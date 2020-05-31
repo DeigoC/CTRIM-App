@@ -1,6 +1,6 @@
 # ctrim_app_v1
 
-A new Flutter project. Change
+An informative app about CTRIM for everyday people
 
 ## Getting Started
 
