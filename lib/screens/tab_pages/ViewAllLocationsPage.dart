@@ -24,6 +24,7 @@ class ViewAllLocationsPage{
     return ListView(
       children: [
         Card(
+          
           child: Row(
             children: [
               Padding(
@@ -40,7 +41,7 @@ class ViewAllLocationsPage{
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ListTile(
-                      title: Text('Title'),
+                      title: SelectableText("Youth Day Out at Lodon's Bridge"),
                       subtitle: Text('Sub'),
                     ),
                     ButtonBar(
@@ -52,7 +53,11 @@ class ViewAllLocationsPage{
                         ),
                         FlatButton(
                           onPressed: () =>BlocProvider.of<AppBloc>(_context).add(ToViewLocationOnMap()),
-                          child: Text('VIEW'),
+                          child: Text('MAP'),
+                        ),
+                         FlatButton(
+                          onPressed: () =>BlocProvider.of<AppBloc>(_context).add(ToEditLocation()),
+                          child: Text('EDIT',style: TextStyle(color: Colors.blue),),
                         ),
                       ],
                     )

@@ -23,6 +23,20 @@ class ToViewAllEventsForLocation extends NavigateToPageEvent{}
 
 class ToViewLocationOnMap extends NavigateToPageEvent{}
 
+class ToRegisterUser extends NavigateToPageEvent{}
+
+class ToViewAllUsers extends NavigateToPageEvent{}
+
+class ToEditUser extends NavigateToPageEvent{}
+
+class ToAddLocation extends NavigateToPageEvent{}
+
+class ToEditLocation extends NavigateToPageEvent{}
+
+class ToSelectLocationForEvent extends NavigateToPageEvent{}
+
+class ToEditAlbum extends NavigateToPageEvent{}
+
 // * Settings Events
 class SettingsEvent extends AppEvent{}
 

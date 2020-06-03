@@ -67,6 +67,7 @@ void initState() {
     appBar: _getAppBar(selectedIndex),
     body: _getBody(selectedIndex),
     floatingActionButton: _getFAB(selectedIndex),
+    drawer: _getDrawer(selectedIndex),
     bottomNavigationBar: BottomNavigationBar(
       currentIndex: selectedIndex,
       selectedItemColor: Colors.red,
@@ -138,5 +139,10 @@ void initState() {
       break;
     }
     return Container();
+  }
+
+  Widget _getDrawer(int selectedIndex){
+    if(selectedIndex == 4) return _settingsPage.buildDrawer();
+    return null;
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/screens/location/EditLocation.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:ctrim_app_v1/App.dart';
@@ -31,10 +32,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   void _openPageFromEvent(NavigateToPageEvent event){
-    if(event is ToViewEventPage) navigatorKey.currentState.pushNamed(ViewEventRoute);
-    else if(event is ToAddEventPage) navigatorKey.currentState.pushNamed(AddEventRoute);
-    else if(event is ToViewAllEventsForLocation) navigatorKey.currentState.pushNamed(ViewAllEventsForLocationRoute);
-    else if(event is ToViewLocationOnMap) navigatorKey.currentState.pushNamed(ViewLocationOnMapRoute); 
+    NavigatorState state = navigatorKey.currentState;
+    if(event is ToViewEventPage) state.pushNamed(ViewEventRoute);
+    else if(event is ToAddEventPage) state.pushNamed(AddEventRoute);
+    else if(event is ToViewAllEventsForLocation) state.pushNamed(ViewAllEventsForLocationRoute);
+    else if(event is ToViewLocationOnMap) state.pushNamed(ViewLocationOnMapRoute); 
+    else if(event is ToRegisterUser) state.pushNamed(RegisterUserRoute);
+    else if(event is ToViewAllUsers) state.pushNamed(ViewAllUsersRoute);
+    else if(event is ToEditUser) state.pushNamed(EditUserRoute);
+    else if(event is ToAddLocation) state.pushNamed(AddLocationRoute);
+    else if(event is ToEditLocation) state.pushNamed(EditLocationRoute);
+    else if(event is ToSelectLocationForEvent) state.pushNamed(SelectLocationForEventRoute);
+    else if(event is ToEditAlbum) state.pushNamed(EditAlbumRoute);
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{

@@ -14,6 +14,37 @@ class SettingsPage{
     );
   }
 
+  BlocBuilder buildDrawer(){
+    return BlocBuilder(
+      bloc: BlocProvider.of<AppBloc>(_context),
+      condition: (_,state){
+        return false;
+      },
+      builder: (_,state){
+        return Drawer(
+          child: ListView(
+            children: [
+              ListTile(
+                title: Text('Register User'),
+                leading: Icon(Icons.person_add),
+                onTap: (){
+                  BlocProvider.of<AppBloc>(_context).add(ToRegisterUser());
+                },
+              ),
+              ListTile(
+                title: Text('Edit User'),
+                leading: Icon(Icons.people),
+                onTap: (){
+                  BlocProvider.of<AppBloc>(_context).add(ToViewAllUsers());
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget buildBody(){
     return BlocConsumer(
       bloc: BlocProvider.of<AppBloc>(_context),

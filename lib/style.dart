@@ -33,7 +33,7 @@ final appLightTheme = ThemeData(
     color: LightPrimaryColor,
   ),
   primaryTextTheme: TextTheme(
-    headline6: TextStyle(fontSize: 18,),//Appbar
+    headline6: TextStyle(fontSize: 20,),//Appbar
   ),
 );
 

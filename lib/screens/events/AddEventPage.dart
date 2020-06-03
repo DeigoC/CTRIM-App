@@ -1,3 +1,4 @@
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,10 +12,12 @@ class AddEventPage extends StatefulWidget {
 class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderStateMixin {
   
   TabController _tabController;
-  TextEditingController _tecBody, _tecTitle;
+  TextEditingController _tecBody, _tecTitle, _tecSubtitle;
   Orientation _orientation;
   
-  EventBloc _eventBloc = EventBloc();
+  List<int> _numbersTestData = [1,2,3,4,5]; 
+
+  EventBloc _eventBloc;
 
   @override
   void initState() {
@@ -22,6 +25,8 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     _tabController = TabController(vsync: this, length: 4);
     _tecBody = TextEditingController();
     _tecTitle = TextEditingController();
+    _tecSubtitle = TextEditingController();
+    _eventBloc = EventBloc();
   }
 
   @override
@@ -29,6 +34,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     _tabController.dispose();
     _tecBody.dispose();
     _tecTitle.dispose();
+    _tecSubtitle.dispose();
     _eventBloc.close();
     super.dispose();
   }
@@ -118,8 +124,8 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
 
         },
         buildWhen: (previousState, currentState){
-          if(currentState is EventDepartmentClickState) return true;
-          else if(currentState is EventTabClick) return true;
+          if(currentState is EventTabClick) return true;
+          //else if(currentState is EventTabClick) return true;
           return false;
         },
         builder: (_,state){
@@ -160,23 +166,31 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
       children: [
         SizedBox(height: 20,),
         Text('Departments'),
-        Wrap(
-          spacing: 8.0,
-          children: _eventBloc.selectedDepartments.keys.map((department){
-            String departmentString = _mapDepartmentToString(department);
+        BlocBuilder(
+          bloc: _eventBloc,
+          condition: (_,state){
+            if(state is EventDepartmentClickState) return true;
+            return false;
+          },
+          builder:(_,state){
+            return Wrap(
+            spacing: 8.0,
+            children: _eventBloc.selectedDepartments.keys.map((department){
+              String departmentString = _mapDepartmentToString(department);
 
-            return FilterChip(
-              label: Text(departmentString),
-              selected: _eventBloc.selectedDepartments[department],
-              onSelected: (newValue){
-                _eventBloc.add(DepartmentClickEvent(department, newValue,));
-              },
+              return FilterChip(
+                label: Text(departmentString),
+                selected: _eventBloc.selectedDepartments[department],
+                onSelected: (newValue){
+                  _eventBloc.add(DepartmentClickEvent(department, newValue,));
+                },
+              );
+            }).toList(),
             );
-          }).toList(),
+          } 
         ),
         SizedBox(height: 20,),
         Text('Body'),
-        SizedBox(height: 20,),
         TextField(
           controller: _tecBody,
           onChanged: (newBody){
@@ -186,6 +200,17 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
             ));
           },
         ),
+         SizedBox(height: 20,),
+          Text('Subtitle'),
+          TextField(
+            controller: _tecSubtitle,
+            onChanged: (newBody){
+            _eventBloc.add(TextChangeEvent(
+                title: _tecTitle.text,
+                body: newBody,
+              ));
+            },
+          ),
       ],
     );
   }
@@ -194,30 +219,61 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     return ListView(
       shrinkWrap: true,
       children: [
-        Text('Location'),
-        FlatButton(
-          child: Text('*INSERT ADDRESS HERE*'),
-          onPressed: () => null,
-        ),
-        Text('Date'),
-        Row(
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
+             Text('Location'),
             FlatButton(
-              child: Text('*INSERT DATE HERE*'),
+              child: Text('*INSERT ADDRESS HERE*'),
               onPressed: () => null,
             ),
+          ],
+        ),
+       Wrap(
+         crossAxisAlignment: WrapCrossAlignment.center,
+         children: [
+          Text('Date'),
+           FlatButton(
+            child: Text('*INSERT DATE HERE*'),
+            onPressed: () => null,
+          ),
             Text(' AT '),
             FlatButton(
               child: Text('*INSERT TIME HERE*'),
               onPressed: () => null,
             ),
-          ],
-        ),
-        Text('Duration'),
+       ],),
+      
+      Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+         Text('Duration'),
         FlatButton(
           child: Text('*INSERT DURATION HERE*'),
           onPressed: () => null,
         ),
+      ],),
+      Divider(),
+      Container(
+        width: MediaQuery.of(context).size.width * 0.95,
+        height: MediaQuery.of(context).size.height * 0.6,
+        child: ReorderableListView(
+          header: Text('Actual Schedule'),
+          onReorder: (oldIndex, newIndex){
+            setState(() {
+              int temp = _numbersTestData.removeAt(oldIndex);
+              if(newIndex > _numbersTestData.length - 1) newIndex = _numbersTestData.length;
+              _numbersTestData.insert(newIndex, temp);
+            });
+          },
+          children: _numbersTestData.map((item){
+            return ListTile(
+              key: ValueKey(item),
+              title: Text('Item: $item'),
+            );
+          }).toList(),
+        ),
+      )
       ],
     );
   }
@@ -233,6 +289,8 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
 
     return ListView(
       children: [
+        FlatButton(child: Text('ADD/EDIT'), onPressed:()=> BlocProvider.of<AppBloc>(context).add(ToEditAlbum()),),
+        SizedBox(height: 20,),
         Wrap(
           children: [
             Padding(
