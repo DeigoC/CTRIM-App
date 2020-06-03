@@ -2,11 +2,19 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:ctrim_app_v1/App.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
+  
+  final GlobalKey<NavigatorState> navigatorKey;
+  bool _onDark = false;
+  bool get onDarkTheme => _onDark;
+  AppBloc(this.navigatorKey);
+
   @override
   AppState get initialState => AppInitial();
 
@@ -14,16 +22,20 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Stream<AppState> mapEventToState(
     AppEvent event,
   ) async* {
-    
     if(event is TabButtonClicked){
       yield* _mapTabEventToState(event);
     }
-
-    else if (event is OpenViewEventPage){
-      yield AppOpenViewEventPage();
-    }
+    else if(event is NavigationPopAction) navigatorKey.currentState.pop();
+    else if(event is NavigateToPageEvent) _openPageFromEvent(event);
+    else if(event is SettingsEvent) yield* _mapSettingsEventToState(event);
   }
 
+  void _openPageFromEvent(NavigateToPageEvent event){
+    if(event is ToViewEventPage) navigatorKey.currentState.pushNamed(ViewEventRoute);
+    else if(event is ToAddEventPage) navigatorKey.currentState.pushNamed(AddEventRoute);
+    else if(event is ToViewAllEventsForLocation) navigatorKey.currentState.pushNamed(ViewAllEventsForLocationRoute);
+    else if(event is ToViewLocationOnMap) navigatorKey.currentState.pushNamed(ViewLocationOnMapRoute); 
+  }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{
     switch(event.selectedIndex){
@@ -39,4 +51,20 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       break;
     }
   }
+
+  Stream<AppState> _mapSettingsEventToState(SettingsEvent event) async*{
+    if(event is ChangeThemeToDark) yield _changeThemeToDarkState();
+    else if(event is ChangeThemeToLight) yield _changeThemeToLightState();
+  }
+
+  AppState _changeThemeToDarkState(){
+    _onDark = true;
+    return AppThemeToDark();
+  }
+
+   AppState _changeThemeToLightState(){
+    _onDark = false;
+    return AppThemeToLight();
+  }
+
 }

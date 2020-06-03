@@ -6,9 +6,26 @@ abstract class AppEvent extends Equatable {
   const AppEvent();
 }
 
-class OpenViewEventPage extends AppEvent{}
-
+class NavigationPopAction extends AppEvent{}
 class TabButtonClicked extends AppEvent{
   final int selectedIndex;
   TabButtonClicked(this.selectedIndex);
 }
+
+// * Navigation Events
+class NavigateToPageEvent extends AppEvent{}
+
+class ToViewEventPage extends NavigateToPageEvent{}
+
+class ToAddEventPage extends NavigateToPageEvent{}
+
+class ToViewAllEventsForLocation extends NavigateToPageEvent{}
+
+class ToViewLocationOnMap extends NavigateToPageEvent{}
+
+// * Settings Events
+class SettingsEvent extends AppEvent{}
+
+class ChangeThemeToDark extends SettingsEvent{}
+
+class ChangeThemeToLight extends SettingsEvent{}

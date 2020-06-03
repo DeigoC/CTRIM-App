@@ -25,3 +25,10 @@ class AppLocationsTabClicked extends AppTabClicked{}
 class AppAboutTabClicked extends AppTabClicked{}
 
 class AppSettingsTabClicked extends AppTabClicked{}
+
+// * Settings State
+class SettingsState extends AppState {}
+
+class AppThemeToLight extends SettingsState{}
+
+class AppThemeToDark extends SettingsState{}
