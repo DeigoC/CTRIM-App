@@ -2,6 +2,7 @@ import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
 import 'package:ctrim_app_v1/screens/HomePage.dart';
 import 'package:ctrim_app_v1/screens/events/ViewEventPage.dart';
 import 'package:ctrim_app_v1/screens/events/AddEventPage.dart';
+import 'package:ctrim_app_v1/screens/gallery/AddFiles.dart';
 import 'package:ctrim_app_v1/screens/gallery/EditAlbum.dart';
 import 'package:ctrim_app_v1/screens/gallery/ViewImageVideo.dart';
 import 'package:ctrim_app_v1/screens/location/AddLocation.dart';
@@ -25,6 +26,7 @@ const AddEventRoute = '/AddEventPage';
 
 const ViewImageVideoRoute = '/ViewImageVideo';
 const EditAlbumRoute = '/EditAlbum';
+const AddGalleryFilesRoute = '/AddFiles';
 
 const ViewLocationOnMapRoute = '/ViewLocationOnMap';
 const ViewAllEventsForLocationRoute = '/ViewAllEventsForLocation';
@@ -135,6 +137,9 @@ class _AppState extends State<App> {
         break;
 
         case EditAlbumRoute: screen = EditAlbum();
+        break;
+
+        case AddGalleryFilesRoute: screen = AddGalleryFiles();
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

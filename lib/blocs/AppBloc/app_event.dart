@@ -14,28 +14,18 @@ class TabButtonClicked extends AppEvent{
 
 // * Navigation Events
 class NavigateToPageEvent extends AppEvent{}
-
 class ToViewEventPage extends NavigateToPageEvent{}
-
 class ToAddEventPage extends NavigateToPageEvent{}
-
 class ToViewAllEventsForLocation extends NavigateToPageEvent{}
-
 class ToViewLocationOnMap extends NavigateToPageEvent{}
-
 class ToRegisterUser extends NavigateToPageEvent{}
-
 class ToViewAllUsers extends NavigateToPageEvent{}
-
 class ToEditUser extends NavigateToPageEvent{}
-
 class ToAddLocation extends NavigateToPageEvent{}
-
 class ToEditLocation extends NavigateToPageEvent{}
-
 class ToSelectLocationForEvent extends NavigateToPageEvent{}
-
 class ToEditAlbum extends NavigateToPageEvent{}
+class ToAddGalleryFile extends NavigateToPageEvent{}
 
 // * Settings Events
 class SettingsEvent extends AppEvent{}

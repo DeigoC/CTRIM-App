@@ -1,4 +1,6 @@
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditAlbum extends StatefulWidget {
   @override
@@ -12,24 +14,57 @@ class _EditAlbumState extends State<EditAlbum> {
     Colors.red, Colors.blue, Colors.green, Colors.orange
   ];
 
+  bool _onDeleteMode = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (_,__){
-          return[
-            SliverAppBar(
-              title: Text('Edit Album'),
-              actions: [
-                FlatButton(
-                  child: Text('UPLOAD'),
-                  onPressed: () => null,
-                ),
-              ],
-            ),
-          ];
+      appBar: AppBar(
+        actions: _onDeleteMode ? _buildDeleteActions() : _buildNormalActions(),
+      ),
+     body: _buildBody(),
+     floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+     floatingActionButton: _onDeleteMode ? _buildDeleteButton(): null,
+    );
+  }
+
+  List<Widget> _buildNormalActions(){
+    return [
+      FlatButton(
+            child: Text('Remove'),
+            onPressed: () {
+              setState(() {_onDeleteMode = true; });
+            },
+          ),
+          FlatButton(
+            child: Text('Add'),
+            onPressed: () => BlocProvider.of<AppBloc>(context).add(ToAddGalleryFile()),
+          ),
+    ];
+  }
+
+  List<Widget> _buildDeleteActions(){
+    return [
+      FlatButton(
+        child: Text('Cancel'),
+        onPressed: () {
+          setState(() {
+            _onDeleteMode = false;
+            _selectedColors = [];
+          });
         },
-        body: _buildBody(),
+      ),
+    ];
+  }
+
+  Widget _buildDeleteButton(){
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.8,
+      child: RaisedButton(
+        child: Text('Delete ${_selectedColors.length} items'),
+        onPressed: (){
+
+        },
       ),
     );
   }
@@ -58,10 +93,12 @@ class _EditAlbumState extends State<EditAlbum> {
           color: color,
           child: InkWell(
             onTap: (){
-              setState(() {
+              if(_onDeleteMode){
+                setState(() {
                 if(selected)_selectedColors.remove(color);
                 else _selectedColors.add(color);
               }); 
+              }
             },
             child: Opacity(
               opacity: selected ? 1:0,

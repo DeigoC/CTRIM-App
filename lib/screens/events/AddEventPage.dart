@@ -64,7 +64,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                     controller: _tabController,
                     tabs: [
                       Tab(icon: Icon(Icons.info_outline), text: 'About',),
-                      Tab(icon: Icon(Icons.calendar_today), text: 'Location',),
+                      Tab(icon: Icon(Icons.calendar_today), text: 'Details',),
                       Tab(icon: Icon(Icons.photo_library), text: 'Gallery',),
                       Tab(icon: Icon(Icons.track_changes), text: 'Updates',),
                     ],

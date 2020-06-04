@@ -36,7 +36,6 @@ class _ScheduleTabBodyState extends State<ScheduleTabBody> {
       children: [
         EventLocationField(),
         EventDateTimeField(widget._eventBloc),
-      
       MyTextField(
         controller: _tecDuration,
         label: 'Duration',
