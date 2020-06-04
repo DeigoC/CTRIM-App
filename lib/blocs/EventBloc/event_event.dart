@@ -13,12 +13,25 @@ class TabClickEvent extends EventEvent{
 
 class TextChangeEvent extends EventEvent{
   final String title, body;
-  TextChangeEvent({@required this.title, @required this.body});
+  TextChangeEvent({this.title, this.body});
 }
 
 class DepartmentClickEvent extends EventEvent{
   final Department department;
   final bool selected;
   DepartmentClickEvent(this.department, this.selected);
+}
+
+// * Schedule Events
+class ScheduleTabEvent extends EventEvent{}
+class SelectEventDateEvent extends ScheduleTabEvent{}
+class SelectEventTimeEvent extends ScheduleTabEvent{}
+class SetEventDateEvent extends ScheduleTabEvent{
+  final DateTime selectedDate;
+  SetEventDateEvent(this.selectedDate);
+}
+class SetEventTimeEvent extends ScheduleTabEvent{
+  final TimeOfDay selectedTOD;
+  SetEventTimeEvent(this.selectedTOD);
 }
 

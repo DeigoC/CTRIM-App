@@ -26,13 +26,19 @@ class EventDepartmentWomenEnabled extends EventDepartmentClickState{}
 class EventDepartmentWomenDisabled extends EventDepartmentClickState{}
 
 // * Tab clicks
-class EventTabClick extends EventState{}
+class EventTabClickState extends EventState{}
 
-class EventMainTabClick extends EventTabClick{}
+class EventMainTabClick extends EventTabClickState{}
 
-class EventScheduleTabClick extends EventTabClick{}
+class EventScheduleTabClick extends EventTabClickState{}
 
-class EventGalleryTabClick extends EventTabClick{}
+class EventGalleryTabClick extends EventTabClickState{}
 
-class EventUpdatesTabClick extends EventTabClick{}
+class EventUpdatesTabClick extends EventTabClickState{}
 
+// * Schedule States
+class EventScheduleState extends EventState{}
+
+class EventSelectDateState extends EventScheduleState{}
+class EventSelectTimeState extends EventScheduleState{}
+class EventDateSelectedState extends EventScheduleState{}

@@ -64,7 +64,7 @@ class _ViewEventPageState extends State<ViewEventPage> with SingleTickerProvider
       builder: (_,state){
         Widget result = _buildTabBody(0);
 
-        if(state is EventTabClick){
+        if(state is EventTabClickState){
           int tabIndex = _getIndexFromState(state);
           result = _buildTabBody(tabIndex);
         }
@@ -74,7 +74,7 @@ class _ViewEventPageState extends State<ViewEventPage> with SingleTickerProvider
     );
   }
 
-  int _getIndexFromState(EventTabClick state){
+  int _getIndexFromState(EventTabClickState state){
     if(state is EventMainTabClick) return 0;
     else if(state is EventScheduleTabClick) return 1;
     else if(state is EventGalleryTabClick) return 2;

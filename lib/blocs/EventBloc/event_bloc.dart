@@ -11,15 +11,25 @@ enum Department{
 }
 
 class EventBloc extends Bloc<EventEvent, EventState> {
-  
 
   Map<Department, bool> selectedDepartments = {
     Department.CHURCH : false,
     Department.YOUTH : false,
     Department.WOMEN : false,
   };
-
   bool _areAnyTextFieldsEmpty = true;
+
+  // * Event Fields
+  DateTime _selectedEventDate;
+  DateTime get getSelectedDate => _selectedEventDate;
+  String get getSelectedDateString => _selectedEventDate == null ? 'Pending' : _selectedEventDate.toString();
+
+  TimeOfDay _selectedEventTOD;
+  String get getSelectedTimeString => _selectedEventTOD == null ? 'Pending' : _selectedEventTOD.toString();
+  
+  String _eventTitle ='', _eventBody ='';
+  String get eventTitle => _eventTitle; 
+  String get eventBody => _eventBody;
   
   @override
   EventState get initialState => EventInitial();
@@ -39,6 +49,25 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     else if(event is DepartmentClickEvent){
       yield* _mapDepartmentClickToState(event);
     }
+
+    else if(event is ScheduleTabEvent){
+      yield* _mapScheduleTabEventsToState(event);
+    }
+  }
+
+  Stream<EventState> _mapScheduleTabEventsToState(ScheduleTabEvent event) async*{
+    if(event is SelectEventDateEvent){
+      yield EventSelectDateState();
+    }else if (event is SelectEventTimeEvent){
+      yield EventSelectTimeState();
+    }else if(event is SetEventDateEvent){
+      if(event.selectedDate != null) _selectedEventDate = event.selectedDate;
+      yield EventDateSelectedState();
+    }else if (event is SetEventTimeEvent){
+      if(event.selectedTOD != null) _selectedEventTOD = event.selectedTOD;
+       yield EventDateSelectedState();// ? Need to change this name perhaps
+    }
+    yield* _canEnableSaveButton();
   }
 
   Stream<EventState> _mapDepartmentClickToState(DepartmentClickEvent event) async*{
@@ -64,7 +93,9 @@ class EventBloc extends Bloc<EventEvent, EventState> {
   }
 
   Stream<EventState> _mapTextChangeToState(TextChangeEvent event) async*{
-    if(event.title.trim().isEmpty || event.body.trim().isEmpty){
+    _eventTitle = event.title?? _eventTitle;
+    _eventBody = event.body?? _eventBody;
+    if(_eventTitle.trim().isEmpty ||_eventBody.trim().isEmpty){
       _areAnyTextFieldsEmpty = true;
     }else{
       _areAnyTextFieldsEmpty = false;
@@ -73,7 +104,8 @@ class EventBloc extends Bloc<EventEvent, EventState> {
   }
 
   Stream<EventState> _canEnableSaveButton() async*{
-    if(_areAnyTextFieldsEmpty || !selectedDepartments.values.contains(true)){
+    if(_areAnyTextFieldsEmpty || !selectedDepartments.values.contains(true) ||
+    _selectedEventTOD == null || _selectedEventDate == null){
        yield EventDisableButton();
     }else{
       yield EventEnableSaveButton();

@@ -1,5 +1,8 @@
-import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
+import 'package:ctrim_app_v1/widgets/events/galleryTabBody.dart';
+import 'package:ctrim_app_v1/widgets/events/mainTabBody.dart';
+import 'package:ctrim_app_v1/widgets/events/scheduleTabBody.dart';
+import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,10 +15,8 @@ class AddEventPage extends StatefulWidget {
 class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderStateMixin {
   
   TabController _tabController;
-  TextEditingController _tecBody, _tecTitle, _tecSubtitle;
+  TextEditingController  _tecTitle;
   Orientation _orientation;
-  
-  List<int> _numbersTestData = [1,2,3,4,5]; 
 
   EventBloc _eventBloc;
 
@@ -23,18 +24,14 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: 4);
-    _tecBody = TextEditingController();
     _tecTitle = TextEditingController();
-    _tecSubtitle = TextEditingController();
     _eventBloc = EventBloc();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _tecBody.dispose();
     _tecTitle.dispose();
-    _tecSubtitle.dispose();
     _eventBloc.close();
     super.dispose();
   }
@@ -56,22 +53,18 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
               padding:  EdgeInsets.all(8.0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  Text('Title'),
-                  TextField(
+                  MyTextField(
+                    label: 'Title',
+                    hint: 'e.g. Youth Day Out!',
                     controller: _tecTitle,
-                    onChanged: (newTitle){
-                       _eventBloc.add(TextChangeEvent(
-                        title: newTitle,
-                        body: _tecBody.text,
-                      ));
-                    },
+                    onTextChange: (newTitle) => _eventBloc.add(TextChangeEvent(title: newTitle)),
                   ),
                   TabBar(
                     labelColor: Colors.black,
                     controller: _tabController,
                     tabs: [
-                      Tab(icon: Icon(Icons.info_outline), text: 'Main',),
-                      Tab(icon: Icon(Icons.calendar_today), text: 'Schedule',),
+                      Tab(icon: Icon(Icons.info_outline), text: 'About',),
+                      Tab(icon: Icon(Icons.calendar_today), text: 'Location',),
                       Tab(icon: Icon(Icons.photo_library), text: 'Gallery',),
                       Tab(icon: Icon(Icons.track_changes), text: 'Updates',),
                     ],
@@ -121,17 +114,21 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
         return BlocConsumer(
         bloc: _eventBloc,
         listener: (_, state){
-
+          //TODO add the dialogues here
+          if(state is EventSelectDateState){
+            _selectEventDate();
+          }else if(state is EventSelectTimeState){
+            _selectEventTime();
+          }
         },
         buildWhen: (previousState, currentState){
-          if(currentState is EventTabClick) return true;
-          //else if(currentState is EventTabClick) return true;
+        if(currentState is EventTabClickState) return true;
           return false;
         },
         builder: (_,state){
           Widget result = _buildTabBody(0);
 
-          if(state is EventTabClick){
+          if(state is EventTabClickState){
             int selectedIndex = _getIndexFromState(state);
             result = _buildTabBody(selectedIndex);
           }
@@ -142,7 +139,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     });
   }
 
-  int _getIndexFromState(EventTabClick state){
+  int _getIndexFromState(EventTabClickState state){
     if(state is EventMainTabClick) return 0;
     else if(state is EventScheduleTabClick) return 1;
     else if(state is EventGalleryTabClick) return 2;
@@ -160,205 +157,35 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     return Center(child: Text('Index is ' + selectedIndex.toString()),);
   }
 
-  ListView _buildMainTabBody(){
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        SizedBox(height: 20,),
-        Text('Departments'),
-        BlocBuilder(
-          bloc: _eventBloc,
-          condition: (_,state){
-            if(state is EventDepartmentClickState) return true;
-            return false;
-          },
-          builder:(_,state){
-            return Wrap(
-            spacing: 8.0,
-            children: _eventBloc.selectedDepartments.keys.map((department){
-              String departmentString = _mapDepartmentToString(department);
-
-              return FilterChip(
-                label: Text(departmentString),
-                selected: _eventBloc.selectedDepartments[department],
-                onSelected: (newValue){
-                  _eventBloc.add(DepartmentClickEvent(department, newValue,));
-                },
-              );
-            }).toList(),
-            );
-          } 
-        ),
-        SizedBox(height: 20,),
-        Text('Body'),
-        TextField(
-          controller: _tecBody,
-          onChanged: (newBody){
-           _eventBloc.add(TextChangeEvent(
-              title: _tecTitle.text,
-              body: newBody,
-            ));
-          },
-        ),
-         SizedBox(height: 20,),
-          Text('Subtitle'),
-          TextField(
-            controller: _tecSubtitle,
-            onChanged: (newBody){
-            _eventBloc.add(TextChangeEvent(
-                title: _tecTitle.text,
-                body: newBody,
-              ));
-            },
-          ),
-      ],
-    );
+  MainTabBody _buildMainTabBody(){
+    return  MainTabBody(_eventBloc);
   }
   
-  ListView _buildScheduleTabBody(){
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-             Text('Location'),
-            FlatButton(
-              child: Text('*INSERT ADDRESS HERE*'),
-              onPressed: () => null,
-            ),
-          ],
-        ),
-       Wrap(
-         crossAxisAlignment: WrapCrossAlignment.center,
-         children: [
-          Text('Date'),
-           FlatButton(
-            child: Text('*INSERT DATE HERE*'),
-            onPressed: () => null,
-          ),
-            Text(' AT '),
-            FlatButton(
-              child: Text('*INSERT TIME HERE*'),
-              onPressed: () => null,
-            ),
-       ],),
-      
-      Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-         Text('Duration'),
-        FlatButton(
-          child: Text('*INSERT DURATION HERE*'),
-          onPressed: () => null,
-        ),
-      ],),
-      Divider(),
-      Container(
-        width: MediaQuery.of(context).size.width * 0.95,
-        height: MediaQuery.of(context).size.height * 0.6,
-        child: ReorderableListView(
-          header: Text('Actual Schedule'),
-          onReorder: (oldIndex, newIndex){
-            setState(() {
-              int temp = _numbersTestData.removeAt(oldIndex);
-              if(newIndex > _numbersTestData.length - 1) newIndex = _numbersTestData.length;
-              _numbersTestData.insert(newIndex, temp);
-            });
-          },
-          children: _numbersTestData.map((item){
-            return ListTile(
-              key: ValueKey(item),
-              title: Text('Item: $item'),
-            );
-          }).toList(),
-        ),
-      )
-      ],
-    );
+  ScheduleTabBody _buildScheduleTabBody(){
+    return ScheduleTabBody(_eventBloc);
   }
 
-  ListView _buildGalleryTabBody(){
-    double pictureSize = MediaQuery.of(context).size.width * 0.32; // * 3 accross so 4% width left 0.04/4 = 0.01
-        double paddingSize = MediaQuery.of(context).size.width * 0.01;
-        if(_orientation == Orientation.landscape){
-          // * 4 blocks accross so 5 paddings accross
-          pictureSize = MediaQuery.of(context).size.width * 0.2375;
-          paddingSize = MediaQuery.of(context).size.width * 0.01;
-        }
-
-    return ListView(
-      children: [
-        FlatButton(child: Text('ADD/EDIT'), onPressed:()=> BlocProvider.of<AppBloc>(context).add(ToEditAlbum()),),
-        SizedBox(height: 20,),
-        Wrap(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: pictureSize,
-                height: pictureSize,
-                color: Colors.red,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: pictureSize,
-                height: pictureSize,
-                color: Colors.green,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: pictureSize,
-                height: pictureSize,
-                color: Colors.purple,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: pictureSize,
-                height: pictureSize,
-                color: Colors.yellow,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: pictureSize,
-                height: pictureSize,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        )
-      ],
-    );
+  GalleryTabBody _buildGalleryTabBody(){
+    return GalleryTabBody(_orientation);
   }
 
-  String _mapDepartmentToString(Department department){
-    String result;
-    switch(department){
-      case Department.CHURCH: result = 'Church';
-      break;
-      case Department.YOUTH: result = 'Youth';
-      break;
-      case Department.WOMEN: result = 'Women';
-      break;
-    }
-    return result;
+  Future<void> _selectEventDate() async{
+    DateTime pickedDate;
+    pickedDate = await showDatePicker(
+      context: context, 
+      initialDate: DateTime.now(), 
+      firstDate: DateTime.now().subtract(Duration(days: 1000)), 
+      lastDate:  DateTime.now().add(Duration(days: 1000)),
+    );
+    _eventBloc.add(SetEventDateEvent(pickedDate));
+  }
+
+  Future<void> _selectEventTime() async{
+    TimeOfDay pickedTime;
+    pickedTime = await showTimePicker(
+      context: context, 
+      initialTime: TimeOfDay.now()
+    );
+    _eventBloc.add(SetEventTimeEvent(pickedTime));
   }
 }
