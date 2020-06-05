@@ -19,7 +19,7 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
       ),
       body: _buildBody(),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => null, 
+        onPressed: () => BlocProvider.of<AppBloc>(context).add(ToAddLocation()), 
         label: Text('New Location'),
         icon: Icon(Icons.add_location),
       ),

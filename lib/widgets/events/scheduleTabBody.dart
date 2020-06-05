@@ -42,25 +42,43 @@ class _ScheduleTabBodyState extends State<ScheduleTabBody> {
         hint: '(Optional) e.g. 2-3 Hours, Whole Day, Pending',
         onTextChange: (newDuration) => null,
       ),
-      Divider(),
-      Container(
-        width: MediaQuery.of(context).size.width * 0.95,
-        height: MediaQuery.of(context).size.height * 0.6,
-        child: ReorderableListView(
-          header: Text('Actual Schedule'),
-          onReorder: (oldIndex, newIndex){
-            setState(() {
-              int temp = _numbersTestData.removeAt(oldIndex);
-              if(newIndex > _numbersTestData.length - 1) newIndex = _numbersTestData.length;
-              _numbersTestData.insert(newIndex, temp);
-            });
-          },
-          children: _numbersTestData.map((item){
-            return ListTile(
-              key: ValueKey(item),
-              title: Text('Item: $item'),
-            );
-          }).toList(),
+      SizedBox(height: 16,),
+      Divider(thickness: 2,),
+      SizedBox(height: 8,),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(),
+          ),
+          //width: MediaQuery.of(context).size.width * 0.95,
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: ReorderableListView(
+            header: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text('Optional Schedule-like table'),
+                FlatButton.icon(
+                  icon: Icon(Icons.add),
+                  label: Text('Item'),
+                  onPressed: () => null,
+                ),
+              ],
+            ),
+            onReorder: (oldIndex, newIndex){
+              setState(() {
+                int temp = _numbersTestData.removeAt(oldIndex);
+                if(newIndex > _numbersTestData.length - 1) newIndex = _numbersTestData.length;
+                _numbersTestData.insert(newIndex, temp);
+              });
+            },
+            children: _numbersTestData.map((item){
+              return ListTile(
+                key: ValueKey(item),
+                title: Text('Item: $item'),
+              );
+            }).toList(),
+          ),
         ),
       )
       ],
