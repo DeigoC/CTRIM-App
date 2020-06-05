@@ -45,7 +45,7 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
       itemCount: _selectedFiles.length,
       itemBuilder: (_, i){
         File file = _selectedFiles[i];
-        String fileType = basename(file.path).split('.').last;
+        String fileType = basename(file.path).split('.').last.toLowerCase();
         double photoSize = MediaQuery.of(_).size.width * 0.2;
         Widget leading = _imageTypes.contains(fileType) ? Image.file(file, width: photoSize, height: photoSize, fit: BoxFit.cover,) :
         Container(width: photoSize, height: photoSize, child: Icon(Icons.video_library),);
@@ -70,8 +70,8 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
   Future<List<File>> _pickFiles() async{
     List<File> results;
     results = await FilePicker.getMultiFile(
-      type: FileType.custom,
-      allowedExtensions: _videoTypes + _imageTypes,
+      type: FileType.image,
+      //allowedExtensions: _videoTypes + _imageTypes,
     );
     _removeDuplicateFiles(results);
     return results;
