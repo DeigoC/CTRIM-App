@@ -22,6 +22,8 @@ class DepartmentClickEvent extends EventEvent{
   DepartmentClickEvent(this.department, this.selected);
 }
 
+class SaveNewBodyDocumentEvent extends EventEvent{}
+
 // * Schedule Events
 class ScheduleTabEvent extends EventEvent{}
 class SelectEventDateEvent extends ScheduleTabEvent{}

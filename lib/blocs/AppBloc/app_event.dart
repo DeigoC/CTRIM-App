@@ -26,6 +26,11 @@ class ToEditLocation extends NavigateToPageEvent{}
 class ToSelectLocationForEvent extends NavigateToPageEvent{}
 class ToEditAlbum extends NavigateToPageEvent{}
 class ToAddGalleryFile extends NavigateToPageEvent{}
+class ToEventBodyEditor extends NavigateToPageEvent{
+  final EventBloc eventBloc;
+  ToEventBodyEditor(this.eventBloc);
+}
+
 
 // * Settings Events
 class SettingsEvent extends AppEvent{}

@@ -2,7 +2,6 @@ import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
 import 'package:ctrim_app_v1/widgets/events/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/events/mainTabBody.dart';
 import 'package:ctrim_app_v1/widgets/events/scheduleTabBody.dart';
-import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,7 +14,6 @@ class AddEventPage extends StatefulWidget {
 class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderStateMixin {
   
   TabController _tabController;
-  TextEditingController  _tecTitle;
   Orientation _orientation;
 
   EventBloc _eventBloc;
@@ -24,14 +22,12 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: 4);
-    _tecTitle = TextEditingController();
     _eventBloc = EventBloc();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _tecTitle.dispose();
     _eventBloc.close();
     super.dispose();
   }
@@ -53,12 +49,6 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
               padding:  EdgeInsets.all(8.0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  MyTextField(
-                    label: 'Title',
-                    hint: 'e.g. Youth Day Out!',
-                    controller: _tecTitle,
-                    onTextChange: (newTitle) => _eventBloc.add(TextChangeEvent(title: newTitle)),
-                  ),
                   TabBar(
                     labelColor: Colors.black,
                     controller: _tabController,

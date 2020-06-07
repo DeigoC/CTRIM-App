@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:ctrim_app_v1/App.dart';
@@ -44,6 +45,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is ToSelectLocationForEvent) state.pushNamed(SelectLocationForEventRoute);
     else if(event is ToEditAlbum) state.pushNamed(EditAlbumRoute);
     else if(event is ToAddGalleryFile) state.pushNamed(AddGalleryFilesRoute);
+    else if(event is ToEventBodyEditor) state.pushNamed(EventBodyEditorRoute, arguments: {'eventBloc':event.eventBloc});
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{

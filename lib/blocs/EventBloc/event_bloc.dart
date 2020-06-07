@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-
+import 'package:quill_delta/quill_delta.dart';
+import 'package:zefyr/zefyr.dart';
 part 'event_event.dart';
 part 'event_state.dart';
 
@@ -30,6 +32,16 @@ class EventBloc extends Bloc<EventEvent, EventState> {
   String _eventTitle ='', _eventBody ='';
   String get eventTitle => _eventTitle; 
   String get eventBody => _eventBody;
+ 
+  String eventBodyContent;
+  NotusDocument getEditorDoc(){
+    if(eventBodyContent == null){
+      List<dynamic> initialWords = [{"insert":"Start Editing\n"}];
+      return NotusDocument.fromJson(initialWords);
+    }
+    var jsonDecoded = jsonDecode(eventBodyContent);
+    return NotusDocument.fromJson(jsonDecoded);
+  }
   
   @override
   EventState get initialState => EventInitial();
@@ -52,6 +64,10 @@ class EventBloc extends Bloc<EventEvent, EventState> {
 
     else if(event is ScheduleTabEvent){
       yield* _mapScheduleTabEventsToState(event);
+    }
+
+    else if(event is SaveNewBodyDocumentEvent){
+      yield EventUpdateBodyState();
     }
   }
 
@@ -124,4 +140,6 @@ class EventBloc extends Bloc<EventEvent, EventState> {
       break;
     }
   }
+
+  Delta() {}
 }

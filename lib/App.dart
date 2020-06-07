@@ -1,5 +1,6 @@
 import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
 import 'package:ctrim_app_v1/screens/HomePage.dart';
+import 'package:ctrim_app_v1/screens/events/EventBodyEditor.dart';
 import 'package:ctrim_app_v1/screens/events/ViewEventPage.dart';
 import 'package:ctrim_app_v1/screens/events/AddEventPage.dart';
 import 'package:ctrim_app_v1/screens/gallery/AddFiles.dart';
@@ -23,6 +24,7 @@ import 'blocs/GalleryBloc/gallery_bloc.dart';
 const HomeRoute ='/';
 const ViewEventRoute ='/ViewEventPage';
 const AddEventRoute = '/AddEventPage';
+const EventBodyEditorRoute = '/EventBodyEditorRoute';
 
 const ViewImageVideoRoute = '/ViewImageVideo';
 const EditAlbumRoute = '/EditAlbum';
@@ -140,6 +142,9 @@ class _AppState extends State<App> {
         break;
 
         case AddGalleryFilesRoute: screen = AddGalleryFiles();
+        break;
+
+        case EventBodyEditorRoute: screen = EventBodyEditor(arguments['eventBloc']);
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

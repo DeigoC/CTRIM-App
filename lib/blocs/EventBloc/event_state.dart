@@ -13,6 +13,8 @@ class EventButtonChangeState extends EventState{}
 class EventEnableSaveButton extends EventButtonChangeState{}
 class EventDisableButton extends EventButtonChangeState{}
 
+class EventUpdateBodyState extends EventState{}
+
 // * Department Clicks
 class EventDepartmentClickState extends EventState{}
 

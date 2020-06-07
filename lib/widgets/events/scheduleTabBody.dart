@@ -51,7 +51,6 @@ class _ScheduleTabBodyState extends State<ScheduleTabBody> {
           decoration: BoxDecoration(
             border: Border.all(),
           ),
-          //width: MediaQuery.of(context).size.width * 0.95,
           height: MediaQuery.of(context).size.height * 0.6,
           child: ReorderableListView(
             header: Row(
@@ -73,15 +72,44 @@ class _ScheduleTabBodyState extends State<ScheduleTabBody> {
               });
             },
             children: _numbersTestData.map((item){
-              return ListTile(
-                key: ValueKey(item),
-                title: Text('Item: $item'),
-              );
+              return _createReorderableItem(item);
             }).toList(),
           ),
         ),
       )
       ],
+    );
+  }
+
+  Widget _createReorderableItem(int item){
+    return Dismissible(
+      onDismissed: (_){
+         setState(() {
+          _numbersTestData.remove(item);
+        });
+      },
+      background: Container(color: Colors.red,),
+      key: ValueKey(item),
+      child: Card(
+        child: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                child: Text('This is a really long text of the ages yeah yeah yeah!'),
+              ),
+            ),
+             Expanded(
+              flex: 2,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                child: Text('Item: $item'),
+            ),
+             ),
+          ],
+        ),
+      ),
     );
   }
 }
