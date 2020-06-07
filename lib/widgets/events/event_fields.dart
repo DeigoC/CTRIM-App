@@ -1,10 +1,10 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
-import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EventDateTimeField extends StatelessWidget {
-  final EventBloc _eventBloc;
+  final PostBloc _eventBloc;
 
   EventDateTimeField(this._eventBloc);
   
@@ -13,7 +13,7 @@ class EventDateTimeField extends StatelessWidget {
      return BlocBuilder(
          bloc: _eventBloc,
          condition: (previousState, currentState){
-           if(currentState is EventScheduleState) return true;
+           if(currentState is PostScheduleTabEvent) return true;
            return false;
          },
           builder:(_,state){
@@ -28,12 +28,12 @@ class EventDateTimeField extends StatelessWidget {
                     children: [
                        FlatButton(
                         child: Text(_eventBloc.getSelectedDateString),
-                        onPressed: () => _eventBloc.add(SelectEventDateEvent()),
+                        onPressed: () => _eventBloc.add(PostSelectPostDateEvent()),
                       ),
                         Text(' AT '),
                         FlatButton(
                           child: Text(_eventBloc.getSelectedTimeString),
-                          onPressed: () => _eventBloc.add(SelectEventTimeEvent()),
+                          onPressed: () => _eventBloc.add(PostSelectPostTimeEvent()),
                         ),
                     ],
                   ),
@@ -55,7 +55,7 @@ class EventLocationField extends StatelessWidget {
             Text('Location'),
             FlatButton(
               child: Text('PENDING LOCATION'),
-              onPressed: () => BlocProvider.of<AppBloc>(context).add(ToSelectLocationForEvent()),
+              onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent()),
             ),
         ],
       ),

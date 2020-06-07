@@ -9,26 +9,18 @@ abstract class AppState extends Equatable {
 
 class AppInitial extends AppState {}
 
-class AppClosedPage extends AppState {}
-
-class AppOpenViewEventPage extends AppState {}
+class AppClosePageState extends AppState {}
+class AppOpenViewEventPageState extends AppState {}
 
 // * Tabs Being clicked
-class AppTabClicked extends AppState {}
-
-class AppGalleryTabClicked extends AppTabClicked{}
-
-class AppEventsTabClicked extends AppTabClicked{}
-
-class AppLocationsTabClicked extends AppTabClicked{}
-
-class AppAboutTabClicked extends AppTabClicked{}
-
-class AppSettingsTabClicked extends AppTabClicked{}
+class AppTabClickedState extends AppState {}
+class AppGalleryTabClickedState extends AppTabClickedState{}
+class AppPostsTabClickedState extends AppTabClickedState{}
+class AppLocationsTabClickedState extends AppTabClickedState{}
+class AppAboutTabClickedState extends AppTabClickedState{}
+class AppSettingsTabClickedState extends AppTabClickedState{}
 
 // * Settings State
 class SettingsState extends AppState {}
-
-class AppThemeToLight extends SettingsState{}
-
-class AppThemeToDark extends SettingsState{}
+class AppThemeToLightState extends SettingsState{}
+class AppThemeToDarkState extends SettingsState{}

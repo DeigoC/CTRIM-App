@@ -156,7 +156,7 @@ class _AddLocationState extends State<AddLocation> {
               appBar: _buildQueryAppbar(state),
               body: _buildQueryBody(state, results),
               floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-              floatingActionButton: (state is LocationDisplaySelectedLocationMap) ?Row(
+              floatingActionButton: (state is LocationDisplaySelectedLocationMapState) ?Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                    RaisedButton(
@@ -178,7 +178,7 @@ class _AddLocationState extends State<AddLocation> {
   }
 
   AppBar _buildQueryAppbar(LocationQueryState state){
-    if(state is LocationDisplayQueryResultsState || state is LocationRebuildQueryResults){
+    if(state is LocationDisplayQueryResultsState || state is LocationRebuildQueryResultsState){
        return  AppBar(
          title: Text('Select Address',),
          leading: IconButton(
@@ -194,7 +194,7 @@ class _AddLocationState extends State<AddLocation> {
   }
 
   Widget _buildQueryBody(LocationQueryState state, List<String> results){
-    if(state is LocationDisplaySelectedLocationMap){
+    if(state is LocationDisplaySelectedLocationMapState){
       return Center(
         child: Text('Map here for: ' + state.selectedAddress),
       );

@@ -28,7 +28,7 @@ class ViewAllLocationsPage{
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: (){
-               BlocProvider.of<AppBloc>(_context).add(ToViewLocationOnMap());
+               BlocProvider.of<AppBloc>(_context).add(AppToViewLocationOnMapEvent());
             },
               child: Row(
               children: [
@@ -53,11 +53,11 @@ class ViewAllLocationsPage{
                         alignment: MainAxisAlignment.end,
                         children: [
                           FlatButton(
-                            onPressed: () => BlocProvider.of<AppBloc>(_context).add(ToViewAllEventsForLocation()),
+                            onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToViewAllPostsForLocationEvent()),
                             child: Text('EVENTS'),
                           ),
                            FlatButton(
-                            onPressed: () =>BlocProvider.of<AppBloc>(_context).add(ToEditLocation()),
+                            onPressed: () =>BlocProvider.of<AppBloc>(_context).add(AppToEditLocationEvent()),
                             child: Text('EDIT',style: TextStyle(color: Colors.blue),),
                           ),
                            IconButton(

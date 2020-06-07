@@ -1,5 +1,6 @@
 part of 'app_bloc.dart';
 
+
 abstract class AppEvent extends Equatable {
    @override
   List<Object> get props => [];
@@ -13,28 +14,28 @@ class TabButtonClicked extends AppEvent{
 }
 
 // * Navigation Events
-class NavigateToPageEvent extends AppEvent{}
-class ToViewEventPage extends NavigateToPageEvent{}
-class ToAddEventPage extends NavigateToPageEvent{}
-class ToViewAllEventsForLocation extends NavigateToPageEvent{}
-class ToViewLocationOnMap extends NavigateToPageEvent{}
-class ToRegisterUser extends NavigateToPageEvent{}
-class ToViewAllUsers extends NavigateToPageEvent{}
-class ToEditUser extends NavigateToPageEvent{}
-class ToAddLocation extends NavigateToPageEvent{}
-class ToEditLocation extends NavigateToPageEvent{}
-class ToSelectLocationForEvent extends NavigateToPageEvent{}
-class ToEditAlbum extends NavigateToPageEvent{}
-class ToAddGalleryFile extends NavigateToPageEvent{}
-class ToEventBodyEditor extends NavigateToPageEvent{
-  final EventBloc eventBloc;
-  ToEventBodyEditor(this.eventBloc);
+class AppNavigateToPageEvent extends AppEvent{}
+class AppToViewPostPageEvent extends AppNavigateToPageEvent{}
+class AppToAddPostPageEvent extends AppNavigateToPageEvent{}
+class AppToViewAllPostsForLocationEvent extends AppNavigateToPageEvent{}
+class AppToViewLocationOnMapEvent extends AppNavigateToPageEvent{}
+class AppToRegisterUserEvent extends AppNavigateToPageEvent{}
+class AppToViewAllUsersEvent extends AppNavigateToPageEvent{}
+class AppToEditUserEvent extends AppNavigateToPageEvent{}
+class AppToAddLocationEvent extends AppNavigateToPageEvent{}
+class AppToEditLocationEvent extends AppNavigateToPageEvent{}
+class AppToSelectLocationForPostEvent extends AppNavigateToPageEvent{}
+class AppToEditAlbumEvent extends AppNavigateToPageEvent{}
+class AppToAddGalleryFileEvent extends AppNavigateToPageEvent{}
+class AppToPostBodyEditorEvent extends AppNavigateToPageEvent{
+  final PostBloc eventBloc;
+  AppToPostBodyEditorEvent(this.eventBloc);
 }
 
 
 // * Settings Events
-class SettingsEvent extends AppEvent{}
+class AppSettingsEvent extends AppEvent{}
 
-class ChangeThemeToDark extends SettingsEvent{}
+class AppChangeThemeToDarkEvent extends AppSettingsEvent{}
 
-class ChangeThemeToLight extends SettingsEvent{}
+class AppChangeThemeToLightEvent extends AppSettingsEvent{}

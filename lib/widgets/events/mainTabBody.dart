@@ -1,5 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
-import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +7,7 @@ import 'package:zefyr/zefyr.dart';
 
 class MainTabBody extends StatefulWidget {
   
-  final EventBloc _eventBloc;
+  final PostBloc _eventBloc;
 
   MainTabBody(this._eventBloc);
 
@@ -49,7 +49,7 @@ class _MainTabBodyState extends State<MainTabBody> {
                BlocBuilder(
                 bloc: widget._eventBloc,
                 condition: (_,state){
-                  if(state is EventDepartmentClickState) return true;
+                  if(state is PostDepartmentClickState) return true;
                   return false;
                 },
                 builder:(_,state){
@@ -62,7 +62,7 @@ class _MainTabBodyState extends State<MainTabBody> {
                       label: Text(departmentString),
                       selected: widget._eventBloc.selectedDepartments[department],
                       onSelected: (newValue){
-                        widget._eventBloc.add(DepartmentClickEvent(department, newValue,));
+                        widget._eventBloc.add(PostDepartmentClickEvent(department, newValue,));
                       },
                     );
                   }).toList(),
@@ -77,7 +77,7 @@ class _MainTabBodyState extends State<MainTabBody> {
           label: 'Title',
           hint: 'e.g. Youth Day Out!',
           controller: _tecTitle,
-          onTextChange: (newTitle) => widget._eventBloc.add(TextChangeEvent(title: newTitle)),
+          onTextChange: (newTitle) => widget._eventBloc.add(PostTextChangeEvent(title: newTitle)),
         ),
         SizedBox(height: 20,),
         MyTextField(
@@ -106,7 +106,7 @@ class _MainTabBodyState extends State<MainTabBody> {
         BlocBuilder(
           bloc: widget._eventBloc,
           condition: (previousState, currentState){
-            if(currentState is EventUpdateBodyState) return true;
+            if(currentState is PostUpdateBodyState) return true;
             return false;
           },
           builder:(_,state){
@@ -141,7 +141,7 @@ class _MainTabBodyState extends State<MainTabBody> {
           padding: EdgeInsets.all(8),
           child: RaisedButton(
             onPressed: (){
-              BlocProvider.of<AppBloc>(context).add(ToEventBodyEditor(widget._eventBloc));
+              BlocProvider.of<AppBloc>(context).add(AppToPostBodyEditorEvent(widget._eventBloc));
             },
             child: Text('Editor Page'),
           ),

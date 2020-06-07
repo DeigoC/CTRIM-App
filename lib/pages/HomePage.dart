@@ -1,8 +1,8 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
-import 'package:ctrim_app_v1/screens/tab_pages/SettingsPage.dart';
-import 'package:ctrim_app_v1/screens/tab_pages/ViewAllEventsPage.dart';
-import 'package:ctrim_app_v1/screens/tab_pages/ViewAllLocationsPage.dart';
-import 'package:ctrim_app_v1/screens/tab_pages/ViewGalleryPage.dart';
+import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
+import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
+import 'package:ctrim_app_v1/pages/tab_pages/ViewAllLocationsTabPage.dart';
+import 'package:ctrim_app_v1/pages/tab_pages/ViewGalleryTabPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,14 +38,14 @@ void initState() {
       
     },
     buildWhen: (previousState, currentState){
-      if(currentState is AppTabClicked){
+      if(currentState is AppTabClickedState){
         return true;
       }
       return false;
     },
     builder:(_,state){
       Widget result = _buildMainScaffold(0);
-      if(state is AppTabClicked){
+      if(state is AppTabClickedState){
         int selectedTab = _getTabIndexFromAppState(state);
         result = _buildMainScaffold(selectedTab);
       }
@@ -54,11 +54,11 @@ void initState() {
   ); 
   }
 
-  int _getTabIndexFromAppState(AppTabClicked state){
-    if(state is AppEventsTabClicked)return 0;
-    else if(state is AppGalleryTabClicked) return 1;
-    else if(state is AppLocationsTabClicked) return 2;
-    else if(state is AppAboutTabClicked) return 3;
+  int _getTabIndexFromAppState(AppTabClickedState state){
+    if(state is AppPostsTabClickedState)return 0;
+    else if(state is AppGalleryTabClickedState) return 1;
+    else if(state is AppLocationsTabClickedState) return 2;
+    else if(state is AppAboutTabClickedState) return 3;
     return 4;
   }
 

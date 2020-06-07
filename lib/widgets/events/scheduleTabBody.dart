@@ -1,11 +1,11 @@
-import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/widgets/events/event_fields.dart';
 import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleTabBody extends StatefulWidget {
   
-  final EventBloc _eventBloc;
+  final PostBloc _eventBloc;
   ScheduleTabBody(this._eventBloc);
 
   @override

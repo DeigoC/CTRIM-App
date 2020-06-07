@@ -19,7 +19,7 @@ class GalleryTabBody extends StatelessWidget {
 
     return ListView(
       children: [
-        FlatButton(child: Text('ADD/EDIT'), onPressed:()=> BlocProvider.of<AppBloc>(context).add(ToEditAlbum()),),
+        FlatButton(child: Text('ADD/EDIT'), onPressed:()=> BlocProvider.of<AppBloc>(context).add(AppToEditAlbumEvent()),),
         SizedBox(height: 20,),
         Wrap(
           children: [

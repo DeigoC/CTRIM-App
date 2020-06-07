@@ -38,7 +38,7 @@ class _EditAlbumState extends State<EditAlbum> {
           ),
           FlatButton(
             child: Text('Add'),
-            onPressed: () => BlocProvider.of<AppBloc>(context).add(ToAddGalleryFile()),
+            onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToAddGalleryFileEvent()),
           ),
     ];
   }

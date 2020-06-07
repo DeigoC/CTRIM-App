@@ -8,12 +8,12 @@ abstract class GalleryState extends Equatable {
 
 class GalleryInitial extends GalleryState {}
 
-class GalleryPictureSelected extends GalleryState{
+class GalleryPictureSelectedState extends GalleryState{
   final Color selectedPicture;
-  GalleryPictureSelected(this.selectedPicture);
+  GalleryPictureSelectedState(this.selectedPicture);
 }
 
-class GalleryPictureDeselected extends GalleryState{
+class GalleryPictureDeselectedState extends GalleryState{
   final Color deselectedPicture;
-  GalleryPictureDeselected(this.deselectedPicture);
+  GalleryPictureDeselectedState(this.deselectedPicture);
 }

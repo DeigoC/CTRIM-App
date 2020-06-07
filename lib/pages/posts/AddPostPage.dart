@@ -1,4 +1,4 @@
-import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/widgets/events/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/events/mainTabBody.dart';
 import 'package:ctrim_app_v1/widgets/events/scheduleTabBody.dart';
@@ -16,13 +16,13 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
   TabController _tabController;
   Orientation _orientation;
 
-  EventBloc _eventBloc;
+  PostBloc _eventBloc;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: 4);
-    _eventBloc = EventBloc();
+    _eventBloc = PostBloc();
   }
 
   @override
@@ -59,7 +59,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                       Tab(icon: Icon(Icons.track_changes), text: 'Updates',),
                     ],
                     onTap: (newIndex){
-                      _eventBloc.add(TabClickEvent(newIndex));
+                      _eventBloc.add(PostTabClickEvent(newIndex));
                     },
                   ),
                 ]),
@@ -78,10 +78,10 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
       bloc: _eventBloc,
       listener: (_,state){
         enableSaveButton = false;
-        if(state is EventEnableSaveButton) enableSaveButton = true;
+        if(state is PostEnableSaveButtonState) enableSaveButton = true;
       },
       buildWhen: (previousState, currentState){
-        if(currentState is EventButtonChangeState) return true;
+        if(currentState is PostButtonChangeState) return true;
         return false;
       },
       builder: (_,state){
@@ -105,20 +105,20 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
         bloc: _eventBloc,
         listener: (_, state){
           //TODO add the dialogues here
-          if(state is EventSelectDateState){
+          if(state is PostSelectDateState){
             _selectEventDate();
-          }else if(state is EventSelectTimeState){
+          }else if(state is PostSelectTimeState){
             _selectEventTime();
           }
         },
         buildWhen: (previousState, currentState){
-        if(currentState is EventTabClickState) return true;
+        if(currentState is PostTabClickState) return true;
           return false;
         },
         builder: (_,state){
           Widget result = _buildTabBody(0);
 
-          if(state is EventTabClickState){
+          if(state is PostTabClickState){
             int selectedIndex = _getIndexFromState(state);
             result = _buildTabBody(selectedIndex);
           }
@@ -129,10 +129,10 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     });
   }
 
-  int _getIndexFromState(EventTabClickState state){
-    if(state is EventMainTabClick) return 0;
-    else if(state is EventScheduleTabClick) return 1;
-    else if(state is EventGalleryTabClick) return 2;
+  int _getIndexFromState(PostTabClickState state){
+    if(state is PostAboutTabClickState) return 0;
+    else if(state is PostDetailsTabClickState) return 1;
+    else if(state is PostGalleryTabClickState) return 2;
     return 3;
   }
 
@@ -167,7 +167,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
       firstDate: DateTime.now().subtract(Duration(days: 1000)), 
       lastDate:  DateTime.now().add(Duration(days: 1000)),
     );
-    _eventBloc.add(SetEventDateEvent(pickedDate));
+    _eventBloc.add(PostSetPostDateEvent(pickedDate));
   }
 
   Future<void> _selectEventTime() async{
@@ -176,6 +176,6 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
       context: context, 
       initialTime: TimeOfDay.now()
     );
-    _eventBloc.add(SetEventTimeEvent(pickedTime));
+    _eventBloc.add(PostSetPostTimeEvent(pickedTime));
   }
 }

@@ -33,9 +33,9 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       yield LocationCancelQueryState();
     }else if(event is LocationSelectedQueryAddressEvent){
       _selectedAddress = event.selectedAddress;
-      yield LocationDisplaySelectedLocationMap(event.selectedAddress);
+      yield LocationDisplaySelectedLocationMapState(event.selectedAddress);
     }else if(event is LocationWrongQueryAddressEvent){
-      yield LocationRebuildQueryResults();
+      yield LocationRebuildQueryResultsState();
     }else if(event is LocationConfirmedQueryAddressEvent){
       yield LocationDisplayConfirmedQueryAddressState(_selectedAddress);
     }

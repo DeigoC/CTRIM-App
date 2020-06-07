@@ -1,22 +1,22 @@
-import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
-import 'package:ctrim_app_v1/screens/HomePage.dart';
-import 'package:ctrim_app_v1/screens/events/EventBodyEditor.dart';
-import 'package:ctrim_app_v1/screens/events/ViewEventPage.dart';
-import 'package:ctrim_app_v1/screens/events/AddEventPage.dart';
-import 'package:ctrim_app_v1/screens/gallery/AddFiles.dart';
-import 'package:ctrim_app_v1/screens/gallery/EditAlbum.dart';
-import 'package:ctrim_app_v1/screens/gallery/ViewImageVideo.dart';
-import 'package:ctrim_app_v1/screens/location/AddLocation.dart';
-import 'package:ctrim_app_v1/screens/location/EditLocation.dart';
-import 'package:ctrim_app_v1/screens/location/SelectLocationForEvent.dart';
-import 'package:ctrim_app_v1/screens/location/ViewAllEventsForLocation.dart';
-import 'package:ctrim_app_v1/screens/location/ViewLocationOnMap.dart';
-import 'package:ctrim_app_v1/screens/user/EditUser.dart';
-import 'package:ctrim_app_v1/screens/user/RegisterUser.dart';
-import 'package:ctrim_app_v1/screens/user/ViewAllUsers.dart';
+import 'package:ctrim_app_v1/pages/HomePage.dart';
+import 'package:ctrim_app_v1/pages/posts/PostBodyEditorPage.dart';
+import 'package:ctrim_app_v1/pages/posts/ViewPostPage.dart';
+import 'package:ctrim_app_v1/pages/posts/AddPostPage.dart';
+import 'package:ctrim_app_v1/pages/gallery/AddFilesPage.dart';
+import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
+import 'package:ctrim_app_v1/pages/gallery/ViewImageVideoPage.dart';
+import 'package:ctrim_app_v1/pages/location/AddLocationPage.dart';
+import 'package:ctrim_app_v1/pages/location/EditLocationPage.dart';
+import 'package:ctrim_app_v1/pages/location/SelectLocationForPostPage.dart';
+import 'package:ctrim_app_v1/pages/location/ViewAllPostsForLocationPage.dart';
+import 'package:ctrim_app_v1/pages/location/ViewLocationOnMapPage.dart';
+import 'package:ctrim_app_v1/pages/user/EditUserPage.dart';
+import 'package:ctrim_app_v1/pages/user/RegisterUserPage.dart';
+import 'package:ctrim_app_v1/pages/user/ViewAllUsersPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 
 import 'blocs/AppBloc/app_bloc.dart';
 import 'blocs/GalleryBloc/gallery_bloc.dart';
@@ -69,8 +69,8 @@ class _AppState extends State<App> {
         BlocProvider<AppBloc>(
         create: (_) => _appBloc,
       ),
-      BlocProvider<EventBloc>(
-        create: (_) => EventBloc(),
+      BlocProvider<PostBloc>(
+        create: (_) => PostBloc(),
       ),
       BlocProvider<GalleryBloc>(
         create: (_) => GalleryBloc(),
@@ -84,7 +84,7 @@ class _AppState extends State<App> {
         },
         builder:(_,state){
           bool onDark = false;
-          if(state is AppThemeToDark) onDark = true;
+          if(state is AppThemeToDarkState) onDark = true;
           return MaterialApp(
           navigatorKey: _navigatorKey,
           theme: onDark ? appDarkTheme : appLightTheme,

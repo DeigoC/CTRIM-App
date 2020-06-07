@@ -19,7 +19,7 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
       ),
       body: _buildBody(),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => BlocProvider.of<AppBloc>(context).add(ToAddLocation()), 
+        onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToAddLocationEvent()), 
         label: Text('New Location'),
         icon: Icon(Icons.add_location),
       ),
@@ -58,7 +58,7 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
                       alignment: MainAxisAlignment.end,
                       children: [
                         FlatButton(
-                          onPressed: () =>BlocProvider.of<AppBloc>(context).add(ToViewLocationOnMap()),
+                          onPressed: () =>BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent()),
                           child: Text('MAP'),
                         ),
                       ],

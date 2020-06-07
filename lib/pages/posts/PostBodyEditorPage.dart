@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:zefyr/zefyr.dart';
 
 class EventBodyEditor extends StatefulWidget {
-  final EventBloc _eventBloc;
+  final PostBloc _eventBloc;
   EventBodyEditor(this._eventBloc);
   
   @override
@@ -52,7 +52,7 @@ class _EventBodyEditorState extends State<EventBodyEditor> {
   void _saveDocument(){
     String contents = jsonEncode(_textController.document);
     widget._eventBloc.eventBodyContent = contents;
-    widget._eventBloc.add(SaveNewBodyDocumentEvent());
+    widget._eventBloc.add(PostSaveBodyDocumentEvent());
     print('--------------CONTENT LOOKS LIKE:\n' + contents);
   }
 }

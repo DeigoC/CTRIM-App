@@ -18,7 +18,7 @@ class ViewAllEventsPage{
   FloatingActionButton buildFAB(){
     return FloatingActionButton.extended(
       onPressed: (){
-        BlocProvider.of<AppBloc>(_context).add(ToAddEventPage());
+        BlocProvider.of<AppBloc>(_context).add(AppToAddPostPageEvent());
       },
       icon: Icon(Icons.add),
        label: Text('Event'),
@@ -31,7 +31,7 @@ class ViewAllEventsPage{
         ListTile(
           title: Text('Insert full test here'),
           onTap: (){
-            BlocProvider.of<AppBloc>(_context).add(ToViewEventPage());
+            BlocProvider.of<AppBloc>(_context).add(AppToViewPostPageEvent());
           },  
         )
       ],

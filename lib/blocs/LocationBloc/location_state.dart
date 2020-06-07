@@ -19,14 +19,14 @@ class LocationDisplayQueryResultsState extends LocationQueryState{
   final List<String> results; //TODO change this of course
   LocationDisplayQueryResultsState(this.results);
 }
-class LocationDisplaySelectedLocationMap extends LocationQueryState{
+class LocationDisplaySelectedLocationMapState extends LocationQueryState{
   final String selectedAddress;
-  LocationDisplaySelectedLocationMap(this.selectedAddress);
+  LocationDisplaySelectedLocationMapState(this.selectedAddress);
 }
 
 class LocationCancelQueryState extends LocationQueryState{}
 
-class LocationRebuildQueryResults extends LocationQueryState{}
+class LocationRebuildQueryResultsState extends LocationQueryState{}
 
 class LocationDisplayConfirmedQueryAddressState extends LocationQueryState{
   final String confirmedAddress;

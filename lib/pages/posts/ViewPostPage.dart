@@ -1,4 +1,4 @@
-import 'package:ctrim_app_v1/blocs/EventBloc/event_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +14,6 @@ class _ViewEventPageState extends State<ViewEventPage> with SingleTickerProvider
 
   @override
   void initState() {
-    // TODO: implement initState
     _tabController = TabController(vsync: this, length: 4);
     super.initState();
   }
@@ -43,7 +42,7 @@ class _ViewEventPageState extends State<ViewEventPage> with SingleTickerProvider
                       Tab(icon: Icon(Icons.track_changes), text: 'Updates',),
                     ],
                     onTap: (newIndex){
-                      BlocProvider.of<EventBloc>(context).add(TabClickEvent(newIndex));
+                      BlocProvider.of<PostBloc>(context).add(PostTabClickEvent(newIndex));
                     },
                   ),
                 ]),),
@@ -57,14 +56,14 @@ class _ViewEventPageState extends State<ViewEventPage> with SingleTickerProvider
 
   Widget _buildBody(){
     return BlocConsumer(
-      bloc: BlocProvider.of<EventBloc>(context),
+      bloc: BlocProvider.of<PostBloc>(context),
       listener: (_,state){
 
       },
       builder: (_,state){
         Widget result = _buildTabBody(0);
 
-        if(state is EventTabClickState){
+        if(state is PostTabClickState){
           int tabIndex = _getIndexFromState(state);
           result = _buildTabBody(tabIndex);
         }
@@ -74,10 +73,10 @@ class _ViewEventPageState extends State<ViewEventPage> with SingleTickerProvider
     );
   }
 
-  int _getIndexFromState(EventTabClickState state){
-    if(state is EventMainTabClick) return 0;
-    else if(state is EventScheduleTabClick) return 1;
-    else if(state is EventGalleryTabClick) return 2;
+  int _getIndexFromState(PostTabClickState state){
+    if(state is PostAboutTabClickState) return 0;
+    else if(state is PostDetailsTabClickState) return 1;
+    else if(state is PostGalleryTabClickState) return 2;
     return 3;
   }
 

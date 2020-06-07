@@ -28,14 +28,14 @@ class SettingsPage{
                 title: Text('Register User'),
                 leading: Icon(Icons.person_add),
                 onTap: (){
-                  BlocProvider.of<AppBloc>(_context).add(ToRegisterUser());
+                  BlocProvider.of<AppBloc>(_context).add(AppToRegisterUserEvent());
                 },
               ),
               ListTile(
                 title: Text('Edit User'),
                 leading: Icon(Icons.people),
                 onTap: (){
-                  BlocProvider.of<AppBloc>(_context).add(ToViewAllUsers());
+                  BlocProvider.of<AppBloc>(_context).add(AppToViewAllUsersEvent());
                 },
               ),
             ],
@@ -62,7 +62,7 @@ class SettingsPage{
                 value: BlocProvider.of<AppBloc>(_context).onDarkTheme, 
                 title: Text('Dark Mode'),
                 onChanged: (newValue){
-                  SettingsEvent event = newValue ? ChangeThemeToDark() : ChangeThemeToLight();
+                  AppSettingsEvent event = newValue ? AppChangeThemeToDarkEvent() : AppChangeThemeToLightEvent();
                   BlocProvider.of<AppBloc>(_context).add(event);
                 }
               ),

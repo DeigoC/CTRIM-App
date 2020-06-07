@@ -5,14 +5,14 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
-part 'event_event.dart';
-part 'event_state.dart';
+part 'post_event.dart';
+part 'post_state.dart';
 
 enum Department{
   CHURCH, YOUTH, WOMEN
 }
 
-class EventBloc extends Bloc<EventEvent, EventState> {
+class PostBloc extends Bloc<PostEvent, PostState> {
 
   Map<Department, bool> selectedDepartments = {
     Department.CHURCH : false,
@@ -44,71 +44,71 @@ class EventBloc extends Bloc<EventEvent, EventState> {
   }
   
   @override
-  EventState get initialState => EventInitial();
+  PostState get initialState => PostInitial();
 
   @override
-  Stream<EventState> mapEventToState(
-    EventEvent event,
+  Stream<PostState> mapEventToState(
+    PostEvent event,
   ) async* {
-    if(event is TabClickEvent){
+    if(event is PostTabClickEvent){
        yield* _mapTabClickEventToState(event);
     }
 
-    else if(event is TextChangeEvent){
+    else if(event is PostTextChangeEvent){
       yield* _mapTextChangeToState(event);
     }
 
-    else if(event is DepartmentClickEvent){
+    else if(event is PostDepartmentClickEvent){
       yield* _mapDepartmentClickToState(event);
     }
 
-    else if(event is ScheduleTabEvent){
+    else if(event is PostScheduleTabEvent){
       yield* _mapScheduleTabEventsToState(event);
     }
 
-    else if(event is SaveNewBodyDocumentEvent){
-      yield EventUpdateBodyState();
+    else if(event is PostSaveBodyDocumentEvent){
+      yield PostUpdateBodyState();
     }
   }
 
-  Stream<EventState> _mapScheduleTabEventsToState(ScheduleTabEvent event) async*{
-    if(event is SelectEventDateEvent){
-      yield EventSelectDateState();
-    }else if (event is SelectEventTimeEvent){
-      yield EventSelectTimeState();
-    }else if(event is SetEventDateEvent){
+  Stream<PostState> _mapScheduleTabEventsToState(PostScheduleTabEvent event) async*{
+    if(event is PostSelectPostDateEvent){
+      yield PostSelectDateState();
+    }else if (event is PostSelectPostTimeEvent){
+      yield PostSelectTimeState();
+    }else if(event is PostSetPostDateEvent){
       if(event.selectedDate != null) _selectedEventDate = event.selectedDate;
-      yield EventDateSelectedState();
-    }else if (event is SetEventTimeEvent){
+      yield PostDateSelectedState();
+    }else if (event is PostSetPostTimeEvent){
       if(event.selectedTOD != null) _selectedEventTOD = event.selectedTOD;
-       yield EventDateSelectedState();// ? Need to change this name perhaps
+       yield PostDateSelectedState();// ? Need to change this name perhaps
     }
     yield* _canEnableSaveButton();
   }
 
-  Stream<EventState> _mapDepartmentClickToState(DepartmentClickEvent event) async*{
+  Stream<PostState> _mapDepartmentClickToState(PostDepartmentClickEvent event) async*{
     selectedDepartments[event.department] = event.selected;
     bool selected = event.selected;
     switch(event.department){
       case Department.CHURCH:
-        if(selected) yield EventDepartmentChurchEnabled();
-        else yield EventDepartmentChurchDisabled();
+        if(selected) yield PostDepartmentChurchEnabledState();
+        else yield PostDepartmentChurchDisabledState();
         break;
 
       case Department.YOUTH:
-        if(selected) yield EventDepartmentYouthEnabled();
-        else yield EventDepartmentYouthDisabled();
+        if(selected) yield PostDepartmentYouthEnabledState();
+        else yield PostDepartmentYouthDisabledState();
         break;
 
       case Department.WOMEN:
-        if(selected) yield EventDepartmentWomenEnabled();
-        else yield EventDepartmentWomenDisabled();
+        if(selected) yield PostDepartmentWomenEnabledState();
+        else yield PostDepartmentWomenDisabledState();
         break;
     }
     yield* _canEnableSaveButton();
   }
 
-  Stream<EventState> _mapTextChangeToState(TextChangeEvent event) async*{
+  Stream<PostState> _mapTextChangeToState(PostTextChangeEvent event) async*{
     _eventTitle = event.title?? _eventTitle;
     _eventBody = event.body?? _eventBody;
     if(_eventTitle.trim().isEmpty ||_eventBody.trim().isEmpty){
@@ -119,24 +119,24 @@ class EventBloc extends Bloc<EventEvent, EventState> {
      yield* _canEnableSaveButton();
   }
 
-  Stream<EventState> _canEnableSaveButton() async*{
+  Stream<PostState> _canEnableSaveButton() async*{
     if(_areAnyTextFieldsEmpty || !selectedDepartments.values.contains(true) ||
     _selectedEventTOD == null || _selectedEventDate == null){
-       yield EventDisableButton();
+       yield PostDisableSaveButtonState();
     }else{
-      yield EventEnableSaveButton();
+      yield PostEnableSaveButtonState();
     }
   }
 
-  Stream<EventState> _mapTabClickEventToState(TabClickEvent event) async*{
+  Stream<PostState> _mapTabClickEventToState(PostTabClickEvent event) async*{
     switch(event.selectedIndex){
-      case 0: yield EventMainTabClick();
+      case 0: yield PostAboutTabClickState();
       break;
-      case 1: yield EventScheduleTabClick();
+      case 1: yield PostDetailsTabClickState();
       break;
-      case 2: yield EventGalleryTabClick();
+      case 2: yield PostGalleryTabClickState();
       break;
-      case 3: yield EventUpdatesTabClick();
+      case 3: yield PostUpdatesTabClickState();
       break;
     }
   }
