@@ -4,22 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:zefyr/zefyr.dart';
 
 class EventBodyEditor extends StatefulWidget {
-  final PostBloc _eventBloc;
-  EventBodyEditor(this._eventBloc);
-  
+  final PostBloc _postBloc;
+  EventBodyEditor(this._postBloc);
   @override
   _EventBodyEditorState createState() => _EventBodyEditorState();
 }
 
 class _EventBodyEditorState extends State<EventBodyEditor> {
   
+ 
   ZefyrController _textController;
   FocusNode _fnEditor;
 
   @override
   void initState() {
     super.initState();
-    _textController = ZefyrController(widget._eventBloc.getEditorDoc());
+    _textController = ZefyrController(widget._postBloc.getEditorDoc());
     _fnEditor = FocusNode();
   }
   
@@ -29,14 +29,15 @@ class _EventBodyEditorState extends State<EventBodyEditor> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Test Page for Editor'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: (){
-              _saveDocument();
-            },
-          )
-        ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+             String contents = jsonEncode(_textController.document);
+              widget._postBloc.eventBodyContent = contents;
+              widget._postBloc.add(PostSaveBodyDocumentEvent());
+              Navigator.pop(context);
+          },
+        ),
       ),
       body: ZefyrScaffold(
         child: ZefyrEditor(
@@ -49,10 +50,10 @@ class _EventBodyEditorState extends State<EventBodyEditor> {
     );
   }
 
-  void _saveDocument(){
+ /*  void _saveDocument(){
     String contents = jsonEncode(_textController.document);
-    widget._eventBloc.eventBodyContent = contents;
-    widget._eventBloc.add(PostSaveBodyDocumentEvent());
+     widget._postBloc.eventBodyContent = contents;
+     widget._postBloc.add(PostSaveBodyDocumentEvent());
     print('--------------CONTENT LOOKS LIKE:\n' + contents);
-  }
+  } */
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:ctrim_app_v1/App.dart';
@@ -44,7 +45,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToSelectLocationForPostEvent) state.pushNamed(SelectLocationForEventRoute);
     else if(event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute);
     else if(event is AppToAddGalleryFileEvent) state.pushNamed(AddGalleryFilesRoute);
-    else if(event is AppToPostBodyEditorEvent) state.pushNamed(EventBodyEditorRoute, arguments: {'eventBloc':event.eventBloc});
+    else if(event is AppToPostBodyEditorEvent) state.pushNamed(EventBodyEditorRoute,arguments: {'postBloc':event.postBloc});
+    else if(event is AppToUserLoginEvent) state.pushNamed(UserLoginRoute);
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{

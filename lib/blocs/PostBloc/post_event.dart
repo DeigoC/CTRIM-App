@@ -24,7 +24,7 @@ class PostDepartmentClickEvent extends PostEvent{
 
 class PostSaveBodyDocumentEvent extends PostEvent{}
 
-// * Schedule Events
+// * Details Events
 class PostScheduleTabEvent extends PostEvent{}
 class PostSelectPostDateEvent extends PostScheduleTabEvent{}
 class PostSelectPostTimeEvent extends PostScheduleTabEvent{}
@@ -36,4 +36,5 @@ class PostSetPostTimeEvent extends PostScheduleTabEvent{
   final TimeOfDay selectedTOD;
   PostSetPostTimeEvent(this.selectedTOD);
 }
+class PostDateNotApplicableClick extends PostScheduleTabEvent{}
 

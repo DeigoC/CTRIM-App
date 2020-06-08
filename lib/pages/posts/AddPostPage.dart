@@ -1,12 +1,12 @@
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
-import 'package:ctrim_app_v1/widgets/events/galleryTabBody.dart';
-import 'package:ctrim_app_v1/widgets/events/mainTabBody.dart';
-import 'package:ctrim_app_v1/widgets/events/scheduleTabBody.dart';
+import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
+import 'package:ctrim_app_v1/widgets/posts/galleryTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts/mainTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts/detailsTabBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddEventPage extends StatefulWidget {
-  
   @override
   _AddEventPageState createState() => _AddEventPageState();
 }
@@ -15,67 +15,77 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
   
   TabController _tabController;
   Orientation _orientation;
-
-  PostBloc _eventBloc;
+  TextEditingController _tecTitle;
+  PostBloc _postBloc;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: 4);
-    _eventBloc = PostBloc();
+     _tecTitle = TextEditingController();
+    _postBloc = PostBloc();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _eventBloc.close();
+    _tecTitle.dispose();
+    _postBloc.close();
     super.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: NestedScrollView(
-        headerSliverBuilder: (_,__){
-          return [
-            SliverAppBar(
-              expandedHeight: 200,
-              actions: [
-                _buildAppBarActions(),
-              ],
-            ),
-            SliverPadding(
-              padding:  EdgeInsets.all(8.0),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  TabBar(
-                    labelColor: Colors.black,
-                    controller: _tabController,
-                    tabs: [
-                      Tab(icon: Icon(Icons.info_outline), text: 'About',),
-                      Tab(icon: Icon(Icons.calendar_today), text: 'Details',),
-                      Tab(icon: Icon(Icons.photo_library), text: 'Gallery',),
-                      Tab(icon: Icon(Icons.track_changes), text: 'Updates',),
-                    ],
-                    onTap: (newIndex){
-                      _eventBloc.add(PostTabClickEvent(newIndex));
-                    },
-                  ),
-                ]),
+    return BlocProvider(
+      create: (_) => _postBloc,
+        child: Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: NestedScrollView(
+          headerSliverBuilder: (_,__){
+            return [
+              SliverAppBar(
+                expandedHeight: 200,
+                actions: [
+                  _buildAppBarActions(),
+                ],
               ),
-            )
-          ];
-        },
-        body: _buildBody(),
+              SliverPadding(
+                padding:  EdgeInsets.all(8.0),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    MyTextField(
+                      label: 'Title',
+                      hint: 'e.g. Youth Day Out!',
+                      controller: _tecTitle,
+                      onTextChange: (newTitle) =>  _postBloc.add(PostTextChangeEvent(title: newTitle)),
+                    ),
+                    TabBar(
+                      labelColor: Colors.black,
+                      controller: _tabController,
+                      tabs: [
+                        Tab(icon: Icon(Icons.info_outline), text: 'About',),
+                        Tab(icon: Icon(Icons.calendar_today), text: 'Details',),
+                        Tab(icon: Icon(Icons.photo_library), text: 'Gallery',),
+                        Tab(icon: Icon(Icons.track_changes), text: 'Updates',),
+                      ],
+                      onTap: (newIndex){
+                        _postBloc.add(PostTabClickEvent(newIndex));
+                      },
+                    ),
+                  ]),
+                ),
+              )
+            ];
+          },
+          body: _buildBody(),
+        ),
       ),
     );
   }
 
   BlocConsumer _buildAppBarActions(){
     bool enableSaveButton = false;
-    return BlocConsumer(
-      bloc: _eventBloc,
+    return BlocConsumer<PostBloc, PostState>(
       listener: (_,state){
         enableSaveButton = false;
         if(state is PostEnableSaveButtonState) enableSaveButton = true;
@@ -101,8 +111,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     return OrientationBuilder(
       builder: (_,orientation){
         _orientation = orientation;
-        return BlocConsumer(
-        bloc: _eventBloc,
+        return BlocConsumer<PostBloc, PostState>(
         listener: (_, state){
           //TODO add the dialogues here
           if(state is PostSelectDateState){
@@ -138,25 +147,11 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
 
   Widget _buildTabBody(int selectedIndex){
     switch(selectedIndex){
-      case 0: return _buildMainTabBody();
-      break;
-      case 1: return _buildScheduleTabBody();
-      break;
-      case 2: return _buildGalleryTabBody();
+      case 0: return MainTabBody();
+      case 1: return PostDetailsTabBody();
+      case 2: return GalleryTabBody(_orientation);
     }
     return Center(child: Text('Index is ' + selectedIndex.toString()),);
-  }
-
-  MainTabBody _buildMainTabBody(){
-    return  MainTabBody(_eventBloc);
-  }
-  
-  ScheduleTabBody _buildScheduleTabBody(){
-    return ScheduleTabBody(_eventBloc);
-  }
-
-  GalleryTabBody _buildGalleryTabBody(){
-    return GalleryTabBody(_orientation);
   }
 
   Future<void> _selectEventDate() async{
@@ -167,7 +162,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
       firstDate: DateTime.now().subtract(Duration(days: 1000)), 
       lastDate:  DateTime.now().add(Duration(days: 1000)),
     );
-    _eventBloc.add(PostSetPostDateEvent(pickedDate));
+    _postBloc.add(PostSetPostDateEvent(pickedDate));
   }
 
   Future<void> _selectEventTime() async{
@@ -176,6 +171,6 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
       context: context, 
       initialTime: TimeOfDay.now()
     );
-    _eventBloc.add(PostSetPostTimeEvent(pickedTime));
+    _postBloc.add(PostSetPostTimeEvent(pickedTime));
   }
 }

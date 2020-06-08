@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:quill_delta/quill_delta.dart';
+import 'package:intl/intl.dart';
 import 'package:zefyr/zefyr.dart';
 part 'post_event.dart';
 part 'post_state.dart';
@@ -21,27 +21,37 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   };
   bool _areAnyTextFieldsEmpty = true;
 
-  // * Event Fields
-  DateTime _selectedEventDate;
-  DateTime get getSelectedDate => _selectedEventDate;
-  String get getSelectedDateString => _selectedEventDate == null ? 'Pending' : _selectedEventDate.toString();
-
-  TimeOfDay _selectedEventTOD;
-  String get getSelectedTimeString => _selectedEventTOD == null ? 'Pending' : _selectedEventTOD.toString();
-  
+  // ! Post Fields - About Tab
   String _eventTitle ='', _eventBody ='';
   String get eventTitle => _eventTitle; 
   String get eventBody => _eventBody;
- 
   String eventBodyContent;
   NotusDocument getEditorDoc(){
     if(eventBodyContent == null){
-      List<dynamic> initialWords = [{"insert":"Start Editing\n"}];
+      List<dynamic> initialWords = [{"insert":"Body Starts here\n"}];
       return NotusDocument.fromJson(initialWords);
     }
     var jsonDecoded = jsonDecode(eventBodyContent);
     return NotusDocument.fromJson(jsonDecoded);
   }
+
+  // ! Post Fields - Details Tab
+  DateTime _selectedEventDate;
+  DateTime get getSelectedDate => _selectedEventDate;
+  String get getSelectedDateString => _selectedEventDate == null ? 'Pending' :
+  DateFormat('EEE, dd MMM yyyy').format(_selectedEventDate);
+  bool _isDateNotApplicable = false;
+  bool get getIsDateNotApplicable => _isDateNotApplicable;
+
+  TimeOfDay _selectedEventTOD;
+  String get getSelectedTimeString => _selectedEventTOD == null ? 'Pending' :
+  DateFormat('h:mm a').format(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
+  _selectedEventTOD.hour, _selectedEventTOD.minute));
+
+  List<List<String>> _detailTable = [];
+ 
+
+  // ! Bloc Stuff
   
   @override
   PostState get initialState => PostInitial();
@@ -82,7 +92,17 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }else if (event is PostSetPostTimeEvent){
       if(event.selectedTOD != null) _selectedEventTOD = event.selectedTOD;
        yield PostDateSelectedState();// ? Need to change this name perhaps
+    }else if(event is PostDateNotApplicableClick){
+      if(_isDateNotApplicable){
+        _isDateNotApplicable = false;
+        yield PostDateIsNOTApplicableState();
+      }else{
+        _isDateNotApplicable = true;
+        yield PostDateIsApplicableState();
+      }
     }
+
+
     yield* _canEnableSaveButton();
   }
 

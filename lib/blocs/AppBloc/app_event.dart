@@ -1,6 +1,5 @@
 part of 'app_bloc.dart';
 
-
 abstract class AppEvent extends Equatable {
    @override
   List<Object> get props => [];
@@ -28,10 +27,10 @@ class AppToSelectLocationForPostEvent extends AppNavigateToPageEvent{}
 class AppToEditAlbumEvent extends AppNavigateToPageEvent{}
 class AppToAddGalleryFileEvent extends AppNavigateToPageEvent{}
 class AppToPostBodyEditorEvent extends AppNavigateToPageEvent{
-  final PostBloc eventBloc;
-  AppToPostBodyEditorEvent(this.eventBloc);
+  final PostBloc postBloc;
+  AppToPostBodyEditorEvent(this.postBloc);
 }
-
+class AppToUserLoginEvent extends AppNavigateToPageEvent{}
 
 // * Settings Events
 class AppSettingsEvent extends AppEvent{}

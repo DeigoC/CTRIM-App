@@ -24,6 +24,12 @@ class SettingsPage{
         return Drawer(
           child: ListView(
             children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue
+                ),
+                child: Text('Admin Facility'),
+              ),
               ListTile(
                 title: Text('Register User'),
                 leading: Icon(Icons.person_add),
@@ -61,10 +67,28 @@ class SettingsPage{
               SwitchListTile(
                 value: BlocProvider.of<AppBloc>(_context).onDarkTheme, 
                 title: Text('Dark Mode'),
+                secondary: Icon(Icons.brightness_medium),
+                subtitle: Text('Changes the brightness and colours of the app to be easy on the eyes'),
                 onChanged: (newValue){
                   AppSettingsEvent event = newValue ? AppChangeThemeToDarkEvent() : AppChangeThemeToLightEvent();
                   BlocProvider.of<AppBloc>(_context).add(event);
                 }
+              ),
+              ListTile(
+                title: Text('Admin Login'),
+                subtitle: Text('Admins are registered by developer'),
+                leading: Icon(Icons.person),
+                onTap: (){
+                   BlocProvider.of<AppBloc>(_context).add(AppToUserLoginEvent());
+                },
+              ),
+              ListTile(
+                title: Text('App Details'),
+                subtitle: Text('Extra details about the app'),
+                leading: Icon(Icons.info_outline),
+                onTap: (){
+                  showAboutDialog(context: _context);
+                },
               ),
             ],
           );

@@ -1,3 +1,4 @@
+import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/pages/HomePage.dart';
 import 'package:ctrim_app_v1/pages/posts/PostBodyEditorPage.dart';
 import 'package:ctrim_app_v1/pages/posts/ViewPostPage.dart';
@@ -12,14 +13,12 @@ import 'package:ctrim_app_v1/pages/location/ViewAllPostsForLocationPage.dart';
 import 'package:ctrim_app_v1/pages/location/ViewLocationOnMapPage.dart';
 import 'package:ctrim_app_v1/pages/user/EditUserPage.dart';
 import 'package:ctrim_app_v1/pages/user/RegisterUserPage.dart';
+import 'package:ctrim_app_v1/pages/user/UserLoginPage.dart';
 import 'package:ctrim_app_v1/pages/user/ViewAllUsersPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
-
 import 'blocs/AppBloc/app_bloc.dart';
-import 'blocs/GalleryBloc/gallery_bloc.dart';
 
 const HomeRoute ='/';
 const ViewEventRoute ='/ViewEventPage';
@@ -39,6 +38,7 @@ const SelectLocationForEventRoute = '/SelectLcoationForEvent';
 const RegisterUserRoute = '/RegisterUser';
 const ViewAllUsersRoute = '/ViewAllUsers';
 const EditUserRoute = '/EditUser';
+const UserLoginRoute = '/UserLogin';
 class App extends StatefulWidget {
 
   @override
@@ -69,12 +69,9 @@ class _AppState extends State<App> {
         BlocProvider<AppBloc>(
         create: (_) => _appBloc,
       ),
-      BlocProvider<PostBloc>(
-        create: (_) => PostBloc(),
-      ),
-      BlocProvider<GalleryBloc>(
-        create: (_) => GalleryBloc(),
-      ),
+      BlocProvider<AdminBloc>(
+        create: (_) => AdminBloc(),
+      )
       ],
       child: BlocBuilder(
         bloc: _appBloc,
@@ -144,7 +141,9 @@ class _AppState extends State<App> {
         case AddGalleryFilesRoute: screen = AddGalleryFiles();
         break;
 
-        case EventBodyEditorRoute: screen = EventBodyEditor(arguments['eventBloc']);
+        case EventBodyEditorRoute: screen = EventBodyEditor(arguments['postBloc']);
+        break;
+        case UserLoginRoute: screen = UserLoginPage();
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

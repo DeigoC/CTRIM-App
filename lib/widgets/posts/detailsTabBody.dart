@@ -1,18 +1,13 @@
-import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
-import 'package:ctrim_app_v1/widgets/events/event_fields.dart';
+import 'package:ctrim_app_v1/widgets/posts/post_fields.dart';
 import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
 import 'package:flutter/material.dart';
 
-class ScheduleTabBody extends StatefulWidget {
-  
-  final PostBloc _eventBloc;
-  ScheduleTabBody(this._eventBloc);
-
+class PostDetailsTabBody extends StatefulWidget {
   @override
-  _ScheduleTabBodyState createState() => _ScheduleTabBodyState();
+  _PostDetailsTabBodyState createState() => _PostDetailsTabBodyState();
 }
 
-class _ScheduleTabBodyState extends State<ScheduleTabBody> {
+class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
  
   List<int> _numbersTestData = [1,2,3,4,5]; 
   TextEditingController _tecDuration;
@@ -34,14 +29,16 @@ class _ScheduleTabBodyState extends State<ScheduleTabBody> {
     return ListView(
       shrinkWrap: true,
       children: [
-        EventLocationField(),
-        EventDateTimeField(widget._eventBloc),
-      MyTextField(
-        controller: _tecDuration,
-        label: 'Duration',
-        hint: '(Optional) e.g. 2-3 Hours, Whole Day, Pending',
-        onTextChange: (newDuration) => null,
-      ),
+        PostLocationField(),
+         SizedBox(height: 8,),
+        PostDateTimeField(),
+         SizedBox(height: 8,),
+        MyTextField(
+          controller: _tecDuration,
+          label: 'Duration',
+          hint: '(Optional) e.g. 2-3 Hours, Whole Day, Pending',
+          onTextChange: (newDuration) => null,
+        ),
       SizedBox(height: 16,),
       Divider(thickness: 2,),
       SizedBox(height: 8,),
@@ -111,5 +108,16 @@ class _ScheduleTabBodyState extends State<ScheduleTabBody> {
         ),
       ),
     );
+  }
+
+  //TODO go from here!
+  void _addNewListItem(){
+    showModalBottomSheet(
+      context: context, 
+      builder: (_){
+        return Scaffold(
+
+        );
+      });
   }
 }
