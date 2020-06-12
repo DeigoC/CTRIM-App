@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/HomePage.dart';
 import 'package:ctrim_app_v1/pages/posts/PostBodyEditorPage.dart';
 import 'package:ctrim_app_v1/pages/posts/ViewPostPage.dart';
@@ -71,6 +72,9 @@ class _AppState extends State<App> {
       ),
       BlocProvider<AdminBloc>(
         create: (_) => AdminBloc(),
+      ),
+      BlocProvider<TimelineBloc>(
+        create: (_) => TimelineBloc(),
       )
       ],
       child: BlocBuilder(
@@ -108,7 +112,7 @@ class _AppState extends State<App> {
         case AddEventRoute: screen = AddEventPage();
         break;
 
-        case ViewImageVideoRoute: screen = ViewImageVideo();
+        case ViewImageVideoRoute: screen = ViewImageVideo(initialPage: arguments['initialPage'], imageSources: arguments['imgSources'],);
         break;
         
         case ViewLocationOnMapRoute: screen = ViewLocationOnMap();
@@ -135,10 +139,10 @@ class _AppState extends State<App> {
         case SelectLocationForEventRoute: screen = SelectLocationForEvent();
         break;
 
-        case EditAlbumRoute: screen = EditAlbum();
+        case EditAlbumRoute: screen = EditAlbum(arguments['postBloc']);
         break;
 
-        case AddGalleryFilesRoute: screen = AddGalleryFiles();
+        case AddGalleryFilesRoute: screen = AddGalleryFiles(arguments['postBloc']);
         break;
 
         case EventBodyEditorRoute: screen = EventBodyEditor(arguments['postBloc']);

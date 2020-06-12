@@ -1,5 +1,7 @@
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ViewGalleryPage{
 
@@ -9,6 +11,15 @@ class ViewGalleryPage{
     Tab(text: 'Timeline',),
     Tab(text: 'Albums',)
   ];
+
+  final Map<String,String> images = {
+    'https://i.ytimg.com/vi/mwux1_CNdxU/maxresdefault.jpg':'img',
+    'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F38%2F2016%2F05%2F12214218%2Fsimple_bites_family_backyard.jpg&q=85':'img',
+    'https://www.lakedistrict.gov.uk/__data/assets/image/0018/123390/families-and-children.jpg':'img',
+    'https://rmstitanichotel.co.uk/wp-content/uploads/2016/07/Family-1024x683.jpg':'img',
+    'https://specials-images.forbesimg.com/imageserve/5e90c5cd5f21d30007e5ab66/960x0.jpg?fit=scale':'img',
+    'https://firebasestorage.googleapis.com/v0/b/ctrim---demo.appspot.com/o/videoExample3.mp4?alt=media&token=a42812a2-9e01-4f29-903b-e9b814cfae02' : 'vid',
+  };
 
   double pictureSize, paddingSize;
 
@@ -47,7 +58,7 @@ class ViewGalleryPage{
           key: PageStorageKey<String>('TimlineTab'),
           children: [
              SizedBox(height: 16,),
-             _examplePictures1(),
+             _examplePictures2(),
              SizedBox(height: 16,),
             _examplePictures1(),
               SizedBox(height: 16,),
@@ -57,6 +68,65 @@ class ViewGalleryPage{
           ],
         );
       } 
+    );
+  }
+
+   Column _examplePictures2() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+         Text(' 23 May 2020', style: TextStyle(fontSize: 28),),
+        SizedBox(height: 16,),
+        Wrap(
+            children: images.keys.map((src){
+              if(images[src].compareTo('vid')==0){
+                return _createVideoContainer(src);
+              }
+              return _createImageContainer(src);
+            }).toList(),
+          ),
+      ],
+    );
+  }
+
+  Padding _createImageContainer(String src){
+    return Padding(
+      padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        width: pictureSize,
+        height: pictureSize,
+        child: GestureDetector(
+          onTap: (){
+            int pos = images.keys.toList().indexOf(src);
+            BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(images, pos));
+          },
+          child: Hero(
+            tag: src,
+            child: Image.network(src, fit: BoxFit.cover,),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _createVideoContainer(String src){
+     return Padding(
+      padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
+      child:  GestureDetector(
+        onTap: (){
+          int pos = images.keys.toList().indexOf(src);
+          BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(images, pos));
+        },
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          width: pictureSize,
+          height: pictureSize,
+          child:Icon(Icons.play_circle_filled, color: Colors.black,size: 60,),
+          ),
+      )
     );
   }
 

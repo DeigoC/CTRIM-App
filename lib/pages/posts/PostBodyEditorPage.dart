@@ -33,8 +33,8 @@ class _EventBodyEditorState extends State<EventBodyEditor> {
           icon: Icon(Icons.arrow_back),
           onPressed: (){
              String contents = jsonEncode(_textController.document);
-              widget._postBloc.eventBodyContent = contents;
-              widget._postBloc.add(PostSaveBodyDocumentEvent());
+             print('-----------------BODY CONTENT LOOKS LIKE: \n' + contents);
+              widget._postBloc.add(PostSaveBodyDocumentEvent(contents));
               Navigator.pop(context);
           },
         ),
@@ -49,11 +49,4 @@ class _EventBodyEditorState extends State<EventBodyEditor> {
       ),
     );
   }
-
- /*  void _saveDocument(){
-    String contents = jsonEncode(_textController.document);
-     widget._postBloc.eventBodyContent = contents;
-     widget._postBloc.add(PostSaveBodyDocumentEvent());
-    print('--------------CONTENT LOOKS LIKE:\n' + contents);
-  } */
 }

@@ -43,10 +43,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToAddLocationEvent) state.pushNamed(AddLocationRoute);
     else if(event is AppToEditLocationEvent) state.pushNamed(EditLocationRoute);
     else if(event is AppToSelectLocationForPostEvent) state.pushNamed(SelectLocationForEventRoute);
-    else if(event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute);
-    else if(event is AppToAddGalleryFileEvent) state.pushNamed(AddGalleryFilesRoute);
+    else if(event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute, arguments: {'postBloc': event.postBloc});
+    else if(event is AppToAddGalleryFileEvent) state.pushNamed(AddGalleryFilesRoute, arguments: {'postBloc': event.postBloc});
     else if(event is AppToPostBodyEditorEvent) state.pushNamed(EventBodyEditorRoute,arguments: {'postBloc':event.postBloc});
     else if(event is AppToUserLoginEvent) state.pushNamed(UserLoginRoute);
+    else if(event is AppToViewImageVideoPage) state.pushNamed(ViewImageVideoRoute, 
+    arguments: {'initialPage': event.initialPage, 'imgSources':event.imageSorces});
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{

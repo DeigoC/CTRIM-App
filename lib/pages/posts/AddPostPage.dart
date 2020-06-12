@@ -83,25 +83,20 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     );
   }
 
-  BlocConsumer _buildAppBarActions(){
-    bool enableSaveButton = false;
-    return BlocConsumer<PostBloc, PostState>(
-      listener: (_,state){
-        enableSaveButton = false;
-        if(state is PostEnableSaveButtonState) enableSaveButton = true;
-      },
-      buildWhen: (previousState, currentState){
+  BlocBuilder _buildAppBarActions(){
+    return BlocBuilder<PostBloc, PostState>(
+      condition: (previousState, currentState){
         if(currentState is PostButtonChangeState) return true;
         return false;
       },
       builder: (_,state){
-        Widget result = FlatButton(
-          onPressed: (){
-
-          },
-          child: Text('Save', style: TextStyle(color: enableSaveButton ? Colors.black : Colors.grey),),
+        Widget result = RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0)
+          ),
+          onPressed: (state is PostEnableSaveButtonState) ? () => null:null,
+          child: Text('Save',),
         );
-
         return result;
       },
     );
@@ -113,12 +108,8 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
         _orientation = orientation;
         return BlocConsumer<PostBloc, PostState>(
         listener: (_, state){
-          //TODO add the dialogues here
-          if(state is PostSelectDateState){
-            _selectEventDate();
-          }else if(state is PostSelectTimeState){
-            _selectEventTime();
-          }
+          if(state is PostSelectDateState) _selectEventDate();
+          else if(state is PostSelectTimeState) _selectEventTime();
         },
         buildWhen: (previousState, currentState){
         if(currentState is PostTabClickState) return true;

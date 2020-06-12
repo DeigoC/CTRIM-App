@@ -1,4 +1,8 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/models/post.dart';
+import 'package:ctrim_app_v1/models/timelinePost.dart';
+import 'package:ctrim_app_v1/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +10,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ViewAllEventsPage{
 
   final BuildContext _context;
+
+  List<TimelinePost> _timelines;
+  List<Post> _posts;
+  List<User> _users;
 
   ViewAllEventsPage(this._context);
 
@@ -26,254 +34,209 @@ class ViewAllEventsPage{
   }
 
   Widget buildBody(){
-    return ListView(
-      children: [
-        buildCard1(),
-        SizedBox(height:8),
-        buildCard2(),
-        SizedBox(height:8),
-        buildCard3(),
-        SizedBox(height:8),
-        buildCard4(),
-        SizedBox(height: 30,),
-        ListTile(
-          title: Text('Insert full test here'),
-          onTap: (){
-            BlocProvider.of<AppBloc>(_context).add(AppToViewPostPageEvent());
-          },  
-        )
-      ],
+    Future.delayed(Duration(seconds: 2),(){
+      BlocProvider.of<TimelineBloc>(_context).add(TimelineFetchAllPostsEvent());
+    });
+
+    return BlocBuilder<TimelineBloc, TimelineState>(
+      builder:(_,state){
+        if(state is TimelineDisplayFeedState){
+          _users = state.users;
+          _posts = state.posts;
+          _timelines = state.timelines;
+          return ListView(
+            children: _timelines.map((timeLinePost) => _createPostFromTimeline(timeLinePost)).toList(),
+        );
+        }
+        return Center(child: CircularProgressIndicator(),);
+      } 
+    );
+
+  }
+
+  Widget _createPostFromTimeline(TimelinePost timeline){
+    Post thisPost = _getPostFromID(timeline.postID);
+    return InkWell(
+      splashColor: Colors.blue.withAlpha(30),
+      onTap: () => null,
+      child: Padding(
+        padding: EdgeInsets.only(left:8.0, top: 8, right:8 ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            RichText(
+              text: TextSpan(
+                text: thisPost.title,
+                style: TextStyle(fontSize: 26, color: Colors.black),
+                children: [
+                  TextSpan(text: _getAuthorNameAndTagsLine(timeline, thisPost),
+                  style: TextStyle(fontSize: 12))
+                ],
+              ),
+            ),
+            SizedBox(height: 8,),
+            Text(thisPost.description),
+            SizedBox(height: 8,),
+            _buildImagesBox(thisPost),
+            SizedBox(height: 8,),
+            Divider(),
+          ],
+        ),
+      ),
     );
   }
 
- Card buildCard4() {
-    return Card(
-        child: InkWell(
-          splashColor: Colors.blue.withAlpha(30),
-          onTap: () => null,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'Youth Day out at London Bridge',
-                    style: TextStyle(fontSize: 26, color: Colors.black),
-                    children: [
-                      TextSpan(text: '\nBy Diego C. 07 Jun 2020 YOUTH, CHURCH',
-                      style: TextStyle(fontSize: 12))
-                    ],
-                  ),
-                ),
-                SizedBox(height: 8,),
-                AspectRatio(
-                  aspectRatio: 16/9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  color: Colors.red,
-                                ),
-                              ),
-                              SizedBox(height: 2,),
-                              Expanded(
-                                child: Container(
-                                  color: Colors.purple,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 2,),
-                         Expanded(
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  color: Colors.blue,
-                                ),
-                              ),
-                              SizedBox(height: 2,),
-                              Expanded(
-                                child: Container(
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                         ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      );
+  String _getAuthorNameAndTagsLine(TimelinePost timelinePost, Post post,){
+    String result = '\nBy ';
+    User author = _getUserFromID(timelinePost.authorID);
+    result += author.forename + ' ' + author.surname[0] + '. ';
+    result += timelinePost.getPostDateString();
+    result += post.getTagsString();
+    return result;
   }
 
- Card buildCard3() {
-    return Card(
-        child: InkWell(
-          splashColor: Colors.blue.withAlpha(30),
-          onTap: () => null,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'Youth Day out at London Bridge',
-                    style: TextStyle(fontSize: 26, color: Colors.black),
-                    children: [
-                      TextSpan(text: '\nBy Diego C. 07 Jun 2020 YOUTH, CHURCH',
-                      style: TextStyle(fontSize: 12))
-                    ],
-                  ),
-                ),
-                SizedBox(height: 8,),
-                AspectRatio(
-                  aspectRatio: 16/9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            color: Colors.red,
-                          ),
-                        ),
-                        SizedBox(width: 3,),
-                         Expanded(
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  color: Colors.blue,
-                                ),
-                              ),
-                              SizedBox(height: 3,),
-                              Expanded(
-                                child: Container(
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                         ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      );
+  Post _getPostFromID(String id){
+    Post result;
+    _posts.forEach((post) {
+      if(post.id.compareTo(id) == 0){
+        result = post;
+      }
+    });
+    return result;
   }
 
-  Card buildCard2() {
-    return Card(
-        child: InkWell(
-          splashColor: Colors.blue.withAlpha(30),
-          onTap: () => null,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'Youth Day out at London Bridge',
-                    style: TextStyle(fontSize: 26, color: Colors.black),
-                    children: [
-                      TextSpan(text: '\nBy Diego C. 07 Jun 2020 YOUTH, CHURCH',
-                      style: TextStyle(fontSize: 12))
-                    ],
-                  ),
-                ),
-                SizedBox(height: 8,),
-                Text(
-'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus fringilla in ligula vel fringilla. Etiam interdum tortor eu lorem sagittis tristique eu sit amet justo. Phasellus iaculis tincidunt elit, eu dictum lorem gravida consequat'
-                ,style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 8,),
-                AspectRatio(
-                  aspectRatio: 16/9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            color: Colors.red,
-                          ),
-                        ),
-                        SizedBox(width: 3,),
-                         Expanded(
-                          child: Container(
-                            color: Colors.blue,
-                        ),
-                         ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      );
+  User _getUserFromID(String id){
+    User result;
+    _users.forEach((user) {
+      if(user.id.compareTo(id) == 0){
+        result = user;
+      }
+    });
+    return result;
   }
 
-  Card buildCard1() {
-    return Card(
-        child: InkWell(
-          splashColor: Colors.blue.withAlpha(30),
-          onTap: () => null,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'Youth Day out at London Bridge',
-                    style: TextStyle(fontSize: 26, color: Colors.black),
-                    children: [
-                      TextSpan(text: '\nBy Diego C. 07 Jun 2020 YOUTH, CHURCH',
-                      style: TextStyle(fontSize: 12))
-                    ],
-                  ),
-                ),
-                SizedBox(height: 8,),
-                Text(
-'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus fringilla in ligula vel fringilla. Etiam interdum tortor eu lorem sagittis tristique eu sit amet justo. Phasellus iaculis tincidunt elit, eu dictum lorem gravida consequat'
-                ,style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 8,),
-                AspectRatio(
-                  aspectRatio: 16/9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      color: Colors.pinkAccent,
-                    ),
-                  )
-                )
-              ],
+  AspectRatio _buildImagesBox(Post post){
+    return AspectRatio(
+      aspectRatio: 16/9,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Row(
+          children: _buildImageLayoutChildren(post),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildImageLayoutChildren(Post post){
+    List<String> imageSrc = post.gallerySources.keys.toList();
+    if(imageSrc.length == 4){
+      return[
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(imageSrc[0]), fit: BoxFit.cover)
             ),
           ),
         ),
-      );
+              SizedBox(height: 2,),
+             Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(imageSrc[2]), fit: BoxFit.cover)
+            ),
+          ),
+        ),
+            ],
+          ),
+        ),
+        SizedBox(width: 2,),
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(imageSrc[1]), fit: BoxFit.cover)
+            ),
+          ),
+        ),
+              SizedBox(height: 2,),
+              Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(imageSrc[3]), fit: BoxFit.cover)
+            ),
+          ),
+        ),
+            ],
+          ),
+        ),
+
+      ];
+    }else if(imageSrc.length == 3){
+      return[
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(imageSrc[0]), fit: BoxFit.cover)
+            ),
+          ),
+        ),
+        SizedBox(width: 2,),
+         Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: NetworkImage(imageSrc[1]), fit: BoxFit.cover)
+                  ),
+                ),
+              ),
+              SizedBox(height: 2,),
+              Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(imageSrc[2]), fit: BoxFit.cover)
+            ),
+          ),
+        ),
+            ],
+          ),
+        ),
+      ];
+    }else if(imageSrc.length == 2){
+      return [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(imageSrc[0]), fit: BoxFit.cover)
+            ),
+          ),
+        ),
+        SizedBox(width: 2,),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(imageSrc[1]), fit: BoxFit.cover)
+            ),
+          ),
+        ),
+      ];
+    }
+    return [
+      Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(imageSrc[0]), fit: BoxFit.cover)
+            ),
+          ),
+        ),
+    ];
+
   }
 
 }

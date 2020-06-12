@@ -40,3 +40,13 @@ class PostSelectTimeState extends PostScheduleState{}
 class PostDateSelectedState extends PostScheduleState{}
 class PostDateIsApplicableState extends PostScheduleState{}
 class PostDateIsNOTApplicableState extends PostScheduleState{}
+
+// * List States
+class PostDetailListState extends PostState{}
+class PostDetailListReorderState extends PostDetailListState{}
+class PostDetailListSaveEnabledState extends PostDetailListState{}
+class PostDetailListSaveDisabledState extends PostDetailListState{}
+
+// * File States
+class PostGalleryState extends PostState{}
+class PostFilesReceivedState extends PostGalleryState{}

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/models/post.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,48 +10,53 @@ import 'package:zefyr/zefyr.dart';
 part 'post_event.dart';
 part 'post_state.dart';
 
-enum Department{
-  CHURCH, YOUTH, WOMEN
-}
-
 class PostBloc extends Bloc<PostEvent, PostState> {
 
-  Map<Department, bool> selectedDepartments = {
+  bool _areAnyTextFieldsEmpty = true;
+  Post _post = Post();
+
+  // ! Post Fields - About Tab
+  String get eventTitle => _post.title; 
+  NotusDocument getEditorDoc(){
+    if(_post.body == null){
+      List<dynamic> initialWords = [{"insert":"Body Starts here\n"}];
+      return NotusDocument.fromJson(initialWords);
+    }
+    var jsonDecoded = jsonDecode(_post.body);
+    return NotusDocument.fromJson(jsonDecoded);
+    
+  }
+
+  Map<Department, bool> selectedTags = {
     Department.CHURCH : false,
     Department.YOUTH : false,
     Department.WOMEN : false,
   };
-  bool _areAnyTextFieldsEmpty = true;
-
-  // ! Post Fields - About Tab
-  String _eventTitle ='', _eventBody ='';
-  String get eventTitle => _eventTitle; 
-  String get eventBody => _eventBody;
-  String eventBodyContent;
-  NotusDocument getEditorDoc(){
-    if(eventBodyContent == null){
-      List<dynamic> initialWords = [{"insert":"Body Starts here\n"}];
-      return NotusDocument.fromJson(initialWords);
-    }
-    var jsonDecoded = jsonDecode(eventBodyContent);
-    return NotusDocument.fromJson(jsonDecoded);
-  }
 
   // ! Post Fields - Details Tab
-  DateTime _selectedEventDate;
-  DateTime get getSelectedDate => _selectedEventDate;
-  String get getSelectedDateString => _selectedEventDate == null ? 'Pending' :
-  DateFormat('EEE, dd MMM yyyy').format(_selectedEventDate);
-  bool _isDateNotApplicable = false;
-  bool get getIsDateNotApplicable => _isDateNotApplicable;
+  DateTime get getSelectedDate => _post.getEventDate;
+  String get getSelectedDateString => _post.getEventDate == null ? 'Pending' :
+  DateFormat('EEE, dd MMM yyyy').format(_post.getEventDate);
+  bool get getIsDateNotApplicable => _post.isDateNotApplicable;
 
-  TimeOfDay _selectedEventTOD;
-  String get getSelectedTimeString => _selectedEventTOD == null ? 'Pending' :
-  DateFormat('h:mm a').format(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
-  _selectedEventTOD.hour, _selectedEventTOD.minute));
+  String get getSelectedTimeString => _post.getEventDate == null ? 'Pending' :
+  DateFormat('h:mm a').format(_post.getEventDate);
 
-  List<List<String>> _detailTable = [];
- 
+  List<List<String>> get detailTable => _post.detailTable;
+ String _leadingDetailItem ='', _trailingDetailItem ='';
+ void prepareNewDetailListItem(){
+   _leadingDetailItem ='';
+   _trailingDetailItem ='';
+ }
+
+ void prepareDetailItemEdit(List<String> item){
+   _leadingDetailItem = item[0];
+   _trailingDetailItem = item[1];
+ }
+  
+  // ! Post Fields - Gallery Tab
+  Map<File,String> get files => _post.temporaryFiles;
+
 
   // ! Bloc Stuff
   
@@ -77,7 +84,52 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
 
     else if(event is PostSaveBodyDocumentEvent){
+      _post.body = event.bodyContent;
       yield PostUpdateBodyState();
+      yield* _canEnableSaveButton();
+    }
+
+    else if (event is PostDetailListEvent){
+      yield* _mapDetailListEventToState(event);
+    }
+
+    else if(event is PostGalleryEvent){
+      yield* _mapGalleryEventsToState(event);
+    }
+  }
+  
+  Stream<PostState> _mapGalleryEventsToState(PostGalleryEvent event) async*{
+    if(event is PostFilesReceivedEvent) yield PostFilesReceivedState();
+    else if(event is PostFilesRemoveSelectedEvent){
+      event.selectedFiles.forEach((file) {
+        _post.temporaryFiles.remove(file);
+      });
+      yield PostFilesReceivedState(); // TODO may have to change this
+    }
+  }
+
+  Stream<PostState> _mapDetailListEventToState(PostDetailListEvent event) async*{
+    if(event is PostDetailListReorderEvent){
+      int newIndex = event.newIndex;
+      // ! when at max or more, set to max
+      if(newIndex >= _post.detailTable.length) newIndex = _post.detailTable.length - 1;
+      var temp = _post.detailTable.removeAt(event.oldIndex);
+      _post.detailTable.insert(newIndex, temp);
+      yield PostDetailListReorderState();
+      yield PostDetailListState();
+    }else if(event is PostDetailListTextChangeEvent){
+      _leadingDetailItem = event.leading ?? _leadingDetailItem;
+      _trailingDetailItem = event.trailing ?? _trailingDetailItem;
+      if(_leadingDetailItem.isNotEmpty || _trailingDetailItem.isNotEmpty) yield PostDetailListSaveEnabledState();
+      else yield PostDetailListSaveDisabledState();
+    }else if(event is PostDetailListItemRemovedEvent){
+      _post.detailTable.remove(event.item);
+      yield PostDetailListReorderState();
+    }else if(event is PostDetailListAddItemEvent){
+      _post.detailTable.add([_leadingDetailItem, _trailingDetailItem]);
+      yield PostDetailListReorderState();
+    }else if(event is PostDetailListSaveEditEvent){
+      _post.detailTable[event.itemIndex] = [_leadingDetailItem, _trailingDetailItem];
     }
   }
 
@@ -87,27 +139,31 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }else if (event is PostSelectPostTimeEvent){
       yield PostSelectTimeState();
     }else if(event is PostSetPostDateEvent){
-      if(event.selectedDate != null) _selectedEventDate = event.selectedDate;
+      if(event.selectedDate != null) _post.setEventDate(event.selectedDate);
       yield PostDateSelectedState();
     }else if (event is PostSetPostTimeEvent){
-      if(event.selectedTOD != null) _selectedEventTOD = event.selectedTOD;
+      _post.setTimeOfDay(event.selectedTOD);
        yield PostDateSelectedState();// ? Need to change this name perhaps
     }else if(event is PostDateNotApplicableClick){
-      if(_isDateNotApplicable){
-        _isDateNotApplicable = false;
+      if(_post.isDateNotApplicable){
+        _post.isDateNotApplicable = false;
         yield PostDateIsNOTApplicableState();
       }else{
-        _isDateNotApplicable = true;
+        _post.isDateNotApplicable = true;
         yield PostDateIsApplicableState();
       }
     }
-
-
     yield* _canEnableSaveButton();
   }
 
   Stream<PostState> _mapDepartmentClickToState(PostDepartmentClickEvent event) async*{
-    selectedDepartments[event.department] = event.selected;
+    if(event.selected){
+      _post.selectedTags.add(event.department);
+    }else{
+      _post.selectedTags.remove(event.department);
+    }
+
+    selectedTags[event.department] = event.selected;
     bool selected = event.selected;
     switch(event.department){
       case Department.CHURCH:
@@ -129,19 +185,15 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Stream<PostState> _mapTextChangeToState(PostTextChangeEvent event) async*{
-    _eventTitle = event.title?? _eventTitle;
-    _eventBody = event.body?? _eventBody;
-    if(_eventTitle.trim().isEmpty ||_eventBody.trim().isEmpty){
-      _areAnyTextFieldsEmpty = true;
-    }else{
-      _areAnyTextFieldsEmpty = false;
-    }
+    _post.title = event.title?? _post.title;
+    if(_post.title.trim().isEmpty)_areAnyTextFieldsEmpty = true;
+    else _areAnyTextFieldsEmpty = false;
      yield* _canEnableSaveButton();
   }
 
   Stream<PostState> _canEnableSaveButton() async*{
-    if(_areAnyTextFieldsEmpty || !selectedDepartments.values.contains(true) ||
-    _selectedEventTOD == null || _selectedEventDate == null){
+    if(_areAnyTextFieldsEmpty || _post.selectedTags.length == 0 ||
+    _post.getEventDate == null|| _post.body.isEmpty){
        yield PostDisableSaveButtonState();
     }else{
       yield PostEnableSaveButtonState();
@@ -161,5 +213,4 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-  Delta() {}
 }

@@ -14,23 +14,38 @@ class TabButtonClicked extends AppEvent{
 
 // * Navigation Events
 class AppNavigateToPageEvent extends AppEvent{}
+
 class AppToViewPostPageEvent extends AppNavigateToPageEvent{}
 class AppToAddPostPageEvent extends AppNavigateToPageEvent{}
 class AppToViewAllPostsForLocationEvent extends AppNavigateToPageEvent{}
-class AppToViewLocationOnMapEvent extends AppNavigateToPageEvent{}
-class AppToRegisterUserEvent extends AppNavigateToPageEvent{}
-class AppToViewAllUsersEvent extends AppNavigateToPageEvent{}
-class AppToEditUserEvent extends AppNavigateToPageEvent{}
-class AppToAddLocationEvent extends AppNavigateToPageEvent{}
-class AppToEditLocationEvent extends AppNavigateToPageEvent{}
-class AppToSelectLocationForPostEvent extends AppNavigateToPageEvent{}
-class AppToEditAlbumEvent extends AppNavigateToPageEvent{}
-class AppToAddGalleryFileEvent extends AppNavigateToPageEvent{}
 class AppToPostBodyEditorEvent extends AppNavigateToPageEvent{
   final PostBloc postBloc;
   AppToPostBodyEditorEvent(this.postBloc);
 }
+
+class AppToViewLocationOnMapEvent extends AppNavigateToPageEvent{}
+class AppToAddLocationEvent extends AppNavigateToPageEvent{}
+class AppToEditLocationEvent extends AppNavigateToPageEvent{}
+class AppToSelectLocationForPostEvent extends AppNavigateToPageEvent{}
+
+class AppToRegisterUserEvent extends AppNavigateToPageEvent{}
+class AppToViewAllUsersEvent extends AppNavigateToPageEvent{}
+class AppToEditUserEvent extends AppNavigateToPageEvent{}
 class AppToUserLoginEvent extends AppNavigateToPageEvent{}
+
+class AppToEditAlbumEvent extends AppNavigateToPageEvent{
+  final PostBloc postBloc;
+  AppToEditAlbumEvent(this.postBloc);
+}
+class AppToAddGalleryFileEvent extends AppNavigateToPageEvent{
+  final PostBloc postBloc;
+  AppToAddGalleryFileEvent(this.postBloc);
+}
+class AppToViewImageVideoPage extends AppNavigateToPageEvent{
+  final Map<String,String> imageSorces;
+  final int initialPage;
+  AppToViewImageVideoPage(this.imageSorces, this.initialPage);
+}
 
 // * Settings Events
 class AppSettingsEvent extends AppEvent{}

@@ -1,3 +1,4 @@
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/widgets/posts/post_fields.dart';
 import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +9,7 @@ class PostDetailsTabBody extends StatefulWidget {
 }
 
 class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
- 
-  List<int> _numbersTestData = [1,2,3,4,5]; 
+
   TextEditingController _tecDuration;
 
   @override
@@ -42,82 +42,8 @@ class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
       SizedBox(height: 16,),
       Divider(thickness: 2,),
       SizedBox(height: 8,),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(),
-          ),
-          height: MediaQuery.of(context).size.height * 0.6,
-          child: ReorderableListView(
-            header: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text('Optional Schedule-like table'),
-                FlatButton.icon(
-                  icon: Icon(Icons.add),
-                  label: Text('Item'),
-                  onPressed: () => null,
-                ),
-              ],
-            ),
-            onReorder: (oldIndex, newIndex){
-              setState(() {
-                int temp = _numbersTestData.removeAt(oldIndex);
-                if(newIndex > _numbersTestData.length - 1) newIndex = _numbersTestData.length;
-                _numbersTestData.insert(newIndex, temp);
-              });
-            },
-            children: _numbersTestData.map((item){
-              return _createReorderableItem(item);
-            }).toList(),
-          ),
-        ),
-      )
+      DetailTable(),
       ],
     );
-  }
-
-  Widget _createReorderableItem(int item){
-    return Dismissible(
-      onDismissed: (_){
-         setState(() {
-          _numbersTestData.remove(item);
-        });
-      },
-      background: Container(color: Colors.red,),
-      key: ValueKey(item),
-      child: Card(
-        child: Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Container(
-                padding: EdgeInsets.all(8),
-                child: Text('This is a really long text of the ages yeah yeah yeah!'),
-              ),
-            ),
-             Expanded(
-              flex: 2,
-              child: Container(
-                padding: EdgeInsets.all(8),
-                child: Text('Item: $item'),
-            ),
-             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  //TODO go from here!
-  void _addNewListItem(){
-    showModalBottomSheet(
-      context: context, 
-      builder: (_){
-        return Scaffold(
-
-        );
-      });
   }
 }

@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
 class AddGalleryFiles extends StatefulWidget {
+  final PostBloc _postBloc;
+  AddGalleryFiles(this._postBloc);
   @override
   _AddGalleryFilesState createState() => _AddGalleryFilesState();
 }
@@ -20,12 +23,23 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Files'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+            _selectedFiles.forEach((file) { 
+              String fileType = basename(file.path).split('.').last.toLowerCase();
+              String type = (_videoTypes.contains(fileType)) ? 'vid' : 'img';
+              widget._postBloc.files[file] = type;
+            });
+            widget._postBloc.add(PostFilesReceivedEvent());
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: (){
           _pickFiles().then((newFiles){
             setState(() {
-              print('---------------------REBUILDING');
               _selectedFiles.addAll(newFiles);
             });
           });
@@ -67,11 +81,12 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
     );
   }
 
+  //TODO needs different technique with iOS
   Future<List<File>> _pickFiles() async{
     List<File> results;
     results = await FilePicker.getMultiFile(
-      type: FileType.image,
-      //allowedExtensions: _videoTypes + _imageTypes,
+      type: FileType.custom,
+      allowedExtensions: _videoTypes + _imageTypes,
     );
     _removeDuplicateFiles(results);
     return results;
