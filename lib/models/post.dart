@@ -1,50 +1,58 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:zefyr/zefyr.dart';
 
 enum Department{
   CHURCH, YOUTH, WOMEN
 }
 
 class Post{
-  String id, title, description, body = '', duration, locationID;
-  DateTime _eventDate;
-  DateTime get getEventDate => _eventDate;
+  String id, title, description, body = '', duration, locationID, detailTableHeader;
+  DateTime eventDate;
   bool isDateNotApplicable = false;
-  List<List<String>> detailTable = [];
+  List<List<String>> detailTable;
   Map<String,String> gallerySources;
-
-  List<Department> selectedTags =[];
-
-  Map<File,String> temporaryFiles = {};
+  List<Department> selectedTags;
+  Map<File,String> temporaryFiles;
 
   Post({
     this.id,
-    this.title,
-    this.body,
-    this.locationID,
-    this.isDateNotApplicable,
+    this.title ='',
+    this.body = '',
+    this.eventDate,
+    this.locationID='',
+    this.detailTableHeader,
+    this.isDateNotApplicable = false,
     this.selectedTags,
     this.gallerySources,
     this.detailTable,
-    this.description
+    this.description ='',
+    this.temporaryFiles,
   });
 
   void setTimeOfDay(TimeOfDay tod){
-    if(_eventDate == null){
-      _eventDate = DateTime(DateTime.now().year, DateTime.now().month, 
+    if(eventDate == null){
+      eventDate = DateTime(DateTime.now().year, DateTime.now().month, 
       DateTime.now().day, tod.hour, tod.minute);
     }else{
-      _eventDate = DateTime(_eventDate.year, _eventDate.month, _eventDate.day
+      eventDate = DateTime(eventDate.year, eventDate.month, eventDate.day
       ,tod.hour, tod.minute);
     }
   }
 
   void setEventDate(DateTime date){
-    if(_eventDate == null){
-      _eventDate = date;
+    if(eventDate == null){
+      eventDate = date;
     }else{
-      _eventDate = DateTime(date.year, date.month, date.day, _eventDate.hour, _eventDate.minute);
+      eventDate = DateTime(date.year, date.month, date.day, eventDate.hour, eventDate.minute);
     }
+  }
+
+   NotusDocument getBodyDoc(){
+    var jsonDecoded = jsonDecode(body);
+    return NotusDocument.fromJson(jsonDecoded);
   }
   
   String getTagsString(){
@@ -62,6 +70,24 @@ class Post{
       case Department.WOMEN: return 'WOMEN';
     }
     return '';
+  }
+
+  String get dateString{
+    if(!isDateNotApplicable){
+      return DateFormat('EEEE, dd MMMM yyyy @ h:mm a').format(eventDate);
+    }
+    return 'N/A';
+  }
+
+  List<String> get selectedTagsString{
+    return selectedTags.map((tag){
+      switch(tag){
+        case Department.YOUTH: return 'Youth';
+        case Department.WOMEN: return 'Women';
+        case Department.CHURCH: return 'Church';
+      }
+      return null;
+    }).toList();
   }
 
  }

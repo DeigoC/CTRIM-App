@@ -12,19 +12,27 @@ part 'post_state.dart';
 
 class PostBloc extends Bloc<PostEvent, PostState> {
 
-  bool _areAnyTextFieldsEmpty = true;
-  Post _post = Post();
+  Post _post = Post(
+    selectedTags: [],
+    temporaryFiles: {},
+    detailTable: [],
+    gallerySources: {},
+  );
+
+  Post get newPost => _post;
 
   // ! Post Fields - About Tab
   String get eventTitle => _post.title; 
+  String get postDescription => _post.description;
+  String _addressLine ='PENDING';
+  String get addressLine => _addressLine;
   NotusDocument getEditorDoc(){
-    if(_post.body == null){
-      List<dynamic> initialWords = [{"insert":"Body Starts here\n"}];
+    if(_post.body == ''){
+      List<dynamic> initialWords = [{"insert":"Body Starts Here\n"}];
       return NotusDocument.fromJson(initialWords);
     }
     var jsonDecoded = jsonDecode(_post.body);
     return NotusDocument.fromJson(jsonDecoded);
-    
   }
 
   Map<Department, bool> selectedTags = {
@@ -34,13 +42,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   };
 
   // ! Post Fields - Details Tab
-  DateTime get getSelectedDate => _post.getEventDate;
-  String get getSelectedDateString => _post.getEventDate == null ? 'Pending' :
-  DateFormat('EEE, dd MMM yyyy').format(_post.getEventDate);
+  DateTime get getSelectedDate => _post.eventDate;
+  String get getSelectedDateString => _post.eventDate == null ? 'Pending' :
+  DateFormat('EEE, dd MMM yyyy').format(_post.eventDate);
   bool get getIsDateNotApplicable => _post.isDateNotApplicable;
 
-  String get getSelectedTimeString => _post.getEventDate == null ? 'Pending' :
-  DateFormat('h:mm a').format(_post.getEventDate);
+  String get getSelectedTimeString => _post.eventDate == null ? 'Pending' :
+  DateFormat('h:mm a').format(_post.eventDate);
 
   List<List<String>> get detailTable => _post.detailTable;
  String _leadingDetailItem ='', _trailingDetailItem ='';
@@ -111,7 +119,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   Stream<PostState> _mapDetailListEventToState(PostDetailListEvent event) async*{
     if(event is PostDetailListReorderEvent){
       int newIndex = event.newIndex;
-      // ! when at max or more, set to max
       if(newIndex >= _post.detailTable.length) newIndex = _post.detailTable.length - 1;
       var temp = _post.detailTable.removeAt(event.oldIndex);
       _post.detailTable.insert(newIndex, temp);
@@ -152,6 +159,10 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         _post.isDateNotApplicable = true;
         yield PostDateIsApplicableState();
       }
+    }else if(event is PostSelectedLocationEvent){
+      _post.locationID = event.locationID;
+      _addressLine = event.addressLine;
+      yield PostLocationSelectedState();
     }
     yield* _canEnableSaveButton();
   }
@@ -186,18 +197,22 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Stream<PostState> _mapTextChangeToState(PostTextChangeEvent event) async*{
     _post.title = event.title?? _post.title;
-    if(_post.title.trim().isEmpty)_areAnyTextFieldsEmpty = true;
-    else _areAnyTextFieldsEmpty = false;
+    _post.description = event.description ?? _post.description;
      yield* _canEnableSaveButton();
   }
 
   Stream<PostState> _canEnableSaveButton() async*{
-    if(_areAnyTextFieldsEmpty || _post.selectedTags.length == 0 ||
-    _post.getEventDate == null|| _post.body.isEmpty){
+    if(_post.title.trim().isEmpty || _post.description.trim().isEmpty || _post.selectedTags.length == 0 ||
+    !_isDateFieldValid()|| _post.body.isEmpty || _post.locationID.trim().isEmpty){
        yield PostDisableSaveButtonState();
     }else{
       yield PostEnableSaveButtonState();
     }
+  }
+
+  bool _isDateFieldValid(){
+    if(_post.eventDate != null || _post.isDateNotApplicable) return true;
+    return false;
   }
 
   Stream<PostState> _mapTabClickEventToState(PostTabClickEvent event) async*{

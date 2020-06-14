@@ -56,34 +56,44 @@ class ViewAllEventsPage{
 
   Widget _createPostFromTimeline(TimelinePost timeline){
     Post thisPost = _getPostFromID(timeline.postID);
+    List<Widget> colChildren =[
+      RichText(
+        text: TextSpan(
+          text: thisPost.title,
+          style: TextStyle(fontSize: 26, color: Colors.black),
+          children: [
+            TextSpan(text: _getAuthorNameAndTagsLine(timeline, thisPost),
+            style: TextStyle(fontSize: 12))
+          ],
+        ),
+      ),
+      SizedBox(height: 8,),
+      Text(thisPost.description),
+    ];  
+    if(thisPost.gallerySources.length != 0){
+      colChildren.addAll(_addPostImageWidgets(thisPost));
+    }
+    
     return InkWell(
       splashColor: Colors.blue.withAlpha(30),
-      onTap: () => null,
+      onTap: () => _moveToViewPost(thisPost),
       child: Padding(
         padding: EdgeInsets.only(left:8.0, top: 8, right:8 ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            RichText(
-              text: TextSpan(
-                text: thisPost.title,
-                style: TextStyle(fontSize: 26, color: Colors.black),
-                children: [
-                  TextSpan(text: _getAuthorNameAndTagsLine(timeline, thisPost),
-                  style: TextStyle(fontSize: 12))
-                ],
-              ),
-            ),
-            SizedBox(height: 8,),
-            Text(thisPost.description),
-            SizedBox(height: 8,),
-            _buildImagesBox(thisPost),
-            SizedBox(height: 8,),
-            Divider(),
-          ],
+          children: colChildren,
         ),
       ),
     );
+  }
+
+  List<Widget> _addPostImageWidgets(Post thisPost){
+    return [
+       SizedBox(height: 8,),
+      _buildImagesBox(thisPost),
+      SizedBox(height: 8,),
+      Divider(),
+    ];
   }
 
   String _getAuthorNameAndTagsLine(TimelinePost timelinePost, Post post,){
@@ -129,6 +139,8 @@ class ViewAllEventsPage{
 
   List<Widget> _buildImageLayoutChildren(Post post){
     List<String> imageSrc = post.gallerySources.keys.toList();
+    List<String> srcType = post.gallerySources.values.toList();
+    Map<String, String> gallerySrc;
     if(imageSrc.length == 4){
       return[
         Expanded(
@@ -177,11 +189,20 @@ class ViewAllEventsPage{
 
       ];
     }else if(imageSrc.length == 3){
+      gallerySrc ={
+        imageSrc[0]:srcType[0],
+        imageSrc[1]:srcType[1],
+        imageSrc[2]:srcType[2],
+      };
       return[
         Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(image: NetworkImage(imageSrc[0]), fit: BoxFit.cover)
+          child: Hero(
+            tag: imageSrc[0],
+            child: Container(
+              child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 0),),
+              decoration: BoxDecoration(
+                image: DecorationImage(image: NetworkImage(imageSrc[0]), fit: BoxFit.cover)
+              ),
             ),
           ),
         ),
@@ -190,17 +211,25 @@ class ViewAllEventsPage{
           child: Column(
             children: [
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: NetworkImage(imageSrc[1]), fit: BoxFit.cover)
+                child: Hero(
+                  tag: imageSrc[1],
+                  child: Container(
+                    child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 1),),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(image: NetworkImage(imageSrc[1]), fit: BoxFit.cover)
+                    ),
                   ),
                 ),
               ),
               SizedBox(height: 2,),
               Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(image: NetworkImage(imageSrc[2]), fit: BoxFit.cover)
+          child: Hero(
+            tag: imageSrc[2],
+                      child: Container(
+              child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 2),),
+              decoration: BoxDecoration(
+                image: DecorationImage(image: NetworkImage(imageSrc[2]), fit: BoxFit.cover)
+              ),
             ),
           ),
         ),
@@ -237,6 +266,14 @@ class ViewAllEventsPage{
         ),
     ];
 
+  }
+
+  void _moveToViewImageVideo(Map<String,String> gallery, int index){
+    BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(gallery, index));
+  }
+
+  void _moveToViewPost(Post post){
+    BlocProvider.of<AppBloc>(_context).add(AppToViewPostPageEvent(post));
   }
 
 }

@@ -1,16 +1,22 @@
-import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/models/post.dart';
+import 'package:ctrim_app_v1/widgets/posts/galleryTabBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zefyr/zefyr.dart';
 
-class ViewEventPage extends StatefulWidget{
+class ViewPostPage extends StatefulWidget{
   
+  final Post _post;
+  ViewPostPage(this._post);
   @override
-  _ViewEventPageState createState() => _ViewEventPageState();
+  _ViewPostPageState createState() => _ViewPostPageState();
 }
 
-class _ViewEventPageState extends State<ViewEventPage> with SingleTickerProviderStateMixin{
+class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderStateMixin{
   
   TabController _tabController;
+  int _selectedTabIndex =0;
 
   @override
   void initState() {
@@ -26,62 +32,136 @@ class _ViewEventPageState extends State<ViewEventPage> with SingleTickerProvider
           return[
             SliverAppBar(
               expandedHeight: 200,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Image.network(widget._post.gallerySources.keys.toList()[0], fit: BoxFit.cover,),
+              ),
             ),
             SliverPadding(
               padding: EdgeInsets.all(8.0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  Text('Title'),
+                  Text(widget._post.title),
                   TabBar(
                     labelColor: Colors.black,
                     controller: _tabController,
                     tabs: [
-                      Tab(icon: Icon(Icons.info_outline), text: 'Main',),
-                      Tab(icon: Icon(Icons.calendar_today), text: 'Schedule',),
+                      Tab(icon: Icon(Icons.info_outline), text: 'About',),
+                      Tab(icon: Icon(Icons.calendar_today), text: 'Details',),
                       Tab(icon: Icon(Icons.photo_library), text: 'Gallery',),
                       Tab(icon: Icon(Icons.track_changes), text: 'Updates',),
                     ],
                     onTap: (newIndex){
-                      BlocProvider.of<PostBloc>(context).add(PostTabClickEvent(newIndex));
+                      setState(() {
+                        _selectedTabIndex = newIndex;
+                      });
                     },
                   ),
                 ]),),
             )
           ];
         },
-        body: _buildBody(),
+        body: _buildTabBody(_selectedTabIndex),
       ),
     );
   }
 
-  Widget _buildBody(){
-    return BlocConsumer(
-      bloc: BlocProvider.of<PostBloc>(context),
-      listener: (_,state){
-
-      },
-      builder: (_,state){
-        Widget result = _buildTabBody(0);
-
-        if(state is PostTabClickState){
-          int tabIndex = _getIndexFromState(state);
-          result = _buildTabBody(tabIndex);
-        }
-
-        return result;
+  Widget _buildTabBody(int selectedIndex){
+    return OrientationBuilder(
+      builder: (_,orientation){
+        if(_selectedTabIndex == 0) return _buildAboutTab();
+        else if(_selectedTabIndex == 1) return _buildDetailsTab();
+        else if(_selectedTabIndex == 2) return GalleryTabBody.view(orientation: orientation, gallerySrc: widget._post.gallerySources);
+        return _buildUpdatesTab();
       },
     );
   }
 
-  int _getIndexFromState(PostTabClickState state){
-    if(state is PostAboutTabClickState) return 0;
-    else if(state is PostDetailsTabClickState) return 1;
-    else if(state is PostGalleryTabClickState) return 2;
-    return 3;
+  Widget _buildAboutTab(){
+    return ListView(
+      children: [
+        Container(
+          padding: EdgeInsets.all(8),
+          child: ZefyrView(
+            document: widget._post.getBodyDoc(),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 8.0),
+          child: Text('Tags'),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 8.0),
+          child: Wrap(
+            spacing: 4,
+            children: widget._post.selectedTagsString.map((tag){
+            return Chip(
+              label: Text(tag),
+            );
+          }).toList()
+          ,),
+        ),
+      ],
+    );
   }
 
-  Widget _buildTabBody(int selectedIndex){
-    return Center(child: Text('Index is ' + selectedIndex.toString()),);
+  Widget _buildDetailsTab(){
+    List<Widget> children =[
+      Text('Location'),
+      Text(BlocProvider.of<TimelineBloc>(context).locations.firstWhere((element) => element.id == widget._post.locationID).addressLine),
+      SizedBox(height: 8,),
+      Text('Time'),
+      Text(widget._post.dateString),
+    ];
+    if(widget._post.detailTable.length != 0){
+      children.addAll(_buildDetailListItems());
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: children,
+    );
+  }
+
+  List<Widget> _buildDetailListItems(){
+    return[
+       SizedBox(height: 24,),
+      Text(widget._post.detailTableHeader),
+       SizedBox(height: 8,),
+      Expanded(
+        child: ListView.builder(
+          itemCount: widget._post.detailTable.length,
+          padding: EdgeInsets.all(8),
+          itemBuilder: (_,index){
+            return Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide()
+                )
+              ),
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(widget._post.detailTable[index][0]),
+                    flex: 1,
+                  ),
+                  Text(' | '),
+                  Expanded(
+                    child: Text(widget._post.detailTable[index][1]),
+                    flex: 2,
+                  )
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildUpdatesTab(){
+    return Center(child: Text('Updates Tab'),);
   }
 
 }

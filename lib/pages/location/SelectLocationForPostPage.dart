@@ -1,15 +1,19 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SelectLocationForEvent extends StatefulWidget {
   
+  final PostBloc _postBloc;
+  SelectLocationForEvent(this._postBloc);
+
   @override
   _SelectLocationForEventState createState() => _SelectLocationForEventState();
 }
 
 class _SelectLocationForEventState extends State<SelectLocationForEvent> {
-  
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +31,20 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
   }
 
   ListView _buildBody(){
-    return ListView(
-      children: [
-         Card(
-          child: InkWell(
-            splashColor: Colors.blue.withAlpha(30),
-            onTap: (){
-
-            },
-            child: Row(
+    List<Widget> children = BlocProvider.of<TimelineBloc>(context).locations.map((location){
+      return Card(
+        child: InkWell(
+          splashColor: Colors.blue.withAlpha(30),
+          onTap: () {
+            widget._postBloc.add(PostSelectedLocationEvent(
+              locationID: location.id,
+              addressLine: location.addressLine,
+            ));
+            Navigator.of(context).pop();
+          },
+          child: Row(
             children: [
-              Padding(
+               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.30,
@@ -47,11 +54,9 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
               ),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ListTile(
-                      title: Text("48 The Demesne, Carryduff, Belfast, BT8 8GU, UK"),
+                      title: Text(location.addressLine),
                       subtitle: Text('Sub'),
                     ),
                     ButtonBar(
@@ -65,11 +70,15 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
                     )
                   ],
                 ),
-              ),
+              )
             ],
-          ),) 
-        )
-      ],
+          ),
+        ),
+      );
+    }).toList();
+
+    return ListView(
+      children: children,
     );
   }
 }

@@ -7,21 +7,47 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GalleryTabBody extends StatelessWidget {
   
-  final Orientation _orientation;
-  GalleryTabBody(this._orientation);
+  final Orientation orientation;
+  final Map<String,String> gallerySrc;
 
   static double pictureSize, paddingSize;
+  static bool _viewMode = false;
+  static BuildContext _context;
+
+  GalleryTabBody.view({
+    @required this.orientation, 
+    @required this.gallerySrc
+  }){
+    _viewMode = true;
+  }
+
+  GalleryTabBody({@required this.orientation, this.gallerySrc}){
+    _viewMode = false;
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     pictureSize = MediaQuery.of(context).size.width * 0.32; // * 3 accross so 4% width left 0.04/4 = 0.01
     paddingSize = MediaQuery.of(context).size.width * 0.01;
-    if(_orientation == Orientation.landscape){
+    if(orientation == Orientation.landscape){
       // * 4 blocks accross so 5 paddings accross
       pictureSize = MediaQuery.of(context).size.width * 0.2375;
       paddingSize = MediaQuery.of(context).size.width * 0.01;
     }
 
+    if(_viewMode){
+      return SingleChildScrollView(
+        child: Wrap(
+          children: gallerySrc.keys.map((src){
+            String type = gallerySrc[src];
+            return type == 'vid' ? _createVideoContainer() : _createImageSrcContainer(src);
+          }).toList(),
+        ),
+      );
+    }
     return ListView(
       children: [
         FlatButton(child: Text('ADD/EDIT'), onPressed:()=> BlocProvider.of<AppBloc>(context).add(AppToEditAlbumEvent(BlocProvider.of<PostBloc>(context))),),
@@ -29,14 +55,31 @@ class GalleryTabBody extends StatelessWidget {
         Wrap(
           children: BlocProvider.of<PostBloc>(context).files.keys.map((file){
             String type = BlocProvider.of<PostBloc>(context).files[file];
-            return type == 'vid' ? _createVideoContainer() : _createImageContainer(file);
+            return type == 'vid' ? _createVideoContainer() : _createImageFileContainer(file);
           }).toList(),
         )
       ],
     );
   }
 
-  Widget _createImageContainer(File file){
+  Widget _createImageSrcContainer(String src){
+      int index = gallerySrc.keys.toList().indexOf(src);
+      return Padding(
+      padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        width: pictureSize,
+        height: pictureSize,
+        child: GestureDetector(
+          onTap: () => BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(gallerySrc, index)),
+          child: Hero(tag: src,child: Image.network(src, fit: BoxFit.cover,))
+        ),
+      ),
+    );
+  }
+
+  Widget _createImageFileContainer(File file){
     return Padding(
       padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
       child: AnimatedContainer(

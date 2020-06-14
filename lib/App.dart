@@ -106,7 +106,7 @@ class _AppState extends State<App> {
         case HomeRoute: screen = HomePage();
         break;
 
-        case ViewEventRoute: screen = ViewEventPage();
+        case ViewEventRoute: screen = ViewPostPage(arguments['post']);
         break;
 
         case AddEventRoute: screen = AddEventPage();
@@ -136,7 +136,7 @@ class _AppState extends State<App> {
         case EditLocationRoute: screen = EditLocation();
         break;
 
-        case SelectLocationForEventRoute: screen = SelectLocationForEvent();
+        case SelectLocationForEventRoute: screen = SelectLocationForEvent(arguments['postBloc']);
         break;
 
         case EditAlbumRoute: screen = EditAlbum(arguments['postBloc']);

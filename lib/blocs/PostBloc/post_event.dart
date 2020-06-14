@@ -12,8 +12,8 @@ class PostTabClickEvent extends PostEvent{
 }
 
 class PostTextChangeEvent extends PostEvent{
-  final String title, body;
-  PostTextChangeEvent({this.title, this.body});
+  final String title, description;
+  PostTextChangeEvent({this.title, this.description});
 }
 
 class PostDepartmentClickEvent extends PostEvent{
@@ -40,6 +40,10 @@ class PostSetPostTimeEvent extends PostScheduleTabEvent{
   PostSetPostTimeEvent(this.selectedTOD);
 }
 class PostDateNotApplicableClick extends PostScheduleTabEvent{}
+class PostSelectedLocationEvent extends PostScheduleTabEvent{
+  final String locationID, addressLine;
+  PostSelectedLocationEvent({this.locationID, this.addressLine});
+}
 
 // * Detail List Events
 class PostDetailListEvent extends PostEvent{}
@@ -47,7 +51,6 @@ class PostDetailListTextChangeEvent extends PostDetailListEvent{
   final String leading, trailing;
   PostDetailListTextChangeEvent({this.leading, this.trailing});
 }
-
 class PostDetailListItemRemovedEvent extends PostDetailListEvent{
   final List<String> item;
   PostDetailListItemRemovedEvent(this.item);

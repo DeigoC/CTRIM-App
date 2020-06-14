@@ -7,3 +7,8 @@ abstract class TimelineEvent extends Equatable {
 }
 
 class TimelineFetchAllPostsEvent extends TimelineEvent{}
+
+class TimelineAddNewPostEvent extends TimelineEvent{
+  final Post post;
+  TimelineAddNewPostEvent(this.post);
+}

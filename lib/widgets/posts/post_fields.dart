@@ -56,9 +56,17 @@ class PostLocationField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
             Text('Location'),
-            FlatButton(
-              child: Text('PENDING LOCATION'),
-              onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent()),
+            BlocBuilder<PostBloc, PostState>(
+              condition: (_,currentState){
+                if(currentState is PostLocationSelectedState) return true;
+                return false;
+              },
+              builder:(_,state){
+                return FlatButton(
+                  child: Text(BlocProvider.of<PostBloc>(context).addressLine),
+                  onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent(BlocProvider.of<PostBloc>(context))),
+                );
+              } 
             ),
         ],
       ),

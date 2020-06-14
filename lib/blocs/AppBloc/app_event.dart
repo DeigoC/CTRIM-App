@@ -15,7 +15,10 @@ class TabButtonClicked extends AppEvent{
 // * Navigation Events
 class AppNavigateToPageEvent extends AppEvent{}
 
-class AppToViewPostPageEvent extends AppNavigateToPageEvent{}
+class AppToViewPostPageEvent extends AppNavigateToPageEvent{
+  final Post post;
+  AppToViewPostPageEvent(this.post);
+}
 class AppToAddPostPageEvent extends AppNavigateToPageEvent{}
 class AppToViewAllPostsForLocationEvent extends AppNavigateToPageEvent{}
 class AppToPostBodyEditorEvent extends AppNavigateToPageEvent{
@@ -26,7 +29,10 @@ class AppToPostBodyEditorEvent extends AppNavigateToPageEvent{
 class AppToViewLocationOnMapEvent extends AppNavigateToPageEvent{}
 class AppToAddLocationEvent extends AppNavigateToPageEvent{}
 class AppToEditLocationEvent extends AppNavigateToPageEvent{}
-class AppToSelectLocationForPostEvent extends AppNavigateToPageEvent{}
+class AppToSelectLocationForPostEvent extends AppNavigateToPageEvent{
+  final PostBloc postBloc;
+  AppToSelectLocationForPostEvent(this.postBloc);
+}
 
 class AppToRegisterUserEvent extends AppNavigateToPageEvent{}
 class AppToViewAllUsersEvent extends AppNavigateToPageEvent{}

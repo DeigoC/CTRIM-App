@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/models/post.dart';
+import 'package:ctrim_app_v1/models/user.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:ctrim_app_v1/App.dart';
@@ -14,6 +16,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final GlobalKey<NavigatorState> navigatorKey;
   bool _onDark = false;
   bool get onDarkTheme => _onDark;
+  User _currentUser = User();
+  User get currentUser => _currentUser;
+  
   AppBloc(this.navigatorKey);
 
   @override
@@ -33,7 +38,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   void _openPageFromEvent(AppNavigateToPageEvent event){
     NavigatorState state = navigatorKey.currentState;
-    if(event is AppToViewPostPageEvent) state.pushNamed(ViewEventRoute);
+    if(event is AppToViewPostPageEvent) state.pushNamed(ViewEventRoute, arguments: {'post': event.post});
     else if(event is AppToAddPostPageEvent) state.pushNamed(AddEventRoute);
     else if(event is AppToViewAllPostsForLocationEvent) state.pushNamed(ViewAllEventsForLocationRoute);
     else if(event is AppToViewLocationOnMapEvent) state.pushNamed(ViewLocationOnMapRoute);
@@ -42,7 +47,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToEditUserEvent) state.pushNamed(EditUserRoute);
     else if(event is AppToAddLocationEvent) state.pushNamed(AddLocationRoute);
     else if(event is AppToEditLocationEvent) state.pushNamed(EditLocationRoute);
-    else if(event is AppToSelectLocationForPostEvent) state.pushNamed(SelectLocationForEventRoute);
+    else if(event is AppToSelectLocationForPostEvent) state.pushNamed(SelectLocationForEventRoute, arguments: {'postBloc': event.postBloc});
     else if(event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute, arguments: {'postBloc': event.postBloc});
     else if(event is AppToAddGalleryFileEvent) state.pushNamed(AddGalleryFilesRoute, arguments: {'postBloc': event.postBloc});
     else if(event is AppToPostBodyEditorEvent) state.pushNamed(EventBodyEditorRoute,arguments: {'postBloc':event.postBloc});

@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
 import 'package:ctrim_app_v1/widgets/posts/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts/mainTabBody.dart';
@@ -94,7 +95,16 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0)
           ),
-          onPressed: (state is PostEnableSaveButtonState) ? () => null:null,
+          onPressed: (state is PostEnableSaveButtonState) ? (){
+            _confirmSave().then((confirmation){
+             if(confirmation){
+               BlocProvider.of<TimelineBloc>(context).add(TimelineAddNewPostEvent(
+                 _postBloc.newPost
+               ));
+               Navigator.of(context).pop();
+             }
+            });
+          }:null,
           child: Text('Save',),
         );
         return result;
@@ -140,7 +150,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     switch(selectedIndex){
       case 0: return MainTabBody();
       case 1: return PostDetailsTabBody();
-      case 2: return GalleryTabBody(_orientation);
+      case 2: return GalleryTabBody(orientation: _orientation,);
     }
     return Center(child: Text('Index is ' + selectedIndex.toString()),);
   }
@@ -163,5 +173,32 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
       initialTime: TimeOfDay.now()
     );
     _postBloc.add(PostSetPostTimeEvent(pickedTime));
+  }
+
+  Future<bool> _confirmSave() async{
+    bool result = false;
+    await showDialog(
+      context: context,
+      builder: (_){
+        return AlertDialog(
+          title: Text('Post Confirmation'),
+          content: Text('Are you sure you want to save this post?'),
+          actions: [
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: ()=> Navigator.of(context).pop(),
+            ),
+            FlatButton(
+              child: Text('Post'),
+              onPressed: (){
+                result = true;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
+    );
+    return result;
   }
 }

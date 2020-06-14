@@ -31,6 +31,13 @@ class SettingsPage{
                 child: Text('Admin Facility'),
               ),
               ListTile(
+                title: Text('My Posts'),
+                leading: Icon(Icons.description),
+                onTap: (){
+                  BlocProvider.of<AppBloc>(_context).add(AppToRegisterUserEvent());
+                },
+              ),
+              ListTile(
                 title: Text('Register User'),
                 leading: Icon(Icons.person_add),
                 onTap: (){

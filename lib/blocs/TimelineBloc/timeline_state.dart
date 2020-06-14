@@ -13,5 +13,4 @@ class TimelineDisplayFeedState extends TimelineState {
   final List<Post> posts;
   final List<User> users;
   TimelineDisplayFeedState({@required this.timelines, @required this.posts, @required this.users});
-
 }

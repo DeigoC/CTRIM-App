@@ -20,8 +20,7 @@ class _MainTabBodyState extends State<MainTabBody> {
   void initState() {
     super.initState();
     _tecBody = TextEditingController();
-    _tecSubtitle = TextEditingController();
-   
+    _tecSubtitle = TextEditingController(text:  BlocProvider.of<PostBloc>(context).postDescription);
   }
 
   @override
@@ -41,10 +40,10 @@ class _MainTabBodyState extends State<MainTabBody> {
         MyTextField(
           controller: _tecSubtitle,
           label: 'Description',
-          hint: '(Optional)',
+          hint: 'Brief summary of the post',
           maxLength: 250,
           maxLines: 5,
-          onTextChange: (newSubtitle) => null,
+          onTextChange: (newSubtitle) =>  BlocProvider.of<PostBloc>(context).add(PostTextChangeEvent(description: newSubtitle)),
         ),
         SizedBox(height: 20,),
         Padding(

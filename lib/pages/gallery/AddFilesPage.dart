@@ -19,7 +19,6 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Files'),
