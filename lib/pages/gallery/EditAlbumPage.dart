@@ -4,31 +4,60 @@ import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EditAlbum extends StatefulWidget {
+class EditAlbumPage extends StatefulWidget {
   final PostBloc _postBloc;
-  EditAlbum(this._postBloc);
+  EditAlbumPage(this._postBloc);
   @override
-  _EditAlbumState createState() => _EditAlbumState();
+  _EditAlbumPageState createState() => _EditAlbumPageState();
 }
 
-class _EditAlbumState extends State<EditAlbum> {
+class _EditAlbumPageState extends State<EditAlbumPage> {
   
-  List<File> _selectedFiles = [];
+  List<String> _selectedFiles = [];
   bool _onDeleteMode = false;
-
+ 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: _onDeleteMode ? _buildDeleteActions() : _buildNormalActions(),
+    return WillPopScope(
+      onWillPop: () async{
+        bool result = false;
+        
+        //TODO need to test this at phase 2
+        if(widget._postBloc.hasAlbumChanged){
+            await showDialog(
+            context: context,
+            builder: (_){
+              return AlertDialog(
+                title: Text('Leave Page'),
+                content: Text('Do you want to save or discard changes?'),
+                actions: [
+                FlatButton(child: Text('Discard'), onPressed: (){
+                  result = true;
+                  Navigator.of(context).pop();
+                }),
+                FlatButton(child: Text('Save'), onPressed: (){
+                  result = true;
+                  Navigator.of(context).pop();
+                }),
+                ],
+              );
+            }
+          );
+        }else return true;
+        return result;
+      },
+        child: Scaffold(
+        appBar: AppBar(
+          title: Text('Edit Album'),
+          actions: _onDeleteMode ? _buildDeleteActions() : _buildNormalActions(),
+        ),
+       body: _buildBody(),
+       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+       floatingActionButton: _onDeleteMode ? _buildDeleteButton(): null,
       ),
-     body: _buildBody(),
-     floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-     floatingActionButton: _onDeleteMode ? _buildDeleteButton(): null,
     );
   }
-
-  List<Widget> _buildNormalActions(){
+    List<Widget> _buildNormalActions(){
     return [
       FlatButton(
         child: Text('Remove'),
@@ -44,7 +73,7 @@ class _EditAlbumState extends State<EditAlbum> {
       ];
   }
 
-  List<Widget> _buildDeleteActions(){
+   List<Widget> _buildDeleteActions(){
     return [
       FlatButton(
         child: Text('Cancel'),
@@ -58,13 +87,13 @@ class _EditAlbumState extends State<EditAlbum> {
     ];
   }
 
-  SizedBox _buildDeleteButton(){
+   SizedBox _buildDeleteButton(){
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.8,
       child: RaisedButton(
-        child: Text('Delete ${_selectedFiles.length} items'),
+        child: Text('Remove ${_selectedFiles.length} items'),
         onPressed: (){
-          widget._postBloc.add(PostFilesRemoveSelectedEvent(_selectedFiles));
+          widget._postBloc.add(PostRemoveSelectedFilesAndSrcEvent(_selectedFiles));
           setState(() {
             _onDeleteMode = false;
           });
@@ -73,7 +102,7 @@ class _EditAlbumState extends State<EditAlbum> {
     );
   }
 
-  Widget _buildBody(){
+   Widget _buildBody(){
     return BlocBuilder(
       bloc: widget._postBloc,
       condition: (_, currentState){
@@ -82,12 +111,22 @@ class _EditAlbumState extends State<EditAlbum> {
       },
       builder:(_,state){
         Map<File, String> files = widget._postBloc.files;
-        List<Widget> newChildren = files.keys.map((file){
-          String type = files[file];
-          if(type == 'vid') return _buildVideoContainer(file);
-          return _buildPictureContainer(file);
+        Map<String, String> sources = widget._postBloc.gallerySrc;
+
+        // TODO need to rework this so that it can be selected to delete
+
+        List<Widget> newChildren = sources.keys.map((src){
+          String type = sources[src];
+          if(type == 'vid') return _buildVideoSrcContainer(src);
+          return _buildPictureSrcContainer(src);
         }).toList();
         
+        newChildren.addAll(files.keys.map((file){
+          String type = files[file];
+          if(type == 'vid') return _buildVideoFileContainer(file);
+          return _buildPictureFileContainer(file);
+        }).toList());
+
         return ListView(
         children: [
           Wrap(children: newChildren),
@@ -95,17 +134,20 @@ class _EditAlbumState extends State<EditAlbum> {
     );
       }
      );
-   
   }
 
-  Padding _buildVideoContainer(File file){
+  Padding _buildVideoSrcContainer(String src){
     return null;
   }
 
-  Padding _buildPictureContainer(File file){
+  Padding _buildVideoFileContainer(File file){
+    return null;
+  }
+
+  Padding _buildPictureFileContainer(File file){
     double pictureSize = MediaQuery.of(context).size.width * 0.32;
     double paddingSize = MediaQuery.of(context).size.width * 0.01;
-    bool selected = _selectedFiles.contains(file);
+    bool selected = _selectedFiles.contains(file.path);
     return Padding(
        padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
        child: AnimatedContainer(
@@ -120,8 +162,8 @@ class _EditAlbumState extends State<EditAlbum> {
             onTap: (){
               if(_onDeleteMode){
                 setState(() {
-                if(selected)_selectedFiles.remove(file);
-                else _selectedFiles.add(file);
+                if(selected)_selectedFiles.remove(file.path);
+                else _selectedFiles.add(file.path);
               }); 
               }
             },
@@ -141,4 +183,45 @@ class _EditAlbumState extends State<EditAlbum> {
        ),
     );
   }
+
+   Padding _buildPictureSrcContainer(String src){
+    double pictureSize = MediaQuery.of(context).size.width * 0.32;
+    double paddingSize = MediaQuery.of(context).size.width * 0.01;
+    bool selected = _selectedFiles.contains(src);
+    return Padding(
+       padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
+       child: AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          width: pictureSize,
+          height: pictureSize,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: NetworkImage(src), fit: BoxFit.cover)
+          ),
+          child: InkWell(
+            onTap: (){
+              if(_onDeleteMode){
+                setState(() {
+                if(selected)_selectedFiles.remove(src);
+                else _selectedFiles.add(src);
+              }); 
+              }
+            },
+            child: Opacity(
+              opacity: selected ? 1:0,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                  Icon(Icons.done, color: Colors.white,)
+                ],
+              ),
+            ),
+          ),
+       ),
+    );
+  }
+
 }

@@ -1,11 +1,14 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/HomePage.dart';
+import 'package:ctrim_app_v1/pages/gallery/CreateAlbumPage.dart';
+import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
+import 'package:ctrim_app_v1/pages/posts/EditPostPage.dart';
 import 'package:ctrim_app_v1/pages/posts/PostBodyEditorPage.dart';
+import 'package:ctrim_app_v1/pages/posts/ViewMyPostsPage.dart';
 import 'package:ctrim_app_v1/pages/posts/ViewPostPage.dart';
 import 'package:ctrim_app_v1/pages/posts/AddPostPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/AddFilesPage.dart';
-import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/ViewImageVideoPage.dart';
 import 'package:ctrim_app_v1/pages/location/AddLocationPage.dart';
 import 'package:ctrim_app_v1/pages/location/EditLocationPage.dart';
@@ -25,10 +28,13 @@ const HomeRoute ='/';
 const ViewEventRoute ='/ViewEventPage';
 const AddEventRoute = '/AddEventPage';
 const EventBodyEditorRoute = '/EventBodyEditorRoute';
+const ViewMyPostsRoute = '/ViewMyPosts';
+const EditPostRoute = '/EditPostPage';
 
 const ViewImageVideoRoute = '/ViewImageVideo';
-const EditAlbumRoute = '/EditAlbum';
+const CreateAlbumRoute = '/CreateAlbum';
 const AddGalleryFilesRoute = '/AddFiles';
+const EditAlbumRoute = '/EditAlbum';
 
 const ViewLocationOnMapRoute = '/ViewLocationOnMap';
 const ViewAllEventsForLocationRoute = '/ViewAllEventsForLocation';
@@ -139,7 +145,7 @@ class _AppState extends State<App> {
         case SelectLocationForEventRoute: screen = SelectLocationForEvent(arguments['postBloc']);
         break;
 
-        case EditAlbumRoute: screen = EditAlbum(arguments['postBloc']);
+        case CreateAlbumRoute: screen = EditAlbum(arguments['postBloc']);
         break;
 
         case AddGalleryFilesRoute: screen = AddGalleryFiles(arguments['postBloc']);
@@ -148,6 +154,15 @@ class _AppState extends State<App> {
         case EventBodyEditorRoute: screen = EventBodyEditor(arguments['postBloc']);
         break;
         case UserLoginRoute: screen = UserLoginPage();
+        break;
+
+        case ViewMyPostsRoute: screen = ViewMyPostsPage();
+        break;
+
+        case EditPostRoute: screen = EditPostPage(arguments['post']);
+        break;
+
+        case EditAlbumRoute: screen = EditAlbumPage(arguments['postBloc']);
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

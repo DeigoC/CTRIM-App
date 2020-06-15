@@ -19,34 +19,31 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Files'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+    return WillPopScope(
+      onWillPop: () async{
+        _selectedFiles.forEach((file) { 
+          String fileType = basename(file.path).split('.').last.toLowerCase();
+          String type = (_videoTypes.contains(fileType)) ? 'vid' : 'img';
+          widget._postBloc.files[file] = type;
+        });
+        widget._postBloc.add(PostFilesReceivedEvent());
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text('Add Files'),),
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: (){
-            _selectedFiles.forEach((file) { 
-              String fileType = basename(file.path).split('.').last.toLowerCase();
-              String type = (_videoTypes.contains(fileType)) ? 'vid' : 'img';
-              widget._postBloc.files[file] = type;
+            _pickFiles().then((newFiles){
+              setState(() {
+                _selectedFiles.addAll(newFiles);
+              });
             });
-            widget._postBloc.add(PostFilesReceivedEvent());
-            Navigator.of(context).pop();
-          },
+          }, 
+          label: Text('Add Images And Videos'),
+          icon: Icon(Icons.add_photo_alternate),
         ),
+        body: _buildBody(),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: (){
-          _pickFiles().then((newFiles){
-            setState(() {
-              _selectedFiles.addAll(newFiles);
-            });
-          });
-        }, 
-        label: Text('Add Images And Videos'),
-        icon: Icon(Icons.add_photo_alternate),
-      ),
-      body: _buildBody(),
     );
   }
 

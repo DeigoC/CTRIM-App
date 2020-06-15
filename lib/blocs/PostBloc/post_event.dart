@@ -75,3 +75,7 @@ class PostFilesRemoveSelectedEvent extends PostGalleryEvent{
   final List<File> selectedFiles;
   PostFilesRemoveSelectedEvent(this.selectedFiles);
 }
+class PostRemoveSelectedFilesAndSrcEvent extends PostGalleryEvent{
+  final List<String> selectedFilesAndSrcs;
+  PostRemoveSelectedFilesAndSrcEvent(this.selectedFilesAndSrcs);
+}

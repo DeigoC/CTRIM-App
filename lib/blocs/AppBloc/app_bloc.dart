@@ -16,7 +16,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final GlobalKey<NavigatorState> navigatorKey;
   bool _onDark = false;
   bool get onDarkTheme => _onDark;
-  User _currentUser = User();
+  User _currentUser = User(id: '1');
   User get currentUser => _currentUser;
   
   AppBloc(this.navigatorKey);
@@ -48,12 +48,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToAddLocationEvent) state.pushNamed(AddLocationRoute);
     else if(event is AppToEditLocationEvent) state.pushNamed(EditLocationRoute);
     else if(event is AppToSelectLocationForPostEvent) state.pushNamed(SelectLocationForEventRoute, arguments: {'postBloc': event.postBloc});
-    else if(event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute, arguments: {'postBloc': event.postBloc});
+    else if(event is AppToCreateAlbumEvent) state.pushNamed(CreateAlbumRoute, arguments: {'postBloc': event.postBloc});
     else if(event is AppToAddGalleryFileEvent) state.pushNamed(AddGalleryFilesRoute, arguments: {'postBloc': event.postBloc});
     else if(event is AppToPostBodyEditorEvent) state.pushNamed(EventBodyEditorRoute,arguments: {'postBloc':event.postBloc});
     else if(event is AppToUserLoginEvent) state.pushNamed(UserLoginRoute);
     else if(event is AppToViewImageVideoPage) state.pushNamed(ViewImageVideoRoute, 
     arguments: {'initialPage': event.initialPage, 'imgSources':event.imageSorces});
+    else if(event is AppToViewMyPostsPageEvent) state.pushNamed(ViewMyPostsRoute);
+    else if(event is AppToEditPostPageEvent) state.pushNamed(EditPostRoute, arguments: {'post': event.post});
+    else if(event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute, arguments: {'postBloc':event.postBloc});
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{

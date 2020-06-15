@@ -34,7 +34,7 @@ class SettingsPage{
                 title: Text('My Posts'),
                 leading: Icon(Icons.description),
                 onTap: (){
-                  BlocProvider.of<AppBloc>(_context).add(AppToRegisterUserEvent());
+                  BlocProvider.of<AppBloc>(_context).add(AppToViewMyPostsPageEvent());
                 },
               ),
               ListTile(

@@ -1,5 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/models/post.dart';
 import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
 import 'package:flutter/material.dart';
@@ -62,8 +63,10 @@ class PostLocationField extends StatelessWidget {
                 return false;
               },
               builder:(_,state){
+                String locationID = BlocProvider.of<PostBloc>(context).newPost.locationID;
+                String addressLine = BlocProvider.of<TimelineBloc>(context).getLocationAddressLine(locationID);
                 return FlatButton(
-                  child: Text(BlocProvider.of<PostBloc>(context).addressLine),
+                  child: Text(addressLine),
                   onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent(BlocProvider.of<PostBloc>(context))),
                 );
               } 
@@ -131,7 +134,7 @@ class DetailTable extends StatelessWidget {
   Widget build(BuildContext context) {
     _context = context;
     return  Padding(
-        padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.0),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(),
@@ -153,8 +156,11 @@ class DetailTable extends StatelessWidget {
                       Expanded(
                         child: MyTextField(
                           label: 'Table Header', 
-                          controller: null,
+                          controller: TextEditingController(text: BlocProvider.of<PostBloc>(context).newPost.detailTableHeader),
                           hint: '(Optional table-like thing?)',
+                          onTextChange: (newHeader){
+                            BlocProvider.of<PostBloc>(context).newPost.detailTableHeader = newHeader;
+                          },
                         ),
                       ),
                       FlatButton.icon(

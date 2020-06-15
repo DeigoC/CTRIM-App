@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zefyr/zefyr.dart';
+import 'package:collection/collection.dart';
 part 'post_event.dart';
 part 'post_state.dart';
 
@@ -18,8 +19,12 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     detailTable: [],
     gallerySources: {},
   );
+  Post _originalPost;
 
   Post get newPost => _post;
+
+  // ! 
+  bool _editMode = false;
 
   // ! Post Fields - About Tab
   String get eventTitle => _post.title; 
@@ -51,6 +56,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   DateFormat('h:mm a').format(_post.eventDate);
 
   List<List<String>> get detailTable => _post.detailTable;
+  String get detailTableHeader => _post.detailTableHeader;
  String _leadingDetailItem ='', _trailingDetailItem ='';
  void prepareNewDetailListItem(){
    _leadingDetailItem ='';
@@ -64,10 +70,61 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   
   // ! Post Fields - Gallery Tab
   Map<File,String> get files => _post.temporaryFiles;
-
+  Map<String, String> get gallerySrc => _post.gallerySources;
+  
+  bool get hasAlbumChanged{
+    List<String> originalSrc = _originalPost.gallerySources.keys.toList();
+     List<String> newSrc = _post.gallerySources.keys.toList();
+    if(!DeepCollectionEquality().equals(originalSrc, newSrc)){
+      return true;
+    }else if(_post.temporaryFiles.length != 0) return true;
+    return false;
+  }
 
   // ! Bloc Stuff
   
+  PostBloc();
+  PostBloc.editMode(Post postToEdit){
+    _editMode = true;
+
+    // ? Everything but images and postID needs to be compared
+    List<Department> originalSelectedTags = List<Department>.from(postToEdit.selectedTags);
+    List<List<String>> originalDetailTable = List<List<String>>.from(postToEdit.detailTable);
+
+    // ? Testing this
+    _post = Post(
+       title: postToEdit.title,
+        body: postToEdit.body,
+        selectedTags: originalSelectedTags,
+        description: postToEdit.description,
+        detailTable: originalDetailTable,
+        detailTableHeader: postToEdit.detailTableHeader,
+        locationID: postToEdit.locationID,
+        eventDate: postToEdit.eventDate,
+        isDateNotApplicable: postToEdit.isDateNotApplicable,
+        gallerySources: postToEdit.gallerySources,
+        temporaryFiles: {}
+    );
+
+    _originalPost = Post(
+      title: _post.title,
+      body: _post.body,
+      selectedTags: originalSelectedTags,
+      description: _post.description,
+      detailTable: originalDetailTable,
+      detailTableHeader: _post.detailTableHeader,
+      locationID: _post.locationID,
+      eventDate: _post.eventDate,
+      isDateNotApplicable: _post.isDateNotApplicable,
+      gallerySources: Map.from( _post.gallerySources),
+      temporaryFiles: {},
+    );
+
+    _post.selectedTags.forEach((tag) {
+      selectedTags[tag] = true;
+    });
+  } 
+
   @override
   PostState get initialState => PostInitial();
 
@@ -113,6 +170,16 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         _post.temporaryFiles.remove(file);
       });
       yield PostFilesReceivedState(); // TODO may have to change this
+    }
+    else if(event is PostRemoveSelectedFilesAndSrcEvent){
+      event.selectedFilesAndSrcs.forEach((src) { 
+        if(_post.gallerySources.keys.contains(src)){
+          _post.gallerySources.remove(src);
+        }else{
+          _post.temporaryFiles.removeWhere((key, value) => key.path.compareTo(src) == 0);
+        }
+      });
+      yield PostFilesReceivedState();
     }
   }
 
@@ -173,7 +240,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }else{
       _post.selectedTags.remove(event.department);
     }
-
     selectedTags[event.department] = event.selected;
     bool selected = event.selected;
     switch(event.department){
@@ -202,12 +268,39 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Stream<PostState> _canEnableSaveButton() async*{
-    if(_post.title.trim().isEmpty || _post.description.trim().isEmpty || _post.selectedTags.length == 0 ||
-    !_isDateFieldValid()|| _post.body.isEmpty || _post.locationID.trim().isEmpty){
-       yield PostDisableSaveButtonState();
+    if(_editMode){
+      if(_haveAnyChangedFields()){
+        yield PostEnableSaveButtonState();
+      }
+      else yield PostDisableSaveButtonState();
     }else{
-      yield PostEnableSaveButtonState();
+       if(_haveAnyEmptyFields()){
+       yield PostDisableSaveButtonState();
+      }else{
+        yield PostEnableSaveButtonState();
+      }
     }
+  }
+
+  bool _haveAnyChangedFields(){
+    if(_originalPost.title.compareTo(_post.title) != 0) return true;
+    else if(_originalPost.body.compareTo(_post.body) != 0) return true;
+    else if(_originalPost.description.compareTo(_post.description) != 0) return true;
+    else if(_originalPost.detailTableHeader.compareTo(_post.detailTableHeader) != 0) return true;
+    else if(!DeepCollectionEquality().equals(_originalPost.detailTable, _post.detailTable)) return true;
+    else if(!DeepCollectionEquality.unordered().equals(_originalPost.selectedTags, _post.selectedTags)) return true;
+    else if(_originalPost.locationID.compareTo(_post.locationID) != 0) return true;
+    // TODO Check the one below
+    else if(_originalPost.eventDate.compareTo(_post.eventDate) != 0 && !_post.isDateNotApplicable) return true;
+    else if(_originalPost.isDateNotApplicable != _post.isDateNotApplicable) return true;
+
+    return false;
+  }
+
+  bool _haveAnyEmptyFields(){
+    if(_post.title.trim().isEmpty || _post.description.trim().isEmpty || _post.selectedTags.length == 0 ||
+    !_isDateFieldValid()|| _post.body.isEmpty || _post.locationID.trim().isEmpty) return true;
+    return false;
   }
 
   bool _isDateFieldValid(){

@@ -100,7 +100,23 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     ),
   ];
 
+  Map<Post, String> getUserPosts(String userID){
+    Map<Post, String> results ={};
+    _testTimelinePosts.forEach((timelinePost) {
+      if(timelinePost.authorID.compareTo(userID) == 0 && timelinePost.postType.compareTo('original') == 0){
+        results[(_testPosts.firstWhere((post) => post.id.compareTo(timelinePost.postID)==0))] = timelinePost.getPostDateString();
+      }
+    });
+    return results;
+  }
+
   List<Location> get locations => _testLocations;
+  String getLocationAddressLine(String locationID){
+    if(locationID.trim().isNotEmpty){
+      return _testLocations.firstWhere((location) => location.id.compareTo(locationID) == 0).addressLine;
+    }
+    return 'Pending';
+  }
 
   @override
   TimelineState get initialState => TimelineInitial();

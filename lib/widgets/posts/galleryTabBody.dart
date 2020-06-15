@@ -11,21 +11,24 @@ class GalleryTabBody extends StatelessWidget {
   final Map<String,String> gallerySrc;
 
   static double pictureSize, paddingSize;
-  static bool _viewMode = false;
+  static String _mode = 'addingPost';
   static BuildContext _context;
+
+  GalleryTabBody({@required this.orientation, this.gallerySrc});
 
   GalleryTabBody.view({
     @required this.orientation, 
     @required this.gallerySrc
   }){
-    _viewMode = true;
+    _mode = 'viewingPost';
   }
 
-  GalleryTabBody({@required this.orientation, this.gallerySrc}){
-    _viewMode = false;
+  GalleryTabBody.edit({
+    @required this.orientation,
+    @required this.gallerySrc,
+  }){
+    _mode = 'editingPost';
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +41,7 @@ class GalleryTabBody extends StatelessWidget {
       paddingSize = MediaQuery.of(context).size.width * 0.01;
     }
 
-    if(_viewMode){
+    if(_mode == 'viewingPost'){
       return SingleChildScrollView(
         child: Wrap(
           children: gallerySrc.keys.map((src){
@@ -47,10 +50,32 @@ class GalleryTabBody extends StatelessWidget {
           }).toList(),
         ),
       );
+    }else if(_mode == 'editingPost'){
+      List<Widget> wrapChildren = BlocProvider.of<PostBloc>(context).gallerySrc.keys.map((src){
+            String type = BlocProvider.of<PostBloc>(context).gallerySrc[src];
+            return type == 'vid' ? _createVideoContainer() : _createImageSrcContainer(src);
+          }).toList();
+
+      wrapChildren.addAll(
+         BlocProvider.of<PostBloc>(context).files.keys.map((file){
+            String type = BlocProvider.of<PostBloc>(context).files[file];
+            return type == 'vid' ? _createVideoContainer() : _createImageFileContainer(file);
+          }).toList()
+      );
+      
+      return ListView(
+      children: [
+        FlatButton(child: Text('Add/Edit Album'), onPressed:()=> BlocProvider.of<AppBloc>(context).add(AppToEditAlbumEvent(BlocProvider.of<PostBloc>(context))),),
+        SizedBox(height: 20,),
+        Wrap(
+          children: wrapChildren
+        )
+      ],
+    );
     }
     return ListView(
       children: [
-        FlatButton(child: Text('ADD/EDIT'), onPressed:()=> BlocProvider.of<AppBloc>(context).add(AppToEditAlbumEvent(BlocProvider.of<PostBloc>(context))),),
+        FlatButton(child: Text('ADD/EDIT'), onPressed:()=> BlocProvider.of<AppBloc>(context).add(AppToCreateAlbumEvent(BlocProvider.of<PostBloc>(context))),),
         SizedBox(height: 20,),
         Wrap(
           children: BlocProvider.of<PostBloc>(context).files.keys.map((file){

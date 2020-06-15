@@ -25,6 +25,11 @@ class AppToPostBodyEditorEvent extends AppNavigateToPageEvent{
   final PostBloc postBloc;
   AppToPostBodyEditorEvent(this.postBloc);
 }
+class AppToViewMyPostsPageEvent extends AppNavigateToPageEvent{}
+class AppToEditPostPageEvent extends AppNavigateToPageEvent{
+  final Post post;
+  AppToEditPostPageEvent(this.post);
+}
 
 class AppToViewLocationOnMapEvent extends AppNavigateToPageEvent{}
 class AppToAddLocationEvent extends AppNavigateToPageEvent{}
@@ -39,6 +44,11 @@ class AppToViewAllUsersEvent extends AppNavigateToPageEvent{}
 class AppToEditUserEvent extends AppNavigateToPageEvent{}
 class AppToUserLoginEvent extends AppNavigateToPageEvent{}
 
+class AppToCreateAlbumEvent extends AppNavigateToPageEvent{
+  final PostBloc postBloc;
+  AppToCreateAlbumEvent(this.postBloc);
+}
+
 class AppToEditAlbumEvent extends AppNavigateToPageEvent{
   final PostBloc postBloc;
   AppToEditAlbumEvent(this.postBloc);
@@ -52,6 +62,7 @@ class AppToViewImageVideoPage extends AppNavigateToPageEvent{
   final int initialPage;
   AppToViewImageVideoPage(this.imageSorces, this.initialPage);
 }
+
 
 // * Settings Events
 class AppSettingsEvent extends AppEvent{}

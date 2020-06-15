@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -44,6 +45,8 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
             return  Scaffold(
           appBar: _orientation == Orientation.portrait ? AppBar() : null,
           body: PageView.builder(
+            pageSnapping: true,
+            physics: BouncingScrollPhysics(),
             itemCount: widget.imageSources.keys.length,
             controller: PageController(initialPage: widget.initialPage),
             itemBuilder: (_,index){
