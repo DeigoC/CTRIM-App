@@ -3,6 +3,7 @@ import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/HomePage.dart';
 import 'package:ctrim_app_v1/pages/gallery/CreateAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
+import 'package:ctrim_app_v1/pages/gallery/ViewPostAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/posts/EditPostPage.dart';
 import 'package:ctrim_app_v1/pages/posts/PostBodyEditorPage.dart';
 import 'package:ctrim_app_v1/pages/posts/ViewMyPostsPage.dart';
@@ -35,6 +36,7 @@ const ViewImageVideoRoute = '/ViewImageVideo';
 const CreateAlbumRoute = '/CreateAlbum';
 const AddGalleryFilesRoute = '/AddFiles';
 const EditAlbumRoute = '/EditAlbum';
+const ViewPostAlbumRoute = '/ViewPostAlbumPage';
 
 const ViewLocationOnMapRoute = '/ViewLocationOnMap';
 const ViewAllEventsForLocationRoute = '/ViewAllEventsForLocation';
@@ -163,6 +165,9 @@ class _AppState extends State<App> {
         break;
 
         case EditAlbumRoute: screen = EditAlbumPage(arguments['postBloc']);
+        break;
+
+        case ViewPostAlbumRoute: screen = ViewPostAlbumPage(arguments['post']);
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

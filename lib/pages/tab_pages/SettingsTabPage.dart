@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SettingsPage{
   
-  final BuildContext _context;
+  BuildContext _context;
+  void setContext(BuildContext context) => _context = context;
   SettingsPage(this._context);
 
   AppBar buildAppbar(){

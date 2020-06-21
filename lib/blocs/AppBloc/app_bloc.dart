@@ -57,6 +57,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToViewMyPostsPageEvent) state.pushNamed(ViewMyPostsRoute);
     else if(event is AppToEditPostPageEvent) state.pushNamed(EditPostRoute, arguments: {'post': event.post});
     else if(event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute, arguments: {'postBloc':event.postBloc});
+    else if(event is AppToViewPostAlbumEvent) state.pushNamed(ViewPostAlbumRoute, arguments: {'post':event.post});
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{

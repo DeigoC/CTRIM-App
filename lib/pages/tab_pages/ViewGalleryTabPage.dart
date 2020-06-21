@@ -1,29 +1,27 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/models/post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class ViewGalleryPage{
 
-  final BuildContext _context;
+  BuildContext _context;
+  void setContext(BuildContext context) => _context = context;
   final TabController _tabController;
   final List<Tab> _myTabs =[
     Tab(text: 'Timeline',),
     Tab(text: 'Albums',)
   ];
 
-  final Map<String,String> images = {
-    'https://i.ytimg.com/vi/mwux1_CNdxU/maxresdefault.jpg':'img',
-    'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F38%2F2016%2F05%2F12214218%2Fsimple_bites_family_backyard.jpg&q=85':'img',
-    'https://www.lakedistrict.gov.uk/__data/assets/image/0018/123390/families-and-children.jpg':'img',
-    'https://rmstitanichotel.co.uk/wp-content/uploads/2016/07/Family-1024x683.jpg':'img',
-    'https://specials-images.forbesimg.com/imageserve/5e90c5cd5f21d30007e5ab66/960x0.jpg?fit=scale':'img',
-    'https://firebasestorage.googleapis.com/v0/b/ctrim---demo.appspot.com/o/videoExample3.mp4?alt=media&token=a42812a2-9e01-4f29-903b-e9b814cfae02' : 'vid',
-  };
+  double _pictureSize, _paddingSize;
+  Map<DateTime, List<Post>> _allPosts;
 
-  double pictureSize, paddingSize;
-
-  ViewGalleryPage(this._context, this._tabController);
+  ViewGalleryPage(this._context, this._tabController){
+    _allPosts = BlocProvider.of<TimelineBloc>(_context).getPostsGroupedByPostDate();
+  }
 
   Widget buildAppBar(){
     return AppBar(
@@ -47,60 +45,63 @@ class ViewGalleryPage{
   Widget _timelineView(){
     return OrientationBuilder(
       builder:(_,orientation){
-        pictureSize = pictureSize = MediaQuery.of(_context).size.width * 0.32;
-        paddingSize = MediaQuery.of(_context).size.width * 0.01;
+        _pictureSize = _pictureSize = MediaQuery.of(_context).size.width * 0.32;
+        _paddingSize = MediaQuery.of(_context).size.width * 0.01;
         if(orientation == Orientation.landscape){
           // * 4 blocks accross so 5 paddings accross
-          pictureSize = MediaQuery.of(_context).size.width * 0.2375;
-          paddingSize = MediaQuery.of(_context).size.width * 0.01;
+          _pictureSize = MediaQuery.of(_context).size.width * 0.2375;
+          _paddingSize = MediaQuery.of(_context).size.width * 0.01;
         }
-        return ListView(
+       
+        List<Widget> children = _allPosts.keys.map((date){
+          Map<String,String> srcs ={};
+          String dateString = DateFormat('dd MMMM yyyy').format(date);
+          _allPosts[date].forEach((post) {
+            srcs.addAll(post.gallerySources);
+          });
+          
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 16,),
+               Text(' ' + dateString, style: TextStyle(fontSize: 28),),
+               SizedBox(height: 4,),
+               Wrap(
+                 children: srcs.keys.map((src){
+                   if(srcs[src].compareTo('vid')==0){
+                    return _createVideoContainer(src, srcs);
+                  }
+                    return _createImageContainer(src, srcs);
+                 }).toList(),
+               ),
+            ],
+          );
+        }).toList();
+
+        return ListView.builder(
           key: PageStorageKey<String>('TimlineTab'),
-          children: [
-             SizedBox(height: 16,),
-             _examplePictures2(),
-             SizedBox(height: 16,),
-            _examplePictures1(),
-              SizedBox(height: 16,),
-            _examplePictures1(),
-              SizedBox(height: 16,),
-            _examplePictures1(),
-          ],
+          itemCount: children.length,
+          itemBuilder: (_,index){
+            return children[index];
+          }
         );
+      
       } 
     );
   }
 
-   Column _examplePictures2() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-         Text(' 23 May 2020', style: TextStyle(fontSize: 28),),
-        SizedBox(height: 16,),
-        Wrap(
-            children: images.keys.map((src){
-              if(images[src].compareTo('vid')==0){
-                return _createVideoContainer(src);
-              }
-              return _createImageContainer(src);
-            }).toList(),
-          ),
-      ],
-    );
-  }
-
-  Padding _createImageContainer(String src){
+  Padding _createImageContainer(String src, Map<String,String> gallery){
     return Padding(
-      padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
+      padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        width: pictureSize,
-        height: pictureSize,
+        width: _pictureSize,
+        height: _pictureSize,
         child: GestureDetector(
           onTap: (){
-            int pos = images.keys.toList().indexOf(src);
-            BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(images, pos));
+            int pos = gallery.keys.toList().indexOf(src);
+            BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(gallery, pos));
           },
           child: Hero(
             tag: src,
@@ -111,155 +112,114 @@ class ViewGalleryPage{
     );
   }
 
-  Padding _createVideoContainer(String src){
+  Padding _createVideoContainer(String src, Map<String,String> gallery){
      return Padding(
-      padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
+      padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
       child:  GestureDetector(
         onTap: (){
-          int pos = images.keys.toList().indexOf(src);
-          BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(images, pos));
+          int pos = gallery.keys.toList().indexOf(src);
+          BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(gallery, pos));
         },
         child: AnimatedContainer(
           duration: Duration(milliseconds: 300),
           curve: Curves.easeInOut,
-          width: pictureSize,
-          height: pictureSize,
+          width: _pictureSize,
+          height: _pictureSize,
           child:Icon(Icons.play_circle_filled, color: Colors.black,size: 60,),
           ),
       )
     );
   }
 
-  Column _examplePictures1() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-         Text(' 23 May 2020', style: TextStyle(fontSize: 28),),
-        SizedBox(height: 16,),
-        Wrap(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  width: pictureSize,
-                  height: pictureSize,
-                  color: Colors.red,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  width: pictureSize,
-                  height: pictureSize,
-                  color: Colors.green,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  width: pictureSize,
-                  height: pictureSize,
-                  color: Colors.purple,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  width: pictureSize,
-                  height: pictureSize,
-                  color: Colors.yellow,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  width: pictureSize,
-                  height: pictureSize,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-      ],
+  Widget _ablumView(){
+    List<Post> individualPosts = [];
+    _allPosts.values.forEach((listOfPosts) {
+      individualPosts.addAll(listOfPosts);
+    });
+
+    return  SingleChildScrollView(
+      key: PageStorageKey<String>('AlbumTab'),
+      child: Padding(
+        padding: EdgeInsets.only(top:8.0),
+        child: Wrap(
+          children: individualPosts.map((post){
+            if(post.gallerySources.values.first == 'vid') return _createVideoAlbumItem(post);
+            return _createPictureAlbumItem(post);
+          }).toList(),
+        ),
+      ),
     );
   }
 
-  Widget _ablumView(){
-    double portSize = MediaQuery.of(_context).size.width * 0.40;
+  Widget _createPictureAlbumItem(Post post){
+    double portSize = MediaQuery.of(_context).size.width * 0.45;
+    double paddingSize =  MediaQuery.of(_context).size.width * 0.033;
+    
     return Padding(
-      padding: EdgeInsets.only(top: 16),
-      child: GridView.count(
-        key: PageStorageKey<String>('AlbumTab'),
-        crossAxisCount: 2,
-        mainAxisSpacing: 10,
+      padding: EdgeInsets.only(left: paddingSize, bottom: 8),
+      child: Column(
         children: [
-          Column(
-            children: [
-              AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
+          GestureDetector(
+            onTap: (){
+              BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post));
+            },
+            child: Hero(
+              tag: post.gallerySources.keys.first,
+              child: Container(
                 width: portSize,
                 height: portSize,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  color: Colors.red,
+                  image: DecorationImage(image: NetworkImage(post.gallerySources.keys.first), fit: BoxFit.cover)
                 ),
               ),
-              SizedBox(height: 8,),
-              Container( width: portSize,child: Text("Youth Day out at London Bridge this is going too far!", overflow: TextOverflow.ellipsis,)),
-              Text('8'),
-            ],
+            ),
           ),
-
-          Column(
-            children: [
-              AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: portSize,
-                height: portSize,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  color: Colors.blue,
-                ),
-              ),
-              SizedBox(height: 8,),
-              Container( width: portSize,child: Text("Youth Day out at London Bridge this is going too far!", overflow: TextOverflow.ellipsis,)),
-              Text('8'),
-            ],
+          SizedBox(height: 8,),
+          Container( 
+            width: portSize,
+            child: Hero(
+              tag: post.id,
+              transitionOnUserGestures: true,
+              child: Material(
+                type: MaterialType.transparency,
+                child: Text(post.title, 
+                textAlign: TextAlign.center, 
+                overflow: TextOverflow.ellipsis,
+              )
+            ),
+             
+            )
           ),
-
-          Column(
-            children: [
-              AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: portSize,
-                height: portSize,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 8,),
-              Container( width: portSize,child: Text("Youth Day out at London Bridge this is going too far!", overflow: TextOverflow.ellipsis,)),
-              Text('8'),
-            ],
-          ),
-
+          Text(post.gallerySources.length.toString()),
         ],
       ),
-    );
+    ); 
+  }
+
+  Widget _createVideoAlbumItem(Post post){
+    double portSize = MediaQuery.of(_context).size.width * 0.45;
+    double paddingSize =  MediaQuery.of(_context).size.width * 0.033;
+    
+    return Padding(
+      padding: EdgeInsets.only(left: paddingSize, bottom: 8),
+      child: Column(
+        children: [
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            width: portSize,
+            height: portSize,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(16.0)),
+            ),
+          ),
+          SizedBox(height: 8,),
+          Container( width: portSize,child: Text(post.title, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,)),
+          Text(post.gallerySources.length.toString()),
+        ],
+      ),
+    ); 
   }
 
 }

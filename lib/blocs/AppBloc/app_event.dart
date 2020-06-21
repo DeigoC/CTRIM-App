@@ -48,6 +48,10 @@ class AppToCreateAlbumEvent extends AppNavigateToPageEvent{
   final PostBloc postBloc;
   AppToCreateAlbumEvent(this.postBloc);
 }
+class AppToViewPostAlbumEvent extends AppNavigateToPageEvent{
+  final Post post;
+  AppToViewPostAlbumEvent(this.post);
+}
 
 class AppToEditAlbumEvent extends AppNavigateToPageEvent{
   final PostBloc postBloc;

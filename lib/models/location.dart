@@ -1,5 +1,5 @@
 class Location{
-  String id, imgSrc, addressLine;
+  String id, imgSrc, addressLine, description;
   Map<String,double> coordinates;
   List<String> postsUsed;
 
@@ -9,5 +9,6 @@ class Location{
     this.coordinates,
     this.postsUsed,
     this.addressLine,
+    this.description
   });
 }
