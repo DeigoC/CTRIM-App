@@ -26,3 +26,15 @@ class LocationSelectedQueryAddressEvent extends LocationQueryAddressEvent{
 
 class LocationWrongQueryAddressEvent extends LocationQueryAddressEvent{}
 class LocationConfirmedQueryAddressEvent extends LocationQueryAddressEvent{}
+class LocationImageSelectedEvent extends LocationEvent{
+  final File selectedFile;
+  LocationImageSelectedEvent(this.selectedFile);
+}
+
+class LocationRemoveSelectedImageEvent extends LocationEvent{}
+
+class LocationEditLocationEvent extends LocationEvent{}
+class LocationEditTextChangeEvent extends LocationEditLocationEvent{
+  final String description, addressLine;
+  LocationEditTextChangeEvent({this.description, this.addressLine});
+}

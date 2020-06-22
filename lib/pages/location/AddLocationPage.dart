@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:ctrim_app_v1/blocs/LocationBloc/location_bloc.dart';
 import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +14,7 @@ class AddLocation extends StatefulWidget {
 
 class _AddLocationState extends State<AddLocation> {
   
-  TextEditingController _tecStreetAddress, _tecTownCity, _tecPostcode, _tecSelectedAddress;
+  TextEditingController _tecStreetAddress, _tecTownCity, _tecPostcode, _tecSelectedAddress, _tecDescription;
   LocationBloc _locationBloc;
 
   @override
@@ -21,6 +24,7 @@ class _AddLocationState extends State<AddLocation> {
     _tecTownCity = TextEditingController();
     _tecPostcode = TextEditingController();
     _tecSelectedAddress = TextEditingController();
+    _tecDescription = TextEditingController();
     _locationBloc = LocationBloc();
   }
 
@@ -31,6 +35,7 @@ class _AddLocationState extends State<AddLocation> {
     _tecPostcode.dispose();
     _tecSelectedAddress.dispose();
     _locationBloc.close();
+    _tecDescription.dispose();
     super.dispose();
   }
 
@@ -59,6 +64,11 @@ class _AddLocationState extends State<AddLocation> {
     return ListView(
       shrinkWrap: false,
       children: [
+        MyTextField(
+          label: 'Description',
+          controller: _tecDescription,
+          hint: '(Optional)',
+        ),
         SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Street Address',
@@ -135,8 +145,61 @@ class _AddLocationState extends State<AddLocation> {
             );
           } 
         ),
+        SizedBox(height: itemPaddingHeight,),
+        _buildImageSelector(),
       ],
     );
+  }
+
+  Column _buildImageSelector() {
+    return Column(
+        children: [
+          Text('Location Image'),
+          BlocBuilder(
+            bloc: _locationBloc,
+            condition: (_,state) {
+              if(state is LocationSetNewLocationImageState) return true;
+              else if(state is LocationRemoveSelectedImageState) return true;
+              return false;
+            },
+            builder:(_,state) {
+            bool hasFile = false;
+            File imageFile;
+            if(state is LocationSetNewLocationImageState){
+              hasFile = true;
+              imageFile = state.locationFile;
+            }
+            return GestureDetector(
+              onTap: ()=> _selectLocationImage(),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: MediaQuery.of(context).size.height * 0.20,
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: hasFile ? IconButton(
+                    icon: Icon(Icons.cancel, color: Colors.red,),
+                    onPressed: () => _locationBloc.add(LocationRemoveSelectedImageEvent()),
+                  ) : Container(),
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.pinkAccent,
+                  image: hasFile ? DecorationImage(image: FileImage(imageFile), fit: BoxFit.cover) : null,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            );
+            } 
+          )
+        ],
+      );
+  }
+
+  Future _selectLocationImage() async{
+    File selectedImage;
+    selectedImage = await FilePicker.getFile(
+      type: FileType.image
+    );
+    _locationBloc.add(LocationImageSelectedEvent(selectedImage));
   }
 
   void _displayLocationQueryResults(List<String> results){

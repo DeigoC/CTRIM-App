@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/models/location.dart';
 import 'package:ctrim_app_v1/models/post.dart';
 import 'package:ctrim_app_v1/models/user.dart';
 import 'package:equatable/equatable.dart';
@@ -46,7 +47,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToViewAllUsersEvent) state.pushNamed(ViewAllUsersRoute);
     else if(event is AppToEditUserEvent) state.pushNamed(EditUserRoute);
     else if(event is AppToAddLocationEvent) state.pushNamed(AddLocationRoute);
-    else if(event is AppToEditLocationEvent) state.pushNamed(EditLocationRoute);
+    else if(event is AppToEditLocationEvent) state.pushNamed(EditLocationRoute, arguments: {'location':event.location});
     else if(event is AppToSelectLocationForPostEvent) state.pushNamed(SelectLocationForEventRoute, arguments: {'postBloc': event.postBloc});
     else if(event is AppToCreateAlbumEvent) state.pushNamed(CreateAlbumRoute, arguments: {'postBloc': event.postBloc});
     else if(event is AppToAddGalleryFileEvent) state.pushNamed(AddGalleryFilesRoute, arguments: {'postBloc': event.postBloc});
@@ -58,6 +59,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToEditPostPageEvent) state.pushNamed(EditPostRoute, arguments: {'post': event.post});
     else if(event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute, arguments: {'postBloc':event.postBloc});
     else if(event is AppToViewPostAlbumEvent) state.pushNamed(ViewPostAlbumRoute, arguments: {'post':event.post});
+    else if(event is AppToSearchPostsPageEvent) state.pushNamed(SearchPostsRoute);
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{

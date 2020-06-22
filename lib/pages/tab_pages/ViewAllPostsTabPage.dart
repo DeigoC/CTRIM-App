@@ -10,22 +10,11 @@ class ViewAllEventsPage{
 
   BuildContext _context;
   void setContext(BuildContext context) => _context = context;
-
-  List<TimelinePost> _timelines;
+  
   ViewAllEventsPage(this._context);
 
   Widget buildAppBar(){
     return null;
-  }
-
-  FloatingActionButton buildFAB(){
-    return FloatingActionButton.extended(
-      onPressed: (){
-        BlocProvider.of<AppBloc>(_context).add(AppToAddPostPageEvent());
-      },
-      icon: Icon(Icons.add),
-       label: Text('Event'),
-      );
   }
 
   Widget buildBody(){
@@ -48,12 +37,12 @@ class ViewAllEventsPage{
   }
 
   Widget _buildBodyWithData(TimelineDisplayFeedState state){
-    _timelines = state.timelines;
-    List<Widget> children = _timelines.map((timelinePost) => PostArticle(
-          allPosts: state.posts,
-          allUsers: state.users,
-          timelinePost: timelinePost,
-        )).toList();
+   List<TimelinePost>  _timelines = state.timelines;
+  List<Widget> children = _timelines.map((timelinePost) => PostArticle(
+        allPosts: state.posts,
+        allUsers: state.users,
+        timelinePost: timelinePost,
+      )).toList();
     
     return CustomScrollView(
       key: PageStorageKey<String>('ViewAllPostsTab'),
@@ -61,11 +50,14 @@ class ViewAllEventsPage{
         SliverAppBar(
             actions: [
               IconButton(
+                icon: Icon(Icons.add_box),
+                onPressed: ()=> BlocProvider.of<AppBloc>(_context).add(AppToAddPostPageEvent()),
+                tooltip: 'Add new post',
+              ),
+              IconButton(
                 icon: Icon(Icons.search),
                 tooltip: 'Search by title',
-                onPressed: (){
-
-                },
+                onPressed: (){BlocProvider.of<AppBloc>(_context).add(AppToSearchPostsPageEvent());},
               )
             ],
             floating: true,

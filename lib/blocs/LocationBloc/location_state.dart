@@ -12,6 +12,13 @@ class LocationButtonState extends LocationState{}
 class LocationDisableFindButtonState extends LocationButtonState{}
 class LocationEnableFindButtonState extends LocationButtonState{}
 
+class LocationSetNewLocationImageState extends LocationState{
+  final File locationFile;
+  LocationSetNewLocationImageState(this.locationFile);
+}
+class LocationRemoveSelectedImageState extends LocationState{}
+
+
 // * The Query Parts
 class LocationQueryState extends LocationState{}
 
@@ -32,3 +39,5 @@ class LocationDisplayConfirmedQueryAddressState extends LocationQueryState{
   final String confirmedAddress;
   LocationDisplayConfirmedQueryAddressState(this.confirmedAddress);
 }
+
+class LocationEditLocationState extends LocationState{}

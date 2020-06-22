@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/models/location.dart';
+import 'package:ctrim_app_v1/widgets/locationCard.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +14,18 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   
   String _streetAddress ='', _townCity ='', _postCode='';
   String _selectedAddress= '';
+  File _locationImage;
   
+  Location _location, _originalLocation;
+  void setLocationForEdit(Location location){
+    _location = location;
+    _originalLocation = Location(
+      addressLine: location.addressLine,
+      description: location.description,
+    );
+  } 
+  Location get locationToEdit => _location;
+
   @override
   LocationState get initialState => LocationInitial();
 
@@ -23,6 +37,20 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       yield* _mapTextChangeEventsToState(event);
     }else if(event is LocationQueryAddressEvent){
       yield* _mapQueryEventsToQueryStates(event);
+    }else if(event is LocationImageSelectedEvent){
+      if(event.selectedFile != null){
+        _locationImage = event.selectedFile;
+        yield LocationSetNewLocationImageState(_locationImage);
+      }
+    }else if(event is LocationRemoveSelectedImageEvent){
+      _locationImage = null;
+      yield LocationRemoveSelectedImageState();
+    }else if(event is LocationEditLocationEvent) yield* _mapEditLocationToState(event);
+  }
+
+  Stream<LocationState> _mapEditLocationToState(LocationEditLocationEvent event) async*{
+    if(event is LocationEditTextChangeEvent){
+     
     }
   }
 

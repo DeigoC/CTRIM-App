@@ -34,6 +34,8 @@ class PostArticle extends StatelessWidget {
     if(thisPost.gallerySources.length != 0){
       colChildren.addAll(_addPostImageWidgets(thisPost));
     }
+    colChildren.add(Divider());
+    
     
     return InkWell(
       splashColor: Colors.blue.withAlpha(30),
@@ -53,7 +55,6 @@ class PostArticle extends StatelessWidget {
        SizedBox(height: 8,),
       _buildImagesBox(thisPost),
       SizedBox(height: 8,),
-      Divider(),
     ];
   }
 

@@ -54,6 +54,29 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       selectedTags: [Department.YOUTH, Department.CHURCH],
       gallerySources: {'https://mamasgeeky.com/wp-content/uploads/2020/03/coronavirus-meme-1.jpg':'img',}
     ),
+    Post(
+      id: '4',
+      eventDate: DateTime.now().subtract(Duration(days: 2)),
+      title: 'Youth dayout at London Bridge',
+      description: 'So this day we went to London Bridge, pretty cool eh? Yeah this is going to be a long description i hope. This is supposed to be at least 2 lines',
+      locationID: '0',
+      selectedTags: [Department.WOMEN],
+      gallerySources: {}
+    ),
+    Post(
+      id: '5',
+      eventDate: DateTime.now().add(Duration(days: 2)),
+      title: 'Youth dayout at London Bridge, The Sequel!',
+      description: 'So this day we went to London Bridge, pretty cool eh? \nWell this is something...',
+      locationID: '4',
+      selectedTags: [Department.WOMEN],
+      gallerySources: {
+        'https://img.delicious.com.au/WqbvXLhs/del/2016/06/more-the-merrier-31380-2.jpg':'img',
+        'https://teamjimmyjoe.com/wp-content/uploads/2019/09/funny-memes-america-one-picture-ronald-mcdonald.jpg':'img',
+        'https://i.ytimg.com/vi/Zo_Y-n__Cbc/maxresdefault.jpg':'img',
+        'https://www.demilked.com/magazine/wp-content/uploads/2019/10/5da8209a0da15-8-5cac5c63d855a__700.jpg':'img',
+      }
+    ),
   ];
   
   List<TimelinePost> _testTimelinePosts = [
@@ -75,6 +98,18 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       authorID: '1',
       postDate: DateTime.now().subtract(Duration(days: 30))
     ),
+    TimelinePost(
+      postID: '4',
+      postType: 'original',
+      authorID: '1',
+      postDate: DateTime.now().subtract(Duration(days: 2))
+    ),
+    TimelinePost(
+      postID: '5',
+      postType: 'original',
+      authorID: '2',
+      postDate: DateTime.now().subtract(Duration(days: 1))
+    ),
   ];
 
   List<User> _testUsers =[
@@ -95,16 +130,39 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     Location(
       id: '0',
       addressLine: 'Address not Required',
+      description: "When the post doesn't require this field - select this"
     ),
     Location(
       id: '1',
       addressLine: '48 The Demesne, Carryduff, Belfast, BT8 8GU',
-      description: 'Used for events'
+      description: 'Used for events',
+      imgSrc: 'https://img2.propertypal.com/hd/p/595087/17026074.jpg'
     ),
     Location(
       id: '2',
       addressLine: '5-7 Conway St, Belfast BT13 2DE',
-      description: 'Church Building #•2'
+      description: 'Church Building #•2',
+      imgSrc: 'https://media-cdn.tripadvisor.com/media/photo-s/06/e2/e4/c1/conway-mill-preservation.jpg'
+    ),
+    Location(
+      id: '3',
+      addressLine: '81 Saintfield Rd, Belfast BT8 7HN',
+      description: "Domino's Pizza"
+    ),
+    Location(
+      id: '4',
+      addressLine: '461 Ormeau Rd, Ormeau, Belfast BT7 3GR',
+      description: 'Subway Ormeau'
+    ),
+    Location(
+      id: '5',
+      addressLine: '369 Lisburn Rd, Belfast BT9 7EP',
+      description: 'Tesco Workplace'
+    ),
+    Location(
+      id: '6',
+      addressLine: '95 Saintfield Rd, Carryduff, CountyDown BT8 8ER',
+      description: 'KFC KFC KFC!'
     ),
   ];
 
@@ -131,23 +189,25 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return results;
   }
 
-  Map<DateTime, List<Post>> getPostsGroupedByPostDate(){
+  Map<DateTime, List<Post>> getPostsForGalleryTab(){
     Map<DateTime, List<Post>> result = {};
-    _testTimelinePosts.sort((a,b) => a.postDate.compareTo(b.postDate));
 
     _testTimelinePosts.forEach((tPost) {
       if(tPost.postType.compareTo('original')==0){
         Post thisPost = _testPosts.firstWhere((post) => post.id.compareTo(tPost.postID)==0);
-        if(thisPost.isDateNotApplicable){
+        if(thisPost.gallerySources.length != 0){
+          
+          if(thisPost.isDateNotApplicable){
           result[tPost.postDate] =_createList(result[tPost.postDate]);
           result[tPost.postDate].add(thisPost);
-        }else{
-          result[thisPost.eventDate] =_createList(result[thisPost.eventDate]);
-          result[thisPost.eventDate].add(thisPost);
+          }else{
+            result[thisPost.eventDate] =_createList(result[thisPost.eventDate]);
+            result[thisPost.eventDate].add(thisPost);
+          }
         }
       }
     });
-
+    result.keys.toList().sort((a,b) => a.compareTo(b));
     return result;
   }
 
@@ -164,6 +224,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return 'Pending';
   }
 
+  // * Stream funtions
   @override
   TimelineState get initialState => TimelineInitial();
 
@@ -181,15 +242,36 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       _testTimelinePosts.add(timelinePost);
       yield _displayFeed();
     }
-
     else if(event is TimelineTagClickedEvent) yield* _mapTagChnageToState(event);
+    else if(event is TimelineSearchPostEvent) yield* _mapSearchPageEventToState(event);
+    else if(event is TimelineLocationSearchTextChangeEvent){
+      List<Location> result = [];
+      _testLocations.forEach((location) {
+        if(location.id != '0' && location.addressLine.toLowerCase().contains(event.searchString.toLowerCase())){
+          result.add(location);
+        }
+      });
+      yield TimelineDisplayLocationSearchResultsState(result);
+      yield TimelineEmptyState();
+    }
+  }
+
+  Stream<TimelineState> _mapSearchPageEventToState(TimelineSearchPostEvent event) async*{
+    if(event is TimelineSearchTextChangeEvent){
+      if(event.searchString.isEmpty){
+        yield TimelineDisplayEmptySearchState();
+      }else{
+        yield _displayFeedBySearch(event.searchString);
+        yield TimelineEmptyState();
+      }
+    }
   }
 
   Stream<TimelineState> _mapTagChnageToState(TimelineTagClickedEvent event)async*{
     Department selectedTag = _stringToTag(event.tag);
     _selectedTags[selectedTag] = !_selectedTags[selectedTag];
     
-   yield TimelineTagChangedState();
+    yield TimelineTagChangedState();
     yield _displayFeed();
   }
 
@@ -211,6 +293,34 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return '';
   }
 
+  TimelineState _displayFeedBySearch(String search){
+    List<Post> posts = [];
+    List<TimelinePost> tPosts = [];
+
+    // * Get all Posts that contains the search string in their titles
+    _testPosts.forEach((post) {
+      if(post.title.toLowerCase().contains(search.toLowerCase()) && !posts.contains(post)){
+        posts.add(post);
+      }
+    });
+
+    if(posts.length == 0) return TimelineDisplayEmptyFeedState();
+
+    // * Get all original tPosts that contains the posts
+    posts.forEach((post) {
+      _testTimelinePosts.forEach((tPost) {
+        if(tPost.postID.compareTo(post.id)==0 && tPost.postType == 'original' && !tPosts.contains(tPost)){
+          tPosts.add(tPost);
+        }
+      });
+    });
+
+     return TimelineDisplaySearchFeedState(
+        users: _testUsers,
+        posts: posts,
+        timelines: tPosts,
+      ); 
+  }
 
   TimelineState _displayFeed(){
     _testTimelinePosts.sort((x,y) => y.postDate.compareTo(x.postDate));

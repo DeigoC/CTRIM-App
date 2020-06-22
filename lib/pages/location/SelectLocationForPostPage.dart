@@ -1,6 +1,8 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/models/location.dart';
+import 'package:ctrim_app_v1/widgets/locationCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,54 +33,21 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
   }
 
   ListView _buildBody(){
-    List<Widget> children = BlocProvider.of<TimelineBloc>(context).locations.map((location){
-      return Card(
-        child: InkWell(
-          splashColor: Colors.blue.withAlpha(30),
-          onTap: () {
-            widget._postBloc.add(PostSelectedLocationEvent(
-              locationID: location.id,
-              addressLine: location.addressLine,
-            ));
-            Navigator.of(context).pop();
+   return ListView.builder(
+      itemCount: BlocProvider.of<TimelineBloc>(context).locations.length,
+      itemBuilder: (_,index){
+       Location location =  BlocProvider.of<TimelineBloc>(context).locations[index];
+       
+        return LocationCard(
+          location:location,
+          onTap: (){
+          widget._postBloc.add(PostSelectedLocationEvent(
+            locationID: location.id,
+            addressLine: location.addressLine,
+          ));
+          Navigator.of(context).pop();
           },
-          child: Row(
-            children: [
-               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.30,
-                  height: MediaQuery.of(context).size.width * 0.30,
-                  color: Colors.pink,
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: Text(location.addressLine),
-                      subtitle: Text('Sub'),
-                    ),
-                    ButtonBar(
-                      alignment: MainAxisAlignment.end,
-                      children: [
-                        FlatButton(
-                          onPressed: () =>BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent()),
-                          child: Text('MAP'),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      );
-    }).toList();
-
-    return ListView(
-      children: children,
-    );
+        );
+      });
   }
 }

@@ -111,11 +111,6 @@ void initState() {
   }
 
   Widget _getFAB(int selectedIndex){
-    switch(selectedIndex){
-      case 0: return _eventPage.buildFAB();
-      case 2: return _locationsPage.buildFAB();
-      break; 
-    }
     return null;
   }
 
@@ -123,12 +118,11 @@ void initState() {
     switch(selectedIndex){
       case 0: return _eventPage.buildAppBar();
       case 1: return _galleryPage.buildAppBar();
-      case 2: return _locationsPage.buildAppBar();
       case 3: return AppBar(title: Text('About'),);
       case 4: return _settingsPage.buildAppbar();
       break;
     }
-    return AppBar();
+    return null;
   }
 
   Widget _getBody(int selectedIndex){

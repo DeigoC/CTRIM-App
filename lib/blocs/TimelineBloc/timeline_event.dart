@@ -17,3 +17,15 @@ class TimelineTagClickedEvent extends TimelineEvent{
   final String tag;
   TimelineTagClickedEvent(this.tag);
 }
+
+class TimelineSearchPostEvent extends TimelineEvent{}
+
+class TimelineSearchTextChangeEvent extends TimelineSearchPostEvent{
+  final String searchString;
+  TimelineSearchTextChangeEvent(this.searchString);
+}
+
+class TimelineLocationSearchTextChangeEvent extends TimelineEvent{
+  final String searchString;
+  TimelineLocationSearchTextChangeEvent(this.searchString);
+}

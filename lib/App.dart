@@ -9,6 +9,7 @@ import 'package:ctrim_app_v1/pages/posts/PostBodyEditorPage.dart';
 import 'package:ctrim_app_v1/pages/posts/ViewMyPostsPage.dart';
 import 'package:ctrim_app_v1/pages/posts/ViewPostPage.dart';
 import 'package:ctrim_app_v1/pages/posts/AddPostPage.dart';
+import 'package:ctrim_app_v1/pages/posts/SearchPostsPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/AddFilesPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/ViewImageVideoPage.dart';
 import 'package:ctrim_app_v1/pages/location/AddLocationPage.dart';
@@ -31,6 +32,7 @@ const AddEventRoute = '/AddEventPage';
 const EventBodyEditorRoute = '/EventBodyEditorRoute';
 const ViewMyPostsRoute = '/ViewMyPosts';
 const EditPostRoute = '/EditPostPage';
+const SearchPostsRoute = '/SearchPosts';
 
 const ViewImageVideoRoute = '/ViewImageVideo';
 const CreateAlbumRoute = '/CreateAlbum';
@@ -141,7 +143,7 @@ class _AppState extends State<App> {
         case AddLocationRoute: screen = AddLocation();
         break;
 
-        case EditLocationRoute: screen = EditLocation();
+        case EditLocationRoute: screen = EditLocation(arguments['location']);
         break;
 
         case SelectLocationForEventRoute: screen = SelectLocationForEvent(arguments['postBloc']);
@@ -168,6 +170,9 @@ class _AppState extends State<App> {
         break;
 
         case ViewPostAlbumRoute: screen = ViewPostAlbumPage(arguments['post']);
+        break;
+
+        case SearchPostsRoute: screen = SearchPostsPage();
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

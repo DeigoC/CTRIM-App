@@ -20,7 +20,7 @@ class ViewGalleryPage{
   Map<DateTime, List<Post>> _allPosts;
 
   ViewGalleryPage(this._context, this._tabController){
-    _allPosts = BlocProvider.of<TimelineBloc>(_context).getPostsGroupedByPostDate();
+    _allPosts = BlocProvider.of<TimelineBloc>(_context).getPostsForGalleryTab();
   }
 
   Widget buildAppBar(){
@@ -53,7 +53,7 @@ class ViewGalleryPage{
           _paddingSize = MediaQuery.of(_context).size.width * 0.01;
         }
        
-        List<Widget> children = _allPosts.keys.map((date){
+        List<Widget> children = _allPosts.keys.toList().reversed.map((date){
           Map<String,String> srcs ={};
           String dateString = DateFormat('dd MMMM yyyy').format(date);
           _allPosts[date].forEach((post) {
