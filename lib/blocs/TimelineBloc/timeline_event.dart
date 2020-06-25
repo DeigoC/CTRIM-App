@@ -29,3 +29,14 @@ class TimelineLocationSearchTextChangeEvent extends TimelineEvent{
   final String searchString;
   TimelineLocationSearchTextChangeEvent(this.searchString);
 }
+
+class TimelineAlbumSearchEvent extends TimelineEvent{}
+class TimelineAlbumSearchTextChangeEvent extends TimelineAlbumSearchEvent{
+  final String newSearch;
+  TimelineAlbumSearchTextChangeEvent(this.newSearch);
+}
+
+class TimelineUserUpdatedEvent extends TimelineEvent{
+  final User updatedUser;
+  TimelineUserUpdatedEvent(this.updatedUser);
+}

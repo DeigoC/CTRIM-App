@@ -45,7 +45,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToViewLocationOnMapEvent) state.pushNamed(ViewLocationOnMapRoute);
     else if(event is AppToRegisterUserEvent) state.pushNamed(RegisterUserRoute);
     else if(event is AppToViewAllUsersEvent) state.pushNamed(ViewAllUsersRoute);
-    else if(event is AppToEditUserEvent) state.pushNamed(EditUserRoute);
+    else if(event is AppToEditUserEvent) state.pushNamed(EditUserRoute,arguments: {'user':event.user});
     else if(event is AppToAddLocationEvent) state.pushNamed(AddLocationRoute);
     else if(event is AppToEditLocationEvent) state.pushNamed(EditLocationRoute, arguments: {'location':event.location});
     else if(event is AppToSelectLocationForPostEvent) state.pushNamed(SelectLocationForEventRoute, arguments: {'postBloc': event.postBloc});
@@ -53,13 +53,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToAddGalleryFileEvent) state.pushNamed(AddGalleryFilesRoute, arguments: {'postBloc': event.postBloc});
     else if(event is AppToPostBodyEditorEvent) state.pushNamed(EventBodyEditorRoute,arguments: {'postBloc':event.postBloc});
     else if(event is AppToUserLoginEvent) state.pushNamed(UserLoginRoute);
-    else if(event is AppToViewImageVideoPage) state.pushNamed(ViewImageVideoRoute, 
+    else if(event is AppToViewImageVideoPageEvent) state.pushNamed(ViewImageVideoRoute, 
     arguments: {'initialPage': event.initialPage, 'imgSources':event.imageSorces});
     else if(event is AppToViewMyPostsPageEvent) state.pushNamed(ViewMyPostsRoute);
     else if(event is AppToEditPostPageEvent) state.pushNamed(EditPostRoute, arguments: {'post': event.post});
     else if(event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute, arguments: {'postBloc':event.postBloc});
     else if(event is AppToViewPostAlbumEvent) state.pushNamed(ViewPostAlbumRoute, arguments: {'post':event.post});
     else if(event is AppToSearchPostsPageEvent) state.pushNamed(SearchPostsRoute);
+    else if(event is AppToSearchAlbumPageEvent) state.pushNamed(SearchAlbumRoute);
+    else if(event is AppToMyDetailsEvent) state.pushNamed(MyDetailsRoute);
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{

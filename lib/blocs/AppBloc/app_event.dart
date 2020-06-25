@@ -48,8 +48,12 @@ class AppToSelectLocationForPostEvent extends AppNavigateToPageEvent{
 // ! User
 class AppToRegisterUserEvent extends AppNavigateToPageEvent{}
 class AppToViewAllUsersEvent extends AppNavigateToPageEvent{}
-class AppToEditUserEvent extends AppNavigateToPageEvent{}
+class AppToEditUserEvent extends AppNavigateToPageEvent{
+  final User user;
+  AppToEditUserEvent(this.user);
+}
 class AppToUserLoginEvent extends AppNavigateToPageEvent{}
+class AppToMyDetailsEvent extends AppNavigateToPageEvent{}
 
 // ! Gallery
 class AppToCreateAlbumEvent extends AppNavigateToPageEvent{
@@ -69,12 +73,12 @@ class AppToAddGalleryFileEvent extends AppNavigateToPageEvent{
   final PostBloc postBloc;
   AppToAddGalleryFileEvent(this.postBloc);
 }
-class AppToViewImageVideoPage extends AppNavigateToPageEvent{
+class AppToViewImageVideoPageEvent extends AppNavigateToPageEvent{
   final Map<String,String> imageSorces;
   final int initialPage;
-  AppToViewImageVideoPage(this.imageSorces, this.initialPage);
+  AppToViewImageVideoPageEvent(this.imageSorces, this.initialPage);
 }
-
+class AppToSearchAlbumPageEvent extends AppNavigateToPageEvent{}
 
 // * Settings Events
 class AppSettingsEvent extends AppEvent{}

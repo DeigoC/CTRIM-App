@@ -40,4 +40,12 @@ class LocationDisplayConfirmedQueryAddressState extends LocationQueryState{
   LocationDisplayConfirmedQueryAddressState(this.confirmedAddress);
 }
 
+// ! Edit Location events
 class LocationEditLocationState extends LocationState{}
+
+class LocationEditDisableUpdateButtonState extends LocationEditLocationState{}
+class LocationEditEnableUpdateButtonState extends LocationEditLocationState{}
+class LocationEditChangesSavedState extends LocationEditLocationState{
+  final Location updatedLocation;
+  LocationEditChangesSavedState(this.updatedLocation);
+}

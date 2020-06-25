@@ -12,8 +12,8 @@ class ViewGalleryPage{
   void setContext(BuildContext context) => _context = context;
   final TabController _tabController;
   final List<Tab> _myTabs =[
-    Tab(text: 'Timeline',),
-    Tab(text: 'Albums',)
+    Tab(icon: Icon(Icons.view_module),),
+    Tab(icon: Icon(Icons.folder,))
   ];
 
   double _pictureSize, _paddingSize;
@@ -24,11 +24,21 @@ class ViewGalleryPage{
   }
 
   Widget buildAppBar(){
-    return AppBar(
-      title: TabBar(
-        controller: _tabController,
-        tabs: _myTabs,
+   return AppBar(
+      title: Container(
+        width: MediaQuery.of(_context).size.width * 0.4,
+        child: TabBar(
+          controller: _tabController,
+          tabs: _myTabs,
+        ),
       ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.search),
+          tooltip: 'Search by post title',
+          onPressed: ()=> BlocProvider.of<AppBloc>(_context).add(AppToSearchAlbumPageEvent()),
+        )
+      ],
     );
   }
 
@@ -52,40 +62,34 @@ class ViewGalleryPage{
           _pictureSize = MediaQuery.of(_context).size.width * 0.2375;
           _paddingSize = MediaQuery.of(_context).size.width * 0.01;
         }
-       
-        List<Widget> children = _allPosts.keys.toList().reversed.map((date){
-          Map<String,String> srcs ={};
-          String dateString = DateFormat('dd MMMM yyyy').format(date);
-          _allPosts[date].forEach((post) {
-            srcs.addAll(post.gallerySources);
-          });
-          
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 16,),
-               Text(' ' + dateString, style: TextStyle(fontSize: 28),),
-               SizedBox(height: 4,),
-               Wrap(
-                 children: srcs.keys.map((src){
-                   if(srcs[src].compareTo('vid')==0){
-                    return _createVideoContainer(src, srcs);
-                  }
-                    return _createImageContainer(src, srcs);
-                 }).toList(),
-               ),
-            ],
-          );
-        }).toList();
 
         return ListView.builder(
           key: PageStorageKey<String>('TimlineTab'),
-          itemCount: children.length,
+          itemCount: _allPosts.keys.length,
           itemBuilder: (_,index){
-            return children[index];
+            DateTime date = _allPosts.keys.toList().reversed.elementAt(index);
+            Map<String,String> srcs = {};
+            String dateString = DateFormat('dd MMMM yyyy').format(date);
+            _allPosts[date].forEach((post) => srcs.addAll(post.gallerySources));
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 16,),
+                Text(' ' + dateString, style: TextStyle(fontSize: 28),),
+                SizedBox(height: 4,),
+                Wrap(
+                  children: srcs.keys.map((src){
+                    if(srcs[src].compareTo('vid')==0){
+                      return _createVideoContainer(src, srcs);
+                    }
+                      return _createImageContainer(src, srcs);
+                  }).toList(),
+                ),
+              ],
+            );
           }
         );
-      
       } 
     );
   }
@@ -101,7 +105,7 @@ class ViewGalleryPage{
         child: GestureDetector(
           onTap: (){
             int pos = gallery.keys.toList().indexOf(src);
-            BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(gallery, pos));
+            BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(gallery, pos));
           },
           child: Hero(
             tag: src,
@@ -118,7 +122,7 @@ class ViewGalleryPage{
       child:  GestureDetector(
         onTap: (){
           int pos = gallery.keys.toList().indexOf(src);
-          BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(gallery, pos));
+          BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(gallery, pos));
         },
         child: AnimatedContainer(
           duration: Duration(milliseconds: 300),
@@ -137,63 +141,46 @@ class ViewGalleryPage{
       individualPosts.addAll(listOfPosts);
     });
 
-    return  SingleChildScrollView(
-      key: PageStorageKey<String>('AlbumTab'),
-      child: Padding(
-        padding: EdgeInsets.only(top:8.0),
-        child: Wrap(
-          children: individualPosts.map((post){
-            if(post.gallerySources.values.first == 'vid') return _createVideoAlbumItem(post);
-            return _createPictureAlbumItem(post);
-          }).toList(),
-        ),
-      ),
+    return GridView.builder(
+      itemCount: individualPosts.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2), 
+      itemBuilder: (_,index){
+        Post post = individualPosts[index];
+        if(post.gallerySources.values.first == 'vid') return _createVideoAlbumItem(post);
+        return _createPictureAlbumItem(post);
+      },
     );
   }
 
   Widget _createPictureAlbumItem(Post post){
-    double portSize = MediaQuery.of(_context).size.width * 0.45;
-    double paddingSize =  MediaQuery.of(_context).size.width * 0.033;
-    
-    return Padding(
-      padding: EdgeInsets.only(left: paddingSize, bottom: 8),
-      child: Column(
-        children: [
-          GestureDetector(
+     return Column(
+      children: [
+        Expanded(
+          child: GestureDetector(
             onTap: (){
               BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post));
             },
             child: Hero(
               tag: post.gallerySources.keys.first,
-              child: Container(
-                width: portSize,
-                height: portSize,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  image: DecorationImage(image: NetworkImage(post.gallerySources.keys.first), fit: BoxFit.cover)
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    image: DecorationImage(image: NetworkImage(post.gallerySources.keys.first), fit: BoxFit.cover)
+                  ),
                 ),
               ),
             ),
           ),
-          SizedBox(height: 8,),
-          Container( 
-            width: portSize,
-            child: Hero(
-              tag: post.id,
-              transitionOnUserGestures: true,
-              child: Material(
-                type: MaterialType.transparency,
-                child: Text(post.title, 
-                textAlign: TextAlign.center, 
-                overflow: TextOverflow.ellipsis,
-              )
-            ),
-             
-            )
-          ),
-          Text(post.gallerySources.length.toString()),
-        ],
-      ),
+        ),
+        Text(
+        post.title, 
+        textAlign: TextAlign.center, 
+        overflow: TextOverflow.ellipsis,
+        ),
+        Text(post.gallerySources.length.toString()),
+      ],
     ); 
   }
 

@@ -33,8 +33,15 @@ class LocationImageSelectedEvent extends LocationEvent{
 
 class LocationRemoveSelectedImageEvent extends LocationEvent{}
 
+// ! Edit Location events
 class LocationEditLocationEvent extends LocationEvent{}
-class LocationEditTextChangeEvent extends LocationEditLocationEvent{
-  final String description, addressLine;
-  LocationEditTextChangeEvent({this.description, this.addressLine});
+class LocationDescriptionTextChangeEvent extends LocationEditLocationEvent{
+  final String description;
+  LocationDescriptionTextChangeEvent(this.description);
 }
+
+class LocationEditRemoveSrcEvent extends LocationEditLocationEvent{}
+
+class LocationEditConfirmedQueryAddressEvent extends LocationEditLocationEvent{}
+
+class LocationEditUpdateLocationEvent extends LocationEditLocationEvent{}

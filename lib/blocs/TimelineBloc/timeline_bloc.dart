@@ -13,6 +13,8 @@ part 'timeline_state.dart';
 class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   
   static String n = '\\n';
+  String _locationSearchString = '';
+
   List<Post> _testPosts =[
     Post(
       id: '1',
@@ -116,16 +118,23 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     User(
       id: '1',
       forename: 'Diego',
-      surname: 'Collado'
+      surname: 'Collado',
+      email: 'diego@email',
+      adminLevel: 3,
+      contactNo: '012301230'
     ),
 
     User(
       id: '2',
       forename: 'Dana',
-      surname: 'Collado'
+      surname: 'Collado',
+      email: 'DaNa@email',
+      adminLevel: 1,
+      contactNo: '0111111111111110'
     ),
   ];
-  
+  List<User> get allUsers => _testUsers;
+
   List<Location> _testLocations =[
     Location(
       id: '0',
@@ -246,12 +255,32 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     else if(event is TimelineSearchPostEvent) yield* _mapSearchPageEventToState(event);
     else if(event is TimelineLocationSearchTextChangeEvent){
       List<Location> result = [];
+      _locationSearchString = event.searchString??_locationSearchString;
       _testLocations.forEach((location) {
-        if(location.id != '0' && location.addressLine.toLowerCase().contains(event.searchString.toLowerCase())){
+        if(location.id != '0' && location.addressLine.toLowerCase().contains(_locationSearchString.toLowerCase())){
           result.add(location);
         }
       });
       yield TimelineDisplayLocationSearchResultsState(result);
+      yield TimelineEmptyState();
+    }
+    else if(event is TimelineAlbumSearchEvent) yield* _mapAlbumSearchEventToState(event);
+    else if(event is TimelineUserUpdatedEvent){
+      int index = _testUsers.indexWhere((user) => user.id.compareTo(event.updatedUser.id)==0);
+      _testUsers[index] = event.updatedUser;
+      yield TimelineEmptyState();
+    }
+  }
+
+  Stream<TimelineState> _mapAlbumSearchEventToState(TimelineAlbumSearchEvent event) async*{
+    if(event is TimelineAlbumSearchTextChangeEvent){
+      List<Post> results = [];
+      _testPosts.forEach((post) {
+        if(post.title.toLowerCase().contains(event.newSearch.toLowerCase()) && post.gallerySources.length != 0){
+          results.add(post);
+        }
+      });
+      yield TimelineAlbumDisplaySearchResultsState(results);
       yield TimelineEmptyState();
     }
   }
@@ -364,6 +393,11 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   void _insertPostID(Post post){
     post.id = (int.parse(_testPosts.last.id) + 1).toString();
+  }
+
+  void updateLocation(Location location){
+    int index = _testLocations.indexWhere((l) => l.id.compareTo(location.id)==0);
+    _testLocations[index] = location;
   }
 
   TimelinePost _generateTimelinePost(Post post){

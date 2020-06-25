@@ -15,3 +15,24 @@ class AdminLoginTextChangeEvent extends AdminLoginEvent{
 class AdminContinueClickEvent extends AdminLoginEvent{}
 class AdminReturnToLoginEmailEvent extends AdminLoginEvent{}
 
+// ! Adding/Editing user
+class AdminModifyingUserEvent extends AdminEvent{}
+class AdminUserAdminLevelChangeEvent extends AdminModifyingUserEvent{
+  final int selectedLevel;
+  AdminUserAdminLevelChangeEvent(this.selectedLevel);
+}
+
+class AdminUserModTextChangeEvent extends AdminModifyingUserEvent{
+  final String forename, surname, email, password, contactNo;
+  AdminUserModTextChangeEvent({
+    this.forename, this.surname, this.email, this.password, this.contactNo
+  });
+}
+
+class AdminUserModEditTextChangeEvent extends AdminModifyingUserEvent{
+  final String forename, surname, contactNo;
+  AdminUserModEditTextChangeEvent({this.forename, this.surname, this.contactNo});
+}
+
+class AdminUserModAddNewUserClickEvent extends AdminModifyingUserEvent{}
+class AdminUserModUpdateUserClickEvent extends AdminModifyingUserEvent{}

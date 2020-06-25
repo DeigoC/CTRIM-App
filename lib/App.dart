@@ -3,6 +3,7 @@ import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/HomePage.dart';
 import 'package:ctrim_app_v1/pages/gallery/CreateAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
+import 'package:ctrim_app_v1/pages/gallery/SearchAlbumsPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/ViewPostAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/posts/EditPostPage.dart';
 import 'package:ctrim_app_v1/pages/posts/PostBodyEditorPage.dart';
@@ -18,6 +19,7 @@ import 'package:ctrim_app_v1/pages/location/SelectLocationForPostPage.dart';
 import 'package:ctrim_app_v1/pages/location/ViewAllPostsForLocationPage.dart';
 import 'package:ctrim_app_v1/pages/location/ViewLocationOnMapPage.dart';
 import 'package:ctrim_app_v1/pages/user/EditUserPage.dart';
+import 'package:ctrim_app_v1/pages/user/MyDetailsPage.dart';
 import 'package:ctrim_app_v1/pages/user/RegisterUserPage.dart';
 import 'package:ctrim_app_v1/pages/user/UserLoginPage.dart';
 import 'package:ctrim_app_v1/pages/user/ViewAllUsersPage.dart';
@@ -39,6 +41,7 @@ const CreateAlbumRoute = '/CreateAlbum';
 const AddGalleryFilesRoute = '/AddFiles';
 const EditAlbumRoute = '/EditAlbum';
 const ViewPostAlbumRoute = '/ViewPostAlbumPage';
+const SearchAlbumRoute ='/SearchAlbumPage';
 
 const ViewLocationOnMapRoute = '/ViewLocationOnMap';
 const ViewAllEventsForLocationRoute = '/ViewAllEventsForLocation';
@@ -50,6 +53,7 @@ const RegisterUserRoute = '/RegisterUser';
 const ViewAllUsersRoute = '/ViewAllUsers';
 const EditUserRoute = '/EditUser';
 const UserLoginRoute = '/UserLogin';
+const MyDetailsRoute = '/MyDetailsPage';
 class App extends StatefulWidget {
 
   @override
@@ -79,9 +83,6 @@ class _AppState extends State<App> {
       providers: [
         BlocProvider<AppBloc>(
         create: (_) => _appBloc,
-      ),
-      BlocProvider<AdminBloc>(
-        create: (_) => AdminBloc(),
       ),
       BlocProvider<TimelineBloc>(
         create: (_) => TimelineBloc(),
@@ -137,7 +138,7 @@ class _AppState extends State<App> {
         case ViewAllUsersRoute: screen = ViewAllUsers();
         break;
 
-        case EditUserRoute: screen = EditUser();
+        case EditUserRoute: screen = EditUserPage(arguments['user']);
         break;
 
         case AddLocationRoute: screen = AddLocation();
@@ -173,6 +174,12 @@ class _AppState extends State<App> {
         break;
 
         case SearchPostsRoute: screen = SearchPostsPage();
+        break;
+
+        case SearchAlbumRoute: screen = SearchAlbumsPage();
+        break;
+
+        case MyDetailsRoute: screen = MyDetailsPage();
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

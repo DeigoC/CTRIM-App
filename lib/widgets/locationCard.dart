@@ -29,7 +29,7 @@ class LocationCard extends StatelessWidget {
                   child: GestureDetector(
                     onTap: (){
                       if(location.imgSrc!=null){
-                        BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPage({location.imgSrc:'img'}, 0));
+                        BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({location.imgSrc:'img'}, 0));
                       }
                     },
                     child: Hero(

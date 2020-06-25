@@ -82,7 +82,7 @@ class ViewPostAlbumPage extends StatelessWidget {
         width: _pictureSize,
         height: _pictureSize,
         child: GestureDetector(
-          onTap: () => BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(_post.gallerySources, index)),
+          onTap: () => BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(_post.gallerySources, index)),
           child: Hero(tag: src,child: Image.network(src, fit: BoxFit.cover,))
         ),
       ),

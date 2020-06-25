@@ -39,6 +39,13 @@ class SettingsPage{
                 },
               ),
               ListTile(
+                title: Text('My Details'),
+                leading: Icon(Icons.person),
+                onTap: (){
+                  BlocProvider.of<AppBloc>(_context).add(AppToMyDetailsEvent());
+                },
+              ),
+              ListTile(
                 title: Text('Register User'),
                 leading: Icon(Icons.person_add),
                 onTap: (){
@@ -50,6 +57,13 @@ class SettingsPage{
                 leading: Icon(Icons.people),
                 onTap: (){
                   BlocProvider.of<AppBloc>(_context).add(AppToViewAllUsersEvent());
+                },
+              ),
+              ListTile(
+                title: Text('Log out'),
+                leading: Icon(Icons.person_outline),
+                onTap: (){
+                  
                 },
               ),
             ],

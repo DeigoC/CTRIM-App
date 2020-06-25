@@ -34,3 +34,9 @@ class TimelineDisplayLocationSearchResultsState extends TimelineState{
   final List<Location> locations;
   TimelineDisplayLocationSearchResultsState(this.locations);
 }
+
+class TimelineAlbumSearchState extends TimelineState{}
+class TimelineAlbumDisplaySearchResultsState extends TimelineAlbumSearchState{
+  final List<Post> queryResults;
+  TimelineAlbumDisplaySearchResultsState(this.queryResults);
+}

@@ -271,7 +271,7 @@ class PostArticle extends StatelessWidget {
   }
 
   void _moveToViewImageVideo(Map<String,String> gallery, int index){
-    BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(gallery, index));
+    BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(gallery, index));
   }
 
   void _moveToViewPost(Post post){

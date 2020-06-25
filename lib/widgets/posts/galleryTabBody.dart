@@ -97,7 +97,7 @@ class GalleryTabBody extends StatelessWidget {
         width: pictureSize,
         height: pictureSize,
         child: GestureDetector(
-          onTap: () => BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPage(gallerySrc, index)),
+          onTap: () => BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(gallerySrc, index)),
           child: Hero(tag: src,child: Image.network(src, fit: BoxFit.cover,))
         ),
       ),

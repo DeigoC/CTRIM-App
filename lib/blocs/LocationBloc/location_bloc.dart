@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/models/location.dart';
-import 'package:ctrim_app_v1/widgets/locationCard.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +17,13 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   
   Location _location, _originalLocation;
   void setLocationForEdit(Location location){
-    _location = location;
+     _location = Location(
+       id: location.id,
+      addressLine: location.addressLine,
+      description: location.description,
+      imgSrc: location.imgSrc,
+    );
+
     _originalLocation = Location(
       addressLine: location.addressLine,
       description: location.description,
@@ -49,9 +54,30 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   }
 
   Stream<LocationState> _mapEditLocationToState(LocationEditLocationEvent event) async*{
-    if(event is LocationEditTextChangeEvent){
-     
+    if(event is LocationDescriptionTextChangeEvent){
+      _location.description = event.description;
+      yield _canUpdateLocation();
+    }else if(event is LocationEditRemoveSrcEvent){
+      _location.imgSrc = '';
+      yield LocationRemoveSelectedImageState();
+      yield _canUpdateLocation();
+    }else if(event is LocationEditConfirmedQueryAddressEvent){
+      _location.addressLine = _selectedAddress;
+      yield LocationDisplayConfirmedQueryAddressState(_selectedAddress);
+      yield _canUpdateLocation();
+    }else if(event is LocationEditUpdateLocationEvent){
+      //TODO need to sort image in the future
+      yield LocationEditChangesSavedState(_location);
     }
+  }
+
+  LocationState _canUpdateLocation(){
+    if(_location.description.compareTo(_originalLocation.description) != 0 ||
+    _location.addressLine.compareTo(_originalLocation.addressLine) != 0 ||
+    _location.imgSrc == ''){
+      return LocationEditEnableUpdateButtonState();
+    }
+    return LocationEditDisableUpdateButtonState();
   }
 
   Stream<LocationQueryState> _mapQueryEventsToQueryStates(LocationQueryAddressEvent event)async*{
