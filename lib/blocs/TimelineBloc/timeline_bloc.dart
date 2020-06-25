@@ -121,7 +121,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       surname: 'Collado',
       email: 'diego@email',
       adminLevel: 3,
-      contactNo: '012301230'
+      contactNo: '012301230',
+      likedPosts: [],
     ),
 
     User(
@@ -130,7 +131,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       surname: 'Collado',
       email: 'DaNa@email',
       adminLevel: 1,
-      contactNo: '0111111111111110'
+      contactNo: '0111111111111110',
+      likedPosts: [],
     ),
   ];
   List<User> get allUsers => _testUsers;
@@ -269,7 +271,32 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       int index = _testUsers.indexWhere((user) => user.id.compareTo(event.updatedUser.id)==0);
       _testUsers[index] = event.updatedUser;
       yield TimelineEmptyState();
-    }
+    }else if(event is TimelineDisplayCurrentUserLikedPosts) yield _getCurrentUserLikedPosts(event.likedPosts);
+  }
+
+  TimelineDisplaySearchFeedState _getCurrentUserLikedPosts(List<String> postIDs){
+    List<Post> posts = [];
+    List<TimelinePost> tPosts = [];
+
+    _testPosts.forEach((post) {
+      if(postIDs.contains(post.id)){
+        posts.add(post);
+      }
+    });
+ 
+    posts.forEach((post) {
+      _testTimelinePosts.forEach((tPost) {
+        if(tPost.postID.compareTo(post.id)==0 && tPost.postType == 'original' && !tPosts.contains(tPost)){
+          tPosts.add(tPost);
+        }
+      });
+    });
+
+     return TimelineDisplaySearchFeedState(
+        users: _testUsers,
+        posts: posts,
+        timelines: tPosts,
+      ); 
   }
 
   Stream<TimelineState> _mapAlbumSearchEventToState(TimelineAlbumSearchEvent event) async*{

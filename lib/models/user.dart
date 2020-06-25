@@ -1,6 +1,7 @@
 class User{
   String id, forename,surname, contactNo, imgSrc, email;
   int adminLevel;
+  List<String> likedPosts;
   User({
     this.id, 
     this.forename, 
@@ -9,5 +10,6 @@ class User{
     this.imgSrc,
     this.email,
     this.adminLevel,
+    this.likedPosts,
   });
 }

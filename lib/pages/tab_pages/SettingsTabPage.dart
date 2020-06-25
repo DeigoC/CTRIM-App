@@ -105,6 +105,14 @@ class SettingsPage{
                 },
               ),
               ListTile(
+                title: Text('My Liked Posts'),
+                subtitle: Text('View Posts that you have saved'),
+                leading: Icon(Icons.favorite),
+                onTap: (){
+                  BlocProvider.of<AppBloc>(_context).add(AppToLikedPostsPageEvent());
+                },
+              ),
+              ListTile(
                 title: Text('App Details'),
                 subtitle: Text('Extra details about the app'),
                 leading: Icon(Icons.info_outline),

@@ -1,5 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/models/post.dart';
 import 'package:ctrim_app_v1/models/timelinePost.dart';
 import 'package:ctrim_app_v1/widgets/postArticle.dart';
 import 'package:flutter/cupertino.dart';
@@ -39,7 +40,7 @@ class ViewAllEventsPage{
   Widget _buildBodyWithData(TimelineDisplayFeedState state){
    List<TimelinePost>  _timelines = state.timelines;
   List<Widget> children = _timelines.map((timelinePost) => PostArticle(
-        allPosts: state.posts,
+        post: _getPostFromID(timelinePost.postID, state.posts),
         allUsers: state.users,
         timelinePost: timelinePost,
       )).toList();
@@ -103,4 +104,14 @@ class ViewAllEventsPage{
       ],
     );
   }
+
+  Post _getPostFromID(String id, List<Post> allPosts){
+  Post result;
+  allPosts.forEach((post) {
+    if(post.id.compareTo(id) == 0){
+      result = post;
+    }
+  });
+  return result;
+}
 }

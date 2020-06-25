@@ -1,3 +1,4 @@
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/models/post.dart';
 import 'package:ctrim_app_v1/widgets/posts/galleryTabBody.dart';
@@ -32,6 +33,22 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           return[
             SliverAppBar(
               expandedHeight: 200,
+              actions: [
+                BlocBuilder<AppBloc, AppState>(
+                  condition: (_,state){
+                    if(state is AppCurrentUserLikedPostState) return true;
+                    return false;
+                  },
+                  builder: (_,state){
+                    bool liked = BlocProvider.of<AppBloc>(context).currentUser.likedPosts.contains(widget._post.id);
+                    return IconButton(
+                      tooltip: 'Save/unsave post',
+                      icon: liked ? Icon(Icons.favorite, color: Colors.red,):Icon(Icons.favorite_border),
+                      onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppPostLikeClicked(widget._post)),
+                    );
+                  },
+                ),
+              ],
               flexibleSpace: FlexibleSpaceBar(
                 background: Image.network(widget._post.gallerySources.keys.toList()[0], fit: BoxFit.cover,),
               ),

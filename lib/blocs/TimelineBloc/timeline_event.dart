@@ -40,3 +40,8 @@ class TimelineUserUpdatedEvent extends TimelineEvent{
   final User updatedUser;
   TimelineUserUpdatedEvent(this.updatedUser);
 }
+
+class TimelineDisplayCurrentUserLikedPosts extends TimelineEvent{
+  final List<String> likedPosts;
+  TimelineDisplayCurrentUserLikedPosts(this.likedPosts);
+}

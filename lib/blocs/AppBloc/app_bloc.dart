@@ -17,7 +17,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final GlobalKey<NavigatorState> navigatorKey;
   bool _onDark = false;
   bool get onDarkTheme => _onDark;
-  User _currentUser = User(id: '1');
+  User _currentUser = User(id: '1', likedPosts: []);
   User get currentUser => _currentUser;
   
   AppBloc(this.navigatorKey);
@@ -35,6 +35,17 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is NavigationPopAction) navigatorKey.currentState.pop();
     else if(event is AppNavigateToPageEvent) _openPageFromEvent(event);
     else if(event is AppSettingsEvent) yield* _mapSettingsEventToState(event);
+    else if(event is AppCurrentUserEvent) yield* _mapCurrentUserEventToState(event);
+  }
+
+  Stream<AppState> _mapCurrentUserEventToState(AppCurrentUserEvent event) async*{
+    if(event is AppPostLikeClicked){
+      bool alreadySaved = _currentUser.likedPosts.contains(event.post.id);
+      if(alreadySaved) _currentUser.likedPosts.remove(event.post.id);
+      else _currentUser.likedPosts.add(event.post.id);
+      yield AppCurrentUserLikedPostState();
+      yield AppCurrentUserState();
+    }
   }
 
   void _openPageFromEvent(AppNavigateToPageEvent event){
@@ -62,6 +73,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToSearchPostsPageEvent) state.pushNamed(SearchPostsRoute);
     else if(event is AppToSearchAlbumPageEvent) state.pushNamed(SearchAlbumRoute);
     else if(event is AppToMyDetailsEvent) state.pushNamed(MyDetailsRoute);
+    else if(event is AppToLikedPostsPageEvent) state.pushNamed(MyLikedPostsRoute);
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async*{

@@ -7,39 +7,40 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PostArticle extends StatelessWidget {
 
-  final List<Post> allPosts;
+  //final List<Post> allPosts;
+  final Post post;
   final List<User> allUsers;
   final TimelinePost timelinePost;
   static BuildContext _context;
-  PostArticle({@required this.allPosts, @required this.timelinePost, @required this.allUsers});
+  PostArticle({/* @required this.allPosts */@required this.post, @required this.timelinePost, @required this.allUsers});
 
   @override
   Widget build(BuildContext context) {
     _context = context;
-    Post thisPost = _getPostFromID(timelinePost.postID);
+    //Post thisPost = _getPostFromID(timelinePost.postID);
     List<Widget> colChildren =[
       RichText(
         text: TextSpan(
-          text: thisPost.title,
+          text: post.title,
           style: TextStyle(fontSize: 26, color: Colors.black),
           children: [
-            TextSpan(text: _getAuthorNameAndTagsLine(timelinePost, thisPost),
+            TextSpan(text: _getAuthorNameAndTagsLine(timelinePost, post),
             style: TextStyle(fontSize: 12))
           ],
         ),
       ),
       SizedBox(height: 8,),
-      Text(thisPost.description),
+      Text(post.description),
     ];  
-    if(thisPost.gallerySources.length != 0){
-      colChildren.addAll(_addPostImageWidgets(thisPost));
+    if(post.gallerySources.length != 0){
+      colChildren.addAll(_addPostImageWidgets(post));
     }
     colChildren.add(Divider());
     
     
     return InkWell(
       splashColor: Colors.blue.withAlpha(30),
-      onTap: () => _moveToViewPost(thisPost),
+      onTap: () => _moveToViewPost(post),
       child: Padding(
         padding: EdgeInsets.only(left:8.0, bottom: 8, right:8 ),
         child: Column(
@@ -64,16 +65,6 @@ class PostArticle extends StatelessWidget {
     result += author.forename + ' ' + author.surname[0] + '. ';
     result += timelinePost.getPostDateString();
     result += post.getTagsString();
-    return result;
-  }
-
-  Post _getPostFromID(String id){
-    Post result;
-    allPosts.forEach((post) {
-      if(post.id.compareTo(id) == 0){
-        result = post;
-      }
-    });
     return result;
   }
 

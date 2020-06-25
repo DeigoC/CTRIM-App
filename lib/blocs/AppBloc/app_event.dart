@@ -12,6 +12,12 @@ class TabButtonClicked extends AppEvent{
   TabButtonClicked(this.selectedIndex);
 }
 
+class AppCurrentUserEvent extends AppEvent{}
+class AppPostLikeClicked extends AppCurrentUserEvent{
+  final Post post;
+  AppPostLikeClicked(this.post);
+}
+
 // * Navigation Events
 class AppNavigateToPageEvent extends AppEvent{}
 
@@ -54,6 +60,7 @@ class AppToEditUserEvent extends AppNavigateToPageEvent{
 }
 class AppToUserLoginEvent extends AppNavigateToPageEvent{}
 class AppToMyDetailsEvent extends AppNavigateToPageEvent{}
+class AppToLikedPostsPageEvent extends AppNavigateToPageEvent{}
 
 // ! Gallery
 class AppToCreateAlbumEvent extends AppNavigateToPageEvent{
@@ -64,7 +71,6 @@ class AppToViewPostAlbumEvent extends AppNavigateToPageEvent{
   final Post post;
   AppToViewPostAlbumEvent(this.post);
 }
-
 class AppToEditAlbumEvent extends AppNavigateToPageEvent{
   final PostBloc postBloc;
   AppToEditAlbumEvent(this.postBloc);
@@ -82,7 +88,5 @@ class AppToSearchAlbumPageEvent extends AppNavigateToPageEvent{}
 
 // * Settings Events
 class AppSettingsEvent extends AppEvent{}
-
 class AppChangeThemeToDarkEvent extends AppSettingsEvent{}
-
 class AppChangeThemeToLightEvent extends AppSettingsEvent{}

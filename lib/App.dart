@@ -21,6 +21,7 @@ import 'package:ctrim_app_v1/pages/location/ViewLocationOnMapPage.dart';
 import 'package:ctrim_app_v1/pages/user/EditUserPage.dart';
 import 'package:ctrim_app_v1/pages/user/MyDetailsPage.dart';
 import 'package:ctrim_app_v1/pages/user/RegisterUserPage.dart';
+import 'package:ctrim_app_v1/pages/user/UserLikedPostsPage.dart';
 import 'package:ctrim_app_v1/pages/user/UserLoginPage.dart';
 import 'package:ctrim_app_v1/pages/user/ViewAllUsersPage.dart';
 import 'package:ctrim_app_v1/style.dart';
@@ -54,6 +55,7 @@ const ViewAllUsersRoute = '/ViewAllUsers';
 const EditUserRoute = '/EditUser';
 const UserLoginRoute = '/UserLogin';
 const MyDetailsRoute = '/MyDetailsPage';
+const MyLikedPostsRoute = '/LikedPostsPage';
 class App extends StatefulWidget {
 
   @override
@@ -180,6 +182,9 @@ class _AppState extends State<App> {
         break;
 
         case MyDetailsRoute: screen = MyDetailsPage();
+        break;
+
+        case MyLikedPostsRoute: screen = UserLikedPostsPage();
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

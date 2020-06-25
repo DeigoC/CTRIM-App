@@ -24,3 +24,6 @@ class AppSettingsTabClickedState extends AppTabClickedState{}
 class SettingsState extends AppState {}
 class AppThemeToLightState extends SettingsState{}
 class AppThemeToDarkState extends SettingsState{}
+
+class AppCurrentUserState extends AppState{}
+class AppCurrentUserLikedPostState extends AppState{}
