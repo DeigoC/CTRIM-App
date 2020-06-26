@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/models/imageTag.dart';
 import 'package:ctrim_app_v1/models/location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,11 +30,12 @@ class LocationCard extends StatelessWidget {
                   child: GestureDetector(
                     onTap: (){
                       if(location.imgSrc!=null){
-                        BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({location.imgSrc:'img'}, 0));
+                        BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({
+                          location.imgSrc:ImageTag(src: location.imgSrc, type: 'img')}, 0));
                       }
                     },
                     child: Hero(
-                      tag: location.imgSrc??location.addressLine,
+                      tag: location.imgSrc == null ? location.addressLine:'0/'+location.imgSrc,
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.30,
                         height: MediaQuery.of(context).size.width * 0.30,

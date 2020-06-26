@@ -18,7 +18,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
    ViewAllLocationsPage _locationsPage;
    SettingsPage _settingsPage;
   
-  
 @override
 void initState() { 
   super.initState();

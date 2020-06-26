@@ -30,6 +30,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (_,__){
+          bool hasImage = widget._post.gallerySources.keys.toList().length != 0;
           return[
             SliverAppBar(
               expandedHeight: 200,
@@ -50,7 +51,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                 ),
               ],
               flexibleSpace: FlexibleSpaceBar(
-                background: Image.network(widget._post.gallerySources.keys.toList()[0], fit: BoxFit.cover,),
+                background: hasImage ? Image.network(widget._post.gallerySources.keys.toList()[0], fit: BoxFit.cover,)
+                : null,
               ),
             ),
             SliverPadding(

@@ -1,9 +1,9 @@
 import 'package:intl/intl.dart';
 
 class TimelinePost{
-  String id, postID, authorID, postType;
+  String id, postID, authorID, postType, updateLog;
   DateTime postDate;
-  TimelinePost({this.postID, this.postDate, this.postType, this.authorID});
+  TimelinePost({this.id, this.postID, this.postDate, this.postType, this.authorID, this.updateLog});
 
   String getPostDateString(){
     return DateFormat('dd MMM yyyy').format(postDate);

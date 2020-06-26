@@ -1,10 +1,10 @@
-import 'package:flutter/gestures.dart';
+import 'package:ctrim_app_v1/models/imageTag.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class ViewImageVideo extends StatefulWidget {
   
-  final Map<String, String> imageSources;
+  final Map<String, ImageTag> imageSources;
   final int initialPage;
 
   ViewImageVideo({@required this.imageSources, @required this.initialPage});
@@ -22,7 +22,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   @override
   void initState() {
     widget.imageSources.keys.forEach((src) {
-      if(widget.imageSources[src] == 'vid'){
+      if(widget.imageSources[src].type == 'vid'){
         VideoPlayerController controller = VideoPlayerController.network(src);
         controller.initialize().then((_){ setState(() {}); });
         _videoControllers[src] = controller;
@@ -51,7 +51,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
             controller: PageController(initialPage: widget.initialPage),
             itemBuilder: (_,index){
               String src = widget.imageSources.keys.elementAt(index);
-              String type = widget.imageSources[src];
+              String type = widget.imageSources[src].type;
               if(type.compareTo('vid')==0) return _createVideoPage(src);
               return _createImagePage(src);
             }
@@ -75,7 +75,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         },
         child: Hero(
           child: Image.network(src,),
-          tag: src,
+          tag: widget.imageSources[src].heroTag,
         ),
       ),
     );

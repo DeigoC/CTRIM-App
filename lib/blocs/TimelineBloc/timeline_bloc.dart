@@ -11,8 +11,7 @@ part 'timeline_event.dart';
 part 'timeline_state.dart';
 
 class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
-  
-  static String n = '\\n';
+ 
   String _locationSearchString = '';
 
   List<Post> _testPosts =[
@@ -27,7 +26,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       'https://i.ytimg.com/vi/mwux1_CNdxU/maxresdefault.jpg':'img',
       'https://www.lakedistrict.gov.uk/__data/assets/image/0018/123390/families-and-children.jpg':'img',},
       selectedTags: [Department.YOUTH],
-      body: '[{"insert":"This is a test"},{"insert":"$n","attributes":{"heading":1}},{"insert": "$n item 1"},{"insert":"$n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"$n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"$n","attributes":{"block":"ol"}}]',
+      body: '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
       detailTableHeader: 'This is the header for the table',
       detailTable: [
         ['Item 1', 'This is test number 1'],
@@ -40,6 +39,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       title: 'Title Post #2',
       eventDate: DateTime.now().subtract(Duration(days: 7)),
       description: '',
+      body: '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
+      detailTable: [],
+      detailTableHeader: '',
       locationID: '2',
       selectedTags: [Department.YOUTH, Department.CHURCH],
       gallerySources: {
@@ -52,6 +54,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       eventDate: DateTime.now().subtract(Duration(days: 5)),
       title: 'Title Post #3 and this one will be the long title',
       description: 'The big image',
+      body: '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
+      detailTable: [],
+      detailTableHeader: '',
       locationID: '2',
       selectedTags: [Department.YOUTH, Department.CHURCH],
       gallerySources: {'https://mamasgeeky.com/wp-content/uploads/2020/03/coronavirus-meme-1.jpg':'img',}
@@ -62,6 +67,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       title: 'Youth dayout at London Bridge',
       description: 'So this day we went to London Bridge, pretty cool eh? Yeah this is going to be a long description i hope. This is supposed to be at least 2 lines',
       locationID: '0',
+      body: '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
+      detailTable: [],
+      detailTableHeader: '',
       selectedTags: [Department.WOMEN],
       gallerySources: {}
     ),
@@ -71,6 +79,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       title: 'Youth dayout at London Bridge, The Sequel!',
       description: 'So this day we went to London Bridge, pretty cool eh? \nWell this is something...',
       locationID: '4',
+      body: '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
+      detailTable: [],
+      detailTableHeader: '',
       selectedTags: [Department.WOMEN],
       gallerySources: {
         'https://img.delicious.com.au/WqbvXLhs/del/2016/06/more-the-merrier-31380-2.jpg':'img',
@@ -83,30 +94,42 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   
   List<TimelinePost> _testTimelinePosts = [
     TimelinePost(
+      id: '1',
       postID: '1',
       postType: 'original',
       authorID: '1',
       postDate: DateTime.now().subtract(Duration(days: 2))
     ),
     TimelinePost(
+      id: '2',
       postID: '2',
       postType: 'original',
       authorID: '2',
       postDate: DateTime.now().subtract(Duration(days: 14))
     ),
     TimelinePost(
+      id: '3',
+      postID: '2',
+      postType: 'update',
+      authorID: '2',
+      postDate: DateTime.now().subtract(Duration(days: 1))
+    ),
+    TimelinePost(
+      id: '4',
       postID: '3',
       postType: 'original',
       authorID: '1',
       postDate: DateTime.now().subtract(Duration(days: 30))
     ),
     TimelinePost(
+      id: '5',
       postID: '4',
       postType: 'original',
       authorID: '1',
       postDate: DateTime.now().subtract(Duration(days: 2))
     ),
     TimelinePost(
+      id: '6',
       postID: '5',
       postType: 'original',
       authorID: '2',

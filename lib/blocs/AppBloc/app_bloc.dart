@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/models/imageTag.dart';
 import 'package:ctrim_app_v1/models/location.dart';
 import 'package:ctrim_app_v1/models/post.dart';
 import 'package:ctrim_app_v1/models/user.dart';

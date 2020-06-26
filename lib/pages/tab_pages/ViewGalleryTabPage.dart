@@ -1,5 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/models/imageTag.dart';
 import 'package:ctrim_app_v1/models/post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +96,8 @@ class ViewGalleryPage{
   }
 
   Padding _createImageContainer(String src, Map<String,String> gallery){
+    Map<String,ImageTag> galleryTags = _createGalleryTags(gallery);
+    int pos = gallery.keys.toList().indexOf(src);
     return Padding(
       padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
       child: AnimatedContainer(
@@ -104,16 +107,23 @@ class ViewGalleryPage{
         height: _pictureSize,
         child: GestureDetector(
           onTap: (){
-            int pos = gallery.keys.toList().indexOf(src);
-            BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(gallery, pos));
+            BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, pos));
           },
           child: Hero(
-            tag: src,
+            tag: galleryTags.values.elementAt(pos).heroTag,
             child: Image.network(src, fit: BoxFit.cover,),
           ),
         ),
       ),
     );
+  }
+
+  Map<String,ImageTag> _createGalleryTags(Map<String, String> gallery){
+    Map<String,ImageTag> result = {};
+    gallery.forEach((src, type) {
+      result[src] = ImageTag(src: src, type: type);
+    });
+    return result;
   }
 
   Padding _createVideoContainer(String src, Map<String,String> gallery){
@@ -122,7 +132,7 @@ class ViewGalleryPage{
       child:  GestureDetector(
         onTap: (){
           int pos = gallery.keys.toList().indexOf(src);
-          BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(gallery, pos));
+          BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(_createGalleryTags(gallery), pos));
         },
         child: AnimatedContainer(
           duration: Duration(milliseconds: 300),
@@ -142,6 +152,7 @@ class ViewGalleryPage{
     });
 
     return GridView.builder(
+      key: PageStorageKey<String>('GalleryView'),
       itemCount: individualPosts.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2), 
       itemBuilder: (_,index){

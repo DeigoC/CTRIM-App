@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/models/imageTag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -89,6 +90,7 @@ class GalleryTabBody extends StatelessWidget {
 
   Widget _createImageSrcContainer(String src){
       int index = gallerySrc.keys.toList().indexOf(src);
+      Map<String,ImageTag> galleryTags = _createGalleryTags(gallerySrc);
       return Padding(
       padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
       child: AnimatedContainer(
@@ -97,11 +99,19 @@ class GalleryTabBody extends StatelessWidget {
         width: pictureSize,
         height: pictureSize,
         child: GestureDetector(
-          onTap: () => BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(gallerySrc, index)),
-          child: Hero(tag: src,child: Image.network(src, fit: BoxFit.cover,))
+          onTap: () => BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, index)),
+          child: Hero(tag: galleryTags.values.elementAt(index).heroTag,child: Image.network(src, fit: BoxFit.cover,))
         ),
       ),
     );
+  }
+
+  Map<String,ImageTag> _createGalleryTags(Map<String, String> gallery){
+    Map<String,ImageTag> result = {};
+    gallery.forEach((src, type) {
+      result[src] = ImageTag(src: src, type: type);
+    });
+    return result;
   }
 
   Widget _createImageFileContainer(File file){

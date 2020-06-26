@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/models/imageTag.dart';
 import 'package:ctrim_app_v1/models/post.dart';
 import 'package:ctrim_app_v1/models/timelinePost.dart';
 import 'package:ctrim_app_v1/models/user.dart';
@@ -6,18 +7,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PostArticle extends StatelessWidget {
-
-  //final List<Post> allPosts;
+  
   final Post post;
   final List<User> allUsers;
   final TimelinePost timelinePost;
   static BuildContext _context;
-  PostArticle({/* @required this.allPosts */@required this.post, @required this.timelinePost, @required this.allUsers});
+  static bool _isOriginal;
+
+  PostArticle({@required this.post, @required this.timelinePost, @required this.allUsers});
 
   @override
   Widget build(BuildContext context) {
     _context = context;
-    //Post thisPost = _getPostFromID(timelinePost.postID);
+    _isOriginal = timelinePost.postType == 'original';
+    
     List<Widget> colChildren =[
       RichText(
         text: TextSpan(
@@ -35,19 +38,61 @@ class PostArticle extends StatelessWidget {
     if(post.gallerySources.length != 0){
       colChildren.addAll(_addPostImageWidgets(post));
     }
-    colChildren.add(Divider());
-    
     
     return InkWell(
       splashColor: Colors.blue.withAlpha(30),
       onTap: () => _moveToViewPost(post),
-      child: Padding(
-        padding: EdgeInsets.only(left:8.0, bottom: 8, right:8 ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: colChildren,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(width: 0.25),)
+        ),
+        padding: EdgeInsets.all(8),
+        child: _isOriginal ? _buildOriginalPost(false) : _buildUpdatePost(),
+      ),
+    );
+  }
+
+  Widget _buildOriginalPost(bool isUpdatePost){
+    List<Widget> colChildren =[
+      RichText(
+        text: TextSpan(
+          text: post.title,
+          style: TextStyle(fontSize: isUpdatePost ? 22:26, color: Colors.black),
+          children: [
+            TextSpan(text: _getAuthorNameAndTagsLine(timelinePost, post),
+            style: TextStyle(fontSize: isUpdatePost? 8:12))
+          ],
         ),
       ),
+      SizedBox(height: 8,),
+      Text(post.description, style: TextStyle(fontSize: 16),),
+    ];  
+    if(post.gallerySources.length != 0){
+      colChildren.addAll(_addPostImageWidgets(post));
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: colChildren,
+    );
+  }
+
+  Widget _buildUpdatePost(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('Update: ' + timelinePost.postDate.toString(), style:TextStyle(fontSize: 12)),
+        Text('Insert the updatelog here', style: TextStyle(fontSize: 26),),
+        SizedBox(height: 8,),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(width: 0.75),
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          padding: EdgeInsets.all(8),
+          child: _buildOriginalPost(true),
+        ),
+      ],
     );
   }
   
@@ -93,13 +138,13 @@ class PostArticle extends StatelessWidget {
   List<Widget> _buildImageLayoutChildren(Post post){
     List<String> imageSrc = post.gallerySources.keys.toList();
     List<String> srcType = post.gallerySources.values.toList();
-    Map<String, String> gallerySrc;
+    Map<String, ImageTag> gallerySrc;
     if(imageSrc.length == 4){
       gallerySrc ={
-        imageSrc[0]:srcType[0],
-        imageSrc[1]:srcType[1],
-        imageSrc[2]:srcType[2],
-        imageSrc[3]:srcType[3],
+        imageSrc[0]:ImageTag(src:imageSrc[0], type: srcType[0], tPostID: _isOriginal ? '0':timelinePost.id),
+        imageSrc[1]:ImageTag(src:imageSrc[1], type: srcType[1], tPostID: _isOriginal ? '0':timelinePost.id),
+        imageSrc[2]:ImageTag(src:imageSrc[2], type: srcType[2], tPostID: _isOriginal ? '0':timelinePost.id),
+        imageSrc[3]:ImageTag(src:imageSrc[3], type: srcType[3], tPostID: _isOriginal ? '0':timelinePost.id),
       };
       
       return[
@@ -108,7 +153,7 @@ class PostArticle extends StatelessWidget {
             children: [
             Expanded(
             child: Hero(
-              tag: imageSrc[0],
+              tag: gallerySrc.values.elementAt(0).heroTag,
                           child: Container(
                 child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 0),),
               decoration: BoxDecoration(
@@ -120,7 +165,7 @@ class PostArticle extends StatelessWidget {
               SizedBox(height: 2,),
              Expanded(
           child: Hero(
-            tag: imageSrc[2],
+            tag: gallerySrc.values.elementAt(2).heroTag,
                       child: Container(
                child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 2),),
               decoration: BoxDecoration(
@@ -138,7 +183,7 @@ class PostArticle extends StatelessWidget {
             children: [
               Expanded(
           child: Hero(
-            tag: imageSrc[1],
+            tag: gallerySrc.values.elementAt(1).heroTag,
                       child: Container(
                child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 1),),
               decoration: BoxDecoration(
@@ -150,7 +195,7 @@ class PostArticle extends StatelessWidget {
               SizedBox(height: 2,),
               Expanded(
           child: Hero(
-            tag: imageSrc[3],
+            tag: gallerySrc.values.elementAt(3).heroTag,
                       child: Container(
                child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 3),),
               decoration: BoxDecoration(
@@ -166,14 +211,14 @@ class PostArticle extends StatelessWidget {
       ];
     }else if(imageSrc.length == 3){
       gallerySrc ={
-        imageSrc[0]:srcType[0],
-        imageSrc[1]:srcType[1],
-        imageSrc[2]:srcType[2],
+        imageSrc[0]:ImageTag(src:imageSrc[0], type: srcType[0], tPostID: _isOriginal ? '0':timelinePost.id),
+        imageSrc[1]:ImageTag(src:imageSrc[1], type: srcType[1], tPostID: _isOriginal ? '0':timelinePost.id),
+        imageSrc[2]:ImageTag(src:imageSrc[2], type: srcType[2], tPostID: _isOriginal ? '0':timelinePost.id),
       };
       return[
         Expanded(
           child: Hero(
-            tag: imageSrc[0],
+            tag: gallerySrc.values.elementAt(0).heroTag,
             child: Container(
               child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 0),),
               decoration: BoxDecoration(
@@ -188,7 +233,7 @@ class PostArticle extends StatelessWidget {
             children: [
               Expanded(
                 child: Hero(
-                  tag: imageSrc[1],
+                  tag: gallerySrc.values.elementAt(1).heroTag,
                   child: Container(
                     child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 1),),
                     decoration: BoxDecoration(
@@ -200,7 +245,7 @@ class PostArticle extends StatelessWidget {
               SizedBox(height: 2,),
               Expanded(
           child: Hero(
-            tag: imageSrc[2],
+            tag: gallerySrc.values.elementAt(2).heroTag,
                       child: Container(
               child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 2),),
               decoration: BoxDecoration(
@@ -215,13 +260,13 @@ class PostArticle extends StatelessWidget {
       ];
     }else if(imageSrc.length == 2){
       gallerySrc ={
-        imageSrc[0]:srcType[0],
-        imageSrc[1]:srcType[1],
+        imageSrc[0]:ImageTag(src:imageSrc[0], type: srcType[0], tPostID: _isOriginal ? '0':timelinePost.id),
+        imageSrc[1]:ImageTag(src:imageSrc[1], type: srcType[1], tPostID: _isOriginal ? '0':timelinePost.id),
       };
       return [
         Expanded(
           child: Hero(
-            tag: imageSrc[0],
+           tag: gallerySrc.values.elementAt(0).heroTag,
                       child: Container(
                child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 0),),
               decoration: BoxDecoration(
@@ -233,7 +278,7 @@ class PostArticle extends StatelessWidget {
         SizedBox(width: 2,),
         Expanded(
           child: Hero(
-            tag: imageSrc[1],
+            tag: gallerySrc.values.elementAt(1).heroTag,
             child: Container(
                child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 1),),
               decoration: BoxDecoration(
@@ -244,11 +289,11 @@ class PostArticle extends StatelessWidget {
         ),
       ];
     }
-    gallerySrc ={imageSrc[0]:srcType[0],};
+    gallerySrc ={imageSrc[0]:ImageTag(src:imageSrc[0], type: srcType[0], tPostID: _isOriginal ? '0':timelinePost.id),};
     return [
       Expanded(
           child: Hero(
-            tag: imageSrc[0],
+            tag: gallerySrc.values.elementAt(0).heroTag,
                       child: Container(
                child: GestureDetector(onTap: () => _moveToViewImageVideo(gallerySrc, 0),),
               decoration: BoxDecoration(
@@ -261,7 +306,7 @@ class PostArticle extends StatelessWidget {
 
   }
 
-  void _moveToViewImageVideo(Map<String,String> gallery, int index){
+  void _moveToViewImageVideo(Map<String,ImageTag> gallery, int index){
     BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(gallery, index));
   }
 

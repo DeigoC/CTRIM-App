@@ -80,7 +80,7 @@ class AppToAddGalleryFileEvent extends AppNavigateToPageEvent{
   AppToAddGalleryFileEvent(this.postBloc);
 }
 class AppToViewImageVideoPageEvent extends AppNavigateToPageEvent{
-  final Map<String,String> imageSorces;
+  final Map<String,ImageTag> imageSorces;
   final int initialPage;
   AppToViewImageVideoPageEvent(this.imageSorces, this.initialPage);
 }

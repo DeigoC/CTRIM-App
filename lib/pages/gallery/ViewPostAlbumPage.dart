@@ -1,6 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/models/imageTag.dart';
 import 'package:ctrim_app_v1/models/post.dart';
-import 'package:ctrim_app_v1/widgets/posts/galleryTabBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,11 +10,14 @@ class ViewPostAlbumPage extends StatelessWidget {
   static double _pictureSize, _paddingSize;
   static BuildContext _context;
   
+  Map<String, ImageTag> _galleryMap ={};
+
   ViewPostAlbumPage(this._post);
   
   @override
   Widget build(BuildContext context) {
     _context = context;
+    _createGalleryTags();
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (_,__){
@@ -52,6 +55,12 @@ class ViewPostAlbumPage extends StatelessWidget {
     );
   }
 
+  void _createGalleryTags(){
+    _post.gallerySources.forEach((src, type) {
+      _galleryMap[src] = ImageTag(src: src, type: type);
+    });
+  }
+
   Widget _buildBody(){
     return OrientationBuilder(builder: (_,orientation){
         _pictureSize = MediaQuery.of(_context).size.width * 0.32; // * 3 accross so 4% width left 0.04/4 = 0.01
@@ -74,6 +83,7 @@ class ViewPostAlbumPage extends StatelessWidget {
 
    Widget _createImageSrcContainer(String src){
       int index = _post.gallerySources.keys.toList().indexOf(src);
+      
       return Padding(
       padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
       child: AnimatedContainer(
@@ -82,7 +92,7 @@ class ViewPostAlbumPage extends StatelessWidget {
         width: _pictureSize,
         height: _pictureSize,
         child: GestureDetector(
-          onTap: () => BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(_post.gallerySources, index)),
+          onTap: () => BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(_galleryMap, index)),
           child: Hero(tag: src,child: Image.network(src, fit: BoxFit.cover,))
         ),
       ),
