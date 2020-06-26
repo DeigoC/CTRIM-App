@@ -1,3 +1,4 @@
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/models/post.dart';
@@ -5,6 +6,7 @@ import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
 import 'package:ctrim_app_v1/widgets/posts/detailsTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts/mainTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts/updateLog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -127,14 +129,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
             borderRadius: BorderRadius.circular(16.0)
           ),
           onPressed: (state is PostEnableSaveButtonState) ? (){
-            _confirmSave().then((confirmation){
-             if(confirmation){
-               BlocProvider.of<TimelineBloc>(context).add(TimelineAddNewPostEvent(
-                 _postBloc.newPost
-               ));
-               Navigator.of(context).pop();
-             }
-            });
+            _confirmSave();
           }:null,
           child: Text('Update',),
         );
@@ -186,30 +181,12 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
     return Center(child: Text('Index is ' + selectedIndex.toString()),);
   }
 
-  Future<bool> _confirmSave() async{
-    bool result = false;
+  void _confirmSave() async{
     await showDialog(
       context: context,
       builder: (_){
-        return AlertDialog(
-          title: Text('Post Update Confirmation'),
-          content: Text('Are you sure you want to save the changes to this post?'),
-          actions: [
-            FlatButton(
-              child: Text('Cancel'),
-              onPressed: ()=> Navigator.of(context).pop(),
-            ),
-            FlatButton(
-              child: Text('Update'),
-              onPressed: (){
-                result = true;
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
+        return UpdateLogDialogue(_postBloc);
       }
     );
-    return result;
   }
 }

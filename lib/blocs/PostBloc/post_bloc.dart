@@ -93,6 +93,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
     // ? Testing this
     _post = Post(
+      id: postToEdit.id,
        title: postToEdit.title,
         body: postToEdit.body,
         selectedTags: originalSelectedTags,

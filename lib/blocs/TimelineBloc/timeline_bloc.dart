@@ -253,6 +253,11 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       _testTimelinePosts.add(timelinePost);
       yield _displayFeed();
     }
+    else if(event is TimelineUpdatePostEvent){
+      int index = _testPosts.indexWhere((post) => post.id.compareTo(event.post.id)==0);
+      _testPosts[index] = event.post;
+      yield TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
+    }
     else if(event is TimelineTagClickedEvent) yield* _mapTagChnageToState(event);
     else if(event is TimelineSearchPostEvent) yield* _mapSearchPageEventToState(event);
     else if(event is TimelineLocationSearchTextChangeEvent){

@@ -40,3 +40,8 @@ class TimelineAlbumDisplaySearchResultsState extends TimelineAlbumSearchState{
   final List<Post> queryResults;
   TimelineAlbumDisplaySearchResultsState(this.queryResults);
 }
+
+class TimelineRebuildMyPostsPageState extends TimelineState{
+  final Map<Post,String> postTime;
+  TimelineRebuildMyPostsPageState(this.postTime);
+}

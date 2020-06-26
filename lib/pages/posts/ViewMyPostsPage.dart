@@ -24,17 +24,28 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Insert searchbar soon'),),
-      body: ListView.builder(
-        itemCount: _myPostsTime.length,
-        itemBuilder:(_,index){
-          return ListTile(
-            title: Text(_myPostsTime.keys.toList()[index].title),
-            subtitle: Text(_myPostsTime.values.toList()[index]),
-            onTap: (){
-              BlocProvider.of<AppBloc>(context).add(AppToEditPostPageEvent(_myPostsTime.keys.toList()[index]));
-            },
+      body: BlocBuilder<TimelineBloc, TimelineState>(
+        condition: (_,state){
+          if(state is TimelineRebuildMyPostsPageState) return true;
+          return false;
+        },
+        builder:(_,state){
+          if(state is TimelineRebuildMyPostsPageState){
+            _myPostsTime = state.postTime;
+          }
+          return ListView.builder(
+            itemCount: _myPostsTime.length,
+            itemBuilder:(_,index){
+              return ListTile(
+                title: Text(_myPostsTime.keys.toList()[index].title),
+                subtitle: Text(_myPostsTime.values.toList()[index]),
+                onTap: (){
+                  BlocProvider.of<AppBloc>(context).add(AppToEditPostPageEvent(_myPostsTime.keys.toList()[index]));
+                },
+              );
+            }
           );
-        }
+        } 
       ),
     );
   }

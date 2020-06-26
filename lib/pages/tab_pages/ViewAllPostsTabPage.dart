@@ -64,7 +64,6 @@ class ViewAllEventsPage{
             floating: true,
             bottom: PreferredSize(
               child: Container(
-                color: Colors.black,
                 height: 35,
                 child: BlocBuilder<TimelineBloc, TimelineState>(
                   condition: (_,state){

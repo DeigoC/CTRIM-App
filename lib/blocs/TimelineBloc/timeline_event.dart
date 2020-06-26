@@ -13,6 +13,12 @@ class TimelineAddNewPostEvent extends TimelineEvent{
   TimelineAddNewPostEvent(this.post);
 }
 
+class TimelineUpdatePostEvent extends TimelineEvent{
+  final Post post;
+  final String uid;
+  TimelineUpdatePostEvent(this.post, this.uid);
+}
+
 class TimelineTagClickedEvent extends TimelineEvent{
   final String tag;
   TimelineTagClickedEvent(this.tag);
