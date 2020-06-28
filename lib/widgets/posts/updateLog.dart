@@ -14,10 +14,9 @@ class UpdateLogDialogue extends StatefulWidget {
 }
 
 class _UpdateLogDialogueState extends State<UpdateLogDialogue> {
-  
   TextEditingController _tecUpdateLog;
   bool _hasText = false;
-  
+
   @override
   void initState() {
     _tecUpdateLog = TextEditingController();
@@ -25,7 +24,7 @@ class _UpdateLogDialogueState extends State<UpdateLogDialogue> {
   }
 
   @override
-  void dispose() { 
+  void dispose() {
     _tecUpdateLog.dispose();
     super.dispose();
   }
@@ -42,26 +41,36 @@ class _UpdateLogDialogueState extends State<UpdateLogDialogue> {
             MyTextField(
               controller: _tecUpdateLog,
               label: 'Update Log',
-              onTextChange: (newString){
-                if(_tecUpdateLog.text.trim().isEmpty){ 
-                  setState(() {_hasText = false;});
-                }else{
-                  if(!_hasText) setState(() {_hasText = true;});
+              onTextChange: (newString) {
+                if (_tecUpdateLog.text.trim().isEmpty) {
+                  setState(() {
+                    _hasText = false;
+                  });
+                } else {
+                  if (!_hasText)
+                    setState(() {
+                      _hasText = true;
+                    });
                 }
               },
               hint: 'e.g. Changed location and time',
             ),
             Padding(
               padding: EdgeInsets.all(8),
-                child: RaisedButton(
-                  child: Text('Update Post'),
-                  onPressed: _hasText ? (){
-                    String userID = BlocProvider.of<AppBloc>(context).currentUser.id;
-                    BlocProvider.of<TimelineBloc>(context).add(TimelineUpdatePostEvent(widget.postBloc.newPost, userID));
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  }:null,
-                ),
+              child: RaisedButton(
+                child: Text('Update Post'),
+                onPressed: _hasText
+                    ? () {
+                        String userID =
+                            BlocProvider.of<AppBloc>(context).currentUser.id;
+                        BlocProvider.of<TimelineBloc>(context).add(
+                            TimelineUpdatePostEvent(widget.postBloc.newPost,
+                                userID, _tecUpdateLog.text));
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      }
+                    : null,
+              ),
             )
           ],
         ),
