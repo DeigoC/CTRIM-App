@@ -1,8 +1,8 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
-import 'package:ctrim_app_v1/models/imageTag.dart';
-import 'package:ctrim_app_v1/models/post.dart';
-import 'package:ctrim_app_v1/models/timelinePost.dart';
-import 'package:ctrim_app_v1/models/user.dart';
+import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
+import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

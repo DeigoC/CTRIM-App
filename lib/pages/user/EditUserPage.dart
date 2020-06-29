@@ -1,14 +1,12 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
-import 'package:ctrim_app_v1/models/confirmationDialogue.dart';
-import 'package:ctrim_app_v1/models/user.dart';
-import 'package:ctrim_app_v1/widgets/generic/MyDropdownList.dart';
-import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
+import 'package:ctrim_app_v1/classes/models/user.dart';
+import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditUserPage extends StatefulWidget {
-
   final User user;
   EditUserPage(this.user);
   @override
@@ -16,7 +14,6 @@ class EditUserPage extends StatefulWidget {
 }
 
 class _EditUserPageState extends State<EditUserPage> {
-  
   AdminBloc _adminBloc;
 
   @override
@@ -27,7 +24,7 @@ class _EditUserPageState extends State<EditUserPage> {
   }
 
   @override
-  void dispose() { 
+  void dispose() {
     _adminBloc.close();
     super.dispose();
   }
@@ -35,21 +32,26 @@ class _EditUserPageState extends State<EditUserPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         return ConfirmationDialogue.leaveEditPage(context: context);
       },
-          child: BlocProvider<AdminBloc>(
+      child: BlocProvider<AdminBloc>(
         create: (_) => _adminBloc,
         child: Scaffold(
-          appBar: AppBar(title: Text('Edit User'),centerTitle: true,),
+          appBar: AppBar(
+            title: Text('Edit User'),
+            centerTitle: true,
+          ),
           body: _buildBody(),
         ),
       ),
     );
   }
 
-  Widget _buildBody(){
-    SizedBox padding = SizedBox(height: 8,);
+  Widget _buildBody() {
+    SizedBox padding = SizedBox(
+      height: 8,
+    );
     return ListView(
       children: [
         Padding(
@@ -61,25 +63,28 @@ class _EditUserPageState extends State<EditUserPage> {
           label: 'Forename',
           controller: TextEditingController(text: widget.user.forename),
           hint: 'Required',
-          onTextChange: (newString) => _adminBloc.add(AdminUserModEditTextChangeEvent(forename: newString)),
+          onTextChange: (newString) => _adminBloc
+              .add(AdminUserModEditTextChangeEvent(forename: newString)),
         ),
         padding,
         MyTextField(
           label: 'Surname',
           controller: TextEditingController(text: widget.user.surname),
           hint: 'Required',
-          onTextChange: (newString) => _adminBloc.add(AdminUserModEditTextChangeEvent(surname: newString)),
+          onTextChange: (newString) => _adminBloc
+              .add(AdminUserModEditTextChangeEvent(surname: newString)),
         ),
         padding,
         MyTextField(
           label: 'Contact No',
           controller: TextEditingController(text: widget.user.contactNo),
           hint: 'Optional',
-          onTextChange: (newString) => _adminBloc.add(AdminUserModEditTextChangeEvent(contactNo: newString)),
+          onTextChange: (newString) => _adminBloc
+              .add(AdminUserModEditTextChangeEvent(contactNo: newString)),
         ),
         padding,
         Padding(
-          padding: const EdgeInsets.only(left:8.0),
+          padding: const EdgeInsets.only(left: 8.0),
           child: AdminDropdownList(),
         ),
         padding,
@@ -90,35 +95,40 @@ class _EditUserPageState extends State<EditUserPage> {
           readOnly: true,
         ),
         padding,
-         Container(
-         padding: EdgeInsets.all(8),
-         child: BlocConsumer(
-           bloc: _adminBloc,
-           listener: (_,state){
-             if(state is AdminUserModUpdateUser){
-              
-             }
-           },
-           buildWhen: (_,state){
-             if(state is AdminUserModEnableSaveButtonState) return true;
-             else if(state is AdminUserModDisableButtonState) return true;
-             return false;
-           },
-            builder:(_,state){
-            return RaisedButton(
-             child: Text('Register User'),
-             onPressed:(state is AdminUserModEnableSaveButtonState) ? (){
-                ConfirmationDialogue.saveRecord(context: context, record: 'User', editing: true).then((confirmation){
-                 if(confirmation){
-                  BlocProvider.of<TimelineBloc>(context).add(TimelineUserUpdatedEvent(_adminBloc.selectedUser));
-                  Navigator.of(context).pop();
-                 }
-               });
-             }: null,
-           );
-          }
-         )
-       )
+        Container(
+            padding: EdgeInsets.all(8),
+            child: BlocConsumer(
+                bloc: _adminBloc,
+                listener: (_, state) {
+                  if (state is AdminUserModUpdateUser) {}
+                },
+                buildWhen: (_, state) {
+                  if (state is AdminUserModEnableSaveButtonState)
+                    return true;
+                  else if (state is AdminUserModDisableButtonState) return true;
+                  return false;
+                },
+                builder: (_, state) {
+                  return RaisedButton(
+                    child: Text('Register User'),
+                    onPressed: (state is AdminUserModEnableSaveButtonState)
+                        ? () {
+                            ConfirmationDialogue.saveRecord(
+                                    context: context,
+                                    record: 'User',
+                                    editing: true)
+                                .then((confirmation) {
+                              if (confirmation) {
+                                BlocProvider.of<TimelineBloc>(context).add(
+                                    TimelineUserUpdatedEvent(
+                                        _adminBloc.selectedUser));
+                                Navigator.of(context).pop();
+                              }
+                            });
+                          }
+                        : null,
+                  );
+                }))
       ],
     );
   }

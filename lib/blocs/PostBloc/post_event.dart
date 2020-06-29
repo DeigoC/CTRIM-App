@@ -6,76 +6,88 @@ abstract class PostEvent extends Equatable {
   const PostEvent();
 }
 
-class PostTabClickEvent extends PostEvent{
+class PostTabClickEvent extends PostEvent {
   final int selectedIndex;
   PostTabClickEvent(this.selectedIndex);
 }
 
-class PostTextChangeEvent extends PostEvent{
+class PostTextChangeEvent extends PostEvent {
   final String title, description;
   PostTextChangeEvent({this.title, this.description});
 }
 
-class PostDepartmentClickEvent extends PostEvent{
-  final Department department;
+class PostDepartmentClickEvent extends PostEvent {
+  final PostTag department;
   final bool selected;
   PostDepartmentClickEvent(this.department, this.selected);
 }
 
-class PostSaveBodyDocumentEvent extends PostEvent{
+class PostSaveBodyDocumentEvent extends PostEvent {
   final String bodyContent;
   PostSaveBodyDocumentEvent(this.bodyContent);
 }
 
-// * Details Events
-class PostScheduleTabEvent extends PostEvent{}
-class PostSelectPostDateEvent extends PostScheduleTabEvent{}
-class PostSelectPostTimeEvent extends PostScheduleTabEvent{}
-class PostSetPostDateEvent extends PostScheduleTabEvent{
+// ! Details Events
+class PostScheduleTabEvent extends PostEvent {}
+
+class PostSelectPostDateEvent extends PostScheduleTabEvent {}
+
+class PostSelectPostTimeEvent extends PostScheduleTabEvent {}
+
+class PostSetPostDateEvent extends PostScheduleTabEvent {
   final DateTime selectedDate;
   PostSetPostDateEvent(this.selectedDate);
 }
-class PostSetPostTimeEvent extends PostScheduleTabEvent{
+
+class PostSetPostTimeEvent extends PostScheduleTabEvent {
   final TimeOfDay selectedTOD;
   PostSetPostTimeEvent(this.selectedTOD);
 }
-class PostDateNotApplicableClick extends PostScheduleTabEvent{}
-class PostSelectedLocationEvent extends PostScheduleTabEvent{
+
+class PostDateNotApplicableClick extends PostScheduleTabEvent {}
+
+class PostSelectedLocationEvent extends PostScheduleTabEvent {
   final String locationID, addressLine;
   PostSelectedLocationEvent({this.locationID, this.addressLine});
 }
 
-// * Detail List Events
-class PostDetailListEvent extends PostEvent{}
-class PostDetailListTextChangeEvent extends PostDetailListEvent{
+// ! Detail List Events
+class PostDetailListEvent extends PostEvent {}
+
+class PostDetailListTextChangeEvent extends PostDetailListEvent {
   final String leading, trailing;
   PostDetailListTextChangeEvent({this.leading, this.trailing});
 }
-class PostDetailListItemRemovedEvent extends PostDetailListEvent{
+
+class PostDetailListItemRemovedEvent extends PostDetailListEvent {
   final List<String> item;
   PostDetailListItemRemovedEvent(this.item);
 }
 
-class PostDetailListReorderEvent extends PostDetailListEvent{
+class PostDetailListReorderEvent extends PostDetailListEvent {
   final int oldIndex, newIndex;
-  PostDetailListReorderEvent({@required this.oldIndex, @required this.newIndex});
+  PostDetailListReorderEvent(
+      {@required this.oldIndex, @required this.newIndex});
 }
 
-class PostDetailListAddItemEvent extends PostDetailListEvent{}
+class PostDetailListAddItemEvent extends PostDetailListEvent {}
 
-class PostDetailListSaveEditEvent extends PostDetailListEvent{
+class PostDetailListSaveEditEvent extends PostDetailListEvent {
   final int itemIndex;
   PostDetailListSaveEditEvent(this.itemIndex);
 }
 
-// * Gallery Events
-class PostGalleryEvent extends PostEvent{}
-class PostFilesReceivedEvent extends PostGalleryEvent{}
-class PostFilesRemoveSelectedEvent extends PostGalleryEvent{
+// ! Gallery Events
+class PostGalleryEvent extends PostEvent {}
+
+class PostFilesReceivedEvent extends PostGalleryEvent {}
+
+class PostFilesRemoveSelectedEvent extends PostGalleryEvent {
   final List<File> selectedFiles;
   PostFilesRemoveSelectedEvent(this.selectedFiles);
 }
-class PostRemoveSelectedFilesAndSrcEvent extends PostGalleryEvent{
+
+class PostRemoveSelectedFilesAndSrcEvent extends PostGalleryEvent {
   final List<String> selectedFilesAndSrcs;
   PostRemoveSelectedFilesAndSrcEvent(this.selectedFilesAndSrcs);
 }

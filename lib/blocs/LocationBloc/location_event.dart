@@ -1,47 +1,58 @@
 part of 'location_bloc.dart';
 
 abstract class LocationEvent extends Equatable {
-   @override
+  @override
   List<Object> get props => [];
   const LocationEvent();
 }
 
-class LocationTextChangeEvent extends LocationEvent{
+class LocationTextChangeEvent extends LocationEvent {
   final String streetAddress, townCityAddress, postcode;
-  LocationTextChangeEvent({this.streetAddress, this.townCityAddress, this.postcode});
+  LocationTextChangeEvent(
+      {this.streetAddress, this.townCityAddress, this.postcode});
 }
 
-class LocationQueryAddressEvent extends LocationEvent{}
-class LocationCancelQueryEvent extends LocationQueryAddressEvent{}
+// ! Query Address events
+class LocationQueryAddressEvent extends LocationEvent {}
 
-class LocationFindAddressEvent extends LocationQueryAddressEvent{
+class LocationCancelQueryEvent extends LocationQueryAddressEvent {}
+
+class LocationFindAddressEvent extends LocationQueryAddressEvent {
   final String streetAddress, townCityAddress, postcode;
-  LocationFindAddressEvent({@required this.streetAddress, @required this.townCityAddress, @required this.postcode});
+  LocationFindAddressEvent(
+      {@required this.streetAddress,
+      @required this.townCityAddress,
+      @required this.postcode});
 }
 
-class LocationSelectedQueryAddressEvent extends LocationQueryAddressEvent{
+class LocationSelectedQueryAddressEvent extends LocationQueryAddressEvent {
   final String selectedAddress;
   LocationSelectedQueryAddressEvent(this.selectedAddress);
 }
 
-class LocationWrongQueryAddressEvent extends LocationQueryAddressEvent{}
-class LocationConfirmedQueryAddressEvent extends LocationQueryAddressEvent{}
-class LocationImageSelectedEvent extends LocationEvent{
+class LocationWrongQueryAddressEvent extends LocationQueryAddressEvent {}
+
+class LocationConfirmedQueryAddressEvent extends LocationQueryAddressEvent {}
+
+// ! Location Image evnets
+class LocationImageSelectedEvent extends LocationEvent {
   final File selectedFile;
   LocationImageSelectedEvent(this.selectedFile);
 }
 
-class LocationRemoveSelectedImageEvent extends LocationEvent{}
+class LocationRemoveSelectedImageEvent extends LocationEvent {}
 
 // ! Edit Location events
-class LocationEditLocationEvent extends LocationEvent{}
-class LocationDescriptionTextChangeEvent extends LocationEditLocationEvent{
+class LocationEditLocationEvent extends LocationEvent {}
+
+class LocationDescriptionTextChangeEvent extends LocationEditLocationEvent {
   final String description;
   LocationDescriptionTextChangeEvent(this.description);
 }
 
-class LocationEditRemoveSrcEvent extends LocationEditLocationEvent{}
+class LocationEditRemoveSrcEvent extends LocationEditLocationEvent {}
 
-class LocationEditConfirmedQueryAddressEvent extends LocationEditLocationEvent{}
+class LocationEditConfirmedQueryAddressEvent extends LocationEditLocationEvent {
+}
 
-class LocationEditUpdateLocationEvent extends LocationEditLocationEvent{}
+class LocationEditUpdateLocationEvent extends LocationEditLocationEvent {}

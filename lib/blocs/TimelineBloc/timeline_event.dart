@@ -6,6 +6,7 @@ abstract class TimelineEvent extends Equatable {
   const TimelineEvent();
 }
 
+// ! Post Related
 class TimelineFetchAllPostsEvent extends TimelineEvent {}
 
 class TimelineAddNewPostEvent extends TimelineEvent {
@@ -24,25 +25,7 @@ class TimelineTagClickedEvent extends TimelineEvent {
   TimelineTagClickedEvent(this.tag);
 }
 
-class TimelineSearchPostEvent extends TimelineEvent {}
-
-class TimelineSearchTextChangeEvent extends TimelineSearchPostEvent {
-  final String searchString;
-  TimelineSearchTextChangeEvent(this.searchString);
-}
-
-class TimelineLocationSearchTextChangeEvent extends TimelineEvent {
-  final String searchString;
-  TimelineLocationSearchTextChangeEvent(this.searchString);
-}
-
-class TimelineAlbumSearchEvent extends TimelineEvent {}
-
-class TimelineAlbumSearchTextChangeEvent extends TimelineAlbumSearchEvent {
-  final String newSearch;
-  TimelineAlbumSearchTextChangeEvent(this.newSearch);
-}
-
+// ! User related
 class TimelineUserUpdatedEvent extends TimelineEvent {
   final User updatedUser;
   TimelineUserUpdatedEvent(this.updatedUser);
@@ -51,4 +34,26 @@ class TimelineUserUpdatedEvent extends TimelineEvent {
 class TimelineDisplayCurrentUserLikedPosts extends TimelineEvent {
   final List<String> likedPosts;
   TimelineDisplayCurrentUserLikedPosts(this.likedPosts);
+}
+
+// ! Search Post
+class TimelineSearchPostEvent extends TimelineEvent {}
+
+class TimelineSearchTextChangeEvent extends TimelineSearchPostEvent {
+  final String searchString;
+  TimelineSearchTextChangeEvent(this.searchString);
+}
+
+// ! Search Location
+class TimelineLocationSearchTextChangeEvent extends TimelineEvent {
+  final String searchString;
+  TimelineLocationSearchTextChangeEvent(this.searchString);
+}
+
+// ! Search Album
+class TimelineAlbumSearchEvent extends TimelineEvent {}
+
+class TimelineAlbumSearchTextChangeEvent extends TimelineAlbumSearchEvent {
+  final String newSearch;
+  TimelineAlbumSearchTextChangeEvent(this.newSearch);
 }

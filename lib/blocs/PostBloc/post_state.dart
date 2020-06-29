@@ -9,45 +9,65 @@ abstract class PostState extends Equatable {
 
 class PostInitial extends PostState {}
 
-class PostButtonChangeState extends PostState{}
-class PostEnableSaveButtonState extends PostButtonChangeState{}
-class PostDisableSaveButtonState extends PostButtonChangeState{}
+class PostButtonChangeState extends PostState {}
 
-class PostUpdateBodyState extends PostState{}
+class PostEnableSaveButtonState extends PostButtonChangeState {}
 
-// * Department Clicks
-class PostDepartmentClickState extends PostState{}
+class PostDisableSaveButtonState extends PostButtonChangeState {}
 
-class PostDepartmentChurchEnabledState extends PostDepartmentClickState{}
-class PostDepartmentYouthEnabledState extends PostDepartmentClickState{}
-class PostDepartmentWomenEnabledState extends PostDepartmentClickState{}
+class PostUpdateBodyState extends PostState {}
 
-class PostDepartmentChurchDisabledState extends PostDepartmentClickState{}
-class PostDepartmentYouthDisabledState extends PostDepartmentClickState{}
-class PostDepartmentWomenDisabledState extends PostDepartmentClickState{}
+// ! Department Clicks
+class PostDepartmentClickState extends PostState {}
 
-// * Tab clicks
-class PostTabClickState extends PostState{}
-class PostAboutTabClickState extends PostTabClickState{}
-class PostDetailsTabClickState extends PostTabClickState{}
-class PostGalleryTabClickState extends PostTabClickState{}
-class PostUpdatesTabClickState extends PostTabClickState{}
+class PostDepartmentChurchEnabledState extends PostDepartmentClickState {}
 
-// * Schedule States
-class PostScheduleState extends PostState{}
-class PostSelectDateState extends PostScheduleState{}
-class PostSelectTimeState extends PostScheduleState{}
-class PostDateSelectedState extends PostScheduleState{}
-class PostDateIsApplicableState extends PostScheduleState{}
-class PostDateIsNOTApplicableState extends PostScheduleState{}
-class PostLocationSelectedState extends PostScheduleState{}
+class PostDepartmentYouthEnabledState extends PostDepartmentClickState {}
 
-// * List States
-class PostDetailListState extends PostState{}
-class PostDetailListReorderState extends PostDetailListState{}
-class PostDetailListSaveEnabledState extends PostDetailListState{}
-class PostDetailListSaveDisabledState extends PostDetailListState{}
+class PostDepartmentWomenEnabledState extends PostDepartmentClickState {}
 
-// * File States
-class PostGalleryState extends PostState{}
-class PostFilesReceivedState extends PostGalleryState{}
+class PostDepartmentChurchDisabledState extends PostDepartmentClickState {}
+
+class PostDepartmentYouthDisabledState extends PostDepartmentClickState {}
+
+class PostDepartmentWomenDisabledState extends PostDepartmentClickState {}
+
+// ! Tab clicks
+class PostTabClickState extends PostState {}
+
+class PostAboutTabClickState extends PostTabClickState {}
+
+class PostDetailsTabClickState extends PostTabClickState {}
+
+class PostGalleryTabClickState extends PostTabClickState {}
+
+class PostUpdatesTabClickState extends PostTabClickState {}
+
+// ! Schedule States
+class PostScheduleState extends PostState {}
+
+class PostSelectDateState extends PostScheduleState {}
+
+class PostSelectTimeState extends PostScheduleState {}
+
+class PostDateSelectedState extends PostScheduleState {}
+
+class PostDateIsApplicableState extends PostScheduleState {}
+
+class PostDateIsNOTApplicableState extends PostScheduleState {}
+
+class PostLocationSelectedState extends PostScheduleState {}
+
+// ! List States
+class PostDetailListState extends PostState {}
+
+class PostDetailListReorderState extends PostDetailListState {}
+
+class PostDetailListSaveEnabledState extends PostDetailListState {}
+
+class PostDetailListSaveDisabledState extends PostDetailListState {}
+
+// ! File States
+class PostGalleryState extends PostState {}
+
+class PostFilesReceivedState extends PostGalleryState {}

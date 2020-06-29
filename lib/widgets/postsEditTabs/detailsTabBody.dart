@@ -1,5 +1,5 @@
-import 'package:ctrim_app_v1/widgets/posts/post_fields.dart';
-import 'package:ctrim_app_v1/widgets/generic/MyTextField.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
+import 'package:ctrim_app_v1/widgets/postsEditTabs/post_fields.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailsTabBody extends StatefulWidget {
@@ -8,7 +8,6 @@ class PostDetailsTabBody extends StatefulWidget {
 }
 
 class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
-
   TextEditingController _tecDuration;
 
   @override
@@ -18,7 +17,7 @@ class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
   }
 
   @override
-  void dispose() { 
+  void dispose() {
     _tecDuration.dispose();
     super.dispose();
   }
@@ -29,19 +28,29 @@ class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
       shrinkWrap: true,
       children: [
         PostLocationField(),
-         SizedBox(height: 8,),
+        SizedBox(
+          height: 8,
+        ),
         PostDateTimeField(),
-         SizedBox(height: 8,),
+        SizedBox(
+          height: 8,
+        ),
         MyTextField(
           controller: _tecDuration,
           label: 'Duration',
           hint: '(Optional) e.g. 2-3 Hours, Whole Day, Pending',
           onTextChange: (newDuration) => null,
         ),
-      SizedBox(height: 16,),
-      Divider(thickness: 2,),
-      SizedBox(height: 8,),
-      DetailTable(),
+        SizedBox(
+          height: 16,
+        ),
+        Divider(
+          thickness: 2,
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        DetailTable(),
       ],
     );
   }

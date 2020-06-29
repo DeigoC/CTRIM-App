@@ -1,7 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
-import 'package:ctrim_app_v1/models/post.dart';
-import 'package:ctrim_app_v1/models/timelinePost.dart';
+import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/widgets/postArticle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,15 +37,6 @@ class ViewAllEventsPage {
   }
 
   Widget _buildBodyWithData(TimelineDisplayFeedState state) {
-    List<TimelinePost> _timelines = state.timelines;
-    List<Widget> children = _timelines
-        .map((timelinePost) => PostArticle(
-              post: _getPostFromID(timelinePost.postID, state.posts),
-              allUsers: state.users,
-              timelinePost: timelinePost,
-            ))
-        .toList();
-
     return RefreshIndicator(
       onRefresh: () async {
         return await Future.delayed(

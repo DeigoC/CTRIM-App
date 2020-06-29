@@ -1,18 +1,17 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:ctrim_app_v1/models/location.dart';
-import 'package:ctrim_app_v1/models/post.dart';
-import 'package:ctrim_app_v1/models/timelinePost.dart';
-import 'package:ctrim_app_v1/models/user.dart';
+import 'package:ctrim_app_v1/classes/models/location.dart';
+import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
+import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 part 'timeline_event.dart';
 part 'timeline_state.dart';
 
 class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
-  String _locationSearchString = '';
-
+  // ! Test Data
   List<Post> _testPosts = [
     Post(
         id: '1',
@@ -27,7 +26,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
           'https://www.lakedistrict.gov.uk/__data/assets/image/0018/123390/families-and-children.jpg':
               'img',
         },
-        selectedTags: [Department.YOUTH],
+        selectedTags: [PostTag.YOUTH],
         body:
             '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
         detailTableHeader: 'This is the header for the table',
@@ -46,7 +45,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
         detailTable: [],
         detailTableHeader: '',
         locationID: '2',
-        selectedTags: [Department.YOUTH, Department.CHURCH],
+        selectedTags: [PostTag.YOUTH, PostTag.CHURCH],
         gallerySources: {
           'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/screen-shot-2020-04-09-at-12-29-32-pm-1586449781.png?crop=1.00xw:0.985xh;0,0.0151xh&resize=480:*':
               'img',
@@ -63,7 +62,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
         detailTable: [],
         detailTableHeader: '',
         locationID: '2',
-        selectedTags: [Department.YOUTH, Department.CHURCH],
+        selectedTags: [PostTag.YOUTH, PostTag.CHURCH],
         gallerySources: {
           'https://mamasgeeky.com/wp-content/uploads/2020/03/coronavirus-meme-1.jpg':
               'img',
@@ -79,7 +78,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
             '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
         detailTable: [],
         detailTableHeader: '',
-        selectedTags: [Department.WOMEN],
+        selectedTags: [PostTag.WOMEN],
         gallerySources: {}),
     Post(
         id: '5',
@@ -92,7 +91,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
             '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
         detailTable: [],
         detailTableHeader: '',
-        selectedTags: [Department.WOMEN],
+        selectedTags: [PostTag.WOMEN],
         gallerySources: {
           'https://img.delicious.com.au/WqbvXLhs/del/2016/06/more-the-merrier-31380-2.jpg':
               'img',
@@ -164,7 +163,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       likedPosts: [],
     ),
   ];
-  List<User> get allUsers => _testUsers;
 
   List<Location> _testLocations = [
     Location(
@@ -200,11 +198,18 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
         description: 'KFC KFC KFC!'),
   ];
 
-  Map<Department, bool> _selectedTags = {
-    Department.YOUTH: false,
-    Department.CHURCH: false,
-    Department.WOMEN: false,
+  // ! Bloc Fields
+  String _locationSearchString = '';
+
+  List<User> get allUsers => _testUsers;
+
+  Map<PostTag, bool> _selectedTags = {
+    PostTag.YOUTH: false,
+    PostTag.CHURCH: false,
+    PostTag.WOMEN: false,
   };
+
+  // ! Bloc Functions
   Map<String, bool> getSelectedTags() {
     Map<String, bool> result = {};
     _selectedTags.forEach((key, value) {
@@ -265,7 +270,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return 'Pending';
   }
 
-  // * Stream funtions
+  // ! Mapping events to state
   @override
   TimelineState get initialState => TimelineInitial();
 
@@ -273,87 +278,24 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   Stream<TimelineState> mapEventToState(
     TimelineEvent event,
   ) async* {
-    if (event is TimelineFetchAllPostsEvent) {
+    if (event is TimelineFetchAllPostsEvent)
       yield _displayFeed();
-    } else if (event is TimelineAddNewPostEvent) {
-      _insertPostID(event.post);
-      TimelinePost timelinePost = _generateTimelinePost(event.post);
-      _testPosts.add(event.post);
-      _testTimelinePosts.add(timelinePost);
-      yield _displayFeed();
-    } else if (event is TimelineUpdatePostEvent) {
-      int index = _testPosts
-          .indexWhere((post) => post.id.compareTo(event.post.id) == 0);
-      _testPosts[index] = event.post;
-      _createUpdateTPost(event);
-      yield TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
-    } else if (event is TimelineTagClickedEvent)
+    else if (event is TimelineAddNewPostEvent)
+      yield _mapNewPostEventToState(event);
+    else if (event is TimelineUpdatePostEvent)
+      yield _mapPostUpdateToEvent(event);
+    else if (event is TimelineTagClickedEvent)
       yield* _mapTagChnageToState(event);
     else if (event is TimelineSearchPostEvent)
       yield* _mapSearchPageEventToState(event);
-    else if (event is TimelineLocationSearchTextChangeEvent) {
-      List<Location> result = [];
-      _locationSearchString = event.searchString ?? _locationSearchString;
-      _testLocations.forEach((location) {
-        if (location.id != '0' &&
-            location.addressLine
-                .toLowerCase()
-                .contains(_locationSearchString.toLowerCase())) {
-          result.add(location);
-        }
-      });
-      yield TimelineDisplayLocationSearchResultsState(result);
-      yield TimelineEmptyState();
-    } else if (event is TimelineAlbumSearchEvent)
+    else if (event is TimelineLocationSearchTextChangeEvent)
+      yield* _mapLocationSearchEventToState(event);
+    else if (event is TimelineAlbumSearchEvent)
       yield* _mapAlbumSearchEventToState(event);
-    else if (event is TimelineUserUpdatedEvent) {
-      int index = _testUsers
-          .indexWhere((user) => user.id.compareTo(event.updatedUser.id) == 0);
-      _testUsers[index] = event.updatedUser;
-      yield TimelineEmptyState();
-    } else if (event is TimelineDisplayCurrentUserLikedPosts)
+    else if (event is TimelineUserUpdatedEvent)
+      yield _mapUserUpdatedEventToState(event);
+    else if (event is TimelineDisplayCurrentUserLikedPosts)
       yield _getCurrentUserLikedPosts(event.likedPosts);
-  }
-
-  void _createUpdateTPost(TimelineUpdatePostEvent event) {
-    String authorID = _testTimelinePosts
-        .firstWhere((tPost) => tPost.postID.compareTo(event.post.id) == 0)
-        .authorID;
-    _testTimelinePosts.add(TimelinePost(
-        id: (int.parse(_testTimelinePosts.last.id) + 1).toString(),
-        authorID: authorID,
-        postDate: DateTime.now(),
-        postID: event.post.id,
-        updateLog: event.updateLog,
-        postType: 'update'));
-  }
-
-  TimelineDisplaySearchFeedState _getCurrentUserLikedPosts(
-      List<String> postIDs) {
-    List<Post> posts = [];
-    List<TimelinePost> tPosts = [];
-
-    _testPosts.forEach((post) {
-      if (postIDs.contains(post.id)) {
-        posts.add(post);
-      }
-    });
-
-    posts.forEach((post) {
-      _testTimelinePosts.forEach((tPost) {
-        if (tPost.postID.compareTo(post.id) == 0 &&
-            tPost.postType == 'original' &&
-            !tPosts.contains(tPost)) {
-          tPosts.add(tPost);
-        }
-      });
-    });
-
-    return TimelineDisplaySearchFeedState(
-      users: _testUsers,
-      posts: posts,
-      timelines: tPosts,
-    );
   }
 
   Stream<TimelineState> _mapAlbumSearchEventToState(
@@ -385,35 +327,27 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   Stream<TimelineState> _mapTagChnageToState(
       TimelineTagClickedEvent event) async* {
-    Department selectedTag = _stringToTag(event.tag);
+    PostTag selectedTag = _stringToTag(event.tag);
     _selectedTags[selectedTag] = !_selectedTags[selectedTag];
 
     yield TimelineTagChangedState();
     yield _displayFeed();
   }
 
-  Department _stringToTag(String tag) {
-    switch (tag) {
-      case 'Women':
-        return Department.WOMEN;
-      case 'Church':
-        return Department.CHURCH;
-      case 'Youth':
-        return Department.YOUTH;
-    }
-    return null;
-  }
-
-  String _tagToString(Department tag) {
-    switch (tag) {
-      case Department.CHURCH:
-        return 'Church';
-      case Department.WOMEN:
-        return 'Women';
-      case Department.YOUTH:
-        return 'Youth';
-    }
-    return '';
+  Stream<TimelineState> _mapLocationSearchEventToState(
+      TimelineLocationSearchTextChangeEvent event) async* {
+    List<Location> result = [];
+    _locationSearchString = event.searchString ?? _locationSearchString;
+    _testLocations.forEach((location) {
+      if (location.id != '0' &&
+          location.addressLine
+              .toLowerCase()
+              .contains(_locationSearchString.toLowerCase())) {
+        result.add(location);
+      }
+    });
+    yield TimelineDisplayLocationSearchResultsState(result);
+    yield TimelineEmptyState();
   }
 
   TimelineState _displayFeedBySearch(String search) {
@@ -448,11 +382,19 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     );
   }
 
+  TimelineState _mapNewPostEventToState(TimelineAddNewPostEvent event) {
+    _insertPostID(event.post);
+    TimelinePost timelinePost = _generateTimelinePost(event.post);
+    _testPosts.add(event.post);
+    _testTimelinePosts.add(timelinePost);
+    return _displayFeed();
+  }
+
   TimelineState _displayFeed() {
     _testTimelinePosts.sort((x, y) => y.postDate.compareTo(x.postDate));
     List<Post> posts = [];
     List<TimelinePost> tPosts = [];
-    List<Department> selectedTags = [];
+    List<PostTag> selectedTags = [];
 
     if (_selectedTags.values.contains(true)) {
       _selectedTags.forEach((key, value) {
@@ -489,14 +431,19 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     );
   }
 
-  void _insertPostID(Post post) {
-    post.id = (int.parse(_testPosts.last.id) + 1).toString();
+  TimelineState _mapUserUpdatedEventToState(TimelineUserUpdatedEvent event) {
+    int index = _testUsers
+        .indexWhere((user) => user.id.compareTo(event.updatedUser.id) == 0);
+    _testUsers[index] = event.updatedUser;
+    return TimelineEmptyState();
   }
 
-  void updateLocation(Location location) {
+  TimelineState _mapPostUpdateToEvent(TimelineUpdatePostEvent event) {
     int index =
-        _testLocations.indexWhere((l) => l.id.compareTo(location.id) == 0);
-    _testLocations[index] = location;
+        _testPosts.indexWhere((post) => post.id.compareTo(event.post.id) == 0);
+    _testPosts[index] = event.post;
+    _createUpdateTPost(event);
+    return TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
   }
 
   TimelinePost _generateTimelinePost(Post post) {
@@ -506,5 +453,81 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       authorID: '1',
       postDate: DateTime.now(),
     );
+  }
+
+  TimelineDisplaySearchFeedState _getCurrentUserLikedPosts(
+      List<String> postIDs) {
+    List<Post> posts = [];
+    List<TimelinePost> tPosts = [];
+
+    _testPosts.forEach((post) {
+      if (postIDs.contains(post.id)) {
+        posts.add(post);
+      }
+    });
+
+    posts.forEach((post) {
+      _testTimelinePosts.forEach((tPost) {
+        if (tPost.postID.compareTo(post.id) == 0 &&
+            tPost.postType == 'original' &&
+            !tPosts.contains(tPost)) {
+          tPosts.add(tPost);
+        }
+      });
+    });
+
+    return TimelineDisplaySearchFeedState(
+      users: _testUsers,
+      posts: posts,
+      timelines: tPosts,
+    );
+  }
+
+  PostTag _stringToTag(String tag) {
+    switch (tag) {
+      case 'Women':
+        return PostTag.WOMEN;
+      case 'Church':
+        return PostTag.CHURCH;
+      case 'Youth':
+        return PostTag.YOUTH;
+    }
+    return null;
+  }
+
+  String _tagToString(PostTag tag) {
+    switch (tag) {
+      case PostTag.CHURCH:
+        return 'Church';
+      case PostTag.WOMEN:
+        return 'Women';
+      case PostTag.YOUTH:
+        return 'Youth';
+    }
+    return '';
+  }
+
+  void _insertPostID(Post post) {
+    post.id = (int.parse(_testPosts.last.id) + 1).toString();
+  }
+
+  void _createUpdateTPost(TimelineUpdatePostEvent event) {
+    String authorID = _testTimelinePosts
+        .firstWhere((tPost) => tPost.postID.compareTo(event.post.id) == 0)
+        .authorID;
+    _testTimelinePosts.add(TimelinePost(
+        id: (int.parse(_testTimelinePosts.last.id) + 1).toString(),
+        authorID: authorID,
+        postDate: DateTime.now(),
+        postID: event.post.id,
+        updateLog: event.updateLog,
+        postType: 'update'));
+  }
+
+  //TODO this should not exist
+  void updateLocation(Location location) {
+    int index =
+        _testLocations.indexWhere((l) => l.id.compareTo(location.id) == 0);
+    _testLocations[index] = location;
   }
 }
