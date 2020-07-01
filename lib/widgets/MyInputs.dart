@@ -41,6 +41,7 @@ class MyTextField extends StatelessWidget {
   final Function(String) onTextChange;
   final bool readOnly;
   final int maxLength, maxLines;
+  final TextInputAction textInputAction;
 
   MyTextField({
     @required this.label,
@@ -50,6 +51,7 @@ class MyTextField extends StatelessWidget {
     this.readOnly = false,
     this.maxLength,
     this.maxLines,
+    this.textInputAction = TextInputAction.done,
   });
 
   @override
@@ -59,15 +61,14 @@ class MyTextField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-          ),
+          Text(label,),
           TextField(
             controller: controller,
             onChanged: onTextChange,
             readOnly: readOnly,
             maxLength: maxLength,
-            maxLines: maxLines ?? 1,
+            maxLines: maxLines,
+            textInputAction: textInputAction,
             decoration: InputDecoration(hintText: hint ?? ''),
           ),
         ],

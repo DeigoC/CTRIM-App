@@ -63,8 +63,7 @@ class _UpdateLogDialogueState extends State<UpdateLogDialogue> {
                         String userID =
                             BlocProvider.of<AppBloc>(context).currentUser.id;
                         BlocProvider.of<TimelineBloc>(context).add(
-                            TimelineUpdatePostEvent(widget.postBloc.newPost,
-                                userID, _tecUpdateLog.text));
+                            TimelineUpdatePostEvent(post: widget.postBloc.newPost, uid: userID, updateLog:_tecUpdateLog.text));
                         Navigator.of(context).pop();
                         Navigator.of(context).pop();
                       }

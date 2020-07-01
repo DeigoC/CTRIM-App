@@ -1,5 +1,8 @@
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/classes/other/updateDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/postsEditTabs/detailsTabBody.dart';
@@ -70,60 +73,70 @@ class _EditPostPageState extends State<EditPostPage>
       child: BlocProvider(
         create: (_) => _postBloc,
         child: Scaffold(
+          // ? Maybe this could be removed?
           resizeToAvoidBottomPadding: false,
-          body: Scaffold(
-            body: NestedScrollView(
-              headerSliverBuilder: (_, __) {
-                return [
-                  SliverAppBar(
-                    expandedHeight: 200,
-                    actions: [
-                      _buildUpdateButton(),
-                    ],
-                  ),
-                  SliverPadding(
-                    padding: EdgeInsets.all(8.0),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        MyTextField(
-                          label: 'Title',
-                          hint: 'e.g. Youth Day Out!',
-                          controller: _tecTitle,
-                          onTextChange: (newTitle) => _postBloc
-                              .add(PostTextChangeEvent(title: newTitle)),
-                        ),
-                        TabBar(
-                          labelColor: Colors.black,
-                          controller: _tabController,
-                          tabs: [
-                            Tab(
-                              icon: Icon(Icons.info_outline),
-                              text: 'About',
-                            ),
-                            Tab(
-                              icon: Icon(Icons.calendar_today),
-                              text: 'Details',
-                            ),
-                            Tab(
-                              icon: Icon(Icons.photo_library),
-                              text: 'Gallery',
-                            ),
-                            Tab(
-                              icon: Icon(Icons.track_changes),
-                              text: 'Updates',
-                            ),
-                          ],
-                          onTap: (newIndex) {
-                            _postBloc.add(PostTabClickEvent(newIndex));
-                          },
-                        )
-                      ]),
+          body: NestedScrollView(
+            headerSliverBuilder: (_, __) {
+              return [
+                SliverAppBar(
+                  expandedHeight: 200,
+                  actions: [
+                    _buildUpdateButton(),
+                    RaisedButton(
+                      child: Text('Delete'),
+                      onPressed: () {
+                        ConfirmationDialogue.deleteRecord(context: context, record: 'Post').then((confirmation) {
+                          if(confirmation){
+                            BlocProvider.of<TimelineBloc>(context).add(
+                              TimelineDeletePostEvent(post: widget._post, uid: BlocProvider.of<AppBloc>(context).currentUser.id));
+                            Navigator.of(context).pop();
+                          }
+                        });
+                      },
                     ),
-                  )
-                ];
-              },
-              body: _buildBody(),
-            ),
+                  ],
+                ),
+                SliverPadding(
+                  padding: EdgeInsets.all(8.0),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      MyTextField(
+                        label: 'Title',
+                        hint: 'e.g. Youth Day Out!',
+                        controller: _tecTitle,
+                        onTextChange: (newTitle) => _postBloc.add(PostTextChangeEvent(title: newTitle)),
+                      ),
+                      TabBar(
+                        labelColor: Colors.black,
+                        controller: _tabController,
+                        tabs: [
+                          Tab(
+                            icon: Icon(Icons.info_outline),
+                            text: 'About',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.calendar_today),
+                            text: 'Details',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.photo_library),
+                            text: 'Gallery',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.track_changes),
+                            text: 'Updates',
+                          ),
+                        ],
+                        onTap: (newIndex) {
+                          _postBloc.add(PostTabClickEvent(newIndex));
+                        },
+                      )
+                    ]),
+                  ),
+                )
+              ];
+            },
+            body: _buildBody(),
           ),
         ),
       ),
@@ -138,16 +151,11 @@ class _EditPostPageState extends State<EditPostPage>
       },
       builder: (_, state) {
         Widget result = RaisedButton(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           onPressed: (state is PostEnableSaveButtonState)
-              ? () {
-                  _confirmSave();
-                }
+              ? () { _confirmSave();}
               : null,
-          child: Text(
-            'Update',
-          ),
+          child: Text('Update',),
         );
         return result;
       },

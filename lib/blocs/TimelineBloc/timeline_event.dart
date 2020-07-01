@@ -14,15 +14,29 @@ class TimelineAddNewPostEvent extends TimelineEvent {
   TimelineAddNewPostEvent(this.post);
 }
 
-class TimelineUpdatePostEvent extends TimelineEvent {
-  final Post post;
-  final String uid, updateLog;
-  TimelineUpdatePostEvent(this.post, this.uid, this.updateLog);
-}
-
 class TimelineTagClickedEvent extends TimelineEvent {
   final String tag;
   TimelineTagClickedEvent(this.tag);
+}
+
+class TimelinePostUpdateEvent extends TimelineEvent{
+  final Post post;
+  final String uid, updateLog;
+  TimelinePostUpdateEvent(this.post, this.uid, this.updateLog);
+}
+
+class TimelineUpdatePostEvent extends TimelinePostUpdateEvent {
+  final Post post;
+  final String uid, updateLog;
+  TimelineUpdatePostEvent({this.post, this.uid, this.updateLog}) : 
+  super(post, uid, updateLog);
+}
+
+class TimelineDeletePostEvent extends TimelinePostUpdateEvent{
+  final Post post;
+  final String uid;
+  TimelineDeletePostEvent({this.post, this.uid})
+  :super(post, uid, 'Post Deleted');
 }
 
 // ! User related

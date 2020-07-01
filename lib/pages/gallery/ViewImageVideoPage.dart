@@ -1,5 +1,6 @@
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
 
@@ -17,10 +18,15 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   Map<String, VideoPlayerController> _videoControllers =
       <String, VideoPlayerController>{};
   Orientation _orientation;
-  bool _videoControlsVisible = false;
+  bool _videoControlsVisible = false, _pagePoped = false;
+
+  ScrollController _scrollController;
+
 
   @override
   void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scollListener);
     widget.imageSources.keys.forEach((src) {
       if (widget.imageSources[src].type == 'vid') {
         VideoPlayerController controller = VideoPlayerController.network(src);
@@ -35,6 +41,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _videoControllers.values.forEach((controller) => controller.dispose());
     super.dispose();
   }
@@ -62,15 +69,55 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   }
 
   Widget _createImagePage(String src) {
+   /*  return Center(
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        physics: BouncingScrollPhysics(),
+        child:  Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Hero(
+            tag: widget.imageSources[src].heroTag,
+            child: PhotoView(
+              initialScale: PhotoViewComputedScale.contained,
+              imageProvider: NetworkImage(src),
+              tightMode: true,
+            ),
+          ),
+        ),
+      ),
+    ); */
+
     return Center(
+      child: Dismissible(
+        movementDuration: Duration(milliseconds: 100),
+        dismissThresholds: {DismissDirection.down:0.8},
+        confirmDismiss: (value) async{
+          bool result = false;
+          await Future.delayed(Duration(microseconds: 100),(){
+            Navigator.of(context).pop();
+          });
+          return result;
+        },
+        direction: DismissDirection.vertical,
+        key: ValueKey(src),
+        child: Hero(
+            tag: widget.imageSources[src].heroTag,
+            child: PhotoView(
+              initialScale: PhotoViewComputedScale.contained,
+              imageProvider: NetworkImage(src),
+              tightMode: true,
+            ),
+          ),
+      ),
+    );
+
+    /* return Center(
       child: Draggable(
         feedback: Container(
           child: PhotoView(
             imageProvider: NetworkImage(src),
             tightMode: true,
-            backgroundDecoration: BoxDecoration(
-              color: Colors.white,
-            ),
           ),
           width: MediaQuery.of(context).size.width,
         ),
@@ -85,7 +132,21 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
           tag: widget.imageSources[src].heroTag,
         ),
       ),
-    );
+    ); */
+  }
+
+  void _scollListener(){
+    /* if(_scrollController.offset > (_scrollController.position.maxScrollExtent + 70)||
+    _scrollController.offset < (_scrollController.position.minScrollExtent - 70)){
+      /* if(!_pagePoped){
+        Navigator.of(context).pop();
+        setState(() {
+        _pagePoped = true;
+      });
+      } */
+
+    } */
+   
   }
 
   Widget _createVideoPage(String src) {

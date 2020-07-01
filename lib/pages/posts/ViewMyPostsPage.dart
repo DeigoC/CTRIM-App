@@ -10,12 +10,15 @@ class ViewMyPostsPage extends StatefulWidget {
 }
 
 class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
-  Map<Post, String> _myPostsTime;
+  Map<Post, String> _myPostsTime, _myDeletedPosts;
+
+  bool _showDeleted = false;
 
   @override
   void initState() {
     String userID = BlocProvider.of<AppBloc>(context).currentUser.id;
     _myPostsTime = BlocProvider.of<TimelineBloc>(context).getUserPosts(userID);
+    _myDeletedPosts = BlocProvider.of<TimelineBloc>(context).getUserDeletedPosts(userID);
     super.initState();
   }
 
@@ -24,23 +27,44 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Insert searchbar soon'),
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (_){
+              return [
+                PopupMenuItem(
+                  child: SwitchListTile(
+                    value: _showDeleted,
+                    title: Icon(Icons.delete, color: Colors.black,),
+                    onChanged: (newValue){ 
+                      setState(() {_showDeleted = newValue;});
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                )
+              ];
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<TimelineBloc, TimelineState>(condition: (_, state) {
         if (state is TimelineRebuildMyPostsPageState) return true;
         return false;
       }, builder: (_, state) {
         if (state is TimelineRebuildMyPostsPageState) {
-          _myPostsTime = state.postTime;
+           String userID = BlocProvider.of<AppBloc>(context).currentUser.id;
+          _myPostsTime = BlocProvider.of<TimelineBloc>(context).getUserPosts(userID);
+          _myDeletedPosts = BlocProvider.of<TimelineBloc>(context).getUserDeletedPosts(userID);
         }
+        Map<Post,String> myPosts = _showDeleted ? _myDeletedPosts : _myPostsTime;
         return ListView.builder(
-            itemCount: _myPostsTime.length,
+            itemCount: myPosts.length,
             itemBuilder: (_, index) {
               return ListTile(
-                title: Text(_myPostsTime.keys.toList()[index].title),
-                subtitle: Text(_myPostsTime.values.toList()[index]),
+                title: Text(myPosts.keys.toList()[index].title),
+                subtitle: Text(myPosts.values.toList()[index]),
                 onTap: () {
                   BlocProvider.of<AppBloc>(context).add(AppToEditPostPageEvent(
-                      _myPostsTime.keys.toList()[index]));
+                      myPosts.keys.toList()[index]));
                 },
               );
             });

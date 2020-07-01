@@ -32,75 +32,90 @@ class GalleryTabBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _context = context;
-    pictureSize = MediaQuery.of(context).size.width *
+    _setupSizes();
+    if (_mode == 'viewingPost')
+      return _buildGalleryViewPost();
+    else if (_mode == 'editingPost') return _buildGalleryEditPost();
+    return _buildGalleryAddPost();
+  }
+
+  void _setupSizes() {
+    pictureSize = MediaQuery.of(_context).size.width *
         0.32; // * 3 accross so 4% width left 0.04/4 = 0.01
-    paddingSize = MediaQuery.of(context).size.width * 0.01;
+    paddingSize = MediaQuery.of(_context).size.width * 0.01;
     if (orientation == Orientation.landscape) {
       // * 4 blocks accross so 5 paddings accross
-      pictureSize = MediaQuery.of(context).size.width * 0.2375;
-      paddingSize = MediaQuery.of(context).size.width * 0.01;
+      pictureSize = MediaQuery.of(_context).size.width * 0.2375;
+      paddingSize = MediaQuery.of(_context).size.width * 0.01;
     }
-    if (_mode == 'viewingPost') {
-      return SingleChildScrollView(
-        child: Wrap(
-          children: gallerySrc.keys.map((src) {
-            String type = gallerySrc[src];
-            return type == 'vid'
-                ? _createVideoContainer()
-                : _createImageSrcContainer(src);
-          }).toList(),
-        ),
-      );
-    } else if (_mode == 'editingPost') {
-      List<Widget> wrapChildren =
-          BlocProvider.of<PostBloc>(context).gallerySrc.keys.map((src) {
-        String type = BlocProvider.of<PostBloc>(context).gallerySrc[src];
-        return type == 'vid'
-            ? _createVideoContainer()
-            : _createImageSrcContainer(src);
-      }).toList();
+  }
 
-      wrapChildren
-          .addAll(BlocProvider.of<PostBloc>(context).files.keys.map((file) {
-        String type = BlocProvider.of<PostBloc>(context).files[file];
-        return type == 'vid'
-            ? _createVideoContainer()
-            : _createImageFileContainer(file);
-      }).toList());
-
-      return ListView(
-        children: [
-          FlatButton(
-            child: Text('Add/Edit Album'),
-            onPressed: () => BlocProvider.of<AppBloc>(context)
-                .add(AppToEditAlbumEvent(BlocProvider.of<PostBloc>(context))),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Wrap(children: wrapChildren)
-        ],
-      );
-    }
+  Widget _buildGalleryAddPost() {
     return ListView(
       children: [
         FlatButton(
           child: Text('ADD/EDIT'),
-          onPressed: () => BlocProvider.of<AppBloc>(context)
-              .add(AppToCreateAlbumEvent(BlocProvider.of<PostBloc>(context))),
+          onPressed: () => BlocProvider.of<AppBloc>(_context)
+              .add(AppToCreateAlbumEvent(BlocProvider.of<PostBloc>(_context))),
         ),
         SizedBox(
           height: 20,
         ),
         Wrap(
-          children: BlocProvider.of<PostBloc>(context).files.keys.map((file) {
-            String type = BlocProvider.of<PostBloc>(context).files[file];
+          children: BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
+            String type = BlocProvider.of<PostBloc>(_context).files[file];
             return type == 'vid'
                 ? _createVideoContainer()
                 : _createImageFileContainer(file);
           }).toList(),
         )
       ],
+    );
+  }
+
+  Widget _buildGalleryEditPost() {
+    List<Widget> wrapChildren =
+        BlocProvider.of<PostBloc>(_context).gallerySrc.keys.map((src) {
+      String type = BlocProvider.of<PostBloc>(_context).gallerySrc[src];
+      return type == 'vid'
+          ? _createVideoContainer()
+          : _createImageSrcContainer(src);
+    }).toList();
+
+    wrapChildren
+        .addAll(BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
+      String type = BlocProvider.of<PostBloc>(_context).files[file];
+      return type == 'vid'
+          ? _createVideoContainer()
+          : _createImageFileContainer(file);
+    }).toList());
+
+    return ListView(
+      children: [
+        FlatButton(
+          child: Text('Add/Edit Album'),
+          onPressed: () => BlocProvider.of<AppBloc>(_context)
+              .add(AppToEditAlbumEvent(BlocProvider.of<PostBloc>(_context))),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Wrap(children: wrapChildren)
+      ],
+    );
+  }
+
+  Widget _buildGalleryViewPost() {
+    if (gallerySrc.length == 0) return Center(child: Text('No Images or Videos'),);
+    return SingleChildScrollView(
+      child: Wrap(
+        children: gallerySrc.keys.map((src) {
+          String type = gallerySrc[src];
+          return type == 'vid'
+              ? _createVideoContainer()
+              : _createImageSrcContainer(src);
+        }).toList(),
+      ),
     );
   }
 

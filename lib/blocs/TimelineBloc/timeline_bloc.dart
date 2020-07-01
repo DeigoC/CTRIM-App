@@ -222,11 +222,20 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   Map<Post, String> getUserPosts(String userID) {
     Map<Post, String> results = {};
     _testTimelinePosts.forEach((timelinePost) {
-      if (timelinePost.authorID.compareTo(userID) == 0 &&
-          timelinePost.postType.compareTo('original') == 0) {
-        results[(_testPosts.firstWhere(
-                (post) => post.id.compareTo(timelinePost.postID) == 0))] =
-            timelinePost.getPostDateString();
+      if (timelinePost.authorID.compareTo(userID) == 0 && timelinePost.postType.compareTo('original') == 0) {
+        Post thisPost = _testPosts.firstWhere((post) => post.id.compareTo(timelinePost.postID) == 0);
+        if(!thisPost.deleted) results[thisPost] =timelinePost.getPostDateString();
+      }
+    });
+    return results;
+  }
+
+  Map<Post, String> getUserDeletedPosts(String userID) {
+    Map<Post, String> results = {};
+    _testTimelinePosts.forEach((timelinePost) {
+      if (timelinePost.authorID.compareTo(userID) == 0 && timelinePost.postType.compareTo('original') == 0) {
+        Post thisPost = _testPosts.firstWhere((post) => post.id.compareTo(timelinePost.postID) == 0);
+        if(thisPost.deleted) results[thisPost] = timelinePost.getPostDateString();
       }
     });
     return results;
@@ -287,16 +296,15 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   TimelineState get initialState => TimelineInitial();
 
   @override
-  Stream<TimelineState> mapEventToState(
-    TimelineEvent event,
-  ) async* {
+  Stream<TimelineState> mapEventToState(TimelineEvent event,) async* {
     if (event is TimelineFetchAllPostsEvent)
       yield _displayFeed();
     else if (event is TimelineAddNewPostEvent)
       yield _mapNewPostEventToState(event);
-    else if (event is TimelineUpdatePostEvent)
-      yield _mapPostUpdateToEvent(event);
-    else if (event is TimelineTagClickedEvent)
+    else if (event is TimelinePostUpdateEvent){
+      if(event is TimelineUpdatePostEvent) yield _mapPostUpdateToState(event);
+      else yield _mapPostDeletedToState(event);
+    } else if (event is TimelineTagClickedEvent)
       yield* _mapTagChnageToState(event);
     else if (event is TimelineSearchPostEvent)
       yield* _mapSearchPageEventToState(event);
@@ -310,8 +318,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       yield _getCurrentUserLikedPosts(event.likedPosts);
   }
 
-  Stream<TimelineState> _mapAlbumSearchEventToState(
-      TimelineAlbumSearchEvent event) async* {
+  Stream<TimelineState> _mapAlbumSearchEventToState(TimelineAlbumSearchEvent event) async* {
     if (event is TimelineAlbumSearchTextChangeEvent) {
       List<Post> results = [];
       _testPosts.forEach((post) {
@@ -325,8 +332,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     }
   }
 
-  Stream<TimelineState> _mapSearchPageEventToState(
-      TimelineSearchPostEvent event) async* {
+  Stream<TimelineState> _mapSearchPageEventToState(TimelineSearchPostEvent event) async* {
     if (event is TimelineSearchTextChangeEvent) {
       if (event.searchString.isEmpty) {
         yield TimelineDisplayEmptySearchState();
@@ -337,8 +343,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     }
   }
 
-  Stream<TimelineState> _mapTagChnageToState(
-      TimelineTagClickedEvent event) async* {
+  Stream<TimelineState> _mapTagChnageToState(TimelineTagClickedEvent event) async* {
     PostTag selectedTag = _stringToTag(event.tag);
     _selectedTags[selectedTag] = !_selectedTags[selectedTag];
 
@@ -346,8 +351,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     yield _displayFeed();
   }
 
-  Stream<TimelineState> _mapLocationSearchEventToState(
-      TimelineLocationSearchTextChangeEvent event) async* {
+  Stream<TimelineState> _mapLocationSearchEventToState( TimelineLocationSearchTextChangeEvent event) async* {
     List<Location> result = [];
     _locationSearchString = event.searchString ?? _locationSearchString;
     _testLocations.forEach((location) {
@@ -416,8 +420,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       // * Add all posts that contains selected tags
       selectedTags.forEach((selectedTag) {
         _testPosts.forEach((post) {
-          if (post.selectedTags.contains(selectedTag) &&
-              !posts.contains(post)) {
+          if (post.selectedTags.contains(selectedTag) && !posts.contains(post)) {
             posts.add(post);
           }
         });
@@ -431,10 +434,15 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
           }
         });
       });
+
     } else {
       posts = _testPosts;
       tPosts = _testTimelinePosts;
     }
+
+    // ! NOT TOO SURE ABOUT THESE TWO
+    posts.removeWhere((element) => element.deleted);
+    tPosts.removeWhere((tPost) => posts.firstWhere((post) => post.id == tPost.postID, orElse: ()=> null) ==null);
 
     return TimelineDisplayFeedState(
       users: _testUsers,
@@ -450,10 +458,16 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return TimelineEmptyState();
   }
 
-  TimelineState _mapPostUpdateToEvent(TimelineUpdatePostEvent event) {
-    int index =
-        _testPosts.indexWhere((post) => post.id.compareTo(event.post.id) == 0);
+  TimelineState _mapPostUpdateToState(TimelineUpdatePostEvent event) {
+    int index = _testPosts.indexWhere((post) => post.id.compareTo(event.post.id) == 0);
     _testPosts[index] = event.post;
+    _createUpdateTPost(event);
+    return TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
+  }
+
+  TimelineState _mapPostDeletedToState(TimelinePostUpdateEvent event){
+    int index = _testPosts.indexWhere((post) => post.id.compareTo(event.post.id) == 0);
+    _testPosts[index].deleted = true;
     _createUpdateTPost(event);
     return TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
   }
@@ -467,8 +481,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     );
   }
 
-  TimelineDisplaySearchFeedState _getCurrentUserLikedPosts(
-      List<String> postIDs) {
+  TimelineDisplaySearchFeedState _getCurrentUserLikedPosts(List<String> postIDs) {
     List<Post> posts = [];
     List<TimelinePost> tPosts = [];
 
@@ -523,10 +536,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     post.id = (int.parse(_testPosts.last.id) + 1).toString();
   }
 
-  void _createUpdateTPost(TimelineUpdatePostEvent event) {
-    String authorID = _testTimelinePosts
-        .firstWhere((tPost) => tPost.postID.compareTo(event.post.id) == 0)
-        .authorID;
+  void _createUpdateTPost(TimelinePostUpdateEvent event) {
+    String authorID = _testTimelinePosts.firstWhere((tPost) => tPost.postID.compareTo(event.post.id) == 0).authorID;
     _testTimelinePosts.add(TimelinePost(
         id: (int.parse(_testTimelinePosts.last.id) + 1).toString(),
         authorID: authorID,

@@ -7,15 +7,9 @@ import 'package:zefyr/zefyr.dart';
 enum PostTag { CHURCH, YOUTH, WOMEN }
 
 class Post {
-  String id,
-      title,
-      description,
-      body = '',
-      duration,
-      locationID,
-      detailTableHeader;
+  String id,title,description,body = '',duration,locationID,detailTableHeader;
   DateTime eventDate;
-  bool isDateNotApplicable = false;
+  bool isDateNotApplicable, deleted;
   List<List<String>> detailTable;
   Map<String, String> gallerySources;
   List<PostTag> selectedTags;
@@ -29,6 +23,7 @@ class Post {
     this.locationID = '',
     this.detailTableHeader,
     this.isDateNotApplicable = false,
+    this.deleted = false,
     this.selectedTags,
     this.gallerySources,
     this.detailTable,
