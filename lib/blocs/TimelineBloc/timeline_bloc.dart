@@ -83,10 +83,11 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     Post(
         id: '5',
         eventDate: DateTime.now().add(Duration(days: 2)),
+        isDateNotApplicable: true,
         title: 'Youth dayout at London Bridge, The Sequel!',
         description:
             'So this day we went to London Bridge, pretty cool eh? \nWell this is something...',
-        locationID: '4',
+        locationID: '0',
         body:
             '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
         detailTable: [],
@@ -268,6 +269,17 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
           .addressLine;
     }
     return 'Pending';
+  }
+
+  List<TimelinePost> getAllUpdatePosts(String postID){
+    List<TimelinePost> result = [];
+    _testTimelinePosts.forEach((tPost) {
+      if(tPost.postID.compareTo(postID)==0){
+        result.add(tPost);
+      }
+    });
+    result.sort((a,b) => a.postDate.compareTo(b.postDate));
+    return result;
   }
 
   // ! Mapping events to state

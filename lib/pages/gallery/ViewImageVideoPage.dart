@@ -1,5 +1,6 @@
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
 
 class ViewImageVideo extends StatefulWidget {
@@ -43,6 +44,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
     return OrientationBuilder(builder: (_, orientation) {
       _orientation = orientation;
       return Scaffold(
+        backgroundColor: Colors.black,
         appBar: _orientation == Orientation.portrait ? AppBar() : null,
         body: PageView.builder(
             pageSnapping: true,
@@ -63,8 +65,12 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
     return Center(
       child: Draggable(
         feedback: Container(
-          child: Image.network(
-            src,
+          child: PhotoView(
+            imageProvider: NetworkImage(src),
+            tightMode: true,
+            backgroundDecoration: BoxDecoration(
+              color: Colors.white,
+            ),
           ),
           width: MediaQuery.of(context).size.width,
         ),
@@ -75,9 +81,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
           Navigator.pop(context);
         },
         child: Hero(
-          child: Image.network(
-            src,
-          ),
+          child: Image.network(src),
           tag: widget.imageSources[src].heroTag,
         ),
       ),

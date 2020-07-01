@@ -84,17 +84,13 @@ class PostArticle extends StatelessWidget {
   Widget _buildUpdatePost() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text('Update: ' + timelinePost.postDate.toString(),
-            style: TextStyle(fontSize: 12)),
-        Text(
-          timelinePost.updateLog,
-          style: TextStyle(fontSize: 26),
-        ),
+      children: [
+        Text('Update: ' + timelinePost.getPostDateString(), style: TextStyle(fontSize: 12)),
+        Text(timelinePost.updateLog,style: TextStyle(fontSize: 26),),
         SizedBox(height: 8,),
         Container(
           decoration: BoxDecoration(
-            border: Border.all(width: 0.75),
+            border: Border.all(width: 0.25),
             borderRadius: BorderRadius.circular(16.0),
           ),
           padding: EdgeInsets.all(8),

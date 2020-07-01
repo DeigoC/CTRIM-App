@@ -1,6 +1,8 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
+import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/widgets/postsEditTabs/galleryTabBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -156,13 +158,10 @@ class _ViewPostPageState extends State<ViewPostPage>
   Widget _buildDetailsTab() {
     List<Widget> children = [
       Text('Location'),
-      Text(BlocProvider.of<TimelineBloc>(context)
-          .locations
+      Text(BlocProvider.of<TimelineBloc>(context).locations
           .firstWhere((element) => element.id == widget._post.locationID)
-          .addressLine),
-      SizedBox(
-        height: 8,
-      ),
+          .getAddressLine()),
+      SizedBox(height: 8,),
       Text('Time'),
       Text(widget._post.dateString),
     ];
@@ -215,8 +214,37 @@ class _ViewPostPageState extends State<ViewPostPage>
   }
 
   Widget _buildUpdatesTab() {
-    return Center(
-      child: Text('Updates Tab'),
+    List<TimelinePost> allUpdates = BlocProvider.of<TimelineBloc>(context).getAllUpdatePosts(widget._post.id);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Posted by: ' + _getAuthorName(allUpdates.last.authorID)),
+        Expanded(child: ListView.builder(
+          itemCount: allUpdates.length,
+          itemBuilder: (_,index){
+            TimelinePost tPost = allUpdates[index];
+            return Container(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(tPost.getPostDateString(), textAlign: TextAlign.center,),
+                    flex: 1,
+                  ),
+                  Expanded(
+                    child: Text(tPost.getUpdateString()),
+                    flex: 2,
+                  )
+                ],
+              ),
+            );
+          }
+        ),)
+      ],
     );
+  }
+
+  String _getAuthorName(String authorID){
+    User u = BlocProvider.of<TimelineBloc>(context).allUsers.firstWhere((author) => author.id == authorID);
+    return u.forename + ' ' + u.surname[0];
   }
 }

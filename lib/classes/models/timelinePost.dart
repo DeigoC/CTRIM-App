@@ -8,4 +8,9 @@ class TimelinePost{
   String getPostDateString(){
     return DateFormat('dd MMM yyyy').format(postDate);
   }
+
+  String getUpdateString(){
+    if(postType == 'original') return 'Original Post';
+    return updateLog;
+  }
 }
