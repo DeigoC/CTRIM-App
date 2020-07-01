@@ -23,27 +23,6 @@ class PostArticle extends StatelessWidget {
     _context = context;
     _isOriginal = timelinePost.postType == 'original';
 
-    List<Widget> colChildren = [
-      RichText(
-        text: TextSpan(
-          text: post.title,
-          style: TextStyle(fontSize: 26, color: Colors.black),
-          children: [
-            TextSpan(
-                text: _getAuthorNameAndTagsLine(timelinePost, post),
-                style: TextStyle(fontSize: 12))
-          ],
-        ),
-      ),
-      SizedBox(
-        height: 8,
-      ),
-      Text(post.description),
-    ];
-    if (post.gallerySources.length != 0) {
-      colChildren.addAll(_addPostImageWidgets(post));
-    }
-
     return InkWell(
       splashColor: Colors.blue.withAlpha(30),
       onTap: () => _moveToViewPost(post),
@@ -72,22 +51,34 @@ class PostArticle extends StatelessWidget {
           ],
         ),
       ),
-      SizedBox(
-        height: 8,
-      ),
-      Text(
-        post.description,
-        style: TextStyle(fontSize: 16),
-      ),
     ];
-    if (post.gallerySources.length != 0) {
-      colChildren.addAll(_addPostImageWidgets(post));
-    }
-
+    _addDescription(colChildren);
+    _addImages(colChildren);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: colChildren,
     );
+  }
+
+  void _addDescription(List<Widget> colChildren) {
+    if (post.description.trim().length > 0) {
+      colChildren.add(Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: Text(
+          post.description,
+          style: TextStyle(fontSize: 16),
+        ),
+      ));
+    }
+  }
+
+  void _addImages(List<Widget> colChildren) {
+    if (post.gallerySources.length != 0) {
+      colChildren.add(Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        child: _buildImagesBox(post),
+      ));
+    }
   }
 
   Widget _buildUpdatePost() {
@@ -100,9 +91,7 @@ class PostArticle extends StatelessWidget {
           timelinePost.updateLog,
           style: TextStyle(fontSize: 26),
         ),
-        SizedBox(
-          height: 8,
-        ),
+        SizedBox(height: 8,),
         Container(
           decoration: BoxDecoration(
             border: Border.all(width: 0.75),
@@ -115,18 +104,6 @@ class PostArticle extends StatelessWidget {
     );
   }
 
-  List<Widget> _addPostImageWidgets(Post thisPost) {
-    return [
-      SizedBox(
-        height: 8,
-      ),
-      _buildImagesBox(thisPost),
-      SizedBox(
-        height: 8,
-      ),
-    ];
-  }
-
   String _getAuthorNameAndTagsLine(
     TimelinePost timelinePost,
     Post post,
@@ -136,16 +113,6 @@ class PostArticle extends StatelessWidget {
     result += author.forename + ' ' + author.surname[0] + '. ';
     result += timelinePost.getPostDateString();
     result += post.getTagsString();
-    return result;
-  }
-
-  User _getUserFromID(String id) {
-    User result;
-    allUsers.forEach((user) {
-      if (user.id.compareTo(id) == 0) {
-        result = user;
-      }
-    });
     return result;
   }
 
@@ -398,6 +365,16 @@ class PostArticle extends StatelessWidget {
         ),
       ),
     ];
+  }
+
+  User _getUserFromID(String id) {
+    User result;
+    allUsers.forEach((user) {
+      if (user.id.compareTo(id) == 0) {
+        result = user;
+      }
+    });
+    return result;
   }
 
   void _moveToViewImageVideo(Map<String, ImageTag> gallery, int index) {
