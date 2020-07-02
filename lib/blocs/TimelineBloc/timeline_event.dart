@@ -50,6 +50,16 @@ class TimelineDisplayCurrentUserLikedPosts extends TimelineEvent {
   TimelineDisplayCurrentUserLikedPosts(this.likedPosts);
 }
 
+class TimelineUserDisabledEvent extends TimelineEvent{
+  final User user;
+  TimelineUserDisabledEvent(this.user);
+}
+
+class TimelineUserEnabledEvent extends TimelineEvent{
+  final User user;
+  TimelineUserEnabledEvent(this.user);
+}
+
 // ! Search Post
 class TimelineSearchPostEvent extends TimelineEvent {}
 
@@ -58,10 +68,15 @@ class TimelineSearchTextChangeEvent extends TimelineSearchPostEvent {
   TimelineSearchTextChangeEvent(this.searchString);
 }
 
-// ! Search Location
+// ! Location related
 class TimelineLocationSearchTextChangeEvent extends TimelineEvent {
   final String searchString;
   TimelineLocationSearchTextChangeEvent(this.searchString);
+}
+  
+class TimelineLocationDeletedEvent extends TimelineEvent{
+  final Location location;
+  TimelineLocationDeletedEvent(this.location);
 }
 
 // ! Search Album

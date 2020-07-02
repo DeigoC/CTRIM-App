@@ -88,13 +88,8 @@ class _EditLocationState extends State<EditLocation> {
     return ListView(
       shrinkWrap: false,
       children: [
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
-        Text(
-          'Query Address',
-          textAlign: TextAlign.center,
-        ),
+        SizedBox(height: itemPaddingHeight,),
+        Text('Query Address',textAlign: TextAlign.center,),
         // * Selected Address
         BlocBuilder(
             bloc: _locationBloc,
@@ -113,9 +108,7 @@ class _EditLocationState extends State<EditLocation> {
                 readOnly: true,
               );
             }),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Street Address',
           hint: '12 Example Rd.',
@@ -123,9 +116,7 @@ class _EditLocationState extends State<EditLocation> {
           onTextChange: (newStreetAddress) => _locationBloc
               .add(LocationTextChangeEvent(streetAddress: newStreetAddress)),
         ),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Town/City',
           hint: 'Belfast',
@@ -133,9 +124,7 @@ class _EditLocationState extends State<EditLocation> {
           onTextChange: (newTownCity) => _locationBloc
               .add(LocationTextChangeEvent(townCityAddress: newTownCity)),
         ),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Postcode',
           hint: 'BT13 2DE',
@@ -143,9 +132,7 @@ class _EditLocationState extends State<EditLocation> {
           onTextChange: (newPostcode) =>
               _locationBloc.add(LocationTextChangeEvent(postcode: newPostcode)),
         ),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         // * Find Address button
         BlocBuilder(
             bloc: _locationBloc,
@@ -171,9 +158,7 @@ class _EditLocationState extends State<EditLocation> {
                 ),
               );
             }),
-        SizedBox(
-          height: 32,
-        ),
+        SizedBox(height: 32,),
         MyTextField(
           label: 'Description',
           controller: _tecDescription,
@@ -182,13 +167,9 @@ class _EditLocationState extends State<EditLocation> {
             _locationBloc.add(LocationDescriptionTextChangeEvent(newDec));
           },
         ),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         _buildImageSelector(),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         // * Save Button
         BlocBuilder(
           bloc: _locationBloc,
@@ -221,7 +202,24 @@ class _EditLocationState extends State<EditLocation> {
             );
           },
         ),
+         SizedBox(height: itemPaddingHeight,),
+       _buildDeleteButton(),
       ],
+    );
+  }
+
+  Widget _buildDeleteButton(){
+    bool hasEvents = BlocProvider.of<TimelineBloc>(context).doesLocationHaveEvents(widget._location.id);
+    return  RaisedButton(
+      child: Text('Delete Location'),
+      onPressed: hasEvents ? null :(){
+        ConfirmationDialogue.deleteRecord(context: context, record: 'Location').then((confirmation){
+          if(confirmation){
+            BlocProvider.of<TimelineBloc>(context).add(TimelineLocationDeletedEvent(widget._location));
+            Navigator.of(context).pop();
+          }
+        });
+      },
     );
   }
 
@@ -229,9 +227,7 @@ class _EditLocationState extends State<EditLocation> {
     return Column(
       children: [
         Text('Location Image'),
-        SizedBox(
-          height: 8,
-        ),
+        SizedBox(height: 8,),
         BlocBuilder(
             bloc: _locationBloc,
             condition: (_, state) {
@@ -242,7 +238,7 @@ class _EditLocationState extends State<EditLocation> {
             },
             builder: (_, state) {
               bool hasFile = false,
-                  hasSrc = _locationBloc.locationToEdit.imgSrc != '';
+                  hasSrc = _locationBloc.locationToEdit.imgSrc != null;
               File imageFile;
               String src = _locationBloc.locationToEdit.imgSrc;
 
@@ -252,27 +248,19 @@ class _EditLocationState extends State<EditLocation> {
               }
               return GestureDetector(
                 onTap: () {
-                  if (!hasSrc) {
-                    _selectLocationImage();
-                  }
+                  if (!hasSrc) _selectLocationImage();
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,
                   height: MediaQuery.of(context).size.height * 0.20,
                   child: Align(
                     alignment: Alignment.topRight,
-                    child: (hasFile || hasSrc)
-                        ? _buildIconButton(hasSrc, hasFile)
-                        : Container(),
+                    child: (hasFile || hasSrc) ? _buildIconButton(hasSrc, hasFile) : Container(),
                   ),
                   decoration: BoxDecoration(
                     color: Colors.pinkAccent,
                     image: (hasFile || hasSrc)
-                        ? DecorationImage(
-                            image: (hasFile)
-                                ? FileImage(imageFile)
-                                : NetworkImage(src),
-                            fit: BoxFit.cover)
+                        ? DecorationImage(image: (hasFile) ? FileImage(imageFile) : NetworkImage(src),fit: BoxFit.cover)
                         : null,
                     borderRadius: BorderRadius.circular(8),
                   ),

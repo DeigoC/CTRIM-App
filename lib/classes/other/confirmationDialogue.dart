@@ -28,6 +28,36 @@ class ConfirmationDialogue{
     return result;
   }
 
+  static Future<bool> disableReenableUser ({
+    @required BuildContext context,
+    @required bool toDisable,
+  }) async{
+    bool result = false;
+    String content = toDisable ? 'Are you sure you want to disable this user?' : 
+    'Are you sure you want to enable this user?';
+    String button = toDisable ? 'Disable' : 'Enable';
+    String title = toDisable ? 'Disable User Confirmation' : 'Enable User Confirmation'; 
+    await showDialog(
+      context: context,
+      builder: (_){
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+          FlatButton(child: Text('Cancel'), onPressed: (){
+            Navigator.of(context).pop();
+          }),
+          FlatButton(child: Text(button), onPressed: (){
+            result = true;
+            Navigator.of(context).pop();
+          }),
+          ],
+        );
+      }
+    );
+    return result;
+  }
+
    static Future<bool> leaveEditPage ({
     @required BuildContext context,
   }) async{

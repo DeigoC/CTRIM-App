@@ -21,22 +21,23 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
     return WillPopScope(
       onWillPop: () async{
         bool result = false;
-        
-        //TODO need to test this at phase 2
+       
         if(widget._postBloc.hasAlbumChanged){
             await showDialog(
             context: context,
             builder: (_){
               return AlertDialog(
                 title: Text('Leave Page'),
-                content: Text('Do you want to save or discard changes?'),
+                content: Text('Do you want to keep or discard changes?'),
                 actions: [
                 FlatButton(child: Text('Discard'), onPressed: (){
                   result = true;
+                  widget._postBloc.add(PostDiscardGalleryChnagesEvent());
                   Navigator.of(context).pop();
                 }),
-                FlatButton(child: Text('Save'), onPressed: (){
+                FlatButton(child: Text('Keep'), onPressed: (){
                   result = true;
+                  widget._postBloc.add(PostTextChangeEvent());
                   Navigator.of(context).pop();
                 }),
                 ],
@@ -57,23 +58,35 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
       ),
     );
   }
-    List<Widget> _buildNormalActions(){
-    return [
-      FlatButton(
-        child: Text('Remove'),
-        onPressed: () {
-          setState(() {_onDeleteMode = true; });
+  
+  List<Widget> _buildNormalActions(){
+      return [ PopupMenuButton(
+        itemBuilder: (_){
+          return [
+            PopupMenuItem(
+              child: ListTile(
+                title: Text('Add'),
+                leading: Icon(Icons.add_photo_alternate),
+                onTap: ()=>  BlocProvider.of<AppBloc>(context).add(AppToAddGalleryFileEvent(widget._postBloc)),
+              ),
+            ),
+            PopupMenuItem(
+              child: ListTile(
+                title: Text('Remove'),
+                leading: Icon(Icons.delete_sweep),
+                onTap: (){
+                  setState(() {_onDeleteMode = true; });
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          ];
         },
       ),
-      FlatButton(
-        child: Text('Add'),
-        onPressed: () {
-           BlocProvider.of<AppBloc>(context).add(AppToAddGalleryFileEvent(widget._postBloc));
-        }),
-      ];
+    ];
   }
 
-   List<Widget> _buildDeleteActions(){
+  List<Widget> _buildDeleteActions(){
     return [
       FlatButton(
         child: Text('Cancel'),
@@ -87,7 +100,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
     ];
   }
 
-   SizedBox _buildDeleteButton(){
+  SizedBox _buildDeleteButton(){
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.8,
       child: RaisedButton(
@@ -102,7 +115,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
     );
   }
 
-   Widget _buildBody(){
+  Widget _buildBody(){
     return BlocBuilder(
       bloc: widget._postBloc,
       condition: (_, currentState){
@@ -184,7 +197,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
     );
   }
 
-   Padding _buildPictureSrcContainer(String src){
+  Padding _buildPictureSrcContainer(String src){
     double pictureSize = MediaQuery.of(context).size.width * 0.32;
     double paddingSize = MediaQuery.of(context).size.width * 0.01;
     bool selected = _selectedFiles.contains(src);

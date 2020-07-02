@@ -87,33 +87,27 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   PostBloc.editMode(Post postToEdit) {
     _editMode = true;
 
-    // ? Everything but images and postID needs to be compared
-    List<PostTag> originalSelectedTags =
-        List<PostTag>.from(postToEdit.selectedTags);
-    List<List<String>> originalDetailTable =
-        List<List<String>>.from(postToEdit.detailTable);
-
     // ? Testing this
     _post = Post(
         id: postToEdit.id,
         title: postToEdit.title,
         body: postToEdit.body,
-        selectedTags: originalSelectedTags,
+        selectedTags: List<PostTag>.from(postToEdit.selectedTags),
         description: postToEdit.description,
-        detailTable: originalDetailTable,
+        detailTable: List<List<String>>.from(postToEdit.detailTable),
         detailTableHeader: postToEdit.detailTableHeader,
         locationID: postToEdit.locationID,
         eventDate: postToEdit.eventDate,
         isDateNotApplicable: postToEdit.isDateNotApplicable,
-        gallerySources: postToEdit.gallerySources,
+        gallerySources: Map.from(postToEdit.gallerySources),
         temporaryFiles: {});
 
     _originalPost = Post(
       title: _post.title,
       body: _post.body,
-      selectedTags: originalSelectedTags,
+      selectedTags: List<PostTag>.from(postToEdit.selectedTags),
       description: _post.description,
-      detailTable: originalDetailTable,
+      detailTable: List<List<String>>.from(postToEdit.detailTable),
       detailTableHeader: _post.detailTableHeader,
       locationID: _post.locationID,
       eventDate: _post.eventDate,
@@ -164,16 +158,16 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         if (_post.gallerySources.keys.contains(src)) {
           _post.gallerySources.remove(src);
         } else {
-          _post.temporaryFiles
-              .removeWhere((key, value) => key.path.compareTo(src) == 0);
+          _post.temporaryFiles.removeWhere((key, value) => key.path.compareTo(src) == 0);
         }
       });
       yield PostFilesReceivedState();
+    }else if(event is PostDiscardGalleryChnagesEvent){
+      _post.gallerySources = Map.from(_originalPost.gallerySources);
     }
   }
 
-  Stream<PostState> _mapDetailListEventToState(
-      PostDetailListEvent event) async* {
+  Stream<PostState> _mapDetailListEventToState(PostDetailListEvent event) async* {
     if (event is PostDetailListReorderEvent) {
       int newIndex = event.newIndex;
       if (newIndex >= _post.detailTable.length)
@@ -203,8 +197,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-  Stream<PostState> _mapScheduleTabEventsToState(
-      PostScheduleTabEvent event) async* {
+  Stream<PostState> _mapScheduleTabEventsToState(PostScheduleTabEvent event) async* {
     if (event is PostSelectPostDateEvent) {
       yield PostSelectDateState();
     } else if (event is PostSelectPostTimeEvent) {
@@ -231,8 +224,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     yield* _canEnableSaveButton();
   }
 
-  Stream<PostState> _mapDepartmentClickToState(
-      PostDepartmentClickEvent event) async* {
+  Stream<PostState> _mapDepartmentClickToState(PostDepartmentClickEvent event) async* {
     if (event.selected) {
       _post.selectedTags.add(event.department);
     } else {
@@ -242,24 +234,18 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     bool selected = event.selected;
     switch (event.department) {
       case PostTag.CHURCH:
-        if (selected)
-          yield PostDepartmentChurchEnabledState();
-        else
-          yield PostDepartmentChurchDisabledState();
+        if (selected) yield PostDepartmentChurchEnabledState();
+        else yield PostDepartmentChurchDisabledState();
         break;
 
       case PostTag.YOUTH:
-        if (selected)
-          yield PostDepartmentYouthEnabledState();
-        else
-          yield PostDepartmentYouthDisabledState();
+        if (selected) yield PostDepartmentYouthEnabledState();
+        else yield PostDepartmentYouthDisabledState();
         break;
 
       case PostTag.WOMEN:
-        if (selected)
-          yield PostDepartmentWomenEnabledState();
-        else
-          yield PostDepartmentWomenDisabledState();
+        if (selected) yield PostDepartmentWomenEnabledState();
+        else yield PostDepartmentWomenDisabledState();
         break;
     }
     yield* _canEnableSaveButton();
@@ -287,31 +273,17 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   bool _haveAnyChangedFields() {
-    if (_originalPost.title.compareTo(_post.title) != 0)
-      return true;
-    else if (_originalPost.body.compareTo(_post.body) != 0)
-      return true;
-    else if (_originalPost.description.compareTo(_post.description) != 0)
-      return true;
-    else if (_originalPost.detailTableHeader
-            .compareTo(_post.detailTableHeader) !=
-        0)
-      return true;
-    else if (!DeepCollectionEquality()
-        .equals(_originalPost.detailTable, _post.detailTable))
-      return true;
-    else if (!DeepCollectionEquality.unordered()
-        .equals(_originalPost.selectedTags, _post.selectedTags))
-      return true;
-    else if (_originalPost.locationID.compareTo(_post.locationID) != 0)
-      return true;
+    if (_originalPost.title.compareTo(_post.title) != 0) return true;
+    else if (_originalPost.body.compareTo(_post.body) != 0) return true;
+    else if (_originalPost.description.compareTo(_post.description) != 0) return true;
+    else if (_originalPost.detailTableHeader.compareTo(_post.detailTableHeader) !=0) return true;
+    else if (!DeepCollectionEquality().equals(_originalPost.detailTable, _post.detailTable)) return true;
+    else if (!DeepCollectionEquality.unordered().equals(_originalPost.selectedTags, _post.selectedTags))return true;
+    else if (_originalPost.locationID.compareTo(_post.locationID) != 0)return true;
     // TODO Check the one below
-    else if (_originalPost.eventDate.compareTo(_post.eventDate) != 0 &&
-        !_post.isDateNotApplicable)
-      return true;
-    else if (_originalPost.isDateNotApplicable != _post.isDateNotApplicable)
-      return true;
-
+    else if (_originalPost.eventDate.compareTo(_post.eventDate) != 0 &&!_post.isDateNotApplicable)return true;
+    else if (_originalPost.isDateNotApplicable != _post.isDateNotApplicable)return true;
+    else if(hasAlbumChanged) return true;
     return false;
   }
 

@@ -33,10 +33,10 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
 
   ListView _buildBody() {
     return ListView.builder(
-        itemCount: BlocProvider.of<TimelineBloc>(context).locations.length,
+        itemCount: BlocProvider.of<TimelineBloc>(context).allLocations.length,
         itemBuilder: (_, index) {
           Location location =
-              BlocProvider.of<TimelineBloc>(context).locations[index];
+              BlocProvider.of<TimelineBloc>(context).allLocations[index];
 
           return LocationCard(
             location: location,

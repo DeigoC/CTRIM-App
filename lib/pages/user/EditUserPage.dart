@@ -128,8 +128,29 @@ class _EditUserPageState extends State<EditUserPage> {
                           }
                         : null,
                   );
-                }))
+                })),
+        padding,
+        _buildDisableButton(),
       ],
     );
+  }
+
+  RaisedButton _buildDisableButton() {
+    bool disabled = widget.user.disabled;
+    return RaisedButton(
+        child: Text(disabled ? 'Enable User' : 'Disable User'),
+        onPressed: (){
+          ConfirmationDialogue.disableReenableUser(
+            context: context,
+            toDisable: !disabled
+          ).then((confirmation){
+            if(confirmation){
+              var event = disabled ? TimelineUserEnabledEvent(widget.user) : TimelineUserDisabledEvent(widget.user);
+              BlocProvider.of<TimelineBloc>(context).add(event);
+              Navigator.of(context).pop();
+            }
+          });
+        },
+      );
   }
 }

@@ -11,17 +11,21 @@ class ViewAllUsers extends StatelessWidget {
       appBar: AppBar(
         title: Text('View All Users'),
       ),
-      body: BlocBuilder<TimelineBloc, TimelineState>(builder: (_, state) {
+      body: BlocBuilder<TimelineBloc, TimelineState>(
+        condition: (_,state){
+          if(state is TimelineRebuildUserListState) return true;
+          return false;
+        },
+        builder: (_, state) {
         return ListView.builder(
             itemCount: BlocProvider.of<TimelineBloc>(context).allUsers.length,
             itemBuilder: (_, index) {
-              User user =
-                  BlocProvider.of<TimelineBloc>(context).allUsers[index];
+              User user = BlocProvider.of<TimelineBloc>(context).allUsers[index];
               return ListTile(
                 title: Text(user.forename + ' ' + user.surname),
                 subtitle: Text('Admin Lvl: ' + user.adminLevel.toString()),
-                onTap: () => BlocProvider.of<AppBloc>(context)
-                    .add(AppToEditUserEvent(user)),
+                trailing: Text(user.disabled ? 'Disabled':''),
+                onTap: () => BlocProvider.of<AppBloc>(context).add(AppToEditUserEvent(user)),
               );
             });
       }),

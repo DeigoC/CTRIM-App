@@ -54,3 +54,6 @@ class TimelineRebuildMyPostsPageState extends TimelineState {
   final Map<Post, String> postTime;
   TimelineRebuildMyPostsPageState(this.postTime);
 }
+
+// ! User related
+class TimelineRebuildUserListState extends TimelineState{}

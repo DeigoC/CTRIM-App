@@ -8,14 +8,13 @@ class ViewPostAlbumPage extends StatelessWidget {
   final Post _post;
   static double _pictureSize, _paddingSize;
   static BuildContext _context;
-  static Map<String, ImageTag> _galleryMap = {};
+  final Map<String, ImageTag> _galleryMap;
 
-  ViewPostAlbumPage(this._post);
+  ViewPostAlbumPage(this._post) : _galleryMap = _createGalleryTags(_post);
 
   @override
   Widget build(BuildContext context) {
     _context = context;
-    _createGalleryTags();
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (_, __) {
@@ -57,10 +56,12 @@ class ViewPostAlbumPage extends StatelessWidget {
     );
   }
 
-  void _createGalleryTags() {
-    _post.gallerySources.forEach((src, type) {
-      _galleryMap[src] = ImageTag(src: src, type: type);
+  static Map<String, ImageTag> _createGalleryTags(Post post) {
+   Map<String, ImageTag> result = {};
+    post.gallerySources.forEach((src, type) {
+      result[src] = ImageTag(src: src, type: type);
     });
+    return result;
   }
 
   Widget _buildBody() {
@@ -88,7 +89,6 @@ class ViewPostAlbumPage extends StatelessWidget {
 
   Widget _createImageSrcContainer(String src) {
     int index = _post.gallerySources.keys.toList().indexOf(src);
-
     return Padding(
       padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
       child: AnimatedContainer(
@@ -100,7 +100,7 @@ class ViewPostAlbumPage extends StatelessWidget {
             onTap: () => BlocProvider.of<AppBloc>(_context)
                 .add(AppToViewImageVideoPageEvent(_galleryMap, index)),
             child: Hero(
-                tag: src,
+                tag: _galleryMap[src].heroTag,
                 child: Image.network(
                   src,
                   fit: BoxFit.cover,

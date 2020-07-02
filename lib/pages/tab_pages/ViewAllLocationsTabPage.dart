@@ -11,9 +11,7 @@ class ViewAllLocationsPage {
   ViewAllLocationsPage(this._context);
 
   Widget buildBody() {
-    List<Location> allLocations =
-        BlocProvider.of<TimelineBloc>(_context).locations;
-    allLocations.removeWhere((element) => element.id == '0');
+    List<Location> allLocations = BlocProvider.of<TimelineBloc>(_context).locationsForTab;
 
     return CustomScrollView(
       slivers: [
@@ -27,8 +25,7 @@ class ViewAllLocationsPage {
             if (state is TimelineDisplayLocationSearchResultsState) {
               allLocations = state.locations;
             }
-            return SliverList(
-                delegate: SliverChildBuilderDelegate((_, index) {
+            return SliverList(delegate: SliverChildBuilderDelegate((_, index) {
               return LocationCard(location: allLocations[index]);
             }, childCount: allLocations.length));
           },
@@ -66,9 +63,7 @@ class _LocationSearchBarState extends State<LocationSearchBar> {
   Widget build(BuildContext context) {
     return SliverAppBar(
       floating: true,
-      actions: _searchMode
-          ? null
-          : [
+      actions: _searchMode ? null: [
               IconButton(
                 icon: Icon(Icons.search),
                 onPressed: () {
@@ -80,8 +75,7 @@ class _LocationSearchBarState extends State<LocationSearchBar> {
                 tooltip: 'Search for address',
               ),
             ],
-      title: _searchMode
-          ? TextField(
+      title: _searchMode ? TextField(
               controller: _tecSearch,
               focusNode: _fnSearch,
               onChanged: (newSearch) {

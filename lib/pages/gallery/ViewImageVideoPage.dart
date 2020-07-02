@@ -18,15 +18,11 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   Map<String, VideoPlayerController> _videoControllers =
       <String, VideoPlayerController>{};
   Orientation _orientation;
-  bool _videoControlsVisible = false, _pagePoped = false;
-
-  ScrollController _scrollController;
+  bool _videoControlsVisible = false;
 
 
   @override
   void initState() {
-    _scrollController = ScrollController();
-    _scrollController.addListener(_scollListener);
     widget.imageSources.keys.forEach((src) {
       if (widget.imageSources[src].type == 'vid') {
         VideoPlayerController controller = VideoPlayerController.network(src);
@@ -41,7 +37,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
     _videoControllers.values.forEach((controller) => controller.dispose());
     super.dispose();
   }
@@ -90,11 +85,12 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
 
     return Center(
       child: Dismissible(
-        movementDuration: Duration(milliseconds: 100),
-        dismissThresholds: {DismissDirection.down:0.8},
+        resizeDuration: null,
+        movementDuration: Duration(milliseconds: 300),
+        dismissThresholds: {DismissDirection.down:0.3, DismissDirection.up:0.3},
         confirmDismiss: (value) async{
           bool result = false;
-          await Future.delayed(Duration(microseconds: 100),(){
+          await Future.delayed(Duration(microseconds: 10),(){
             Navigator.of(context).pop();
           });
           return result;
@@ -104,7 +100,11 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         child: Hero(
             tag: widget.imageSources[src].heroTag,
             child: PhotoView(
+              loadingBuilder: (_,__){
+                return Image.network(src);
+              },
               initialScale: PhotoViewComputedScale.contained,
+              minScale: PhotoViewComputedScale.contained,
               imageProvider: NetworkImage(src),
               tightMode: true,
             ),
@@ -133,20 +133,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         ),
       ),
     ); */
-  }
-
-  void _scollListener(){
-    /* if(_scrollController.offset > (_scrollController.position.maxScrollExtent + 70)||
-    _scrollController.offset < (_scrollController.position.minScrollExtent - 70)){
-      /* if(!_pagePoped){
-        Navigator.of(context).pop();
-        setState(() {
-        _pagePoped = true;
-      });
-      } */
-
-    } */
-   
   }
 
   Widget _createVideoPage(String src) {

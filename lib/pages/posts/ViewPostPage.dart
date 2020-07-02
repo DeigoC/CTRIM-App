@@ -158,7 +158,7 @@ class _ViewPostPageState extends State<ViewPostPage>
   Widget _buildDetailsTab() {
     List<Widget> children = [
       Text('Location'),
-      Text(BlocProvider.of<TimelineBloc>(context).locations
+      Text(BlocProvider.of<TimelineBloc>(context).allLocations
           .firstWhere((element) => element.id == widget._post.locationID)
           .getAddressLine()),
       SizedBox(height: 8,),

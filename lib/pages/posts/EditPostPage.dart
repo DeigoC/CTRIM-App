@@ -82,18 +82,7 @@ class _EditPostPageState extends State<EditPostPage>
                   expandedHeight: 200,
                   actions: [
                     _buildUpdateButton(),
-                    RaisedButton(
-                      child: Text('Delete'),
-                      onPressed: () {
-                        ConfirmationDialogue.deleteRecord(context: context, record: 'Post').then((confirmation) {
-                          if(confirmation){
-                            BlocProvider.of<TimelineBloc>(context).add(
-                              TimelineDeletePostEvent(post: widget._post, uid: BlocProvider.of<AppBloc>(context).currentUser.id));
-                            Navigator.of(context).pop();
-                          }
-                        });
-                      },
-                    ),
+                    _buildDeleteButton(context),
                   ],
                 ),
                 SliverPadding(
@@ -140,6 +129,22 @@ class _EditPostPageState extends State<EditPostPage>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDeleteButton(BuildContext context) {
+    if(widget._post.deleted) return Container();
+    return RaisedButton(
+      child: Text('Delete'),
+      onPressed: () {
+        ConfirmationDialogue.deleteRecord(context: context, record: 'Post').then((confirmation) {
+          if(confirmation){
+            BlocProvider.of<TimelineBloc>(context).add(
+              TimelineDeletePostEvent(post: widget._post, uid: BlocProvider.of<AppBloc>(context).currentUser.id));
+            Navigator.of(context).pop();
+          }
+        });
+      },
     );
   }
 
@@ -199,14 +204,11 @@ class _EditPostPageState extends State<EditPostPage>
 
   Widget _buildTabBody(int selectedIndex) {
     switch (selectedIndex) {
-      case 0:
-        return MainTabBody();
-      case 1:
-        return PostDetailsTabBody();
-      case 2:
-        return GalleryTabBody.edit(
+      case 0: return MainTabBody();
+      case 1: return PostDetailsTabBody();
+      case 2: return GalleryTabBody.edit(
           orientation: _orientation,
-          gallerySrc: widget._post.gallerySources,
+          gallerySrc: _postBloc.newPost.gallerySources,
         );
     }
     return Center(

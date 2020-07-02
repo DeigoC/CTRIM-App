@@ -75,31 +75,23 @@ class GalleryTabBody extends StatelessWidget {
 
   Widget _buildGalleryEditPost() {
     List<Widget> wrapChildren =
-        BlocProvider.of<PostBloc>(_context).gallerySrc.keys.map((src) {
+    BlocProvider.of<PostBloc>(_context).gallerySrc.keys.map((src) {
       String type = BlocProvider.of<PostBloc>(_context).gallerySrc[src];
-      return type == 'vid'
-          ? _createVideoContainer()
-          : _createImageSrcContainer(src);
+      return type == 'vid'? _createVideoContainer(): _createImageSrcContainer(src);
     }).toList();
 
-    wrapChildren
-        .addAll(BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
+    wrapChildren.addAll(BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
       String type = BlocProvider.of<PostBloc>(_context).files[file];
-      return type == 'vid'
-          ? _createVideoContainer()
-          : _createImageFileContainer(file);
+      return type == 'vid'? _createVideoContainer(): _createImageFileContainer(file);
     }).toList());
 
     return ListView(
       children: [
         FlatButton(
           child: Text('Add/Edit Album'),
-          onPressed: () => BlocProvider.of<AppBloc>(_context)
-              .add(AppToEditAlbumEvent(BlocProvider.of<PostBloc>(_context))),
+          onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToEditAlbumEvent(BlocProvider.of<PostBloc>(_context))),
         ),
-        SizedBox(
-          height: 20,
-        ),
+        SizedBox( height: 20,),
         Wrap(children: wrapChildren)
       ],
     );

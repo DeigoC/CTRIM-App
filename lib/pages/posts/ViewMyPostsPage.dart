@@ -36,8 +36,8 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
                     value: _showDeleted,
                     title: Icon(Icons.delete, color: Colors.black,),
                     onChanged: (newValue){ 
-                      setState(() {_showDeleted = newValue;});
                       Navigator.of(context).pop();
+                      setState(() {_showDeleted = newValue;});
                     },
                   ),
                 )

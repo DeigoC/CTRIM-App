@@ -24,9 +24,8 @@ class ViewGalleryPage {
   double _pictureSize, _paddingSize;
   Map<DateTime, List<Post>> _allPosts;
 
-  ViewGalleryPage(this._context, this._tabController) {
-    _allPosts = BlocProvider.of<TimelineBloc>(_context).getPostsForGalleryTab();
-  }
+  ViewGalleryPage(this._context, this._tabController);
+  
 
   Widget buildAppBar() {
     return AppBar(
@@ -49,6 +48,7 @@ class ViewGalleryPage {
   }
 
   Widget buildBody() {
+     _allPosts = BlocProvider.of<TimelineBloc>(_context).getPostsForGalleryTab();
     return TabBarView(
       controller: _tabController,
       children: [
@@ -183,16 +183,16 @@ class ViewGalleryPage {
   }
 
   Widget _createPictureAlbumItem(Post post) {
+    ImageTag imageTag = ImageTag(src: post.gallerySources.keys.first, type: 'img');
     return Column(
       children: [
         Expanded(
           child: GestureDetector(
             onTap: () {
-              BlocProvider.of<AppBloc>(_context)
-                  .add(AppToViewPostAlbumEvent(post));
+              BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post));
             },
             child: Hero(
-              tag: post.gallerySources.keys.first,
+              tag: imageTag.heroTag,
               child: Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Container(
