@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -48,16 +49,14 @@ class SettingsPage{
               ListTile(
                 title: Text('Register User'),
                 leading: Icon(Icons.person_add),
-                onTap: (){
-                  BlocProvider.of<AppBloc>(_context).add(AppToRegisterUserEvent());
-                },
+                onTap: AdminCheck.isCurrentUserAboveLvl1(_context) ? 
+                  ()=> BlocProvider.of<AppBloc>(_context).add(AppToRegisterUserEvent()): null,
               ),
               ListTile(
                 title: Text('Edit User'),
                 leading: Icon(Icons.people),
-                onTap: (){
-                  BlocProvider.of<AppBloc>(_context).add(AppToViewAllUsersEvent());
-                },
+                onTap: AdminCheck.isCurrentUserAboveLvl1(_context) ? 
+                ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewAllUsersEvent()) : null,
               ),
               ListTile(
                 title: Text('Log out'),

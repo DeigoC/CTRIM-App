@@ -155,6 +155,15 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       likedPosts: [],
     ),
     User(
+      id: '3',
+      forename: 'Claudette',
+      surname: 'Collado',
+      email: 'claudette@email',
+      adminLevel: 2,
+      contactNo: '0111111111111110',
+      likedPosts: [],
+    ),
+    User(
       id: '2',
       forename: 'Dana',
       surname: 'Collado',

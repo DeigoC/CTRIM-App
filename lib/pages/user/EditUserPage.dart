@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
+import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
@@ -82,11 +83,7 @@ class _EditUserPageState extends State<EditUserPage> {
           onTextChange: (newString) => _adminBloc
               .add(AdminUserModEditTextChangeEvent(contactNo: newString)),
         ),
-        padding,
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: AdminDropdownList(),
-        ),
+        _buildAdminLvlSelector(),
         padding,
         MyTextField(
           label: 'Email',
@@ -135,9 +132,20 @@ class _EditUserPageState extends State<EditUserPage> {
     );
   }
 
-  RaisedButton _buildDisableButton() {
+  Widget _buildAdminLvlSelector(){
+    if(AdminCheck.isCurrentUserAboveLvl2(context)){
+      return Padding(
+        padding: EdgeInsets.only(top: 8, left: 8),
+        child: AdminDropdownList(),
+      );
+    }
+    return Container();
+  }
+
+  Widget _buildDisableButton() {
     bool disabled = widget.user.disabled;
-    return RaisedButton(
+    if(AdminCheck.isCurrentUserAboveLvl2(context)){
+      return RaisedButton(
         child: Text(disabled ? 'Enable User' : 'Disable User'),
         onPressed: (){
           ConfirmationDialogue.disableReenableUser(
@@ -152,5 +160,7 @@ class _EditUserPageState extends State<EditUserPage> {
           });
         },
       );
+    }
+    return Container();
   }
 }

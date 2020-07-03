@@ -38,7 +38,7 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
           Location location =
               BlocProvider.of<TimelineBloc>(context).allLocations[index];
 
-          return LocationCard(
+          return LocationCard.addressSelect(
             location: location,
             onTap: () {
               widget._postBloc.add(PostSelectedLocationEvent(

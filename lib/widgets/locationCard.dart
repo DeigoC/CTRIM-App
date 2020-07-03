@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,19 +9,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LocationCard extends StatelessWidget {
   final Location location;
-  final Function onTap;//TODO remove this?
-  LocationCard({@required this.location, this.onTap});
+  final bool isSelecting;
+  final Function onTap;
+  LocationCard({@required this.location}):isSelecting = false, onTap = null;
+
+  LocationCard.addressSelect({@required this.location, @required this.onTap}):isSelecting = true;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
-        onTap: () {
-          if (onTap == null) {
-            BlocProvider.of<AppBloc>(context).add(AppToViewAllPostsForLocationEvent());
-          } else {
+        onTap: (){
+          if(isSelecting){
             onTap();
+          }else{
+            BlocProvider.of<AppBloc>(context).add(AppToViewAllPostsForLocationEvent());
           }
         },
         child: Row(
@@ -70,35 +74,29 @@ class LocationCard extends StatelessWidget {
                   ),
                   ButtonBar(
                     alignment: MainAxisAlignment.end,
-                    children: (onTap != null) ? [
-                            IconButton(
-                              onPressed: () => BlocProvider.of<AppBloc>(context)
-                                  .add(AppToViewLocationOnMapEvent()),
-                              icon: Icon(Icons.location_on),
-                            ),
-                          ]
-                        : [
-                            IconButton(
-                                onPressed: () =>
-                                    BlocProvider.of<AppBloc>(context)
-                                        .add(AppToEditLocationEvent(location)),
-                                icon: Icon(Icons.edit)),
-                           /*  IconButton(
-                              onPressed: () => BlocProvider.of<AppBloc>(context)
-                                  .add(AppToViewLocationOnMapEvent()),
-                              icon: Icon(Icons.location_on),
-                            ), */
-                            IconButton(
-                              icon: Icon(Icons.content_copy),
-                              tooltip: 'Copy address line',
-                              onPressed: () {
-                                Clipboard.setData(
-                                    ClipboardData(text: location.addressLine));
-                                Scaffold.of(context).showSnackBar(SnackBar(
-                                    content: Text('Address line copied')));
-                              },
-                            ),
-                          ],
+                    children: (AdminCheck.isCurrentUserAboveLvl1(context) && onTap==null) ? [
+                      IconButton(
+                        onPressed:() => BlocProvider.of<AppBloc>(context).add(AppToEditLocationEvent(location)),
+                        icon: Icon(Icons.edit),
+                      ),
+                      IconButton(
+                      icon: Icon(Icons.content_copy),
+                      tooltip: 'Copy address line',
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: location.addressLine));
+                        Scaffold.of(context).showSnackBar(SnackBar(content: Text('Address line copied')));
+                      },
+                    ),
+                  ]: [  
+                    IconButton(
+                      icon: Icon(Icons.content_copy),
+                      tooltip: 'Copy address line',
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: location.addressLine));
+                        Scaffold.of(context).showSnackBar(SnackBar(content: Text('Address line copied')));
+                      },
+                    ),
+                  ],
                   )
                 ],
               ),
