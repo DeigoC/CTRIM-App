@@ -2,7 +2,7 @@ class User{
   String id, forename,surname, contactNo, imgSrc, email;
   int adminLevel;
   List<String> likedPosts;
-  bool disabled;
+  bool disabled, onDarkTheme;
 
   User({
     this.id, 
@@ -14,5 +14,6 @@ class User{
     this.adminLevel,
     this.likedPosts,
     this.disabled = false,
+    this.onDarkTheme = false,
   });
 }
