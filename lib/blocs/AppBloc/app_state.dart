@@ -13,6 +13,10 @@ class AppClosePageState extends AppState {}
 
 class AppOpenViewEventPageState extends AppState {}
 
+class AppRebuildSettingsDrawerState extends AppState{}
+
+class AppAttemptingToLogoutUserState extends AppState{}
+
 // ! Tabs Being clicked
 class AppTabClickedState extends AppState {}
 

@@ -23,12 +23,15 @@ import 'package:ctrim_app_v1/pages/user/RegisterUserPage.dart';
 import 'package:ctrim_app_v1/pages/user/UserLikedPostsPage.dart';
 import 'package:ctrim_app_v1/pages/user/UserLoginPage.dart';
 import 'package:ctrim_app_v1/pages/user/ViewAllUsersPage.dart';
+import 'package:ctrim_app_v1/pages/InitialLoadingPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'blocs/AppBloc/app_bloc.dart';
 
-const HomeRoute ='/';
+const InitailLoadingRoute = '/';
+const HomeRoute ='/Home';
+
 const ViewEventRoute ='/ViewEventPage';
 const AddEventRoute = '/AddEventPage';
 const EventBodyEditorRoute = '/EventBodyEditorRoute';
@@ -83,7 +86,7 @@ class _AppState extends State<App> {
   
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AppBloc>(
+      BlocProvider<AppBloc>(
         create: (_) => _appBloc,
       ),
       BlocProvider<TimelineBloc>(
@@ -116,6 +119,9 @@ class _AppState extends State<App> {
       Widget screen;
 
       switch (settings.name){
+        case InitailLoadingRoute: screen = InitialLoadingPage();
+        break;
+
         case HomeRoute: screen = HomePage();
         break;
 

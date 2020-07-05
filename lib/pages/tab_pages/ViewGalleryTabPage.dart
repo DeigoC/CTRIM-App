@@ -29,6 +29,7 @@ class ViewGalleryPage {
 
   Widget buildAppBar() {
     return AppBar(
+      automaticallyImplyLeading: false,
       title: Container(
         width: MediaQuery.of(_context).size.width * 0.4,
         child: TabBar(

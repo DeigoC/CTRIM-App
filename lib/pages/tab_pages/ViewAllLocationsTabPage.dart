@@ -63,6 +63,7 @@ class _LocationSearchBarState extends State<LocationSearchBar> {
   Widget build(BuildContext context) {
     return SliverAppBar(
       floating: true,
+      leading: Container(),
       actions: _searchMode ? null: [
               IconButton(
                 icon: Icon(Icons.search),

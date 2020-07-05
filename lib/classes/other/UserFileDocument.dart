@@ -1,21 +1,27 @@
 import 'dart:io';
+import 'package:ctrim_app_v1/classes/firebase_services/auth.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:path_provider/path_provider.dart';
 
 class UserFileDocument{
   
-  static Future<User> attpemtToLoginSavedUser() async{
+  Future<User> attpemtToLoginSavedUser() async{
     User rememberedUser;
+    AuthService _auth = AuthService();
+    
     try{
-       await _readLoginData().then((data){
+       await _readLoginData().then((data) async{
          //TODO login as normal user
+        rememberedUser = await _auth.loginWithEmail(email: data[0], password: data[1]);
        });
     }catch(e){
-
+      //print('----------------ERROR AT FIRST BLOCK: '+ e.toString());
+      // ! Maybe the password was changed in a different phone?
     }finally{
       if(rememberedUser==null){
         await _readGuestData().then((data){
           rememberedUser = User(
+            id: '0',
             adminLevel: 0,
             likedPosts: data.length==1 ? [] : List.from(data.sublist(1)),
             onDarkTheme: data[0].compareTo('true')==0
@@ -26,7 +32,7 @@ class UserFileDocument{
     return rememberedUser;
   }
 
-  static Future<List<String>> _readLoginData() async{
+  Future<List<String>> _readLoginData() async{
     List<String> content;
     try{
       final file = await _localLoginFile;
@@ -35,7 +41,7 @@ class UserFileDocument{
     return content;
   }
 
-   static Future<List<String>> _readGuestData() async{
+  Future<List<String>> _readGuestData() async{
     List<String> content =[];
     try{
       final file = await _localGuestFile;
@@ -46,40 +52,45 @@ class UserFileDocument{
     return content;
   }
 
-  // * SAVING THE DATA
-  static Future<Null> saveLoginData(String email, String password)async{
+  Future<Null> deleteSaveData() async{
+    final file = await _localLoginFile;
+    file.delete();//TODO need to test this
+  }
+
+  // * WRITING THE DATA
+  Future<Null> saveLoginData(String email, String password)async{
     String contents = '$email\n$password';
     await _writeToLoginFile(contents);
   }
 
-  static Future<Null> saveNormalUserData(User user)async{
+  Future<Null> saveGuestUserData(User user)async{
     String likedPosts ='';
     user.likedPosts.forEach((id)=>likedPosts += '\n$id');
     String contents = '${user.onDarkTheme.toString()}$likedPosts';
     await _writeToLocalUserFile(contents);
   }
-
-  static Future<File> _writeToLocalUserFile(String contents) async{
+ 
+  Future<File> _writeToLocalUserFile(String contents) async{
     final file = await _localGuestFile;
     return file.writeAsString(contents);
   }
 
-  static Future<File> get _localGuestFile async{
+  Future<File> get _localGuestFile async{
     final path = await _localPath;
     return File('$path/userInfo.txt');
   }
 
-  static Future<File> _writeToLoginFile(String contents) async{
+  Future<File> _writeToLoginFile(String contents) async{
     final file = await _localLoginFile;
     return file.writeAsString(contents);
   }
 
-  static Future<File> get _localLoginFile async{
+  Future<File> get _localLoginFile async{
     final path = await _localPath;
     return File('$path/login.txt');
   }
 
-  static Future<String> get _localPath async{
+  Future<String> get _localPath async{
     final directory = await getApplicationDocumentsDirectory();
     return directory.path; 
   }

@@ -2,13 +2,17 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
+import 'package:ctrim_app_v1/classes/other/UserFileDocument.dart';
 import 'package:equatable/equatable.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/auth.dart';
 
 part 'admin_event.dart';
 part 'admin_state.dart';
 
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
   // ! Admin Variables
+
+  final AuthService _auth = AuthService();
 
   List<User> _users = [];
   void setUsers(List<User> users) {
@@ -54,21 +58,39 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   AdminState get initialState => AdminInitial();
 
   @override
-  Stream<AdminState> mapEventToState(
-    AdminEvent event,
-  ) async* {
-    if (event is AdminLoginTextChangeEvent) {
-      yield* _mapLoginTextChangeEventToState(event);
-    } else if (event is AdminContinueClickEvent) {
-      yield _canContinueToPasswordState(event);
-    } else if (event is AdminReturnToLoginEmailEvent) {
-      yield AdminLognReturnToEmailState();
-    } else if (event is AdminModifyingUserEvent)
-      yield* _mapUserModificationEventToState(event);
+  Stream<AdminState> mapEventToState(AdminEvent event,) async* {
+    if (event is AdminLoginTextChangeEvent) yield* _mapLoginTextChangeEventToState(event);
+    else if (event is AdminContinueClickEvent)  yield _canContinueToPasswordState(event);
+    else if (event is AdminReturnToLoginEmailEvent) yield AdminLognReturnToEmailState();
+    else if (event is AdminModifyingUserEvent) yield* _mapUserModificationEventToState(event);
+    else if (event is AdminLoginButtonClickedEvent) yield* _mapAdminButtonClickedToState(event);
   }
 
-  Stream<AdminState> _mapUserModificationEventToState(
-      AdminModifyingUserEvent event) async* {
+  Stream<AdminState> _mapAdminButtonClickedToState(AdminLoginButtonClickedEvent event)async*{
+    AdminState theResult = AdminLoginLoadingState();
+    await _auth.loginWithEmail(email: _loginEmail, password: _loginPassword)
+    .then((user){
+      UserFileDocument()..saveLoginData(_loginEmail, _loginPassword);
+      theResult = AdminLoginCompletedState(user);
+    })
+    .catchError((error) {
+      theResult = _mapErrorCodeToState(error.code);
+    });
+    yield theResult;
+  }
+
+  AdminLoginErrorState _mapErrorCodeToState(String errorCode){
+    switch(errorCode){
+      case "ERROR_INVALID_EMAIL": return AdminLoginEmailNotRecognisedState();
+      case "ERROR_WRONG_PASSWORD": return AdminLoginIncorrectPasswordState();
+      case "ERROR_USER_DISABLED": return AdminLoginUserDisabledState();
+      case "ERROR_TOO_MANY_REQUESTS": return AdminLoginTooManyRequestsState();
+      case "ERROR_OPERATION_NOT_ALLOWED": return AdminLoginOperationNotAllowedState();
+      default: return AdminLoginUnknownErrorState();
+    }
+  }
+
+  Stream<AdminState> _mapUserModificationEventToState(AdminModifyingUserEvent event) async* {
     if (event is AdminUserAdminLevelChangeEvent) {
       _selectedUser.adminLevel = event.selectedLevel;
       yield AdminUserAdminLevelChangedState();
@@ -137,9 +159,8 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     return AdminLoginEmailNotRecognisedState();
   }
 
-  Stream<AdminLoginState> _mapLoginTextChangeEventToState(
-      AdminLoginTextChangeEvent event) async* {
-    _loginEmail = event.email.trim() ?? _loginEmail;
+  Stream<AdminLoginState> _mapLoginTextChangeEventToState(AdminLoginTextChangeEvent event) async* {
+    _loginEmail = event.email ?? _loginEmail;
     _loginPassword = event.password ?? _loginPassword;
     if (_loginEmail.isEmpty) {
       yield AdminLoginDisableContinueState();
@@ -149,7 +170,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     if (_loginPassword.isEmpty) {
       yield AdminLoginDisableLoginState();
     } else {
-      yield AdminLoginEnableContinueState();
+      yield AdminLoginEnableLoginState();
     }
   }
 }

@@ -1,5 +1,5 @@
 class User{
-  String id, forename,surname, contactNo, imgSrc, email;
+  String id, forename,surname, contactNo, imgSrc, email, authID;
   int adminLevel;
   List<String> likedPosts;
   bool disabled, onDarkTheme;
@@ -15,5 +15,14 @@ class User{
     this.likedPosts,
     this.disabled = false,
     this.onDarkTheme = false,
+    this.authID = '',
   });
+
+  User.fromMap(String id, Map<String,dynamic> data) 
+  : id = id,
+  forename = data['Forename'],
+  surname = data['Surname'],
+  authID = data['AuthID'],
+  adminLevel = data['AdminLevel'],
+  email = data['Email'];
 }

@@ -2,6 +2,32 @@ import 'package:flutter/material.dart';
 
 class ConfirmationDialogue{
 
+  static Future<bool> userLogout ({
+    @required BuildContext context,
+  }) async{
+    bool result = false;
+    await showDialog(
+      context: context,
+      builder: (_){
+        return AlertDialog(
+          title: Text('Logout Confirmation'),
+          content: Text('Do you wish to continue?'),
+          actions: [
+          FlatButton(child: Text('Cancel'), onPressed: (){
+            Navigator.of(context).pop();
+          }),
+          FlatButton(child: Text('Yes'), onPressed: (){
+            result = true;
+            Navigator.of(context).pop();
+          }),
+          ],
+        );
+      }
+    );
+    return result;
+  }
+
+
   static Future<bool> deleteRecord ({
     @required BuildContext context,
     @required String record,

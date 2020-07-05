@@ -20,6 +20,8 @@ class AdminContinueClickEvent extends AdminLoginEvent {}
 
 class AdminReturnToLoginEmailEvent extends AdminLoginEvent {}
 
+class AdminLoginButtonClickedEvent extends AdminLoginEvent{}
+
 // ! Adding/Editing user
 class AdminModifyingUserEvent extends AdminEvent {}
 

@@ -55,7 +55,7 @@ class _ViewPostPageState extends State<ViewPostPage>
                             )
                           : Icon(Icons.favorite_border),
                       onPressed: () => BlocProvider.of<AppBloc>(context)
-                          .add(AppPostLikeClicked(widget._post)),
+                          .add(AppPostLikeClickedEvent(widget._post)),
                     );
                   },
                 ),

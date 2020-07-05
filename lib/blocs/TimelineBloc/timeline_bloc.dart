@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
@@ -211,7 +212,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   // ! Bloc Fields
   String _locationSearchString = '';
 
-  List<User> get allUsers => _testUsers;
+  List<User> get allUsers => UserDBManager.allUsers;
 
   Map<PostTag, bool> _selectedTags = {
     PostTag.YOUTH: false,

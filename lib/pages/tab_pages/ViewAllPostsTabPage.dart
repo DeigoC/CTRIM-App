@@ -47,6 +47,7 @@ class ViewAllEventsPage {
         key: PageStorageKey<String>('ViewAllPostsTab'),
         slivers: [
           SliverAppBar(
+            leading: Container(),
             actions: [
               IconButton(
                 icon: Icon(Icons.add_box),

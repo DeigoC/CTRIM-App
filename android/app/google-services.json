@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "547781919976",
+    "firebase_url": "https://ctrim-app.firebaseio.com",
+    "project_id": "ctrim-app",
+    "storage_bucket": "ctrim-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:547781919976:android:f15bb05dba157153d3755d",
+        "android_client_info": {
+          "package_name": "com.example.ctrim_app_v1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "547781919976-h5a8jp8vjkl9l42h0nsbl6qvjfua4k8k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnaldYymO2yERSO8kupZwPsPI_eW96ORQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "547781919976-h5a8jp8vjkl9l42h0nsbl6qvjfua4k8k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

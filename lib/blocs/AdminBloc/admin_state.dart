@@ -22,11 +22,32 @@ class AdminLoginDisableLoginState extends AdminLoginButtonState {}
 
 class AdminLoginEnableLoginState extends AdminLoginButtonState {}
 
-class AdminLoginEmailNotRecognisedState extends AdminLoginState {}
+// ! Login - Errors
+class AdminLoginErrorState extends AdminLoginState{}
 
+class AdminLoginEmailNotRecognisedState extends AdminLoginErrorState {}
+
+class AdminLoginIncorrectPasswordState extends AdminLoginErrorState{}
+
+class AdminLoginUserDisabledState extends AdminLoginErrorState{}
+
+class AdminLoginTooManyRequestsState extends AdminLoginErrorState{}
+
+class AdminLoginOperationNotAllowedState extends AdminLoginErrorState{}
+
+class AdminLoginUnknownErrorState extends AdminLoginErrorState{}
+
+// ! Login - other
 class AdminLoginContinueToPasswordState extends AdminLoginState {}
 
 class AdminLognReturnToEmailState extends AdminLoginState {}
+
+class AdminLoginCompletedState extends AdminLoginState{
+  final User user;
+  AdminLoginCompletedState(this.user);
+}
+
+class AdminLoginLoadingState extends AdminLoginState{}
 
 // ! User modification states
 class AdminUserModificationState extends AdminState {}

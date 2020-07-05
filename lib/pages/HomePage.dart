@@ -1,5 +1,4 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
-import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllLocationsTabPage.dart';
@@ -14,10 +13,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
 
-   ViewAllEventsPage _eventPage;
-   ViewGalleryPage _galleryPage;
-   ViewAllLocationsPage _locationsPage;
-   SettingsPage _settingsPage;
+  ViewAllEventsPage _eventPage;
+  ViewGalleryPage _galleryPage;
+  ViewAllLocationsPage _locationsPage;
+  SettingsPage _settingsPage;
   
 @override
 void initState() { 
@@ -30,26 +29,26 @@ void initState() {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer(
-    bloc: BlocProvider.of<AppBloc>(context),
-    listener: (_, state){
-      
-    },
-    buildWhen: (previousState, currentState){
-      if(currentState is AppTabClickedState){
-        return true;
-      }
-      return false;
-    },
-    builder:(_,state){
-      Widget result = _buildMainScaffold(0);
-      if(state is AppTabClickedState){
-        int selectedTab = _getTabIndexFromAppState(state);
-        result = _buildMainScaffold(selectedTab);
-      }
-      return result;
-    } ,
-  ); 
+    return WillPopScope(
+      onWillPop: () async=> false,
+      child: BlocConsumer<AppBloc, AppState>(
+      listener: (_, state){
+        if(state is AppRebuildSettingsDrawerState) BlocProvider.of<AppBloc>(context).add(TabButtonClicked(4));
+      },
+      buildWhen: (previousState, currentState){
+        if(currentState is AppTabClickedState)return true;
+        return false;
+      },
+      builder:(_,state){
+        Widget result = _buildMainScaffold(0);
+        if(state is AppTabClickedState){
+          int selectedTab = _getTabIndexFromAppState(state);
+          result = _buildMainScaffold(selectedTab);
+        }
+        return result;
+      } ,
+  ),
+    ); 
   }
 
   int _getTabIndexFromAppState(AppTabClickedState state){
