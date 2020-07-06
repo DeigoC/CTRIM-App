@@ -41,15 +41,9 @@ class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
           hint: '(Optional) e.g. 2-3 Hours, Whole Day, Pending',
           onTextChange: (newDuration) => null,
         ),
-        SizedBox(
-          height: 16,
-        ),
-        Divider(
-          thickness: 2,
-        ),
-        SizedBox(
-          height: 8,
-        ),
+        SizedBox( height: 16,),
+        Divider(thickness: 2,),
+        SizedBox( height: 8,),
         DetailTable(),
       ],
     );

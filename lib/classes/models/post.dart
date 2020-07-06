@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zefyr/zefyr.dart';
@@ -10,9 +11,12 @@ class Post {
   String id,title,description,body = '',duration,locationID,detailTableHeader;
   DateTime eventDate;
   bool isDateNotApplicable, deleted;
-  List<List<String>> detailTable;
-  Map<String, String> gallerySources;
+
+  //List<List<String>> detailTable;
+  List<Map<String, String>> detailTable;
+
   List<PostTag> selectedTags;
+  Map<String, String> gallerySources;
   Map<File, String> temporaryFiles;
 
   Post({
@@ -29,7 +33,65 @@ class Post {
     this.detailTable,
     this.description = '',
     this.temporaryFiles,
+    this.duration,
   });
+
+  Post.fromMap(String id, Map<String,dynamic> data)
+  :id = id,
+  title = data['Title'],
+  body = data['Body'],
+  duration = data['Duration'],
+  eventDate = (data['EventDate'] as Timestamp).toDate(),
+  locationID = data['LocationID'],
+  detailTable = _toProperFormat(data['DetailTable']) ,
+  detailTableHeader = data['DetailTableHeader'],
+  deleted = data['Deleted'],
+  selectedTags = _setSelectedTags(data['SelectedTags']),
+  gallerySources = Map<String,String>.from(data['GallerySources']),
+  description = data['Description'],
+  isDateNotApplicable = data['IsDateNotApplicable'],
+  temporaryFiles = {};
+
+  static List<Map<String,String>> _toProperFormat(dynamic data){
+    List<Map<String,String>> result = [];
+    data.forEach((item) => result.add({
+      'Leading':item['Leading'],
+      'Trailing':item['Trailing'],
+    }));
+    return result;
+  }
+
+  toJson(){
+    return {
+      'Title':title,
+      'Body':body,
+      'Duration':duration??'',
+      'EventDate': Timestamp.fromDate(eventDate??DateTime.now()),
+      'LocationID':locationID,
+      'DetailTable':detailTable,
+      'DetailTableHeader':detailTableHeader??'',
+      'Deleted':deleted,
+      'SelectedTags':selectedTagsString,
+      'GallerySources':gallerySources,
+      'Description':description,
+      'IsDateNotApplicable':isDateNotApplicable,
+    };
+  }
+  
+  static List<PostTag> _setSelectedTags(dynamic data){
+    List<PostTag> result = [];
+    data.forEach((postString) => result.add(_stringToTag(postString)));
+    return result;
+  }
+
+  static PostTag _stringToTag(String s){
+    switch(s){
+      case 'Women': return PostTag.WOMEN;
+      case 'Youth':return PostTag.YOUTH;
+      case 'Church':return PostTag.CHURCH;
+    }
+    return null;
+  }
 
   void setTimeOfDay(TimeOfDay tod) {
     if (eventDate == null) {

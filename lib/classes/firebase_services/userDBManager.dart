@@ -40,18 +40,18 @@ class UserDBManager{
 
   static final CollectionReference _ref = Firestore.instance.collection('users');
 
-  Future<List<User>> fetchUsers() async{
+  Future<List<User>> fetchAllUsers() async{
     var collections = await _ref.getDocuments();
-    List<User> _allUsers = collections.documents.map((doc) => User.fromMap(doc.documentID, doc.data)).toList();
+    _allUsers = collections.documents.map((doc) => User.fromMap(doc.documentID, doc.data)).toList();
     return _allUsers;
   }
 
   Future<Null> addUser(User user) async{
-
+    await _ref.document(user.id).setData(user.toJson());
   }
 
   Future<Null> updateUser(User user) async{
-    
+    await _ref.document(user.id).setData(user.toJson());
   }
 
   User getUserByID(String id) {

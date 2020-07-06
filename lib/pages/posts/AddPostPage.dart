@@ -1,3 +1,4 @@
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
@@ -105,22 +106,21 @@ class _AddEventPageState extends State<AddEventPage>
       },
       builder: (_, state) {
         Widget result = RaisedButton(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           onPressed: (state is PostEnableSaveButtonState)
               ? () {
                   _confirmSave().then((confirmation) {
                     if (confirmation) {
-                      BlocProvider.of<TimelineBloc>(context)
-                          .add(TimelineAddNewPostEvent(_postBloc.newPost));
+                      BlocProvider.of<TimelineBloc>(context).add(TimelineAddNewPostEvent(
+                        _postBloc.newPost,
+                        BlocProvider.of<AppBloc>(context).currentUser.id,
+                      ));
                       Navigator.of(context).pop();
                     }
                   });
                 }
               : null,
-          child: Text(
-            'Save',
-          ),
+          child: Text('Save',),
         );
         return result;
       },

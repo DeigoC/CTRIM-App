@@ -95,35 +95,30 @@ class _EditUserPageState extends State<EditUserPage> {
         Container(
             padding: EdgeInsets.all(8),
             child: BlocConsumer(
-                bloc: _adminBloc,
-                listener: (_, state) {
-                  if (state is AdminUserModUpdateUser) {}
-                },
-                buildWhen: (_, state) {
-                  if (state is AdminUserModEnableSaveButtonState)
-                    return true;
-                  else if (state is AdminUserModDisableButtonState) return true;
-                  return false;
-                },
-                builder: (_, state) {
-                  return RaisedButton(
-                    child: Text('Register User'),
-                    onPressed: (state is AdminUserModEnableSaveButtonState)
-                        ? () {
-                            ConfirmationDialogue.saveRecord(
-                                    context: context,
-                                    record: 'User',
-                                    editing: true)
-                                .then((confirmation) {
-                              if (confirmation) {
-                                BlocProvider.of<TimelineBloc>(context).add(
-                                    TimelineUserUpdatedEvent(
-                                        _adminBloc.selectedUser));
-                                Navigator.of(context).pop();
-                              }
-                            });
-                          }
-                        : null,
+              bloc: _adminBloc,
+              listener: (_, state) {
+                if (state is AdminUserModUpdateUser) {}
+              },
+              buildWhen: (_, state) {
+                if (state is AdminUserModEnableSaveButtonState)
+                  return true;
+                else if (state is AdminUserModDisableButtonState) return true;
+                return false;
+              },
+              builder: (_, state) {
+                return RaisedButton(
+                  child: Text('Update User'),
+                  onPressed: (state is AdminUserModEnableSaveButtonState)? () {
+                    ConfirmationDialogue.saveRecord(
+                      context: context,
+                      record: 'User',
+                      editing: true).then((confirmation) {
+                      if (confirmation) {
+                        BlocProvider.of<TimelineBloc>(context).add(TimelineUserUpdatedEvent(_adminBloc.selectedUser));
+                        Navigator.of(context).pop();
+                      }
+                    });
+                  }: null,
                   );
                 })),
         padding,

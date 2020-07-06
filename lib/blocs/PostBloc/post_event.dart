@@ -60,7 +60,7 @@ class PostDetailListTextChangeEvent extends PostDetailListEvent {
 }
 
 class PostDetailListItemRemovedEvent extends PostDetailListEvent {
-  final List<String> item;
+  final Map<String,String> item;
   PostDetailListItemRemovedEvent(this.item);
 }
 

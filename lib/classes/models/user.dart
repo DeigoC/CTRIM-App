@@ -24,5 +24,26 @@ class User{
   surname = data['Surname'],
   authID = data['AuthID'],
   adminLevel = data['AdminLevel'],
+  contactNo = data['ContactNo'],
+  disabled = data['Disabled'],
+  imgSrc = data['ImgSrc'],
+  likedPosts = List.from(data['LikedPosts'], growable: true),
+  onDarkTheme = data['OnDarkTheme'],
   email = data['Email'];
+
+  toJson(){
+    return {
+      'AdminLevel':adminLevel,
+      'AuthID':authID,
+      'ContactNo':contactNo,
+      'Disabled':disabled,
+      'Email':email,
+      'Forename':forename,
+      'ImgSrc':imgSrc??'',
+      'LikedPosts':likedPosts??[],
+      'OnDarkTheme':onDarkTheme,
+      'Surname':surname,
+    };
+  }
+
 }

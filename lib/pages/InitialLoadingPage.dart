@@ -1,4 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/postDBManager.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/timelinePostDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,9 +15,7 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
 
   @override
   void initState() {
-    UserDBManager()..fetchUsers().then((allUsers){
-      BlocProvider.of<AppBloc>(context).add(AppStartupLoadUserEvent());
-    });
+    _loadAllData();
     super.initState();
   }
 
@@ -34,5 +35,19 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
         ),
       ),
     );
+  }
+
+  Future<Null> _loadAllData() async{
+    LocationDBManager locationDBManager = LocationDBManager();
+    UserDBManager userDBManager = UserDBManager();
+    PostDBManager postDBManager = PostDBManager();
+    TimelinePostDBManager timelinePostDBManager = TimelinePostDBManager();
+
+    await locationDBManager.fetchAllLocations();
+    await postDBManager.fetchAllPosts();
+    await timelinePostDBManager.fetchAllTimelinePosts();
+    userDBManager.fetchAllUsers().then((_){
+      BlocProvider.of<AppBloc>(context).add(AppStartupLoadUserEvent());
+    });
   }
 }

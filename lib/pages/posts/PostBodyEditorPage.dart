@@ -11,7 +11,6 @@ class EventBodyEditor extends StatefulWidget {
 }
 
 class _EventBodyEditorState extends State<EventBodyEditor> {
-  
  
   ZefyrController _textController;
   FocusNode _fnEditor;
@@ -25,7 +24,6 @@ class _EventBodyEditorState extends State<EventBodyEditor> {
   
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         title: Text('Test Page for Editor'),
@@ -33,7 +31,6 @@ class _EventBodyEditorState extends State<EventBodyEditor> {
           icon: Icon(Icons.arrow_back),
           onPressed: (){
              String contents = jsonEncode(_textController.document);
-             print('-----------------BODY CONTENT LOOKS LIKE: \n' + contents);
               widget._postBloc.add(PostSaveBodyDocumentEvent(contents));
               Navigator.pop(context);
           },

@@ -199,15 +199,12 @@ class DetailTable extends StatelessWidget {
     );
   }
 
-  Widget _createReorderableItem(List<String> item) {
+  Widget _createReorderableItem(Map<String,String> item) {
     return Dismissible(
       onDismissed: (_) {
-        BlocProvider.of<PostBloc>(_context)
-            .add(PostDetailListItemRemovedEvent(item));
+        BlocProvider.of<PostBloc>(_context).add(PostDetailListItemRemovedEvent(item));
       },
-      background: Container(
-        color: Colors.red,
-      ),
+      background: Container(color: Colors.red,),
       key: ValueKey(item),
       child: Card(
         child: InkWell(
@@ -219,14 +216,14 @@ class DetailTable extends StatelessWidget {
                 flex: 1,
                 child: Container(
                   padding: EdgeInsets.all(8),
-                  child: Text(item[0]),
+                  child: Text(item['Leading']),
                 ),
               ),
               Expanded(
                 flex: 2,
                 child: Container(
                   padding: EdgeInsets.all(8),
-                  child: Text(item[1]),
+                  child: Text(item['Trailing']),
                 ),
               ),
             ],
@@ -302,9 +299,8 @@ class DetailTable extends StatelessWidget {
         });
   }
 
-  void _editItem(List<String> item) {
-    int itemIndex =
-        BlocProvider.of<PostBloc>(_context).detailTable.indexOf(item);
+  void _editItem(Map<String,String> item) {
+    int itemIndex =BlocProvider.of<PostBloc>(_context).detailTable.indexOf(item);
     BlocProvider.of<PostBloc>(_context).prepareDetailItemEdit(item);
 
     showDialog(
@@ -320,30 +316,24 @@ class DetailTable extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Item ' + (itemIndex + 1).toString()),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8,),
                   MyTextField(
                     label: 'Leading',
-                    controller: TextEditingController(text: item[0]),
+                    controller: TextEditingController(text: item['Leading']),
                     onTextChange: (newLeading) =>
                         BlocProvider.of<PostBloc>(_context).add(
                             PostDetailListTextChangeEvent(leading: newLeading)),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox( height: 8,),
                   MyTextField(
                     label: 'Trailing',
-                    controller: TextEditingController(text: item[1]),
+                    controller: TextEditingController(text: item['Trailing']),
                     onTextChange: (newTrailing) =>
                         BlocProvider.of<PostBloc>(_context).add(
                             PostDetailListTextChangeEvent(
                                 trailing: newTrailing)),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox( height: 8,),
                   BlocBuilder(
                     bloc: BlocProvider.of<PostBloc>(_context),
                     condition: (_, state) {

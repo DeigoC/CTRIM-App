@@ -56,7 +56,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       : DateFormat('h:mm a').format(_post.eventDate);
 
   // ! Post Fields - Details Tab - Detail Table
-  List<List<String>> get detailTable => _post.detailTable;
+  List<Map<String,String>> get detailTable => _post.detailTable;
   String get detailTableHeader => _post.detailTableHeader;
   String _leadingDetailItem = '', _trailingDetailItem = '';
   void prepareNewDetailListItem() {
@@ -64,9 +64,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     _trailingDetailItem = '';
   }
 
-  void prepareDetailItemEdit(List<String> item) {
-    _leadingDetailItem = item[0];
-    _trailingDetailItem = item[1];
+  void prepareDetailItemEdit(Map<String,String> item) {
+    _leadingDetailItem = item['Leading'];
+    _trailingDetailItem = item['Trailing'];
   }
 
   // ! Post Fields - Gallery Tab
@@ -94,7 +94,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         body: postToEdit.body,
         selectedTags: List<PostTag>.from(postToEdit.selectedTags),
         description: postToEdit.description,
-        detailTable: List<List<String>>.from(postToEdit.detailTable),
+        detailTable: List<Map<String,String>>.from(postToEdit.detailTable),
         detailTableHeader: postToEdit.detailTableHeader,
         locationID: postToEdit.locationID,
         eventDate: postToEdit.eventDate,
@@ -107,7 +107,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       body: _post.body,
       selectedTags: List<PostTag>.from(postToEdit.selectedTags),
       description: _post.description,
-      detailTable: List<List<String>>.from(postToEdit.detailTable),
+      detailTable: List<Map<String,String>>.from(postToEdit.detailTable),
       detailTableHeader: _post.detailTableHeader,
       locationID: _post.locationID,
       eventDate: _post.eventDate,
@@ -125,9 +125,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   PostState get initialState => PostInitial();
 
   @override
-  Stream<PostState> mapEventToState(
-    PostEvent event,
-  ) async* {
+  Stream<PostState> mapEventToState(PostEvent event,) async* {
     if (event is PostTabClickEvent)
       yield* _mapTabClickEventToState(event);
     else if (event is PostTextChangeEvent)
@@ -187,13 +185,14 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       _post.detailTable.remove(event.item);
       yield PostDetailListReorderState();
     } else if (event is PostDetailListAddItemEvent) {
-      _post.detailTable.add([_leadingDetailItem, _trailingDetailItem]);
+      _post.detailTable.add({'Leading':_leadingDetailItem, 'Trailing':_trailingDetailItem});
+      //_post.detailTable.add([_leadingDetailItem, _trailingDetailItem]);
       yield PostDetailListReorderState();
     } else if (event is PostDetailListSaveEditEvent) {
-      _post.detailTable[event.itemIndex] = [
-        _leadingDetailItem,
-        _trailingDetailItem
-      ];
+      _post.detailTable[event.itemIndex] = {
+        'Leading':_leadingDetailItem,
+        'Trailing':_trailingDetailItem
+    };
     }
   }
 

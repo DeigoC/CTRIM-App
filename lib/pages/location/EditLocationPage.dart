@@ -71,10 +71,8 @@ class _EditLocationState extends State<EditLocation> {
               } else if (state is LocationDisplayConfirmedQueryAddressState) {
                 Navigator.of(context).pop();
               } else if (state is LocationEditChangesSavedState) {
-                BlocProvider.of<TimelineBloc>(context)
-                    .updateLocation(state.updatedLocation);
-                BlocProvider.of<TimelineBloc>(context)
-                    .add(TimelineLocationSearchTextChangeEvent(null));
+                BlocProvider.of<TimelineBloc>(context).add(TimelineLocationUpdatedEvent(state.updatedLocation));
+                BlocProvider.of<TimelineBloc>(context).add(TimelineLocationSearchTextChangeEvent(null));
                 Navigator.of(context).pop();
               }
             },

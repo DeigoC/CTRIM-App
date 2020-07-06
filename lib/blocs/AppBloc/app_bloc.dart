@@ -20,7 +20,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   
   final AuthService _auth = AuthService();
   final UserFileDocument _userFileDocument = UserFileDocument();
-  final UserDBManager _userDBManager = UserDBManager();
+  //final UserDBManager _userDBManager = UserDBManager();
 
   // ! Bloc Fields
   final GlobalKey<NavigatorState> navigatorKey;

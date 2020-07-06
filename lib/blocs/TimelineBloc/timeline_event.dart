@@ -11,7 +11,8 @@ class TimelineFetchAllPostsEvent extends TimelineEvent {}
 
 class TimelineAddNewPostEvent extends TimelineEvent {
   final Post post;
-  TimelineAddNewPostEvent(this.post);
+  final String authorID;
+  TimelineAddNewPostEvent(this.post,this.authorID);
 }
 
 class TimelineTagClickedEvent extends TimelineEvent {
@@ -77,6 +78,11 @@ class TimelineLocationSearchTextChangeEvent extends TimelineEvent {
 class TimelineLocationDeletedEvent extends TimelineEvent{
   final Location location;
   TimelineLocationDeletedEvent(this.location);
+}
+
+class TimelineLocationUpdatedEvent extends TimelineEvent{
+  final Location location;
+  TimelineLocationUpdatedEvent(this.location);
 }
 
 // ! Search Album

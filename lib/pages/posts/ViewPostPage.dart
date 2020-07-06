@@ -177,13 +177,9 @@ class _ViewPostPageState extends State<ViewPostPage>
 
   List<Widget> _buildDetailListItems() {
     return [
-      SizedBox(
-        height: 24,
-      ),
+      SizedBox(height: 24,),
       Text(widget._post.detailTableHeader),
-      SizedBox(
-        height: 8,
-      ),
+      SizedBox(height: 8,),
       Expanded(
         child: ListView.builder(
           itemCount: widget._post.detailTable.length,
@@ -196,12 +192,12 @@ class _ViewPostPageState extends State<ViewPostPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(widget._post.detailTable[index][0]),
+                    child: Text(widget._post.detailTable[index]['Leading']),
                     flex: 1,
                   ),
                   Text(' | '),
                   Expanded(
-                    child: Text(widget._post.detailTable[index][1]),
+                    child: Text(widget._post.detailTable[index]['Trailing']),
                     flex: 2,
                   )
                 ],

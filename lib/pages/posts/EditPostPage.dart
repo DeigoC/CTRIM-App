@@ -19,8 +19,7 @@ class EditPostPage extends StatefulWidget {
   _EditPostPageState createState() => _EditPostPageState();
 }
 
-class _EditPostPageState extends State<EditPostPage>
-    with SingleTickerProviderStateMixin {
+class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderStateMixin {
   PostBloc _postBloc;
   TabController _tabController;
   Orientation _orientation;

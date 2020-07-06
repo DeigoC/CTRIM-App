@@ -1,7 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
-import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/widgets/postArticle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -39,9 +38,9 @@ class ViewAllEventsPage {
   Widget _buildBodyWithData(TimelineDisplayFeedState state) {
     return RefreshIndicator(
       onRefresh: () async {
-        return await Future.delayed(
-          Duration(seconds: 2),
-        );
+        await BlocProvider.of<TimelineBloc>(_context).reloadAllRecords().then((_){
+          BlocProvider.of<TimelineBloc>(_context).add(TimelineFetchAllPostsEvent());
+        });
       },
       child: CustomScrollView(
         key: PageStorageKey<String>('ViewAllPostsTab'),
@@ -51,8 +50,7 @@ class ViewAllEventsPage {
             actions: [
               IconButton(
                 icon: Icon(Icons.add_box),
-                onPressed: () => BlocProvider.of<AppBloc>(_context)
-                    .add(AppToAddPostPageEvent()),
+                onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToAddPostPageEvent()),
                 tooltip: 'Add new post',
               ),
               IconButton(
@@ -104,8 +102,7 @@ class ViewAllEventsPage {
               (_, index) {
                 return PostArticle(
                   allUsers: state.users,
-                  post: _getPostFromID(
-                      state.timelines[index].postID, state.posts),
+                  post: _getPostFromID(state.timelines[index].postID, state.posts),
                   timelinePost: state.timelines[index],
                 );
               },

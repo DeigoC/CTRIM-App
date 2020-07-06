@@ -49,7 +49,7 @@ class LocationCard extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: Colors.pink,
                         borderRadius: BorderRadius.circular(8),
-                        image: location.imgSrc != null
+                        image: location.imgSrc.isNotEmpty
                             ? DecorationImage(
                                 image: NetworkImage(location.imgSrc),
                                 fit: BoxFit.cover)
