@@ -30,9 +30,9 @@ class Location{
 
   toJson(){
     return{
-      'ImgSrc':imgSrc,
+      'ImgSrc':imgSrc??'',
       'Coordinates':coordinates,
-      'PostsUsed':postsUsed,
+      'PostsUsed':postsUsed??[],
       'AddressLine':addressLine,
       'Description':description,
       'Deleted':deleted,

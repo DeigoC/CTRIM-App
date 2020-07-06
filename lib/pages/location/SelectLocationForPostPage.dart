@@ -24,7 +24,7 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
       body: _buildBody(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () =>
-            BlocProvider.of<AppBloc>(context).add(AppToAddLocationEvent()),
+            BlocProvider.of<AppBloc>(context).add(AppToAddLocationEvent(widget._postBloc)),
         label: Text('New Location'),
         icon: Icon(Icons.add_location),
       ),
@@ -35,9 +35,7 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
     return ListView.builder(
         itemCount: BlocProvider.of<TimelineBloc>(context).allLocations.length,
         itemBuilder: (_, index) {
-          Location location =
-              BlocProvider.of<TimelineBloc>(context).allLocations[index];
-
+          Location location =BlocProvider.of<TimelineBloc>(context).allLocations[index];
           return LocationCard.addressSelect(
             location: location,
             onTap: () {

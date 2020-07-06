@@ -54,7 +54,10 @@ class AppToSearchPostsPageEvent extends AppNavigateToPageEvent {}
 
 // ! Locations
 class AppToViewLocationOnMapEvent extends AppNavigateToPageEvent {}
-class AppToAddLocationEvent extends AppNavigateToPageEvent {}
+class AppToAddLocationEvent extends AppNavigateToPageEvent {
+  final PostBloc postBloc;
+  AppToAddLocationEvent(this.postBloc);
+}
 class AppToEditLocationEvent extends AppNavigateToPageEvent {
   final Location location;
   AppToEditLocationEvent(this.location);

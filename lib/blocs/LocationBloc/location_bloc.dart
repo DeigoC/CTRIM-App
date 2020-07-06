@@ -2,17 +2,22 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoder/geocoder.dart';
 
 part 'location_event.dart';
 part 'location_state.dart';
 
 class LocationBloc extends Bloc<LocationEvent, LocationState> {
   // ! Bloc Fields
+  final LocationDBManager _locationDBManager = LocationDBManager();
+  List<Address> _queryAddresses =[];
+
   String _streetAddress = '', _townCity = '', _postCode = '';
-  String _selectedAddress = '';
+  String _selectedAddressLine = '';
   File _locationImage;
 
   Location _location, _originalLocation;
@@ -37,32 +42,25 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   LocationState get initialState => LocationInitial();
 
   @override
-  Stream<LocationState> mapEventToState(
-    LocationEvent event,
-  ) async* {
-    if (event is LocationTextChangeEvent)
-      yield* _mapTextChangeEventsToState(event);
-    else if (event is LocationQueryAddressEvent)
-      yield* _mapQueryEventsToQueryStates(event);
-    else if (event is LocationImageSelectedEvent)
-      yield* _mapImageSetEventToState(event);
+  Stream<LocationState> mapEventToState(LocationEvent event,) async* {
+    if (event is LocationTextChangeEvent)yield* _mapTextChangeEventsToState(event);
+    else if (event is LocationQueryAddressEvent)yield* _mapQueryEventsToQueryStates(event);
+    else if (event is LocationImageSelectedEvent)yield* _mapImageSetEventToState(event);
     else if (event is LocationRemoveSelectedImageEvent) {
       _locationImage = null;
       yield LocationRemoveSelectedImageState();
-    } else if (event is LocationEditLocationEvent)
-      yield* _mapEditLocationToState(event);
+    } else if (event is LocationEditLocationEvent)yield* _mapEditLocationToState(event);
+    else if(event is LocationSaveNewLocationEvent) yield* _saveNewLocation();
   }
 
-  Stream<LocationState> _mapImageSetEventToState(
-      LocationImageSelectedEvent event) async* {
+  Stream<LocationState> _mapImageSetEventToState(LocationImageSelectedEvent event) async* {
     if (event.selectedFile != null) {
       _locationImage = event.selectedFile;
       yield LocationSetNewLocationImageState(_locationImage);
     }
   }
 
-  Stream<LocationState> _mapEditLocationToState(
-      LocationEditLocationEvent event) async* {
+  Stream<LocationState> _mapEditLocationToState(LocationEditLocationEvent event) async* {
     if (event is LocationDescriptionTextChangeEvent) {
       _location.description = event.description;
       yield _canUpdateLocation();
@@ -71,8 +69,8 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       yield LocationRemoveSelectedImageState();
       yield _canUpdateLocation();
     } else if (event is LocationEditConfirmedQueryAddressEvent) {
-      _location.addressLine = _selectedAddress;
-      yield LocationDisplayConfirmedQueryAddressState(_selectedAddress);
+      _location.addressLine = _selectedAddressLine;
+      yield LocationDisplayConfirmedQueryAddressState(_selectedAddressLine);
       yield _canUpdateLocation();
     } else if (event is LocationEditUpdateLocationEvent) {
       //TODO need to sort image in the future
@@ -80,24 +78,22 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     }
   }
 
-  Stream<LocationQueryState> _mapQueryEventsToQueryStates(
-      LocationQueryAddressEvent event) async* {
+  Stream<LocationQueryState> _mapQueryEventsToQueryStates(LocationQueryAddressEvent event) async* {
     if (event is LocationFindAddressEvent) {
-      yield _mapQueryToResultsState(event);
+      yield* _mapQueryToResultsState(event);
     } else if (event is LocationCancelQueryEvent) {
       yield LocationCancelQueryState();
     } else if (event is LocationSelectedQueryAddressEvent) {
-      _selectedAddress = event.selectedAddress;
+      _selectedAddressLine = event.selectedAddress;
       yield LocationDisplaySelectedLocationMapState(event.selectedAddress);
     } else if (event is LocationWrongQueryAddressEvent) {
       yield LocationRebuildQueryResultsState();
     } else if (event is LocationConfirmedQueryAddressEvent) {
-      yield LocationDisplayConfirmedQueryAddressState(_selectedAddress);
-    }
+      yield LocationDisplayConfirmedQueryAddressState(_selectedAddressLine);
+    }else if (event is LocationSaveNewLocationEvent) yield* _saveNewLocation();
   }
 
-  Stream<LocationState> _mapTextChangeEventsToState(
-      LocationTextChangeEvent event) async* {
+  Stream<LocationState> _mapTextChangeEventsToState(LocationTextChangeEvent event) async* {
     _streetAddress = event.streetAddress ?? _streetAddress;
     _townCity = event.townCityAddress ?? _townCity;
     _postCode = event.postcode ?? _postCode;
@@ -119,9 +115,34 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     return LocationEditDisableUpdateButtonState();
   }
 
-  LocationState _mapQueryToResultsState(LocationFindAddressEvent event) {
-    //TODO add the logic here
-
-    return LocationDisplayQueryResultsState(['Address 1', 'Address 2']);
+  Stream<LocationState> _saveNewLocation() async*{
+    Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
+    Location newLocation = Location(
+      addressLine: _selectedAddressLine,
+      coordinates: {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude},
+      deleted: false,
+      description: 'Used for Events',
+    );
+    await _locationDBManager.addLocation(newLocation).then((_){
+      LocationDBManager.allLocations.add(newLocation);
+    });
+    yield LocationCreatedState();
   }
+
+  Stream<LocationQueryState> _mapQueryToResultsState(LocationFindAddressEvent event) async*{
+    // TODO could add a loading thing here?
+    _queryAddresses.clear();
+    String query = event.streetAddress + ',' +event.townCityAddress + ',' + event.postcode;
+    await Geocoder.local.findAddressesFromQuery(query).then((results){
+      results.forEach((address){
+      /* print('---------------ADDRESS LINE: ' + address.addressLine +'\nCo ords: ' + address.coordinates.toString());
+        print('-----------Lat: '+address.coordinates.latitude.toString());
+        print('-----------Long: '+address.coordinates.longitude.toString()); */
+        _queryAddresses.add(address);
+      });
+    });
+    yield LocationDisplayQueryResultsState(_queryAddresses.map((a) => a.addressLine).toList());
+  }
+
+
 }

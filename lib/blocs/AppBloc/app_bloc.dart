@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/auth.dart';
-import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
@@ -71,7 +70,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if (event is AppToRegisterUserEvent) state.pushNamed(RegisterUserRoute);
     else if (event is AppToViewAllUsersEvent) state.pushNamed(ViewAllUsersRoute);
     else if (event is AppToEditUserEvent) state.pushNamed(EditUserRoute, arguments: {'user': event.user});
-    else if (event is AppToAddLocationEvent) state.pushNamed(AddLocationRoute);
+    else if (event is AppToAddLocationEvent) state.pushNamed(AddLocationRoute, arguments: {'postBloc': event.postBloc});
     else if (event is AppToEditLocationEvent) state.pushNamed(EditLocationRoute,
     arguments: {'location': event.location});
     else if (event is AppToSelectLocationForPostEvent) state.pushNamed(SelectLocationForEventRoute,

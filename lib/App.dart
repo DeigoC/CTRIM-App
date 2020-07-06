@@ -149,7 +149,7 @@ class _AppState extends State<App> {
         case EditUserRoute: screen = EditUserPage(arguments['user']);
         break;
 
-        case AddLocationRoute: screen = AddLocation();
+        case AddLocationRoute: screen = AddLocation(arguments['postBloc']);
         break;
 
         case EditLocationRoute: screen = EditLocation(arguments['location']);
@@ -166,6 +166,7 @@ class _AppState extends State<App> {
 
         case EventBodyEditorRoute: screen = EventBodyEditor(arguments['postBloc']);
         break;
+
         case UserLoginRoute: screen = UserLoginPage();
         break;
 

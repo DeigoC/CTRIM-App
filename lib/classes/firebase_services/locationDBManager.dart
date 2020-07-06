@@ -18,6 +18,9 @@ class LocationDBManager{
   }
 
   Future<Null> addLocation(Location location) async{
+    await _ref.getDocuments().then((collection){
+      location.id = (int.parse(collection.documents.last.documentID) + 1).toString();
+    });
     await _ref.document(location.id).setData(location.toJson());
   }
 

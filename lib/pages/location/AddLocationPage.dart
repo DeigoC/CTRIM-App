@@ -1,12 +1,16 @@
 import 'dart:io';
 
 import 'package:ctrim_app_v1/blocs/LocationBloc/location_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddLocation extends StatefulWidget {
+  final PostBloc _postBloc;
+  AddLocation(this._postBloc);
   @override
   _AddLocationState createState() => _AddLocationState();
 }
@@ -56,6 +60,13 @@ class _AddLocationState extends State<AddLocation> {
               Navigator.of(context).pop();
             } else if (state is LocationDisplayConfirmedQueryAddressState) {
               Navigator.of(context).pop();
+            }else if (state is LocationCreatedState){
+              widget._postBloc.add(PostSelectedLocationEvent(
+                addressLine: LocationDBManager.allLocations.last.addressLine,
+                locationID: LocationDBManager.allLocations.last.id,
+              ));
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
             }
           },
           child: _buildBody()),
@@ -67,14 +78,7 @@ class _AddLocationState extends State<AddLocation> {
     return ListView(
       shrinkWrap: false,
       children: [
-        MyTextField(
-          label: 'Description',
-          controller: _tecDescription,
-          hint: '(Optional)',
-        ),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Street Address',
           hint: '12 Example Rd.',
@@ -82,9 +86,7 @@ class _AddLocationState extends State<AddLocation> {
           onTextChange: (newStreetAddress) => _locationBloc
               .add(LocationTextChangeEvent(streetAddress: newStreetAddress)),
         ),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Town/City',
           hint: 'Belfast',
@@ -92,9 +94,7 @@ class _AddLocationState extends State<AddLocation> {
           onTextChange: (newTownCity) => _locationBloc
               .add(LocationTextChangeEvent(townCityAddress: newTownCity)),
         ),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Postcode',
           hint: 'BT13 2DE',
@@ -102,9 +102,7 @@ class _AddLocationState extends State<AddLocation> {
           onTextChange: (newPostcode) =>
               _locationBloc.add(LocationTextChangeEvent(postcode: newPostcode)),
         ),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         BlocBuilder(
             bloc: _locationBloc,
             condition: (previousStatem, currentState) {
@@ -124,14 +122,11 @@ class _AddLocationState extends State<AddLocation> {
                               streetAddress: _tecStreetAddress.text,
                               townCityAddress: _tecTownCity.text,
                               postcode: _tecPostcode.text));
-                        }
-                      : null,
+                        }: null,
                 ),
               );
             }),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         BlocBuilder(
             bloc: _locationBloc,
             condition: (previousState, currentState) {
@@ -156,17 +151,18 @@ class _AddLocationState extends State<AddLocation> {
                     width: MediaQuery.of(context).size.width * 0.85,
                     child: RaisedButton(
                       onPressed:
-                          _tecSelectedAddress.text.isEmpty ? null : () => null,
+                          _tecSelectedAddress.text.isEmpty ? null : (){
+                            _locationBloc.add(LocationSaveNewLocationEvent());
+                          },
                       child: Text('Save New Location'),
                     ),
                   ),
                 ],
               );
             }),
-        SizedBox(
-          height: itemPaddingHeight,
-        ),
+        SizedBox(height: itemPaddingHeight,),
         _buildImageSelector(),
+        SizedBox(height: itemPaddingHeight,),
       ],
     );
   }
@@ -174,7 +170,7 @@ class _AddLocationState extends State<AddLocation> {
   Column _buildImageSelector() {
     return Column(
       children: [
-        Text('Location Image'),
+        Text('Location Image (Optional)'),
         BlocBuilder(
             bloc: _locationBloc,
             condition: (_, state) {
@@ -229,6 +225,7 @@ class _AddLocationState extends State<AddLocation> {
     _locationBloc.add(LocationImageSelectedEvent(selectedImage));
   }
 
+  // ! Querying starts here
   void _displayLocationQueryResults(List<String> results) {
     showModalBottomSheet(
         context: context,

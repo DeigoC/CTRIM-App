@@ -12,7 +12,10 @@ class LocationTextChangeEvent extends LocationEvent {
       {this.streetAddress, this.townCityAddress, this.postcode});
 }
 
-// ! Query Address events
+// ! Query Address / Add Location events
+
+class LocationSaveNewLocationEvent extends LocationEvent{}
+
 class LocationQueryAddressEvent extends LocationEvent {}
 
 class LocationCancelQueryEvent extends LocationQueryAddressEvent {}
@@ -52,7 +55,6 @@ class LocationDescriptionTextChangeEvent extends LocationEditLocationEvent {
 
 class LocationEditRemoveSrcEvent extends LocationEditLocationEvent {}
 
-class LocationEditConfirmedQueryAddressEvent extends LocationEditLocationEvent {
-}
+class LocationEditConfirmedQueryAddressEvent extends LocationEditLocationEvent {}
 
 class LocationEditUpdateLocationEvent extends LocationEditLocationEvent {}
