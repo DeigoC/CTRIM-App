@@ -33,7 +33,7 @@ class LocationCard extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
                 onTap: () {
-                  if (location.imgSrc != null) {
+                  if (location.imgSrc.isNotEmpty) {
                     BlocProvider.of<AppBloc>(context).add(
                         AppToViewImageVideoPageEvent({location.imgSrc:ImageTag(src: location.imgSrc, type: 'img')
                     }, 0));
@@ -68,7 +68,7 @@ class LocationCard extends StatelessWidget {
                       text: location.addressLine,
                       style: TextStyle(color: Colors.black),
                       recognizer: TapGestureRecognizer()..onTap =()=> BlocProvider.of<AppBloc>(context)
-                      .add(AppToViewLocationOnMapEvent()),
+                      .add(AppToViewLocationOnMapEvent(location)),
                     ),),
                     subtitle: Text(location.description),
                   ),

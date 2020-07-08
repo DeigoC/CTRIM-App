@@ -12,35 +12,42 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
   List<AboutArticle> _allArticles = [
     AboutArticle(// ? This can be the MAIN about article, has no other data but the gallery
       id: '0',
-      gallerySources: {}
+      gallerySources: {},
     ),
     AboutArticle(
       id: '1',
-      title: 'Belfast Church',
+      title: 'Belfast',
       serviceTime: 'Belfast Service Time here',
       locationID: '1',
       locationPastorUID: '1',
-      gallerySources: {},
+      gallerySources: {
+        'https://ctrim.co.uk/wp-content/uploads/2020/04/4-768x768.png':'img',
+      },
     ),
     AboutArticle(
       id: '2',
-      title: 'Lisburn',
+      title: 'Northcoast',
       serviceTime: 'Belfast Service Time here',
       locationID: '1',
       locationPastorUID: '1',
-      gallerySources: {},
+      gallerySources: {
+        'https://ctrim.co.uk/wp-content/uploads/2020/05/Untitled-design.png':'img',
+      },
     ),
     AboutArticle(
       id: '3',
-      title: 'North Coast',
+      title: 'Portadown',
       serviceTime: 'Belfast Service Time here',
       locationID: '1',
       locationPastorUID: '1',
-      gallerySources: {},
+      gallerySources: {
+        'https://ctrim.co.uk/wp-content/uploads/2020/04/2.png':'img',
+      },
     ),
   ];
 
-  
+  List<AboutArticle> get allArticles => _allArticles;
+
   @override
   AboutState get initialState => AboutInitial();
 

@@ -15,8 +15,7 @@ class ViewImageVideo extends StatefulWidget {
 }
 
 class _ViewImageVideoState extends State<ViewImageVideo> {
-  Map<String, VideoPlayerController> _videoControllers =
-      <String, VideoPlayerController>{};
+  Map<String, VideoPlayerController> _videoControllers = <String, VideoPlayerController>{};
   Orientation _orientation;
   bool _videoControlsVisible = false;
 
@@ -196,10 +195,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(
-          icon: Icon(
-            Icons.replay_10,
-            size: 40,
-          ),
+          icon: Icon(Icons.replay_10,size: 40,color: Colors.white,),
           onPressed: () {
             controller.position.then((position) {
               Duration newPosition = position - Duration(seconds: 10);
@@ -208,7 +204,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
           },
         ),
         IconButton(
-            icon: Icon(Icons.fast_rewind, size: 40),
+            icon: Icon(Icons.fast_rewind, size: 40, color: Colors.white,),
             onPressed: () {
               controller.seekTo(Duration(seconds: 0, minutes: 0));
             }),
@@ -216,6 +212,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
           icon: Icon(
             controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
             size: 40,
+            color: Colors.white,
           ),
           onPressed: () {
             setState(() {
@@ -225,11 +222,12 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
             });
           },
         ),
-        IconButton(icon: Icon(Icons.volume_off, size: 40), onPressed: () {}),
+        IconButton(icon: Icon(Icons.volume_off, size: 40), onPressed: () {},color: Colors.white,),
         IconButton(
           icon: Icon(
             Icons.forward_10,
             size: 40,
+            color: Colors.white,
           ),
           onPressed: () {
             controller.position.then((position) {

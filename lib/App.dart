@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AboutBloc/about_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/HomePage.dart';
+import 'package:ctrim_app_v1/pages/about/EditAboutArticlePage.dart';
 import 'package:ctrim_app_v1/pages/about/ViewAboutPastors.dart';
 import 'package:ctrim_app_v1/pages/about/ViewChurchPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/CreateAlbumPage.dart';
@@ -64,6 +65,7 @@ const MyLikedPostsRoute = '/LikedPostsPage';
 
 const ViewChurchPageRoute = '/ViewChurchPage';
 const ViewAboutPastorsRoute = '/ViewAboutPastorsRoute';
+const EditAboutArticleRoute = '/EditAboutArticlePageRoute';
 
 class App extends StatefulWidget {
 
@@ -143,7 +145,7 @@ class _AppState extends State<App> {
         case ViewImageVideoRoute: screen = ViewImageVideo(initialPage: arguments['initialPage'], imageSources: arguments['imgSources'],);
         break;
         
-        case ViewLocationOnMapRoute: screen = ViewLocationOnMap();
+        case ViewLocationOnMapRoute: screen = ViewLocationOnMap(arguments['location']);
         break;
 
         case ViewAllEventsForLocationRoute: screen = ViewAllEventsForLocation();
@@ -207,6 +209,9 @@ class _AppState extends State<App> {
         break;
 
         case ViewAboutPastorsRoute: screen = ViewAboutPastorPage(arguments['article']);
+        break;
+
+        case EditAboutArticleRoute: screen = EditAboutArticlePage();
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

@@ -1,4 +1,8 @@
+import 'package:ctrim_app_v1/blocs/AboutBloc/about_bloc.dart';
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AboutTabPage{
 
@@ -51,29 +55,42 @@ class AboutTabPage{
   }
 
   Widget _buildTab2(){
-    List<Color> colors = [
-      Colors.red,
-      Colors.pink,
-      Colors.blue,
-      Colors.yellow,
-    ];
+    List<AboutArticle> articles = List.from(BlocProvider.of<AboutBloc>(_context).allArticles);
+    articles.removeAt(0);
     return ListView.builder(
-      itemCount: 4,
+      itemCount: articles.length,
       key: PageStorageKey<String>('AboutTabPageTab2'),
       itemBuilder: (_,index){
+        AboutArticle thisArticle = articles[index];
         return InkWell(
-          onTap: ()=> null,
+          onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewChurchEvent(articles[index])),
           splashColor: Colors.blue.withAlpha(30),
           child: Container(
-            color: colors[index],
+            decoration: BoxDecoration(image: DecorationImage(
+              image: NetworkImage(thisArticle.gallerySources.keys.first),
+              fit: BoxFit.cover
+            )),
             width: double.infinity,
             height: MediaQuery.of(_context).size.height * 0.40,
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Church #$index'),
-              ),
+            child: Stack(
+              children:[ 
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(Icons.edit, color: Colors.white),
+                    onPressed: (){
+                      BlocProvider.of<AppBloc>(_context).add(AppToEditAboutArticleEvent());
+                    },
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(thisArticle.title.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 24),),
+                  ),
+                ),
+              ],
             )
           ),
         );

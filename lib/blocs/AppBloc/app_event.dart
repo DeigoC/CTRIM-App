@@ -53,7 +53,10 @@ class AppToEditPostPageEvent extends AppNavigateToPageEvent {
 class AppToSearchPostsPageEvent extends AppNavigateToPageEvent {}
 
 // ! Locations
-class AppToViewLocationOnMapEvent extends AppNavigateToPageEvent {}
+class AppToViewLocationOnMapEvent extends AppNavigateToPageEvent {
+  final Location location;
+  AppToViewLocationOnMapEvent(this.location);
+}
 class AppToAddLocationEvent extends AppNavigateToPageEvent {
   final PostBloc postBloc;
   AppToAddLocationEvent(this.postBloc);
@@ -112,6 +115,7 @@ class AppToViewPastorEvent extends AppNavigateToPageEvent{
   final AboutArticle aboutArticle;
   AppToViewPastorEvent(this.aboutArticle);
 }
+class AppToEditAboutArticleEvent extends AppNavigateToPageEvent{}
 
 // ! Settings Events
 class AppSettingsEvent extends AppEvent {}

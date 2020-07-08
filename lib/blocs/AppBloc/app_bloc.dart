@@ -67,7 +67,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToHomePageEvent) state.pushNamed(HomeRoute);
     else if (event is AppToAddPostPageEvent) state.pushNamed(AddEventRoute);
     else if (event is AppToViewAllPostsForLocationEvent) state.pushNamed(ViewAllEventsForLocationRoute);
-    else if (event is AppToViewLocationOnMapEvent) state.pushNamed(ViewLocationOnMapRoute);
+    else if (event is AppToViewLocationOnMapEvent) state.pushNamed(ViewLocationOnMapRoute, arguments: 
+    {'location':event.location});
     else if (event is AppToRegisterUserEvent) state.pushNamed(RegisterUserRoute);
     else if (event is AppToViewAllUsersEvent) state.pushNamed(ViewAllUsersRoute);
     else if (event is AppToEditUserEvent) state.pushNamed(EditUserRoute, arguments: {'user': event.user});
@@ -83,9 +84,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     arguments: {'postBloc': event.postBloc});
     else if (event is AppToUserLoginEvent)state.pushNamed(UserLoginRoute);
     else if (event is AppToViewImageVideoPageEvent)state.pushNamed(ViewImageVideoRoute, arguments: {
-        'initialPage': event.initialPage,
-        'imgSources': event.imageSorces
-      });
+        'initialPage': event.initialPage,'imgSources': event.imageSorces});
     else if (event is AppToViewMyPostsPageEvent)state.pushNamed(ViewMyPostsRoute);
     else if (event is AppToEditPostPageEvent)state.pushNamed(EditPostRoute, arguments: {'post': event.post});
     else if (event is AppToEditAlbumEvent)state.pushNamed(EditAlbumRoute, arguments: {'postBloc': event.postBloc});
@@ -98,6 +97,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     {'article':event.aboutArticle});
     else if(event is AppToViewPastorEvent) state.pushNamed(ViewAboutPastorsRoute, arguments: {
       'article':event.aboutArticle});
+    else if(event is AppToEditAboutArticleEvent) state.pushNamed(EditAboutArticleRoute);
   }
 
   Future<void> _appStartupLoad() async{

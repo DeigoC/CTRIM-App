@@ -1,7 +1,6 @@
 class AboutArticle{
 
   String id, body, title, locationID, serviceTime, locationPastorUID;
-  bool aboutPastors;
   Map<String, String> gallerySources;
 
   AboutArticle({
@@ -12,6 +11,5 @@ class AboutArticle{
     this.serviceTime,
     this.locationPastorUID,
     this.gallerySources,
-    this.aboutPastors,
   });
 }

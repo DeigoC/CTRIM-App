@@ -9,6 +9,10 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="ctrim_app_v1"
         android:icon="@mipmap/ic_launcher">
+
+       <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAUsYTGspX3XVBPtm4qNTkOw3x7O8rUBQ8"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

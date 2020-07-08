@@ -113,12 +113,12 @@ void initState() {
   }
 
   Widget _getFAB(int selectedIndex){
+    if(selectedIndex ==0) return _eventPage.buildFAB();
     return null;
   }
 
   AppBar _getAppBar(int selectedIndex){
     switch(selectedIndex){
-      case 0: return _eventPage.buildAppBar();
       case 1: return _galleryPage.buildAppBar();
       case 4: return _settingsPage.buildAppbar();
       break;

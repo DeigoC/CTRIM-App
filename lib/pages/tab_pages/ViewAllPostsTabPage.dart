@@ -13,15 +13,16 @@ class ViewAllEventsPage {
 
   ViewAllEventsPage(this._context);
 
-  Widget buildAppBar() {
-    return null;
+  Widget buildFAB() {
+    return FloatingActionButton(
+      child: Icon(Icons.add, size: 29,),
+      onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToAddPostPageEvent()),
+      tooltip: 'Add New Post',
+    );
   }
 
   Widget buildBody() {
-    Future.delayed(Duration(seconds: 1), () {
-      BlocProvider.of<TimelineBloc>(_context).add(TimelineFetchAllPostsEvent());
-    });
-
+    BlocProvider.of<TimelineBloc>(_context).add(TimelineFetchAllPostsEvent());
     return BlocBuilder<TimelineBloc, TimelineState>(condition: (_, state) {
       if (state is TimelineDisplayFeedState) return true;
       return false;
@@ -49,17 +50,9 @@ class ViewAllEventsPage {
             leading: Container(),
             actions: [
               IconButton(
-                icon: Icon(Icons.add_box),
-                onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToAddPostPageEvent()),
-                tooltip: 'Add new post',
-              ),
-              IconButton(
                 icon: Icon(Icons.search),
                 tooltip: 'Search by title',
-                onPressed: () {
-                  BlocProvider.of<AppBloc>(_context)
-                      .add(AppToSearchPostsPageEvent());
-                },
+                onPressed: ()=>BlocProvider.of<AppBloc>(_context).add(AppToSearchPostsPageEvent()),
               )
             ],
             floating: true,
