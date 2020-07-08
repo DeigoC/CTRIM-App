@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/pages/tab_pages/AboutTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllLocationsTabPage.dart';
@@ -11,12 +12,13 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   ViewAllEventsPage _eventPage;
   ViewGalleryPage _galleryPage;
   ViewAllLocationsPage _locationsPage;
   SettingsPage _settingsPage;
+  AboutTabPage _aboutTabPage;
   
 @override
 void initState() { 
@@ -25,6 +27,7 @@ void initState() {
     _galleryPage = ViewGalleryPage(context, TabController(length: 2, vsync: this));
     _locationsPage = ViewAllLocationsPage(context);
     _settingsPage = SettingsPage(context);
+    _aboutTabPage = AboutTabPage(context, TabController(length: 2, vsync: this));
 }
 
   @override
@@ -117,7 +120,6 @@ void initState() {
     switch(selectedIndex){
       case 0: return _eventPage.buildAppBar();
       case 1: return _galleryPage.buildAppBar();
-      case 3: return AppBar(title: Text('About'),);
       case 4: return _settingsPage.buildAppbar();
       break;
     }
@@ -132,7 +134,7 @@ void initState() {
       break;
       case 2: return _locationsPage.buildBody();
       break;
-      case 3: return Center(child: Text('About'),);
+      case 3: return _aboutTabPage.buildBody();
       break;
       case 4: return _settingsPage.buildBody();
       break;
