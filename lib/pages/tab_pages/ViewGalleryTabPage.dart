@@ -24,8 +24,8 @@ class ViewGalleryPage {
   double _pictureSize, _paddingSize;
   Map<DateTime, List<Post>> _allPosts;
 
+  //TODO may not need the controller at the end
   ViewGalleryPage(this._context, this._tabController);
-  
 
   Widget buildAppBar() {
     return AppBar(
@@ -41,8 +41,7 @@ class ViewGalleryPage {
         IconButton(
           icon: Icon(Icons.search),
           tooltip: 'Search by post title',
-          onPressed: () => BlocProvider.of<AppBloc>(_context)
-              .add(AppToSearchAlbumPageEvent()),
+          onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToSearchAlbumPageEvent()),
         )
       ],
     );

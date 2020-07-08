@@ -1,5 +1,7 @@
+import 'package:ctrim_app_v1/blocs/AboutBloc/about_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/HomePage.dart';
+import 'package:ctrim_app_v1/pages/about/ViewChurchPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/CreateAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/SearchAlbumsPage.dart';
@@ -59,6 +61,8 @@ const UserLoginRoute = '/UserLogin';
 const MyDetailsRoute = '/MyDetailsPage';
 const MyLikedPostsRoute = '/LikedPostsPage';
 
+const ViewChurchPageRoute = '/ViewChurchPage';
+
 class App extends StatefulWidget {
 
   @override
@@ -91,6 +95,9 @@ class _AppState extends State<App> {
       ),
       BlocProvider<TimelineBloc>(
         create: (_) => TimelineBloc(),
+      ),
+      BlocProvider<AboutBloc>(
+        create: (_)=> AboutBloc(),
       )
       ],
       child: BlocBuilder(
@@ -194,6 +201,8 @@ class _AppState extends State<App> {
         case MyLikedPostsRoute: screen = UserLikedPostsPage();
         break;
        
+        case ViewChurchPageRoute: screen = ViewChurchPage(arguments['article']);
+        break;
       }
       return MaterialPageRoute(builder: (context) => screen);
     };

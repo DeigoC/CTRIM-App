@@ -27,7 +27,7 @@ void initState() {
     _galleryPage = ViewGalleryPage(context, TabController(length: 2, vsync: this));
     _locationsPage = ViewAllLocationsPage(context);
     _settingsPage = SettingsPage(context);
-    _aboutTabPage = AboutTabPage(context, TabController(length: 2, vsync: this));
+    _aboutTabPage = AboutTabPage(context, TabController(length: 3, vsync: this));
 }
 
   @override

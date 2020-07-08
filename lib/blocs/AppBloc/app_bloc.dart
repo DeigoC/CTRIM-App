@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/auth.dart';
+import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
@@ -93,6 +94,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if (event is AppToSearchAlbumPageEvent)state.pushNamed(SearchAlbumRoute);
     else if (event is AppToMyDetailsEvent)state.pushNamed(MyDetailsRoute);
     else if (event is AppToLikedPostsPageEvent)state.pushNamed(MyLikedPostsRoute);
+    else if(event is AppToViewChurchEvent) state.pushNamed(ViewChurchPageRoute, arguments: 
+    {'article':event.aboutArticle});
   }
 
   Future<void> _appStartupLoad() async{

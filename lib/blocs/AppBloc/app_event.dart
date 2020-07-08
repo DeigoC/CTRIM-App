@@ -102,6 +102,12 @@ class AppToViewImageVideoPageEvent extends AppNavigateToPageEvent {
 }
 class AppToSearchAlbumPageEvent extends AppNavigateToPageEvent {}
 
+// ! About Pages
+class AppToViewChurchEvent extends AppNavigateToPageEvent{
+  final AboutArticle aboutArticle;
+  AppToViewChurchEvent(this.aboutArticle);
+}
+
 // ! Settings Events
 class AppSettingsEvent extends AppEvent {}
 class AppChangeThemeToDarkEvent extends AppSettingsEvent {}
