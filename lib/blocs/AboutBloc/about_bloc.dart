@@ -14,13 +14,29 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
       id: '0',
       gallerySources: {}
     ),
-    AboutArticle(// ? Belfast
+    AboutArticle(
       id: '1',
       title: 'Belfast Church',
-      serviceTime: 'Service Time here',
+      serviceTime: 'Belfast Service Time here',
       locationID: '1',
       locationPastorUID: '1',
-      gallerySources: {}
+      gallerySources: {},
+    ),
+    AboutArticle(
+      id: '2',
+      title: 'Lisburn',
+      serviceTime: 'Belfast Service Time here',
+      locationID: '1',
+      locationPastorUID: '1',
+      gallerySources: {},
+    ),
+    AboutArticle(
+      id: '3',
+      title: 'North Coast',
+      serviceTime: 'Belfast Service Time here',
+      locationID: '1',
+      locationPastorUID: '1',
+      gallerySources: {},
     ),
   ];
 

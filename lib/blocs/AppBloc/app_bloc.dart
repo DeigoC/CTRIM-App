@@ -96,6 +96,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if (event is AppToLikedPostsPageEvent)state.pushNamed(MyLikedPostsRoute);
     else if(event is AppToViewChurchEvent) state.pushNamed(ViewChurchPageRoute, arguments: 
     {'article':event.aboutArticle});
+    else if(event is AppToViewPastorEvent) state.pushNamed(ViewAboutPastorsRoute, arguments: {
+      'article':event.aboutArticle});
   }
 
   Future<void> _appStartupLoad() async{

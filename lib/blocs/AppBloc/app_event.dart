@@ -108,6 +108,11 @@ class AppToViewChurchEvent extends AppNavigateToPageEvent{
   AppToViewChurchEvent(this.aboutArticle);
 }
 
+class AppToViewPastorEvent extends AppNavigateToPageEvent{
+  final AboutArticle aboutArticle;
+  AppToViewPastorEvent(this.aboutArticle);
+}
+
 // ! Settings Events
 class AppSettingsEvent extends AppEvent {}
 class AppChangeThemeToDarkEvent extends AppSettingsEvent {}
