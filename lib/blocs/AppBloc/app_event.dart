@@ -116,6 +116,11 @@ class AppToViewPastorEvent extends AppNavigateToPageEvent{
   AppToViewPastorEvent(this.aboutArticle);
 }
 class AppToEditAboutArticleEvent extends AppNavigateToPageEvent{}
+class AppToEditAboutBodyEvent extends AppNavigateToPageEvent{}
+class AppToViewUserPageEvent extends AppNavigateToPageEvent{
+  final User user;
+  AppToViewUserPageEvent(this.user);
+}
 
 // ! Settings Events
 class AppSettingsEvent extends AppEvent {}

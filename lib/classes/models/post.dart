@@ -70,11 +70,11 @@ class Post {
       'LocationID':locationID,
       'DetailTable':detailTable,
       'DetailTableHeader':detailTableHeader??'',
-      'Deleted':deleted,
+      'Deleted':deleted??false,
       'SelectedTags':selectedTagsString,
       'GallerySources':gallerySources,
       'Description':description,
-      'IsDateNotApplicable':isDateNotApplicable,
+      'IsDateNotApplicable':isDateNotApplicable??false,
     };
   }
   

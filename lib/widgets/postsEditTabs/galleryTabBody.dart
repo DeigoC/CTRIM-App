@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/widgets/galleryItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -64,9 +65,8 @@ class GalleryTabBody extends StatelessWidget {
         Wrap(
           children: BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
             String type = BlocProvider.of<PostBloc>(_context).files[file];
-            return type == 'vid'
-                ? _createVideoContainer()
-                : _createImageFileContainer(file);
+            return type == 'vid'? GalleryItem.file(type: 'vid', file: file)
+                : GalleryItem.file(type: 'img', file: file);
           }).toList(),
         )
       ],
@@ -74,15 +74,26 @@ class GalleryTabBody extends StatelessWidget {
   }
 
   Widget _buildGalleryEditPost() {
+    Map<String, ImageTag> galleryTags = _createGalleryTags(gallerySrc);
     List<Widget> wrapChildren =
     BlocProvider.of<PostBloc>(_context).gallerySrc.keys.map((src) {
       String type = BlocProvider.of<PostBloc>(_context).gallerySrc[src];
-      return type == 'vid'? _createVideoContainer(): _createImageSrcContainer(src);
+        return type == 'vid'? GalleryItem(
+          type: 'vid',
+          src: src,
+          heroTag: galleryTags[src].heroTag,
+          onTap: ()=>null,
+        ): GalleryItem(
+          type: 'img',
+          src: src,
+          heroTag: galleryTags[src].heroTag,
+          onTap:()=>null,
+        );
     }).toList();
 
     wrapChildren.addAll(BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
       String type = BlocProvider.of<PostBloc>(_context).files[file];
-      return type == 'vid'? _createVideoContainer(): _createImageFileContainer(file);
+      return type == 'vid'? GalleryItem.file(type: 'vid', file: file): GalleryItem.file(type: 'img', file: file);
     }).toList());
 
     return ListView(
@@ -99,19 +110,32 @@ class GalleryTabBody extends StatelessWidget {
 
   Widget _buildGalleryViewPost() {
     if (gallerySrc.length == 0) return Center(child: Text('No Images or Videos'),);
+   
+   Map<String, ImageTag> galleryTags = _createGalleryTags(gallerySrc);
     return SingleChildScrollView(
       child: Wrap(
         children: gallerySrc.keys.map((src) {
           String type = gallerySrc[src];
-          return type == 'vid'
-              ? _createVideoContainer()
-              : _createImageSrcContainer(src);
+          int index = gallerySrc.keys.toList().indexOf(src);
+          return type == 'vid'? GalleryItem(
+            type: 'vid',
+            src: src,
+            heroTag: galleryTags[src].heroTag,
+            onTap: ()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, index)),
+          )
+          : GalleryItem(
+            type: 'img',
+            src: src,
+            heroTag: galleryTags[src].heroTag,
+            onTap:()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, index)),
+          );
         }).toList(),
       ),
     );
   }
 
   Widget _createImageSrcContainer(String src) {
+    print('--------------------BUILDING SRC IMAGE' + src);
     int index = gallerySrc.keys.toList().indexOf(src);
     Map<String, ImageTag> galleryTags = _createGalleryTags(gallerySrc);
     return Padding(

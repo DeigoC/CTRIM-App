@@ -20,204 +20,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   final UserDBManager _userDBManager = UserDBManager();
   final PostDBManager _postDBManager = PostDBManager();
   final TimelinePostDBManager _timelinePostDBManager = TimelinePostDBManager();
-  
-  // ! Test Data
-  /* List<Post> _testPosts = [
-    Post(
-        id: '1',
-        title: 'Title here',
-        locationID: '1',
-        duration: 'About 2 hours',
-        eventDate: DateTime.now().subtract(Duration(days: 16)),
-        description: 'This is the first test of so many to come',
-        gallerySources: {
-          'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F38%2F2016%2F05%2F12214218%2Fsimple_bites_family_backyard.jpg&q=85':
-              'img',
-          'https://i.ytimg.com/vi/mwux1_CNdxU/maxresdefault.jpg': 'img',
-          'https://www.lakedistrict.gov.uk/__data/assets/image/0018/123390/families-and-children.jpg':
-              'img',
-        },
-        selectedTags: [PostTag.YOUTH],
-        body:
-            '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
-        detailTableHeader: 'This is the header for the table',
-        detailTable: [
-          { 'Leading':'Item 1', 'Trailing':'This is test number 1'},
-          { 'Leading':'', 'Trailing':'This is test number 1'},
-          { 'Leading':'Item 1', 'Trailing':''},
-        ]),
-    Post(
-        id: '2',
-        title: 'Title Post #2',
-        eventDate: DateTime.now().subtract(Duration(days: 7)),
-        description: '',
-        body:
-            '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
-        detailTable: [],
-        detailTableHeader: '',
-        locationID: '2',
-        selectedTags: [PostTag.YOUTH, PostTag.CHURCH],
-        gallerySources: {
-          'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/screen-shot-2020-04-09-at-12-29-32-pm-1586449781.png?crop=1.00xw:0.985xh;0,0.0151xh&resize=480:*':
-              'img',
-          'https://www.netbase.com/wp-content/uploads/Brands%E2%80%99-Meme-Marketing-Makes-Sentiment-Analysis-More-Important-Than-Ever.png':
-              'img',
-        }),
-    Post(
-        id: '3',
-        eventDate: DateTime.now().subtract(Duration(days: 5)),
-        title: 'Title Post #3 and this one will be the long title',
-        description: 'The big image',
-        body:
-            '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
-        detailTable: [],
-        detailTableHeader: '',
-        locationID: '2',
-        selectedTags: [PostTag.YOUTH, PostTag.CHURCH],
-        gallerySources: {
-          'https://mamasgeeky.com/wp-content/uploads/2020/03/coronavirus-meme-1.jpg':
-              'img',
-        }),
-    Post(
-        id: '4',
-        eventDate: DateTime.now().subtract(Duration(days: 2)),
-        title: 'Youth dayout at London Bridge',
-        description:
-            'So this day we went to London Bridge, pretty cool eh? Yeah this is going to be a long description i hope. This is supposed to be at least 2 lines',
-        locationID: '0',
-        body:
-            '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
-        detailTable: [],
-        detailTableHeader: '',
-        selectedTags: [PostTag.WOMEN],
-        gallerySources: {}),
-    Post(
-        id: '5',
-        eventDate: DateTime.now().add(Duration(days: 2)),
-        isDateNotApplicable: true,
-        title: 'Youth dayout at London Bridge, The Sequel!',
-        description:
-            'So this day we went to London Bridge, pretty cool eh? \nWell this is something...',
-        locationID: '0',
-        body:
-            '[{"insert":"This is a test"},{"insert":"\\n","attributes":{"heading":1}},{"insert": "\\n item 1"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"item 2"},{"insert":"\\n","attributes":{"block":"ol"}},{"insert":"another item"},{"insert":"\\n","attributes":{"block":"ol"}}]',
-        detailTable: [],
-        detailTableHeader: '',
-        selectedTags: [PostTag.WOMEN],
-        gallerySources: {
-          'https://img.delicious.com.au/WqbvXLhs/del/2016/06/more-the-merrier-31380-2.jpg':
-              'img',
-          'https://teamjimmyjoe.com/wp-content/uploads/2019/09/funny-memes-america-one-picture-ronald-mcdonald.jpg':
-              'img',
-          'https://i.ytimg.com/vi/Zo_Y-n__Cbc/maxresdefault.jpg': 'img',
-          'https://www.demilked.com/magazine/wp-content/uploads/2019/10/5da8209a0da15-8-5cac5c63d855a__700.jpg':
-              'img',
-        }),
-  ]; */
-
-  /* List<TimelinePost> _testTimelinePosts = [
-    TimelinePost(
-        id: '1',
-        postID: '1',
-        postType: 'original',
-        authorID: '1',
-        postDate: DateTime.now().subtract(Duration(days: 2))),
-    TimelinePost(
-        id: '2',
-        postID: '2',
-        postType: 'original',
-        authorID: '2',
-        postDate: DateTime.now().subtract(Duration(days: 14))),
-    TimelinePost(
-        id: '3',
-        postID: '2',
-        postType: 'update',
-        authorID: '2',
-        updateLog: 'This is a test log',
-        postDate: DateTime.now().subtract(Duration(days: 1))),
-    TimelinePost(
-        id: '4',
-        postID: '3',
-        postType: 'original',
-        authorID: '1',
-        postDate: DateTime.now().subtract(Duration(days: 30))),
-    TimelinePost(
-        id: '5',
-        postID: '4',
-        postType: 'original',
-        authorID: '1',
-        postDate: DateTime.now().subtract(Duration(days: 2))),
-    TimelinePost(
-        id: '6',
-        postID: '5',
-        postType: 'original',
-        authorID: '2',
-        postDate: DateTime.now().subtract(Duration(days: 1))),
-  ]; */
-
- /*  List<User> _testUsers = [
-    User(
-      id: '1',
-      forename: 'Diego',
-      surname: 'Collado',
-      email: 'diego@email',
-      adminLevel: 3,
-      contactNo: '012301230',
-      likedPosts: [],
-    ),
-    User(
-      id: '3',
-      forename: 'Claudette',
-      surname: 'Collado',
-      email: 'claudette@email',
-      adminLevel: 2,
-      contactNo: '0111111111111110',
-      likedPosts: [],
-    ),
-    User(
-      id: '2',
-      forename: 'Dana',
-      surname: 'Collado',
-      email: 'DaNa@email',
-      adminLevel: 1,
-      contactNo: '0111111111111110',
-      likedPosts: [],
-    ),
-  ]; */
-
-  /* List<Location> _testLocations = [
-    Location(
-        id: '0',
-        addressLine: 'Address not Required',
-        description: "When the post doesn't require this field - select this"),
-    Location(
-        id: '1',
-        addressLine: '48 The Demesne, Carryduff, Belfast, BT8 8GU',
-        description: 'Used for events',
-        imgSrc: 'https://img2.propertypal.com/hd/p/595087/17026074.jpg'),
-    Location(
-        id: '2',
-        addressLine: '5-7 Conway St, Belfast BT13 2DE',
-        description: 'Church Building #•2',
-        imgSrc:'https://media-cdn.tripadvisor.com/media/photo-s/06/e2/e4/c1/conway-mill-preservation.jpg'),
-    Location(
-        id: '3',
-        addressLine: '81 Saintfield Rd, Belfast BT8 7HN',
-        description: "Domino's Pizza"),
-    Location(
-        id: '4',
-        addressLine: '461 Ormeau Rd, Ormeau, Belfast BT7 3GR',
-        description: 'Subway Ormeau'),
-    Location(
-        id: '5',
-        addressLine: '369 Lisburn Rd, Belfast BT9 7EP',
-        description: 'Tesco Workplace'),
-    Location(
-        id: '6',
-        addressLine: '95 Saintfield Rd, Carryduff, CountyDown BT8 8ER',
-        description: 'KFC KFC KFC!'),
-  ];
- */
+ 
   // ! Bloc Fields
   String _locationSearchString = '';
 
@@ -427,13 +230,16 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     TimelinePost timelinePost = _generateTimelinePost(event);
      
     yield TimelineEmptyState();
-    await _postDBManager.addPost(event.post).then((_) => _allPosts.add(event.post));
+    await _postDBManager.addPost(event.post).then((_){
+      _allPosts.add(_postDBManager.getPostByID(event.post.id));
+      //_allPosts.add(event.post);
+    });
     await _timelinePostDBManager.addTimelinePost(timelinePost).then((_) =>  _allTimelinePosts.add(timelinePost));
+    yield TimelineNewPostUploadedState();
     yield* _displayFeed();
   }
 
-  Stream<TimelineState> _displayFeed() async*{
-    _allTimelinePosts.sort((x, y) => y.postDate.compareTo(x.postDate));
+  Stream<TimelineState> _displayFeed() async*{_allTimelinePosts.sort((x, y) => y.postDate.compareTo(x.postDate));
     List<Post> posts = [];
     List<TimelinePost> tPosts = [];
     List<PostTag> selectedTags = [];

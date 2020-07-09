@@ -1,9 +1,11 @@
 import 'package:ctrim_app_v1/blocs/AboutBloc/about_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/HomePage.dart';
+import 'package:ctrim_app_v1/pages/about/AboutBodyEditorPage.dart';
 import 'package:ctrim_app_v1/pages/about/EditAboutArticlePage.dart';
 import 'package:ctrim_app_v1/pages/about/ViewAboutPastors.dart';
 import 'package:ctrim_app_v1/pages/about/ViewChurchPage.dart';
+import 'package:ctrim_app_v1/pages/about/ViewUserPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/CreateAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/SearchAlbumsPage.dart';
@@ -66,6 +68,8 @@ const MyLikedPostsRoute = '/LikedPostsPage';
 const ViewChurchPageRoute = '/ViewChurchPage';
 const ViewAboutPastorsRoute = '/ViewAboutPastorsRoute';
 const EditAboutArticleRoute = '/EditAboutArticlePageRoute';
+const AboutBodyEditorPageRoute = '/AboutBodyEditorPage';
+const ViewUserPageRoute = '/ViewUserPageRoute';
 
 class App extends StatefulWidget {
 
@@ -175,7 +179,7 @@ class _AppState extends State<App> {
         case AddGalleryFilesRoute: screen = AddGalleryFiles(arguments['postBloc']);
         break;
 
-        case EventBodyEditorRoute: screen = EventBodyEditor(arguments['postBloc']);
+        case EventBodyEditorRoute: screen = PostBodyEditor(arguments['postBloc']);
         break;
 
         case UserLoginRoute: screen = UserLoginPage();
@@ -212,6 +216,12 @@ class _AppState extends State<App> {
         break;
 
         case EditAboutArticleRoute: screen = EditAboutArticlePage();
+        break;
+
+        case AboutBodyEditorPageRoute: screen = AboutBodyEditorPage();
+        break;
+
+        case ViewUserPageRoute: screen = ViewUserPage(arguments['user']);
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

@@ -2,6 +2,7 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/widgets/galleryItem.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,16 +13,10 @@ class ViewGalleryPage {
   void setContext(BuildContext context) => _context = context;
   final TabController _tabController;
   final List<Tab> _myTabs = [
-    Tab(
-      icon: Icon(Icons.view_module),
-    ),
-    Tab(
-        icon: Icon(
-      Icons.folder,
-    ))
+    Tab(icon: Icon(Icons.view_module),),
+    Tab( icon: Icon(Icons.folder,))
   ];
-
-  double _pictureSize, _paddingSize;
+ 
   Map<DateTime, List<Post>> _allPosts;
 
   //TODO may not need the controller at the end
@@ -30,13 +25,12 @@ class ViewGalleryPage {
   Widget buildAppBar() {
     return AppBar(
       automaticallyImplyLeading: false,
-      title: Container(
-        width: MediaQuery.of(_context).size.width * 0.4,
-        child: TabBar(
+      title: Text('Gallery'),
+      centerTitle: true,
+      bottom: TabBar(
           controller: _tabController,
           tabs: _myTabs,
         ),
-      ),
       actions: [
         IconButton(
           icon: Icon(Icons.search),
@@ -60,14 +54,6 @@ class ViewGalleryPage {
 
   Widget _timelineView() {
     return OrientationBuilder(builder: (_, orientation) {
-      _pictureSize = _pictureSize = MediaQuery.of(_context).size.width * 0.32;
-      _paddingSize = MediaQuery.of(_context).size.width * 0.01;
-      if (orientation == Orientation.landscape) {
-        // * 4 blocks accross so 5 paddings accross
-        _pictureSize = MediaQuery.of(_context).size.width * 0.2375;
-        _paddingSize = MediaQuery.of(_context).size.width * 0.01;
-      }
-
       return ListView.builder(
           key: PageStorageKey<String>('TimlineTab'),
           itemCount: _allPosts.keys.length,
@@ -77,25 +63,30 @@ class ViewGalleryPage {
             String dateString = DateFormat('dd MMMM yyyy').format(date);
             _allPosts[date].forEach((post) => srcs.addAll(post.gallerySources));
 
+            Map<String, ImageTag> galleryTags = _createGalleryTags(srcs);
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: 16,
-                ),
-                Text(
-                  ' ' + dateString,
-                  style: TextStyle(fontSize: 28),
-                ),
-                SizedBox(
-                  height: 4,
-                ),
+                SizedBox(height: 16,),
+                Text(' ' + dateString,style: TextStyle(fontSize: 28),),
+                SizedBox(height: 4,),
                 Wrap(
                   children: srcs.keys.map((src) {
+                    int pos = srcs.keys.toList().indexOf(src);
                     if (srcs[src].compareTo('vid') == 0) {
-                      return _createVideoContainer(src, srcs);
+                      return GalleryItem(
+                        src: src,
+                        type: srcs[src],
+                        heroTag: galleryTags.values.elementAt(pos).heroTag,
+                        onTap: ()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
+                      );
                     }
-                    return _createImageContainer(src, srcs);
+                    return GalleryItem(
+                        src: src,
+                        type: srcs[src],
+                        heroTag: galleryTags.values.elementAt(pos).heroTag,
+                        onTap: ()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
+                      );
                   }).toList(),
                 ),
               ],
@@ -103,63 +94,13 @@ class ViewGalleryPage {
           });
     });
   }
-
-  Padding _createImageContainer(String src, Map<String, String> gallery) {
-    Map<String, ImageTag> galleryTags = _createGalleryTags(gallery);
-    int pos = gallery.keys.toList().indexOf(src);
-    return Padding(
-      padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        width: _pictureSize,
-        height: _pictureSize,
-        child: GestureDetector(
-          onTap: () {
-            BlocProvider.of<AppBloc>(_context)
-                .add(AppToViewImageVideoPageEvent(galleryTags, pos));
-          },
-          child: Hero(
-            tag: galleryTags.values.elementAt(pos).heroTag,
-            child: Image.network(
-              src,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
+  
   Map<String, ImageTag> _createGalleryTags(Map<String, String> gallery) {
     Map<String, ImageTag> result = {};
     gallery.forEach((src, type) {
       result[src] = ImageTag(src: src, type: type);
     });
     return result;
-  }
-
-  Padding _createVideoContainer(String src, Map<String, String> gallery) {
-    return Padding(
-        padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
-        child: GestureDetector(
-          onTap: () {
-            int pos = gallery.keys.toList().indexOf(src);
-            BlocProvider.of<AppBloc>(_context).add(
-                AppToViewImageVideoPageEvent(_createGalleryTags(gallery), pos));
-          },
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            width: _pictureSize,
-            height: _pictureSize,
-            child: Icon(
-              Icons.play_circle_filled,
-              color: Colors.black,
-              size: 60,
-            ),
-          ),
-        ));
   }
 
   Widget _ablumView() {
@@ -171,81 +112,27 @@ class ViewGalleryPage {
     return GridView.builder(
       key: PageStorageKey<String>('GalleryView'),
       itemCount: individualPosts.length,
-      gridDelegate:
-          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (_, index) {
         Post post = individualPosts[index];
-        if (post.gallerySources.values.first == 'vid')
-          return _createVideoAlbumItem(post);
-        return _createPictureAlbumItem(post);
+        if (post.gallerySources.values.first == 'vid'){
+          return AlbumCoverItem(
+            type: 'vid',
+            src: post.gallerySources.keys.first,
+            onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post)),
+            title: post.title,
+            itemCount: post.gallerySources.length.toString(),
+          );
+        }
+        return AlbumCoverItem(
+          type: 'img',
+          src: post.gallerySources.keys.first,
+          onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post)),
+          title: post.title,
+          itemCount: post.gallerySources.length.toString(),
+        );
+        //return _createPictureAlbumItem(post);
       },
-    );
-  }
-
-  Widget _createPictureAlbumItem(Post post) {
-    ImageTag imageTag = ImageTag(src: post.gallerySources.keys.first, type: 'img');
-    return Column(
-      children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post));
-            },
-            child: Hero(
-              tag: imageTag.heroTag,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                      image: DecorationImage(
-                          image: NetworkImage(post.gallerySources.keys.first),
-                          fit: BoxFit.cover)),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Text(
-          post.title,
-          textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis,
-        ),
-        Text(post.gallerySources.length.toString()),
-      ],
-    );
-  }
-
-  Widget _createVideoAlbumItem(Post post) {
-    double portSize = MediaQuery.of(_context).size.width * 0.45;
-    double paddingSize = MediaQuery.of(_context).size.width * 0.033;
-
-    return Padding(
-      padding: EdgeInsets.only(left: paddingSize, bottom: 8),
-      child: Column(
-        children: [
-          AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            width: portSize,
-            height: portSize,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(16.0)),
-            ),
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Container(
-              width: portSize,
-              child: Text(
-                post.title,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              )),
-          Text(post.gallerySources.length.toString()),
-        ],
-      ),
     );
   }
 }

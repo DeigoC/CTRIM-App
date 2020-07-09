@@ -62,8 +62,8 @@ class _LocationSearchBarState extends State<LocationSearchBar> {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      automaticallyImplyLeading: false,
       floating: true,
-      leading: Container(),
       actions: _searchMode ? null: [
               IconButton(
                 icon: Icon(Icons.search),
@@ -82,7 +82,7 @@ class _LocationSearchBarState extends State<LocationSearchBar> {
               onChanged: (newSearch) {
                 setState(() {
                   BlocProvider.of<TimelineBloc>(context)
-                      .add(TimelineLocationSearchTextChangeEvent(newSearch));
+                  .add(TimelineLocationSearchTextChangeEvent(newSearch));
                 });
               },
               decoration: InputDecoration(
@@ -108,8 +108,8 @@ class _LocationSearchBarState extends State<LocationSearchBar> {
                       }
                     },
                   )),
-            )
-          : Container(),
+            ): Text('Locations'),
+            centerTitle: true,
     );
   }
 }

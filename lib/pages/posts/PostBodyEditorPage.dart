@@ -3,14 +3,14 @@ import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:zefyr/zefyr.dart';
 
-class EventBodyEditor extends StatefulWidget {
+class PostBodyEditor extends StatefulWidget {
   final PostBloc _postBloc;
-  EventBodyEditor(this._postBloc);
+  PostBodyEditor(this._postBloc);
   @override
-  _EventBodyEditorState createState() => _EventBodyEditorState();
+  _PostBodyEditorState createState() => _PostBodyEditorState();
 }
 
-class _EventBodyEditorState extends State<EventBodyEditor> {
+class _PostBodyEditorState extends State<PostBodyEditor> {
  
   ZefyrController _textController;
   FocusNode _fnEditor;
@@ -20,6 +20,13 @@ class _EventBodyEditorState extends State<EventBodyEditor> {
     super.initState();
     _textController = ZefyrController(widget._postBloc.getEditorDoc());
     _fnEditor = FocusNode();
+  }
+
+  @override
+  void dispose() { 
+    _textController.dispose();
+    _fnEditor.dispose();
+    super.dispose();
   }
   
   @override

@@ -73,6 +73,7 @@ void initState() {
     floatingActionButton: _getFAB(selectedIndex),
     drawer: _getDrawer(selectedIndex),
     bottomNavigationBar: BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
       currentIndex: selectedIndex,
       selectedItemColor: Colors.red,
       unselectedItemColor: Colors.black,
@@ -81,24 +82,24 @@ void initState() {
       },
       items: [
          BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          title: Text('Events'),
+          title: Container(),
+          icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.photo_library),
-          title: Text('Gallery'),
+          title: Container(),
+          icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.map),
-          title: Text('Locations'),
+          title: Container(),
+          icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
         ),
          BottomNavigationBarItem(
-          icon: Icon(Icons.info),
-          title: Text('About'),
+           title: Container(),
+          icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          title: Text('Settings'),
+          title: Container(),
+          icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
         ),
       ],
     ),

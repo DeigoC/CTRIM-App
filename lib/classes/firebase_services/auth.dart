@@ -12,10 +12,6 @@ class AuthService{
 
   Future<User> loginWithEmail({@required String email, @required String password}) async{
       AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      /* .catchError((error){
-        print('---------------HERE: THIS ERROR IS '+error.toString());
-        throw error;
-      }); */
       User u = _userDBManager.getUserByAuthUID(result.user.uid);
       currentFirebaseUser['email'] = email;
       currentFirebaseUser['password'] = password;
@@ -24,5 +20,10 @@ class AuthService{
 
   Future logoutCurrentUser() async{
     await _auth.signOut();
+  }
+
+  Future<FirebaseUser> registerUserWithEmailAndPassword(String email, String password) async{
+    AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    return result.user;
   }
 }

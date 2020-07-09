@@ -107,15 +107,13 @@ class _AddEventPageState extends State<AddEventPage>
       builder: (_, state) {
         Widget result = RaisedButton(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-          onPressed: (state is PostEnableSaveButtonState)
-              ? () {
+          onPressed: (state is PostEnableSaveButtonState)? (){
                   _confirmSave().then((confirmation) {
                     if (confirmation) {
                       BlocProvider.of<TimelineBloc>(context).add(TimelineAddNewPostEvent(
                         _postBloc.newPost,
                         BlocProvider.of<AppBloc>(context).currentUser.id,
                       ));
-                      Navigator.of(context).pop();
                     }
                   });
                 }

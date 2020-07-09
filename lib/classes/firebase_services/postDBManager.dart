@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 
 class PostDBManager{
 
-  static final CollectionReference _ref = Firestore.instance.collection('posts');
+  final CollectionReference _ref = Firestore.instance.collection('posts');
+  final AppStorage _appStorage = AppStorage();
 
   static List<Post> _allPosts;
   static List<Post> get allPosts => _allPosts;
@@ -20,9 +22,13 @@ class PostDBManager{
 
   Future<Null> addPost(Post post) async{
     await _ref.getDocuments().then((collection){
+      //TODO need to sort by id in numbers!
       post.id = (int.parse(collection.documents.last.documentID) + 1).toString();
     });
+    await _appStorage.uploadNewPostFiles(post);
     await _ref.document(post.id).setData(post.toJson());
+    post.temporaryFiles.clear();
+    _allPosts.add(post);
   }
 
   Future<Null> updatePost(Post post) async{

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/UserFileDocument.dart';
 import 'package:equatable/equatable.dart';
@@ -13,6 +14,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   // ! Admin Variables
 
   final AuthService _auth = AuthService();
+  final UserDBManager _userDBManager = UserDBManager();
 
   List<User> _users = [];
   void setUsers(List<User> users) {
@@ -109,16 +111,21 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       _selectedUser.contactNo = event.contactNo ?? _selectedUser.contactNo;
       yield _canEnableUpdateUserButton();
     } else if (event is AdminUserModAddNewUserClickEvent) {
-      //TODO need to check for Auth checks
-      if (_emailAlreadyExists()) {
-        yield AdminUserModEmailAlreadyExistsState();
-      } else if (_creationPassword.length < 6) {
-        yield AdminUserModPasswordTooSmallState();
-      } else {
-        yield AdminUserModAddNewUserState(_selectedUser);
-      }
-      yield _canEnableAddUserButton();
+      if (_emailAlreadyExists()) yield AdminUserModEmailAlreadyExistsState();
+      else if (_creationPassword.length < 6) yield AdminUserModPasswordTooSmallState();
+      else yield* _attemptToRegisterUser();
     }
+  }
+
+  Stream<AdminState> _attemptToRegisterUser() async*{
+    await _auth.registerUserWithEmailAndPassword(_selectedUser.email, _creationPassword)
+    .then((authUser){
+      _selectedUser.authID = authUser.uid;
+      _userDBManager.addUser(_selectedUser);
+    }).catchError((error){
+      print('----------------ERROR WHEN REGISTERING: \n' + error.toString());
+    });
+    yield AdminUserModAddNewUserState(_selectedUser);
   }
 
   bool _emailAlreadyExists() {

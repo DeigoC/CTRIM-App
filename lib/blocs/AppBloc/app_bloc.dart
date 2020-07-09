@@ -98,6 +98,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToViewPastorEvent) state.pushNamed(ViewAboutPastorsRoute, arguments: {
       'article':event.aboutArticle});
     else if(event is AppToEditAboutArticleEvent) state.pushNamed(EditAboutArticleRoute);
+    else if(event is AppToEditAboutBodyEvent) state.pushNamed(AboutBodyEditorPageRoute);
+    else if(event is AppToViewUserPageEvent) state.pushNamed(ViewUserPageRoute, arguments: {'user':event.user});
   }
 
   Future<void> _appStartupLoad() async{
@@ -110,14 +112,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Stream<AppState> _currentUserLogsOut() async*{
     //TODO log out through auth and load the guest account
     _auth.logoutCurrentUser();
-    AppState result = AppAttemptingToLogoutUserState();
-    await _userFileDocument.deleteSaveData().then((_){
-      _userFileDocument.attpemtToLoginSavedUser().then((user){
+    await _userFileDocument.deleteSaveData().then((_)async{
+      await _userFileDocument.attpemtToLoginSavedUser().then((user){
         _currentUser = user;
-        result = AppRebuildSettingsDrawerState();
       });
     });
-    yield result;
+    yield AppRebuildSettingsDrawerState();
   }
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async* {

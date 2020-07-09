@@ -43,9 +43,7 @@ class _RegisterUserState extends State<RegisterUser> {
   }
 
   Widget _buildBody() {
-    SizedBox padding = SizedBox(
-      height: 8,
-    );
+    SizedBox padding = SizedBox(height: 8,);
     return ListView(
       children: [
         Padding(
@@ -104,14 +102,11 @@ class _RegisterUserState extends State<RegisterUser> {
                 bloc: _adminBloc,
                 listener: (_, state) {
                   if (state is AdminUserModAddNewUserState) {
-                    BlocProvider.of<TimelineBloc>(context)
-                        .allUsers
-                        .add(state.newUser);
+                    BlocProvider.of<TimelineBloc>(context).allUsers.add(state.newUser);
                     Navigator.of(context).pop();
                   } else if (state is AdminUserModPasswordTooSmallState) {
                     Scaffold.of(_context).showSnackBar(SnackBar(
-                      content:
-                          Text('Password too small (at least 6 characters)!'),
+                      content:Text('Password too small (at least 6 characters)!'),
                     ));
                   } else if (state is AdminUserModEmailAlreadyExistsState) {
                     Scaffold.of(_context).showSnackBar(SnackBar(
@@ -129,8 +124,7 @@ class _RegisterUserState extends State<RegisterUser> {
                   return RaisedButton(
                     child: Text('Register User'),
                     onPressed: (state is AdminUserModEnableSaveButtonState)
-                        ? () =>
-                            _adminBloc.add(AdminUserModAddNewUserClickEvent())
+                        ? () =>_adminBloc.add(AdminUserModAddNewUserClickEvent())
                         : null,
                   );
                 }))

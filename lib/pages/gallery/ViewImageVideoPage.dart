@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:photo_view/photo_view.dart';
@@ -63,26 +64,29 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   }
 
   Widget _createImagePage(String src) {
-   /*  return Center(
+    //TODO lets try this again!
+    return Center(
       child: SingleChildScrollView(
-        controller: _scrollController,
         physics: BouncingScrollPhysics(),
-        child:  Container(
-          width: MediaQuery.of(context).size.width,
+        child: Container(
           height: MediaQuery.of(context).size.height,
-          child: Hero(
-            tag: widget.imageSources[src].heroTag,
-            child: PhotoView(
-              initialScale: PhotoViewComputedScale.contained,
-              imageProvider: NetworkImage(src),
-              tightMode: true,
-            ),
+          child: PhotoView(
+            onTapUp: (context, details, controllerValue){
+              print('----------------TAPPED UP?');
+            },
+            loadingBuilder: (_,__){
+              return Image.network(src);
+            },
+            initialScale: PhotoViewComputedScale.contained,
+            minScale: PhotoViewComputedScale.contained,
+            imageProvider: NetworkImage(src),
+            tightMode: true,
           ),
         ),
       ),
-    ); */
-
-    return Center(
+    );
+    
+    /* return Center(
       child: Dismissible(
         resizeDuration: null,
         movementDuration: Duration(milliseconds: 300),
@@ -99,6 +103,9 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         child: Hero(
             tag: widget.imageSources[src].heroTag,
             child: PhotoView(
+              onTapUp: (context, details, controllerValue){
+                print('----------------TAPPED UP?');
+              },
               loadingBuilder: (_,__){
                 return Image.network(src);
               },
@@ -108,28 +115,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
               tightMode: true,
             ),
           ),
-      ),
-    );
-
-    /* return Center(
-      child: Draggable(
-        feedback: Container(
-          child: PhotoView(
-            imageProvider: NetworkImage(src),
-            tightMode: true,
-          ),
-          width: MediaQuery.of(context).size.width,
-        ),
-        childWhenDragging: Container(),
-        axis: Axis.vertical,
-        affinity: Axis.vertical,
-        onDraggableCanceled: (_, __) {
-          Navigator.pop(context);
-        },
-        child: Hero(
-          child: Image.network(src),
-          tag: widget.imageSources[src].heroTag,
-        ),
       ),
     ); */
   }

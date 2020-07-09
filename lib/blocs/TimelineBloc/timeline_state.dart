@@ -8,9 +8,7 @@ abstract class TimelineState extends Equatable {
 
 // ! Post Related
 class TimelineInitial extends TimelineState {}
-
 class TimelineEmptyState extends TimelineState {}
-
 class TimelineDisplayFeedState extends TimelineState {
   final List<TimelinePost> timelines;
   final List<Post> posts;
@@ -18,8 +16,8 @@ class TimelineDisplayFeedState extends TimelineState {
   TimelineDisplayFeedState(
       {@required this.timelines, @required this.posts, @required this.users});
 }
-
 class TimelineTagChangedState extends TimelineState {}
+class TimelineNewPostUploadedState extends TimelineState{}
 
 // ! Search Post
 class TimelineSearchState extends TimelineState {}

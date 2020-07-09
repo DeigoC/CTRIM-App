@@ -47,7 +47,10 @@ class UserDBManager{
   }
 
   Future<Null> addUser(User user) async{
-    await _ref.document(user.id).setData(user.toJson());
+    await _ref.getDocuments().then((collection){
+      user.id = (int.parse(collection.documents.last.documentID) + 1).toString();
+      _ref.document(user.id).setData(user.toJson());
+    });
   }
 
   Future<Null> updateUser(User user) async{

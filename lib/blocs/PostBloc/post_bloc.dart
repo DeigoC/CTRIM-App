@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zefyr/zefyr.dart';
@@ -17,6 +18,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     temporaryFiles: {},
     detailTable: [],
     gallerySources: {},
+    deleted: false,
   );
 
   Post _originalPost;

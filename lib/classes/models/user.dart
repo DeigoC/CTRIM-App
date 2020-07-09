@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class User{
   String id, forename,surname, contactNo, imgSrc, email, authID;
   int adminLevel;
@@ -44,6 +46,19 @@ class User{
       'OnDarkTheme':onDarkTheme,
       'Surname':surname,
     };
+  }
+
+  CircleAvatar buildAvatar(){
+    String avatarName = forename[0].toUpperCase() + surname[0].toUpperCase();
+    if(imgSrc=='' || imgSrc==null){
+      return CircleAvatar(
+        backgroundColor: Colors.grey,
+        child: Text(avatarName),
+      );
+    }
+    return CircleAvatar(
+      backgroundImage: NetworkImage(imgSrc),
+    );
   }
 
 }

@@ -22,17 +22,28 @@ class ViewAllEventsPage {
   }
 
   Widget buildBody() {
+    /* Post t = PostDBManager.allPosts.last;
+    print('----------------------GALLERY LENGTH IS ' + t.gallerySources.length.toString()); */
+
     BlocProvider.of<TimelineBloc>(_context).add(TimelineFetchAllPostsEvent());
-    return BlocBuilder<TimelineBloc, TimelineState>(condition: (_, state) {
-      if (state is TimelineDisplayFeedState) return true;
-      return false;
-    }, builder: (_, state) {
-      if (state is TimelineDisplayFeedState) {
-        return _buildBodyWithData(state);
-      }
-      return Center(
-        child: CircularProgressIndicator(),
-      );
+    return BlocConsumer<TimelineBloc, TimelineState>(
+      listenWhen: (_,state){
+        if(state is TimelineNewPostUploadedState) return true;
+        return false; 
+      },
+      listener: (_,state){
+        if(state is TimelineNewPostUploadedState) Navigator.of(_context).pop();
+      },
+      buildWhen: (_, state) {
+        if (state is TimelineDisplayFeedState) return true;
+        return false;
+      }, builder: (_, state) {
+        if (state is TimelineDisplayFeedState) {
+          return _buildBodyWithData(state);
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
     });
   }
 
@@ -48,6 +59,8 @@ class ViewAllEventsPage {
         slivers: [
           SliverAppBar(
             leading: Container(),
+            title: Text('Posts'),
+            centerTitle: true,
             actions: [
               IconButton(
                 icon: Icon(Icons.search),
