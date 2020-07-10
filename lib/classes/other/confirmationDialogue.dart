@@ -137,4 +137,32 @@ class ConfirmationDialogue{
     );
     return result;
   }
+
+  static void uploadTaskStarted({
+    @required BuildContext context,
+  }){
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_){
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))
+          ),
+          child: Container(
+            height: MediaQuery.of(context).size.height *0.3,
+            width:  MediaQuery.of(context).size.width *0.3,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                Text('Uploading...')
+              ],
+            ),
+          ),
+        );
+      }
+    );
+  }
 }

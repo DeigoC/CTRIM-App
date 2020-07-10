@@ -3,6 +3,7 @@ import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
+import 'package:video_player/video_player.dart';
 
 class AddGalleryFiles extends StatefulWidget {
   final PostBloc _postBloc;
@@ -65,35 +66,21 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
         String fileType = basename(file.path).split('.').last.toLowerCase();
         double photoSize = MediaQuery.of(_).size.width * 0.2;
         Widget leading = _imageTypes.contains(fileType)
-            ? Image.file(
-                file,
-                width: photoSize,
-                height: photoSize,
-                fit: BoxFit.cover,
-              )
-            : Container(
-                width: photoSize,
-                height: photoSize,
-                child: Icon(Icons.video_library),
-              );
+            ? AddingFileItem(
+              file: file,
+              fileType: fileType,
+            )
+            : Container(width: photoSize,height: photoSize, child: Icon(Icons.video_library),);
+        
         return Dismissible(
           background: Container(
             color: Colors.red,
           ),
           key: ValueKey(file),
           onDismissed: (_) {
-            setState(() {
-              _selectedFiles.removeAt(i);
-            });
+            setState(() {_selectedFiles.removeAt(i);});
           },
-          child: ListTile(
-            title: Text(
-              'File ' + (i + 1).toString() + ': ' + basename(file.path),
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text('Type: ' + fileType),
-            leading: leading,
-          ),
+          child: AddingFileItem(file: file, fileType: fileType),
         );
       },
     );
@@ -123,5 +110,98 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
     filesToRemove.forEach((toBeRemoved) {
       files.remove(toBeRemoved);
     });
+  }
+}
+
+class AddingFileItem extends StatefulWidget {
+  final File file;
+  final String fileType;
+  AddingFileItem({
+    @required this.file,
+    @required this.fileType,
+  });
+  @override
+  _AddingFileItemState createState() => _AddingFileItemState();
+}
+
+class _AddingFileItemState extends State<AddingFileItem> {
+  
+  final List<String> _imageTypes = ['jpg', 'png', 'gif', 'svg'];
+  double _containerSize;
+  VideoPlayerController _videoPlayerController;
+
+  @override
+  void initState() {
+    if(!_imageTypes.contains(widget.fileType.toLowerCase())){
+      _videoPlayerController = VideoPlayerController.file(widget.file);
+      _videoPlayerController.initialize().then((_){
+        if(mounted){ setState(() { });}
+      });
+    } 
+    super.initState();
+  }
+
+  @override
+  void dispose() { 
+    if(_videoPlayerController != null){
+      _videoPlayerController.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _containerSize = MediaQuery.of(context).size.width * 0.3;
+    return Card(
+      child: Row(
+        children: [
+          _buildFileContainer(),
+          SizedBox(width: 8,),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(basename(widget.file.path), overflow: TextOverflow.ellipsis,),
+                Text('Type: ' + widget.fileType),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFileContainer(){
+    if(_imageTypes.contains(widget.fileType.toLowerCase())) return _buildImageFileContainer();
+    return _buildVideoFileContainer();
+  }
+
+  Widget _buildImageFileContainer(){
+    return Container(
+      width: _containerSize,
+      height: _containerSize,
+      decoration: BoxDecoration(
+        image: DecorationImage(image: FileImage(widget.file),fit: BoxFit.cover),
+        borderRadius: BorderRadius.circular(16),
+      ),
+    );
+  }
+
+  Widget _buildVideoFileContainer(){
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+        child: Container(
+        width: _containerSize,
+        height: _containerSize,
+        child: Stack(
+          alignment: Alignment.center,
+          children:[
+             VideoPlayer(_videoPlayerController),
+             Icon(Icons.play_circle_outline, color: Colors.white,),
+          ]
+        ),
+      ),
+    );
   }
 }

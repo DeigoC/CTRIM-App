@@ -58,9 +58,11 @@ class ViewGalleryPage {
           key: PageStorageKey<String>('TimlineTab'),
           itemCount: _allPosts.keys.length,
           itemBuilder: (_, index) {
+
             DateTime date = _allPosts.keys.toList().reversed.elementAt(index);
             Map<String, String> srcs = {};
             String dateString = DateFormat('dd MMMM yyyy').format(date);
+
             _allPosts[date].forEach((post) => srcs.addAll(post.gallerySources));
 
             Map<String, ImageTag> galleryTags = _createGalleryTags(srcs);

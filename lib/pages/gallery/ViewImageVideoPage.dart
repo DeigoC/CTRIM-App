@@ -1,5 +1,4 @@
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:photo_view/photo_view.dart';
@@ -16,13 +15,26 @@ class ViewImageVideo extends StatefulWidget {
 }
 
 class _ViewImageVideoState extends State<ViewImageVideo> {
+
   Map<String, VideoPlayerController> _videoControllers = <String, VideoPlayerController>{};
   Orientation _orientation;
-  bool _videoControlsVisible = false;
+  bool _videoControlsVisible = false, _isZoomedIn = false;
+
+  double _midScroll = 0;
+  ScrollController _scrollController;
 
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+       setState(() {
+         _midScroll = _scrollController.position.maxScrollExtent / 2;
+        _scrollController.jumpTo(_midScroll);
+        _scrollController = ScrollController(initialScrollOffset: _midScroll);
+       });
+    });
+     _scrollController = ScrollController();
+
     widget.imageSources.keys.forEach((src) {
       if (widget.imageSources[src].type == 'vid') {
         VideoPlayerController controller = VideoPlayerController.network(src);
@@ -37,6 +49,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _videoControllers.values.forEach((controller) => controller.dispose());
     super.dispose();
   }
@@ -50,7 +63,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         appBar: _orientation == Orientation.portrait ? AppBar() : null,
         body: PageView.builder(
             pageSnapping: true,
-            physics: BouncingScrollPhysics(),
+            physics: _isZoomedIn ? NeverScrollableScrollPhysics() : BouncingScrollPhysics(),
             itemCount: widget.imageSources.keys.length,
             controller: PageController(initialPage: widget.initialPage),
             itemBuilder: (_, index) {
@@ -64,15 +77,42 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   }
 
   Widget _createImagePage(String src) {
-    //TODO lets try this again!
-    return Center(
+    return NotificationListener(
+      onNotification: (t){
+        if(t is ScrollEndNotification){
+          if(t.metrics.pixels != _midScroll){
+            Future.delayed(Duration(microseconds: 10),(){
+              _scrollController.animateTo(_midScroll, duration: Duration(milliseconds: 200), curve: Curves.easeIn).then((_){
+            });
+            });
+          }
+          if(t.metrics.atEdge){
+            Navigator.of(context).pop();
+          }
+        }
+        return null;
+      },
       child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        controller: _scrollController,
+        physics: _isZoomedIn ? NeverScrollableScrollPhysics() : ClampingScrollPhysics(),
         child: Container(
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height + 200,
           child: PhotoView(
-            onTapUp: (context, details, controllerValue){
-              print('----------------TAPPED UP?');
+            heroAttributes: PhotoViewHeroAttributes(tag: widget.imageSources[src].heroTag,),
+            scaleStateChangedCallback: (_){
+              if(_.index == 0){
+                if(_isZoomedIn){
+                    setState(() {
+                  _isZoomedIn = false;
+                });
+                }
+              }else{
+                if(!_isZoomedIn){
+                  setState(() {
+                    _isZoomedIn = true;
+                  });
+                }
+              }
             },
             loadingBuilder: (_,__){
               return Image.network(src);
@@ -82,9 +122,9 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
             imageProvider: NetworkImage(src),
             tightMode: true,
           ),
+          ),
         ),
-      ),
-    );
+      );
     
     /* return Center(
       child: Dismissible(

@@ -31,7 +31,7 @@ class _ViewPostPageState extends State<ViewPostPage>
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (_, __) {
-          bool hasImage = widget._post.gallerySources.keys.toList().length != 0;
+          bool hasImage = widget._post.getFirstImageSrc() != null;
           return [
             SliverAppBar(
               expandedHeight: 200,
@@ -42,10 +42,7 @@ class _ViewPostPageState extends State<ViewPostPage>
                     return false;
                   },
                   builder: (_, state) {
-                    bool liked = BlocProvider.of<AppBloc>(context)
-                        .currentUser
-                        .likedPosts
-                        .contains(widget._post.id);
+                    bool liked = BlocProvider.of<AppBloc>(context).currentUser.likedPosts.contains(widget._post.id);
                     return IconButton(
                       tooltip: 'Save/unsave post',
                       icon: liked
@@ -63,7 +60,7 @@ class _ViewPostPageState extends State<ViewPostPage>
               flexibleSpace: FlexibleSpaceBar(
                 background: hasImage
                     ? Image.network(
-                        widget._post.gallerySources.keys.toList()[0],
+                        widget._post.getFirstImageSrc(),
                         fit: BoxFit.cover,
                       )
                     : null,

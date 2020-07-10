@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/widgets/galleryItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -88,34 +89,89 @@ class _EditAlbumState extends State<EditAlbum> {
           return _buildPictureContainer(file);
         }).toList();
         
-        return ListView(
-        children: [
-          Wrap(children: newChildren),
-        ],
-    );
+       return  SingleChildScrollView(
+          child: Wrap(children: newChildren,),
+        );
+
+      /* return ListView(
+      children: [
+        Wrap(children: newChildren),
+      ],
+      ); */
       }
      );
    
   }
 
-  Padding _buildVideoContainer(File file){
-    return null;
+  GalleryItem _buildVideoContainer(File file){
+    bool selected = _selectedFiles.contains(file);
+    return GalleryItem.file(
+      type: 'vid', file: file,
+      child: InkWell(
+        onTap: (){
+          if(_onDeleteMode){
+            setState(() {
+            if(selected)_selectedFiles.remove(file);
+            else _selectedFiles.add(file);
+          }); 
+          }
+        },
+        child: Opacity(
+          opacity: selected ? 1:0,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                color: Colors.black.withOpacity(0.3),
+              ),
+              Icon(Icons.done, color: Colors.white,)
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
-  Padding _buildPictureContainer(File file){
-    double pictureSize = MediaQuery.of(context).size.width * 0.32;
-    double paddingSize = MediaQuery.of(context).size.width * 0.01;
+  Widget _buildPictureContainer(File file){
+    /* return GalleryItem.file(
+      type: 'img',
+      file: file,
+    ); */
     bool selected = _selectedFiles.contains(file);
-    return Padding(
+    return GalleryItem.file(
+      type: 'img',
+      file: file,
+      child: InkWell(
+        onTap: (){
+          if(_onDeleteMode){
+            setState(() {
+            if(selected)_selectedFiles.remove(file);
+            else _selectedFiles.add(file);
+          }); 
+          }
+        },
+        child: Opacity(
+          opacity: selected ? 1:0,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                color: Colors.black.withOpacity(0.3),
+              ),
+              Icon(Icons.done, color: Colors.white,)
+            ],
+          ),
+        ),
+      ),
+    );
+
+    /* return Padding(
        padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
        child: AnimatedContainer(
           duration: Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           width: pictureSize,
           height: pictureSize,
-          decoration: BoxDecoration(
-            image: DecorationImage(image: FileImage(file), fit: BoxFit.cover)
-          ),
           child: InkWell(
             onTap: (){
               if(_onDeleteMode){
@@ -139,6 +195,6 @@ class _EditAlbumState extends State<EditAlbum> {
             ),
           ),
        ),
-    );
+    ); */
   }
 }

@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/postsEditTabs/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/postsEditTabs/mainTabBody.dart';
@@ -92,7 +93,17 @@ class _AddEventPageState extends State<AddEventPage>
               )
             ];
           },
-          body: _buildBody(),
+          body: BlocListener<TimelineBloc,TimelineState>(
+            listener: (_,state){
+               if(state is TimelineNewPostUploadedState){
+                 Navigator.of(context).pop();
+                 Navigator.of(context).pop();
+               }else if(state is TimelineAttemptingToUploadNewPostState){
+                 ConfirmationDialogue.uploadTaskStarted(context: context);
+               }
+            },
+            child: _buildBody()
+          ),
         ),
       ),
     );

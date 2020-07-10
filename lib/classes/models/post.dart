@@ -137,6 +137,16 @@ class Post {
     return '';
   }
 
+  String getFirstImageSrc(){
+    if(gallerySources.length != 0){
+      for (var i = 0; i < gallerySources.length; i++) {
+        String src = gallerySources.keys.elementAt(i);
+        if(gallerySources[src]=='img') return src;
+      }
+    } 
+    return null;
+  }
+
   String get dateString {
     if (!isDateNotApplicable) {
       return DateFormat('EEEE, dd MMMM yyyy @ h:mm a').format(eventDate);

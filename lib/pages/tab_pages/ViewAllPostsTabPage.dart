@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ViewAllEventsPage {
+  
   BuildContext _context;
+  final ScrollController _scrollController;
 
   void setContext(BuildContext context) => _context = context;
 
-  ViewAllEventsPage(this._context);
+  ViewAllEventsPage(this._context,this._scrollController);
 
   Widget buildFAB() {
     return FloatingActionButton(
@@ -22,17 +24,21 @@ class ViewAllEventsPage {
   }
 
   Widget buildBody() {
-    /* Post t = PostDBManager.allPosts.last;
-    print('----------------------GALLERY LENGTH IS ' + t.gallerySources.length.toString()); */
-
     BlocProvider.of<TimelineBloc>(_context).add(TimelineFetchAllPostsEvent());
     return BlocConsumer<TimelineBloc, TimelineState>(
       listenWhen: (_,state){
         if(state is TimelineNewPostUploadedState) return true;
+        else if(state is TimelineTagChangedState) return true;
         return false; 
       },
       listener: (_,state){
-        if(state is TimelineNewPostUploadedState) Navigator.of(_context).pop();
+        if(state is TimelineNewPostUploadedState){
+          _scrollController.jumpTo(_scrollController.position.minScrollExtent);
+        }else if(state is TimelineTagChangedState){
+          //_scrollController.jumpTo(_scrollController.position.minScrollExtent);
+          _scrollController.animateTo(_scrollController.position.minScrollExtent, 
+          duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+        }
       },
       buildWhen: (_, state) {
         if (state is TimelineDisplayFeedState) return true;
@@ -55,6 +61,7 @@ class ViewAllEventsPage {
         });
       },
       child: CustomScrollView(
+        controller: _scrollController,
         key: PageStorageKey<String>('ViewAllPostsTab'),
         slivers: [
           SliverAppBar(
@@ -80,8 +87,7 @@ class ViewAllEventsPage {
                   return ListView(
                     key: PageStorageKey<String>('PostsTagList'),
                     scrollDirection: Axis.horizontal,
-                    children: BlocProvider.of<TimelineBloc>(_context)
-                        .getSelectedTags()
+                    children: BlocProvider.of<TimelineBloc>(_context).getSelectedTags()
                         .keys
                         .map((tag) {
                       return Padding(

@@ -90,23 +90,24 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
         Post thisPost = _allPosts.firstWhere((post) => post.id.compareTo(tPost.postID) == 0);
         if (thisPost.gallerySources.length != 0 && !thisPost.deleted) {
           if (thisPost.isDateNotApplicable) {
-            unsortedResult[tPost.postDate] = _createList(unsortedResult[tPost.postDate]);
-            unsortedResult[tPost.postDate].add(thisPost);
+            DateTime thisDate = DateTime(tPost.postDate.year, tPost.postDate.month, tPost.postDate.day);
+            unsortedResult[thisDate] = _createList(unsortedResult[thisDate]);
+            unsortedResult[thisDate].add(thisPost);
           } else {
-            unsortedResult[thisPost.eventDate] =_createList(unsortedResult[thisPost.eventDate]);
-            unsortedResult[thisPost.eventDate].add(thisPost);
+            DateTime thisDate = DateTime(thisPost.eventDate.year, thisPost.eventDate.month, thisPost.eventDate.day);
+            unsortedResult[thisDate] =_createList(unsortedResult[thisDate]);
+            unsortedResult[thisDate].add(thisPost);
           }
         }
       }
     });
-  
+
     // * Sorts by date
     List<DateTime> sortedDates =  unsortedResult.keys.toList();
     sortedDates.sort((a, b) => a.compareTo(b));
     sortedDates.forEach((date) {
       sortedResult[date] = unsortedResult[date];
     });
-
     return sortedResult;
   }
 
@@ -177,9 +178,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   Stream<TimelineState> _mapTagChnageToState(TimelineTagClickedEvent event) async* {
     PostTag selectedTag = _stringToTag(event.tag);
     _selectedTags[selectedTag] = !_selectedTags[selectedTag];
-
-    yield TimelineTagChangedState();
+    
     yield* _displayFeed();
+    yield TimelineTagChangedState();
   }
 
   Stream<TimelineState> _mapSearchPageEventToState(TimelineSearchPostEvent event) async* {
@@ -229,17 +230,17 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     _insertPostID(event.post);
     TimelinePost timelinePost = _generateTimelinePost(event);
      
-    yield TimelineEmptyState();
+    yield TimelineAttemptingToUploadNewPostState();
     await _postDBManager.addPost(event.post).then((_){
       _allPosts.add(_postDBManager.getPostByID(event.post.id));
-      //_allPosts.add(event.post);
     });
     await _timelinePostDBManager.addTimelinePost(timelinePost).then((_) =>  _allTimelinePosts.add(timelinePost));
     yield TimelineNewPostUploadedState();
     yield* _displayFeed();
   }
 
-  Stream<TimelineState> _displayFeed() async*{_allTimelinePosts.sort((x, y) => y.postDate.compareTo(x.postDate));
+  Stream<TimelineState> _displayFeed() async*{
+    _allTimelinePosts.sort((x, y) => y.postDate.compareTo(x.postDate));
     List<Post> posts = [];
     List<TimelinePost> tPosts = [];
     List<PostTag> selectedTags = [];

@@ -10,17 +10,19 @@ class GalleryItem extends StatefulWidget {
   final String heroTag, src, type;
   final bool isItemAFile;
   final File file;
+  final Widget child;
 
   GalleryItem({
    @required this.onTap,
    @required this.heroTag,
    @required this.src,
     @required this.type,
-  }):isItemAFile = false, file = null;
+  }):isItemAFile = false, file = null, child=null;
 
   GalleryItem.file({
     @required this.type,
-    @required this.file
+    @required this.file,
+    this.child,
   }):isItemAFile = true, src = null, onTap = null, heroTag = null;
 
   @override
@@ -44,6 +46,12 @@ class _GalleryItemState extends State<GalleryItem> {
       });
     }
     super.initState();
+  }
+
+  @override
+  void dispose() { 
+    if(_videoPlayerController != null) _videoPlayerController.dispose();
+    super.dispose();
   }
   
   @override
@@ -108,7 +116,10 @@ class _GalleryItemState extends State<GalleryItem> {
         curve: Curves.easeInOut,
         width: _pictureSize,
         height: _pictureSize,
-        child: Image.file(widget.file,fit: BoxFit.cover,),
+        decoration: BoxDecoration(
+          image: DecorationImage(image: FileImage(widget.file),fit: BoxFit.cover),
+        ),
+        child: widget.child??Container(),
       ),
     );
   }
@@ -125,7 +136,8 @@ class _GalleryItemState extends State<GalleryItem> {
           alignment: Alignment.center,
           children:[ 
             VideoPlayer(_videoPlayerController),
-            Icon(Icons.play_circle_outline, color: Colors.white,)
+            Icon(Icons.play_circle_outline, color: Colors.white,),
+            widget.child??Container(),
           ]),
       ),
     );

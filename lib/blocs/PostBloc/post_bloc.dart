@@ -146,9 +146,10 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Stream<PostState> _mapGalleryEventsToState(PostGalleryEvent event) async* {
-    if (event is PostFilesReceivedEvent)
+    if (event is PostFilesReceivedEvent){
+      yield PostGalleryState();
       yield PostFilesReceivedState();
-    else if (event is PostFilesRemoveSelectedEvent) {
+    }else if (event is PostFilesRemoveSelectedEvent) {
       event.selectedFiles.forEach((file) {
         _post.temporaryFiles.remove(file);
       });

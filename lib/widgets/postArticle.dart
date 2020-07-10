@@ -11,14 +11,15 @@ class PostArticle extends StatelessWidget {
   final Post post;
   final List<User> allUsers;
   final TimelinePost timelinePost;
-  static BuildContext _context;
-  static bool _isOriginal;
+  bool _isOriginal;
+  BuildContext _context;
 
   PostArticle(
       {@required this.post,
       @required this.timelinePost,
-      @required this.allUsers});
-
+      @required this.allUsers}):_isOriginal = false, _context = null;
+       
+ 
   @override
   Widget build(BuildContext context) {
     _context = context;
@@ -127,7 +128,6 @@ class PostArticle extends StatelessWidget {
   void _moveToViewPost(Post post) {
     BlocProvider.of<AppBloc>(_context).add(AppToViewPostPageEvent(post));
   }
-
 }
 
 class PostArticleMediaContainer extends StatefulWidget {
@@ -145,17 +145,27 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
   VideoPlayerController _videoController;
   Map<String, ImageTag> _gallerySrc ={};
 
-  @override
+   String _initalPostID;
+   bool _initialisedData = false;
+
+   @override
   void initState() {
-    _initialiseData();
+    _initalPostID = widget.post.id;
+    //_initialiseData();
     super.initState();
   }
 
+  @override
+  void dispose() { 
+    if(_videoController != null) _videoController.dispose();
+    super.dispose();
+  }
+
   void _initialiseData(){
-     if(widget.post.gallerySources.length !=0){
+    if(widget.post.gallerySources.length !=0 && !_initialisedData){
       String type = widget.post.gallerySources.values.elementAt(0);
       String src = widget.post.gallerySources.keys.elementAt(0);
-      if(type =='vid'){
+      if(type =='vid' && _videoController == null){
         _gallerySrc[src] = ImageTag(
           src: src,
           type: type,
@@ -163,7 +173,11 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
         );
         _videoController = VideoPlayerController.network(widget.post.gallerySources.keys.elementAt(0));
         _videoController.initialize().then((_){
-          setState(() {});
+          if(mounted){
+            setState(() {
+              _initialisedData = true;
+            });
+          }
         });
       }else{
         int imageNo = 0;
@@ -183,6 +197,23 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
 
   @override
   Widget build(BuildContext context) {
+    if(_initalPostID.compareTo(widget.post.id) != 0){
+      // ! Data has changed
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+         setState(() {
+         _videoController = null;
+          _initialisedData = false;
+          _initalPostID = widget.post.id;
+          _gallerySrc.clear();
+        });
+      });
+    }else{
+      _initialiseData();
+    }
+    if(_gallerySrc.length > 1 && _gallerySrc.values.first.type=='vid'){
+      _gallerySrc = {_gallerySrc.keys.first:_gallerySrc.values.first};
+    }
+
     return AspectRatio(
       aspectRatio: 16/9,
       child: ClipRRect(
@@ -248,6 +279,9 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
 
   Widget _buildVideoContainer(Map<String, ImageTag> gallerySrc, int index){
     double iconSize = MediaQuery.of(context).size.width*0.15;
+    if(_videoController == null){
+      return CircularProgressIndicator();
+    }
     return Stack(
       alignment: Alignment.center,
           children:[ 

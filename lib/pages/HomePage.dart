@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/AboutTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
@@ -19,11 +20,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   ViewAllLocationsPage _locationsPage;
   SettingsPage _settingsPage;
   AboutTabPage _aboutTabPage;
+
+  int _selectedIndex =0;
+  ScrollController _postsScrollController;
   
 @override
 void initState() { 
   super.initState();
-   _eventPage = ViewAllEventsPage(context);
+  _postsScrollController = ScrollController();
+
+   _eventPage = ViewAllEventsPage(context,_postsScrollController);
     _galleryPage = ViewGalleryPage(context, TabController(length: 2, vsync: this));
     _locationsPage = ViewAllLocationsPage(context);
     _settingsPage = SettingsPage(context);
@@ -78,6 +84,16 @@ void initState() {
       selectedItemColor: Colors.red,
       unselectedItemColor: Colors.black,
       onTap: (newIndex){
+        if(newIndex != _selectedIndex){
+          setState(() {
+            _selectedIndex = newIndex;
+          });
+        }else{
+          if(_selectedIndex == 0){
+           _postsScrollController.animateTo(_postsScrollController.position.minScrollExtent,
+          duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
+          }
+        }
         BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
       },
       items: [
@@ -129,7 +145,7 @@ void initState() {
 
   Widget _getBody(int selectedIndex){
     switch(selectedIndex){
-      case 0: return _eventPage.buildBody();
+      case 0:return _eventPage.buildBody();
       break;
       case 1: return _galleryPage.buildBody();
       break;

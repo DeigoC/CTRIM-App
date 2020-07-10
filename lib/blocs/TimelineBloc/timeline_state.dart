@@ -18,6 +18,8 @@ class TimelineDisplayFeedState extends TimelineState {
 }
 class TimelineTagChangedState extends TimelineState {}
 class TimelineNewPostUploadedState extends TimelineState{}
+class TimelineAttemptingToUploadNewPostState extends TimelineState{}
+
 
 // ! Search Post
 class TimelineSearchState extends TimelineState {}
