@@ -164,13 +164,13 @@ class AboutTabPage{
         'subject':'This is the subject!'
       }
     );
-    launch(email.toString());
+    launch(email.toString(),forceSafariVC: false, universalLinksOnly: true).then((value) => print('--------SOMETHING HAPPENDED: ' + value.toString()));
   }
 
   void _launchTwitter() async{
     String url = 'https://twitter.com/nytimes';
     if(await canLaunch(url)){
-      await launch(url);
+      await launch(url).then((value) => print('--------SOMETHING HAPPENDED twitter: ' + value.toString()));
     }else{
       print('--------------------------COULDNT LAUNCH!');
     }
