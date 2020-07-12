@@ -94,6 +94,11 @@ class _AddEventPageState extends State<AddEventPage>
             ];
           },
           body: BlocListener<TimelineBloc,TimelineState>(
+            condition: (_,state){
+              if(state is TimelineNewPostUploadedState||
+              state is TimelineAttemptingToUploadNewPostState) return true;
+              return false;
+            },
             listener: (_,state){
                if(state is TimelineNewPostUploadedState){
                  Navigator.of(context).pop();

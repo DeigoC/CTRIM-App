@@ -32,6 +32,8 @@ class PostDBManager{
   }
 
   Future<Null> updatePost(Post post) async{
+    await _appStorage.uploadEditPostNewFiles(post);
+    post.temporaryFiles.clear();
     await _ref.document(post.id).setData(post.toJson());
   }
 

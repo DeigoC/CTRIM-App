@@ -5,7 +5,6 @@ import 'package:ctrim_app_v1/pages/about/AboutBodyEditorPage.dart';
 import 'package:ctrim_app_v1/pages/about/EditAboutArticlePage.dart';
 import 'package:ctrim_app_v1/pages/about/ViewAboutPastors.dart';
 import 'package:ctrim_app_v1/pages/about/ViewChurchPage.dart';
-import 'package:ctrim_app_v1/pages/about/ViewUserPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/CreateAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/SearchAlbumsPage.dart';
@@ -24,12 +23,13 @@ import 'package:ctrim_app_v1/pages/location/SelectLocationForPostPage.dart';
 import 'package:ctrim_app_v1/pages/location/ViewAllPostsForLocationPage.dart';
 import 'package:ctrim_app_v1/pages/location/ViewLocationOnMapPage.dart';
 import 'package:ctrim_app_v1/pages/user/EditUserPage.dart';
-import 'package:ctrim_app_v1/pages/user/MyDetailsPage.dart';
+import 'package:ctrim_app_v1/pages/user/EditMyDetailsPage.dart';
 import 'package:ctrim_app_v1/pages/user/RegisterUserPage.dart';
 import 'package:ctrim_app_v1/pages/user/UserLikedPostsPage.dart';
 import 'package:ctrim_app_v1/pages/user/UserLoginPage.dart';
 import 'package:ctrim_app_v1/pages/user/ViewAllUsersPage.dart';
 import 'package:ctrim_app_v1/pages/InitialLoadingPage.dart';
+import 'package:ctrim_app_v1/pages/user/ViewUserPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -203,7 +203,7 @@ class _AppState extends State<App> {
         case SearchAlbumRoute: screen = SearchAlbumsPage();
         break;
 
-        case MyDetailsRoute: screen = MyDetailsPage();
+        case MyDetailsRoute: screen = EditMyDetailsPage();
         break;
 
         case MyLikedPostsRoute: screen = UserLikedPostsPage();

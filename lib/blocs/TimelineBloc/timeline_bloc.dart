@@ -286,9 +286,13 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   Stream<TimelineState> _mapPostUpdateToState(TimelineUpdatePostEvent event) async*{
     int index = _allPosts.indexWhere((post) => post.id.compareTo(event.post.id) == 0);
+
+    yield TimelineAttemptingToUploadNewPostState();
+    await _postDBManager.updatePost(event.post);
     _allPosts[index] = event.post;
-    _postDBManager.updatePost(event.post);
     _createUpdateTPost(event);
+
+    print('----------EVENT POST SRC LENGTH IS ' + event.post.gallerySources.length.toString());
     yield TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
     yield TimelineEmptyState();
   }

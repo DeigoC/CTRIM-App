@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/widgets/galleryItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,7 +22,8 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
     return WillPopScope(
       onWillPop: () async{
         bool result = false;
-       
+        
+        widget._postBloc.add(PostTextChangeEvent());
         if(widget._postBloc.hasAlbumChanged){
             await showDialog(
             context: context,
@@ -37,14 +39,15 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
                 }),
                 FlatButton(child: Text('Keep'), onPressed: (){
                   result = true;
-                  widget._postBloc.add(PostTextChangeEvent());
                   Navigator.of(context).pop();
                 }),
                 ],
               );
             }
           );
+          widget._postBloc.add(PostTextChangeEvent());
         }else return true;
+
         return result;
       },
         child: Scaffold(
@@ -60,28 +63,14 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
   }
   
   List<Widget> _buildNormalActions(){
-      return [ PopupMenuButton(
-        itemBuilder: (_){
-          return [
-            PopupMenuItem(
-              child: ListTile(
-                title: Text('Add'),
-                leading: Icon(Icons.add_photo_alternate),
-                onTap: ()=>  BlocProvider.of<AppBloc>(context).add(AppToAddGalleryFileEvent(widget._postBloc)),
-              ),
-            ),
-            PopupMenuItem(
-              child: ListTile(
-                title: Text('Remove'),
-                leading: Icon(Icons.delete_sweep),
-                onTap: (){
-                  setState(() {_onDeleteMode = true; });
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
-          ];
-        },
+    return [
+      FlatButton(
+        child: Text('Add'),
+        onPressed:()=> BlocProvider.of<AppBloc>(context).add(AppToAddGalleryFileEvent(widget._postBloc)),
+      ),
+      FlatButton(
+        child: Text('Remove'),
+        onPressed:(){ setState(() {_onDeleteMode = true; });} 
       ),
     ];
   }
@@ -125,10 +114,10 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
       builder:(_,state){
         Map<File, String> files = widget._postBloc.files;
         Map<String, String> sources = widget._postBloc.gallerySrc;
+        List<String> sourcesOrdered = sources.keys.toList();
+        sourcesOrdered.sort();
 
-        // TODO need to rework this so that it can be selected to delete
-
-        List<Widget> newChildren = sources.keys.map((src){
+        List<Widget> newChildren = sourcesOrdered.map((src){
           String type = sources[src];
           if(type == 'vid') return _buildVideoSrcContainer(src);
           return _buildPictureSrcContainer(src);
@@ -140,101 +129,132 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
           return _buildPictureFileContainer(file);
         }).toList());
 
-        return ListView(
-        children: [
-          Wrap(children: newChildren),
-        ],
-    );
+        return SingleChildScrollView(
+          child: Wrap(children: newChildren),
+        );
       }
      );
   }
 
-  Padding _buildVideoSrcContainer(String src){
-    return null;
-  }
-
-  Padding _buildVideoFileContainer(File file){
-    return null;
-  }
-
-  Padding _buildPictureFileContainer(File file){
-    double pictureSize = MediaQuery.of(context).size.width * 0.32;
-    double paddingSize = MediaQuery.of(context).size.width * 0.01;
-    bool selected = _selectedFiles.contains(file.path);
-    return Padding(
-       padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-       child: AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          width: pictureSize,
-          height: pictureSize,
-          decoration: BoxDecoration(
-            image: DecorationImage(image: FileImage(file), fit: BoxFit.cover)
-          ),
-          child: InkWell(
-            onTap: (){
-              if(_onDeleteMode){
-                setState(() {
-                if(selected)_selectedFiles.remove(file.path);
-                else _selectedFiles.add(file.path);
-              }); 
-              }
-            },
-            child: Opacity(
-              opacity: selected ? 1:0,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    color: Colors.black.withOpacity(0.3),
-                  ),
-                  Icon(Icons.done, color: Colors.white,)
-                ],
-              ),
-            ),
-          ),
-       ),
-    );
-  }
-
-  Padding _buildPictureSrcContainer(String src){
-    double pictureSize = MediaQuery.of(context).size.width * 0.32;
-    double paddingSize = MediaQuery.of(context).size.width * 0.01;
+  GalleryItem _buildVideoSrcContainer(String src){
     bool selected = _selectedFiles.contains(src);
-    return Padding(
-       padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-       child: AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          width: pictureSize,
-          height: pictureSize,
-          decoration: BoxDecoration(
-            image: DecorationImage(image: NetworkImage(src), fit: BoxFit.cover)
-          ),
-          child: InkWell(
-            onTap: (){
-              if(_onDeleteMode){
-                setState(() {
-                if(selected)_selectedFiles.remove(src);
-                else _selectedFiles.add(src);
-              }); 
-              }
-            },
-            child: Opacity(
-              opacity: selected ? 1:0,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    color: Colors.black.withOpacity(0.3),
-                  ),
-                  Icon(Icons.done, color: Colors.white,)
-                ],
-              ),
+    return GalleryItem(
+      onTap: null,
+      heroTag: src,// ? Not required
+      src: src,
+      type: 'vid',
+      child: InkWell(
+        onTap: (){
+           if(_onDeleteMode){
+          setState(() {
+             if(selected)_selectedFiles.remove(src);
+              else _selectedFiles.add(src);
+          });
+        }
+        },
+          child: Opacity(
+            opacity: selected ? 1:0,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  color: Colors.black.withOpacity(0.3),
+                ),
+                Icon(Icons.done, color: Colors.white,)
+              ],
             ),
           ),
-       ),
+      ),
     );
   }
 
+  GalleryItem _buildVideoFileContainer(File file){
+    bool selected = _selectedFiles.contains(file.path);
+    return GalleryItem.file(
+      file: file,
+      type: 'vid',
+      child: InkWell(
+        onTap: (){
+           if(_onDeleteMode){
+          setState(() {
+             if(selected)_selectedFiles.remove(file.path);
+              else _selectedFiles.add(file.path);
+          });
+        }
+        },
+          child: Opacity(
+            opacity: selected ? 1:0,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  color: Colors.black.withOpacity(0.3),
+                ),
+                Icon(Icons.done, color: Colors.white,)
+              ],
+            ),
+          ),
+      ),
+    );
+  }
+
+  GalleryItem _buildPictureFileContainer(File file){
+    bool selected = _selectedFiles.contains(file.path);
+    return GalleryItem.file(
+      type: 'img', 
+      file: file,
+      child: InkWell(
+        onTap: (){
+          if(_onDeleteMode){
+            setState(() {
+            if(selected)_selectedFiles.remove(file.path);
+            else _selectedFiles.add(file.path);
+          }); 
+          }
+        },
+        child: Opacity(
+          opacity: selected ? 1:0,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                color: Colors.black.withOpacity(0.3),
+              ),
+              Icon(Icons.done, color: Colors.white,)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  GalleryItem _buildPictureSrcContainer(String src){
+    bool selected = _selectedFiles.contains(src);
+    return GalleryItem(
+      heroTag: src,
+      onTap: null,
+      type: 'img', 
+      src: src,
+      child: InkWell(
+        onTap: (){
+          if(_onDeleteMode){
+            setState(() {
+            if(selected)_selectedFiles.remove(src);
+            else _selectedFiles.add(src);
+          }); 
+          }
+        },
+        child: Opacity(
+          opacity: selected ? 1:0,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(color: Colors.black.withOpacity(0.3),),
+              Icon(Icons.done, color: Colors.white,)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

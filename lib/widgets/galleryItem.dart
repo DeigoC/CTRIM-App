@@ -17,13 +17,15 @@ class GalleryItem extends StatefulWidget {
    @required this.heroTag,
    @required this.src,
     @required this.type,
-  }):isItemAFile = false, file = null, child=null;
+    this.child
+  }):isItemAFile = false, file = null;
 
   GalleryItem.file({
     @required this.type,
     @required this.file,
     this.child,
-  }):isItemAFile = true, src = null, onTap = null, heroTag = null;
+    this.onTap,
+  }):isItemAFile = true, src = null, heroTag = null;
 
   @override
   _GalleryItemState createState() => _GalleryItemState();
@@ -71,16 +73,19 @@ class _GalleryItemState extends State<GalleryItem> {
   Widget _buildSRCImageContainer(){
     return Padding(
      padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        width: _pictureSize,
-        height: _pictureSize,
-        child: GestureDetector(
-          onTap: widget.onTap,
-          child: Hero(
-            tag: widget.heroTag,
-            child: Image.network(widget.src, fit: BoxFit.cover,),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Hero(
+          tag: widget.heroTag,
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            width: _pictureSize,
+            height: _pictureSize,
+            decoration: BoxDecoration(
+              image: DecorationImage(image: NetworkImage(widget.src),fit: BoxFit.cover)
+            ),
+            child: widget.child??Container(),
           ),
         ),
       ),

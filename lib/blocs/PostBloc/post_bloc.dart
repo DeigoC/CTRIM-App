@@ -74,10 +74,12 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   // ! Post Fields - Gallery Tab
   Map<File, String> get files => _post.temporaryFiles;
   Map<String, String> get gallerySrc => _post.gallerySources;
+
   bool get hasAlbumChanged {
     List<String> originalSrc = _originalPost.gallerySources.keys.toList();
     List<String> newSrc = _post.gallerySources.keys.toList();
-    if (!DeepCollectionEquality().equals(originalSrc, newSrc)) {
+
+    if (!DeepCollectionEquality.unordered().equals(originalSrc, newSrc)) {
       return true;
     } else if (_post.temporaryFiles.length != 0) return true;
     return false;
@@ -97,11 +99,12 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         selectedTags: List<PostTag>.from(postToEdit.selectedTags),
         description: postToEdit.description,
         detailTable: List<Map<String,String>>.from(postToEdit.detailTable),
-        detailTableHeader: postToEdit.detailTableHeader,
+        detailTableHeader: postToEdit.detailTableHeader??'',
         locationID: postToEdit.locationID,
         eventDate: postToEdit.eventDate,
         isDateNotApplicable: postToEdit.isDateNotApplicable,
         gallerySources: Map.from(postToEdit.gallerySources),
+        noOfGalleryItems: postToEdit.noOfGalleryItems,
         temporaryFiles: {});
 
     _originalPost = Post(
@@ -110,11 +113,12 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       selectedTags: List<PostTag>.from(postToEdit.selectedTags),
       description: _post.description,
       detailTable: List<Map<String,String>>.from(postToEdit.detailTable),
-      detailTableHeader: _post.detailTableHeader,
+      detailTableHeader: postToEdit.detailTableHeader??'',
       locationID: _post.locationID,
-      eventDate: _post.eventDate,
+      eventDate: postToEdit.eventDate,
       isDateNotApplicable: _post.isDateNotApplicable,
       gallerySources: Map.from(_post.gallerySources),
+      noOfGalleryItems: postToEdit.noOfGalleryItems,
       temporaryFiles: {},
     );
 
@@ -153,7 +157,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       event.selectedFiles.forEach((file) {
         _post.temporaryFiles.remove(file);
       });
-      yield PostFilesReceivedState(); // TODO may have to change this
+      yield PostFilesReceivedState(); 
     } else if (event is PostRemoveSelectedFilesAndSrcEvent) {
       event.selectedFilesAndSrcs.forEach((src) {
         if (_post.gallerySources.keys.contains(src)) {
@@ -164,6 +168,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       });
       yield PostFilesReceivedState();
     }else if(event is PostDiscardGalleryChnagesEvent){
+      _post.temporaryFiles.clear();
       _post.gallerySources = Map.from(_originalPost.gallerySources);
     }
   }
@@ -263,8 +268,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     if (_editMode) {
       if (_haveAnyChangedFields()) {
         yield PostEnableSaveButtonState();
-      } else
+      } else{
         yield PostDisableSaveButtonState();
+      } 
     } else {
       if (_haveAnyEmptyFields()) {
         yield PostDisableSaveButtonState();
@@ -282,10 +288,11 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     else if (!DeepCollectionEquality().equals(_originalPost.detailTable, _post.detailTable)) return true;
     else if (!DeepCollectionEquality.unordered().equals(_originalPost.selectedTags, _post.selectedTags))return true;
     else if (_originalPost.locationID.compareTo(_post.locationID) != 0)return true;
-    // TODO Check the one below
-    else if (_originalPost.eventDate.compareTo(_post.eventDate) != 0 &&!_post.isDateNotApplicable)return true;
     else if (_originalPost.isDateNotApplicable != _post.isDateNotApplicable)return true;
     else if(hasAlbumChanged) return true;
+    else if(_originalPost.eventDate != null){
+      if (_originalPost.eventDate.compareTo(_post.eventDate) != 0 &&!_post.isDateNotApplicable)return true;
+    }
     return false;
   }
 

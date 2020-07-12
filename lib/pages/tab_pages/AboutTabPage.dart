@@ -5,6 +5,7 @@ import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutTabPage{
 
@@ -26,7 +27,7 @@ class AboutTabPage{
             tabs: [
               Tab( text: 'CTRIM',),
               Tab(text: 'Churches',),
-              Tab(text: 'Admins',),
+              Tab(text: 'Contact Us',),
             ],
           ),
         ),
@@ -125,19 +126,62 @@ class AboutTabPage{
   }
 
   Widget _buildTab3(){
-    List<User> allUsers = BlocProvider.of<TimelineBloc>(_context).allUsers;
-    return ListView.builder(
-      key: PageStorageKey<String>('AboutTabPageTab3'),
-      itemCount: allUsers.length,
-      itemBuilder: (_,index){
-        User u = allUsers[index];
-        return ListTile(
-          title: Text(u.forename + ' ' + u.surname),
-          subtitle: Text('This is description for item $index'),
-          leading: u.buildAvatar(),
-          onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewUserPageEvent(u)),
-        );
+   return ListView(
+     children: [
+       SizedBox(height: 8,),
+       Text('Got Questions? Get In Touch With Us', textAlign: TextAlign.center,),
+       SizedBox(height: 8,),
+       RaisedButton(
+         child: Text('Contact Us'),
+         onPressed: (){
+           _launchEmail();
+         },
+       ),
+      SizedBox(height: 8,),
+       RaisedButton(
+         child: Text('Random twitter link'),
+         onPressed: (){
+           _launchTwitter();
+         },
+       ),
+       
+      SizedBox(height: 8,),
+       RaisedButton(
+         child: Text('Random YOUTUBE link'),
+         onPressed: (){
+           _launchYoutube();
+         },
+       ),
+     ],
+   );
+  }
+
+  void _launchEmail() {
+    final Uri email = Uri(
+      scheme: 'mailto',
+      path: 'diegocollado117@gmail.com',
+      queryParameters: {
+        'subject':'This is the subject!'
       }
     );
+    launch(email.toString());
+  }
+
+  void _launchTwitter() async{
+    String url = 'https://twitter.com/nytimes';
+    if(await canLaunch(url)){
+      await launch(url);
+    }else{
+      print('--------------------------COULDNT LAUNCH!');
+    }
+  }
+
+  void _launchYoutube() async{
+    String url = 'https://www.youtube.com/watch?v=dgZDICFDY5o&t=587s';
+    if(await canLaunch(url)){
+      await launch(url);
+    }else{
+      print('--------------------------COULDNT LAUNCH!');
+    }
   }
 }

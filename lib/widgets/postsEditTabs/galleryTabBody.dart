@@ -75,8 +75,10 @@ class GalleryTabBody extends StatelessWidget {
 
   Widget _buildGalleryEditPost() {
     Map<String, ImageTag> galleryTags = _createGalleryTags(gallerySrc);
-    List<Widget> wrapChildren =
-    BlocProvider.of<PostBloc>(_context).gallerySrc.keys.map((src) {
+    List<String> srcs = gallerySrc.keys.toList();
+    srcs.sort((a,b) => a.compareTo(b));
+
+    List<Widget> wrapChildren =srcs.map((src) {
       String type = BlocProvider.of<PostBloc>(_context).gallerySrc[src];
         return type == 'vid'? GalleryItem(
           type: 'vid',
@@ -112,11 +114,15 @@ class GalleryTabBody extends StatelessWidget {
     if (gallerySrc.length == 0) return Center(child: Text('No Images or Videos'),);
    
    Map<String, ImageTag> galleryTags = _createGalleryTags(gallerySrc);
+    List<String> srcs = gallerySrc.keys.toList();
+    srcs.sort((a,b) => a.compareTo(b));
+
     return SingleChildScrollView(
       child: Wrap(
-        children: gallerySrc.keys.map((src) {
+        children: srcs.map((src) {
           String type = gallerySrc[src];
-          int index = gallerySrc.keys.toList().indexOf(src);
+          int index = srcs.indexOf(src);
+
           return type == 'vid'? GalleryItem(
             type: 'vid',
             src: src,
@@ -134,64 +140,14 @@ class GalleryTabBody extends StatelessWidget {
     );
   }
 
-  Widget _createImageSrcContainer(String src) {
-    print('--------------------BUILDING SRC IMAGE' + src);
-    int index = gallerySrc.keys.toList().indexOf(src);
-    Map<String, ImageTag> galleryTags = _createGalleryTags(gallerySrc);
-    return Padding(
-      padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        width: pictureSize,
-        height: pictureSize,
-        child: GestureDetector(
-            onTap: () => BlocProvider.of<AppBloc>(_context)
-                .add(AppToViewImageVideoPageEvent(galleryTags, index)),
-            child: Hero(
-                tag: galleryTags.values.elementAt(index).heroTag,
-                child: Image.network(
-                  src,
-                  fit: BoxFit.cover,
-                ))),
-      ),
-    );
-  }
-
   Map<String, ImageTag> _createGalleryTags(Map<String, String> gallery) {
     Map<String, ImageTag> result = {};
-    gallery.forEach((src, type) {
+    List<String> srcs = gallery.keys.toList();
+    srcs.sort((a,b) => a.compareTo(b));
+    srcs.forEach((src) {
+      String type = gallery[src];
       result[src] = ImageTag(src: src, type: type);
     });
     return result;
-  }
-
-  Widget _createImageFileContainer(File file) {
-    return Padding(
-      padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        width: pictureSize,
-        height: pictureSize,
-        child: Image.file(
-          file,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
-  Widget _createVideoContainer() {
-    return Padding(
-      padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        width: pictureSize,
-        height: pictureSize,
-        child: Icon(Icons.play_circle_outline),
-      ),
-    );
   }
 }

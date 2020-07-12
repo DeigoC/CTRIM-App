@@ -181,11 +181,14 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
         });
       }else{
         int imageNo = 0;
-        widget.post.gallerySources.forEach((key, value) {
-          if(imageNo != 5 && value=='img'){
+        List<String> srcs = widget.post.gallerySources.keys.toList();
+        srcs.sort();
+
+        srcs.forEach((key) {
+          if(imageNo != 4 &&  widget.post.gallerySources[key]=='img'){
             _gallerySrc[key] = ImageTag(
               src: key,
-              type: value,
+              type: widget.post.gallerySources[key],
               tPostID: widget.isOriginal ? '0' : widget.timelinePost.id
             );
             imageNo++;
@@ -226,7 +229,7 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
   }
   
   List<Widget> _buildImageLayoutChildren(){
-    if (_gallerySrc.length == 4) {
+    if (_gallerySrc.length >= 4) {
        return [
         Expanded(
           child: Column(

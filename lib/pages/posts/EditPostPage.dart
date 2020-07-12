@@ -124,7 +124,23 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
                 )
               ];
             },
-            body: _buildBody(),
+            body: BlocListener<TimelineBloc, TimelineState>(
+              condition: (_,state){
+                if(state is TimelineRebuildMyPostsPageState||
+                state is TimelineAttemptingToUploadNewPostState) return true;
+                return false;
+              },
+              listener: (_,state){
+                if(state is TimelineRebuildMyPostsPageState){
+                 Navigator.of(context).pop();
+                 Navigator.of(context).pop();
+                 Navigator.of(context).pop();
+               }else if(state is TimelineAttemptingToUploadNewPostState){
+                 ConfirmationDialogue.uploadTaskStarted(context: context);
+               }
+              },
+              child: _buildBody()
+            ),
           ),
         ),
       ),

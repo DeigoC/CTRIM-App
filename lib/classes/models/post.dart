@@ -11,6 +11,7 @@ class Post {
   String id,title,description,body = '',duration,locationID,detailTableHeader;
   DateTime eventDate;
   bool isDateNotApplicable, deleted;
+  int noOfGalleryItems;
 
   //List<List<String>> detailTable;
   List<Map<String, String>> detailTable;
@@ -34,6 +35,7 @@ class Post {
     this.description = '',
     this.temporaryFiles,
     this.duration,
+    this.noOfGalleryItems = 0,
   });
 
   Post.fromMap(String id, Map<String,dynamic> data)
@@ -50,6 +52,7 @@ class Post {
   gallerySources = Map<String,String>.from(data['GallerySources']),
   description = data['Description'],
   isDateNotApplicable = data['IsDateNotApplicable'],
+  noOfGalleryItems = data['NoOfGalleryItems'],
   temporaryFiles = {};
 
   static List<Map<String,String>> _toProperFormat(dynamic data){
@@ -75,6 +78,7 @@ class Post {
       'GallerySources':gallerySources,
       'Description':description,
       'IsDateNotApplicable':isDateNotApplicable??false,
+      'NoOfGalleryItems':noOfGalleryItems,
     };
   }
   
@@ -139,8 +143,10 @@ class Post {
 
   String getFirstImageSrc(){
     if(gallerySources.length != 0){
-      for (var i = 0; i < gallerySources.length; i++) {
-        String src = gallerySources.keys.elementAt(i);
+      List<String> srcs = gallerySources.keys.toList();
+    srcs.sort((a,b) => a.compareTo(b));
+      for (var i = 0; i < srcs.length; i++) {
+        String src = srcs.elementAt(i);
         if(gallerySources[src]=='img') return src;
       }
     } 

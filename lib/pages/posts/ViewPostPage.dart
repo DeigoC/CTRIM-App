@@ -208,23 +208,56 @@ class _ViewPostPageState extends State<ViewPostPage>
 
   Widget _buildUpdatesTab() {
     List<TimelinePost> allUpdates = BlocProvider.of<TimelineBloc>(context).getAllUpdatePosts(widget._post.id);
+    Map<DateTime, List<TimelinePost>> updatesSortedToLists = {};
+    allUpdates.forEach((u) {
+      DateTime thisDate = DateTime(u.postDate.year, u.postDate.month, u.postDate.day);
+      if(updatesSortedToLists[thisDate] == null){
+        updatesSortedToLists[thisDate] = [];
+      }
+      updatesSortedToLists[thisDate].add(u);
+    });
+
+    List<DateTime> sortedDates = updatesSortedToLists.keys.toList();
+    sortedDates.sort((a,b) => b.compareTo(a));
+    User user = BlocProvider.of<TimelineBloc>(context).allUsers.firstWhere(
+      (author) => author.id == allUpdates.last.authorID);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Posted by: ' + _getAuthorName(allUpdates.last.authorID)),
-        Expanded(child: ListView.builder(
-          itemCount: allUpdates.length,
+        ListTile(
+          leading: user.buildAvatar(),
+          title: Text(user.forename + ' ' + user.surname[0] + '.'),
+          subtitle: Text('Author'),
+          onTap: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(user)),
+          trailing: Container(
+            padding: EdgeInsets.all(8),
+            child: Text('CONTACT'),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(16),
+            ),
+          )
+        ),
+        Divider(),
+        Expanded(child: ListView.separated(
+          itemCount: sortedDates.length,
+          separatorBuilder: (_,index)=>Divider(),
           itemBuilder: (_,index){
-            TimelinePost tPost = allUpdates[index];
+            List<TimelinePost> updates = updatesSortedToLists[sortedDates[index]];
+            updates.sort((a,b) => b.postDate.compareTo(a.postDate));
+            
             return Container(
+              padding: EdgeInsets.symmetric(vertical: 8),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(tPost.getPostDateString(), textAlign: TextAlign.center,),
+                    child: Text(updates.first.getPostDateString(), textAlign: TextAlign.center,),
                     flex: 1,
                   ),
                   Expanded(
-                    child: Text(tPost.getUpdateString()),
+                    child: _mapUpdatesLogsToWidgets(updates),
                     flex: 2,
                   )
                 ],
@@ -236,8 +269,23 @@ class _ViewPostPageState extends State<ViewPostPage>
     );
   }
 
-  String _getAuthorName(String authorID){
-    User u = BlocProvider.of<TimelineBloc>(context).allUsers.firstWhere((author) => author.id == authorID);
-    return u.forename + ' ' + u.surname[0];
+  Column _mapUpdatesLogsToWidgets(List<TimelinePost> updates){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: updates.map((u){
+        List<Widget> children = [
+          Text(u.getUpdateTime()),
+          Text(u.getUpdateString()),
+          Divider(),
+        ];
+        if(updates.indexOf(u) == updates.length - 1){
+          children.removeLast();
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        );
+      }).toList(),
+    );
   }
 }
