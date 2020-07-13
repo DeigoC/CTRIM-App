@@ -60,7 +60,8 @@ final appDarkTheme = ThemeData(
     onError: Colors.white, 
     brightness: Brightness.dark
   ),
+
     appBarTheme: AppBarTheme(
-    color: LightPrimaryColor,
+    color: DarkPrimaryColor,
   ),
 );

@@ -50,6 +50,9 @@ class AdminLoginCompletedState extends AdminLoginState{
 class AdminLoginLoadingState extends AdminLoginState{}
 
 // ! User modification states
+class AdminUserImageUploadingState extends AdminState{}
+class AdminUserImageUploadCompleteState extends AdminState{}
+
 class AdminUserModificationState extends AdminState {}
 
 class AdminUserAdminLevelChangedState extends AdminUserModificationState {}
@@ -67,7 +70,7 @@ class AdminUserModAddNewUserState extends AdminUserModificationState {
   AdminUserModAddNewUserState(this.newUser);
 }
 
-class AdminUserModUpdateUser extends AdminUserModificationState {
+class AdminUserModUpdateUserState extends AdminUserModificationState {
   final User updatedUser;
-  AdminUserModUpdateUser(this.updatedUser);
+  AdminUserModUpdateUserState(this.updatedUser);
 }

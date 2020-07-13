@@ -59,23 +59,23 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return result;
   }
 
-  Map<Post, String> getUserPosts(String userID) {
-    Map<Post, String> results = {};
+  Map<Post, TimelinePost> getUserPosts(String userID) {
+    Map<Post, TimelinePost> results = {};
     _allTimelinePosts.forEach((timelinePost) {
       if (timelinePost.authorID.compareTo(userID) == 0 && timelinePost.postType.compareTo('original') == 0) {
         Post thisPost = _allPosts.firstWhere((post) => post.id.compareTo(timelinePost.postID) == 0);
-        if(!thisPost.deleted) results[thisPost] =timelinePost.getPostDateString();
+        if(!thisPost.deleted) results[thisPost] = timelinePost;
       }
     });
     return results;
   }
 
-  Map<Post, String> getUserDeletedPosts(String userID) {
-    Map<Post, String> results = {};
+  Map<Post, TimelinePost> getUserDeletedPosts(String userID) {
+    Map<Post, TimelinePost> results = {};
     _allTimelinePosts.forEach((timelinePost) {
       if (timelinePost.authorID.compareTo(userID) == 0 && timelinePost.postType.compareTo('original') == 0) {
         Post thisPost = _allPosts.firstWhere((post) => post.id.compareTo(timelinePost.postID) == 0);
-        if(thisPost.deleted) results[thisPost] = timelinePost.getPostDateString();
+        if(thisPost.deleted) results[thisPost] = timelinePost;
       }
     });
     return results;
@@ -291,8 +291,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     await _postDBManager.updatePost(event.post);
     _allPosts[index] = event.post;
     _createUpdateTPost(event);
-
-    print('----------EVENT POST SRC LENGTH IS ' + event.post.gallerySources.length.toString());
+   
     yield TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
     yield TimelineEmptyState();
   }

@@ -35,6 +35,7 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
                   .length,
               itemBuilder: (_, index) {
                 return PostArticle(
+                  mode: 'view',
                   allUsers: state.users,
                   post: _getPostFromID(
                       state.timelines[index].postID, state.posts),

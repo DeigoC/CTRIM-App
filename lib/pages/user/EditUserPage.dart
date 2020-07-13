@@ -78,7 +78,7 @@ class _EditUserPageState extends State<EditUserPage> {
         padding,
         MyTextField(
           label: 'Contact No',
-          controller: TextEditingController(text: widget.user.contactNo),
+          controller: TextEditingController(text: widget.user.body),
           hint: 'Optional',
           onTextChange: (newString) => _adminBloc
               .add(AdminUserModEditTextChangeEvent(contactNo: newString)),
@@ -97,7 +97,7 @@ class _EditUserPageState extends State<EditUserPage> {
             child: BlocConsumer(
               bloc: _adminBloc,
               listener: (_, state) {
-                if (state is AdminUserModUpdateUser) {}
+                if (state is AdminUserModUpdateUserState) {}
               },
               buildWhen: (_, state) {
                 if (state is AdminUserModEnableSaveButtonState)

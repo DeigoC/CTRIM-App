@@ -113,18 +113,26 @@ class ConfirmationDialogue{
     @required BuildContext context,
     @required String record,
     bool editing = false,
+    bool discardOption = false,
   }) async{
     bool result = false;
     String title = editing ? 'Update $record' : 'Save $record';
     String content = editing ? 'Do you wish to save updates made?' : 'Do you wish to add new $record?';
     await showDialog(
+      barrierDismissible: discardOption ? false:true,
       context: context,
       builder: (_){
         return AlertDialog(
           title: Text(title),
           content: Text(content),
           actions: [
-          FlatButton(child: Text('Cancel'), onPressed: (){
+          discardOption ? FlatButton(
+            child: Text('Cancel'), onPressed: (){
+              result = null;
+              Navigator.of(context).pop();
+            },
+          ):Container(),
+          FlatButton(child: Text(discardOption ? 'Discard':'Cancel'), onPressed: (){
             Navigator.of(context).pop();
           }),
           FlatButton(child: Text('Continue'), onPressed: (){

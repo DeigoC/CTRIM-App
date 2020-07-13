@@ -1,6 +1,8 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
+import 'package:ctrim_app_v1/widgets/postArticle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,14 +12,14 @@ class ViewMyPostsPage extends StatefulWidget {
 }
 
 class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
-  Map<Post, String> _myPostsTime, _myDeletedPosts;
+  Map<Post, TimelinePost> _myPosts, _myDeletedPosts;
 
   bool _showDeleted = false;
 
   @override
   void initState() {
     String userID = BlocProvider.of<AppBloc>(context).currentUser.id;
-    _myPostsTime = BlocProvider.of<TimelineBloc>(context).getUserPosts(userID);
+    _myPosts = BlocProvider.of<TimelineBloc>(context).getUserPosts(userID);
     _myDeletedPosts = BlocProvider.of<TimelineBloc>(context).getUserDeletedPosts(userID);
     super.initState();
   }
@@ -26,7 +28,7 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Insert searchbar soon'),
+        title: Text('Your Posts'),
         actions: [
           PopupMenuButton(
             itemBuilder: (_){
@@ -52,20 +54,21 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
       }, builder: (_, state) {
         if (state is TimelineRebuildMyPostsPageState) {
            String userID = BlocProvider.of<AppBloc>(context).currentUser.id;
-          _myPostsTime = BlocProvider.of<TimelineBloc>(context).getUserPosts(userID);
+          _myPosts = BlocProvider.of<TimelineBloc>(context).getUserPosts(userID);
           _myDeletedPosts = BlocProvider.of<TimelineBloc>(context).getUserDeletedPosts(userID);
         }
-        Map<Post,String> myPosts = _showDeleted ? _myDeletedPosts : _myPostsTime;
+
+        Map<Post,TimelinePost> myPosts = _showDeleted ? _myDeletedPosts : _myPosts;
+
         return ListView.builder(
             itemCount: myPosts.length,
             itemBuilder: (_, index) {
-              return ListTile(
-                title: Text(myPosts.keys.toList()[index].title),
-                subtitle: Text(myPosts.values.toList()[index]),
-                onTap: () {
-                  BlocProvider.of<AppBloc>(context).add(AppToEditPostPageEvent(
-                      myPosts.keys.toList()[index]));
-                },
+
+              return PostArticle(
+                mode: 'edit',
+                allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
+                timelinePost: myPosts.values.elementAt(index),
+                post: myPosts.keys.elementAt(index),
               );
             });
       }),

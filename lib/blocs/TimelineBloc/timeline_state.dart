@@ -51,7 +51,7 @@ class TimelineAlbumDisplaySearchResultsState extends TimelineAlbumSearchState {
 }
 
 class TimelineRebuildMyPostsPageState extends TimelineState {
-  final Map<Post, String> postTime;
+  final Map<Post, TimelinePost> postTime;
   TimelineRebuildMyPostsPageState(this.postTime);
 }
 

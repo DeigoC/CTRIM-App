@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/UserFileDocument.dart';
 import 'package:equatable/equatable.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/auth.dart';
+import 'package:zefyr/zefyr.dart';
 
 part 'admin_event.dart';
 part 'admin_state.dart';
@@ -15,6 +19,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
   final AuthService _auth = AuthService();
   final UserDBManager _userDBManager = UserDBManager();
+  final AppStorage _appStorage = AppStorage();
 
   List<User> _users = [];
   void setUsers(List<User> users) {
@@ -34,7 +39,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         forename: '',
         surname: '',
         email: '',
-        contactNo: '');
+        body: '');
   }
 
   void setupUserToEdit(User user) {
@@ -43,14 +48,18 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         forename: user.forename,
         surname: user.surname,
         email: user.email,
-        contactNo: user.contactNo,
+        body: user.body,
         adminLevel: user.adminLevel);
     _selectedUser = User(
       id: user.id,
+      authID: user.authID,
+      likedPosts: user.likedPosts,
+      onDarkTheme: user.onDarkTheme,
       forename: user.forename,
       surname: user.surname,
       email: user.email,
-      contactNo: user.contactNo,
+      body: user.body,
+      imgSrc: user.imgSrc,
       adminLevel: user.adminLevel,
     );
   }
@@ -66,6 +75,21 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     else if (event is AdminReturnToLoginEmailEvent) yield AdminLognReturnToEmailState();
     else if (event is AdminModifyingUserEvent) yield* _mapUserModificationEventToState(event);
     else if (event is AdminLoginButtonClickedEvent) yield* _mapAdminButtonClickedToState(event);
+    else if (event is AdminSaveMyDetailsEvent) yield* _mapSaveUserDetailsToState(event);
+  }
+
+  Stream<AdminState> _mapSaveUserDetailsToState(AdminSaveMyDetailsEvent event) async*{
+    yield AdminUserImageUploadingState();
+    _selectedUser.imgSrc = event.hasDeletedSrc ? '':_selectedUser.imgSrc;
+    if(event.file != null){
+      _selectedUser.imgSrc = await _appStorage.uploadAndGetUserImageSrc(_selectedUser, event.file);
+    }
+    _selectedUser.body = jsonEncode(event.document);
+
+    await _userDBManager.updateUser(_selectedUser);
+    _userDBManager.updateListUser(_selectedUser);
+    yield AdminUserModUpdateUserState(_selectedUser);
+    yield AdminUserImageUploadCompleteState();
   }
 
   Stream<AdminState> _mapAdminButtonClickedToState(AdminLoginButtonClickedEvent event)async*{
@@ -101,14 +125,14 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     } else if (event is AdminUserModTextChangeEvent) {
       _selectedUser.forename = event.forename ?? _selectedUser.forename;
       _selectedUser.surname = event.surname ?? _selectedUser.surname;
-      _selectedUser.contactNo = event.contactNo ?? _selectedUser.contactNo;
+      _selectedUser.body = event.contactNo ?? _selectedUser.body;
       _selectedUser.email = event.email ?? _selectedUser.email;
       _creationPassword = event.password ?? _creationPassword;
       yield _canEnableAddUserButton();
     } else if (event is AdminUserModEditTextChangeEvent) {
       _selectedUser.forename = event.forename ?? _selectedUser.forename;
       _selectedUser.surname = event.surname ?? _selectedUser.surname;
-      _selectedUser.contactNo = event.contactNo ?? _selectedUser.contactNo;
+      _selectedUser.body = event.contactNo ?? _selectedUser.body;
       yield _canEnableUpdateUserButton();
     } else if (event is AdminUserModAddNewUserClickEvent) {
       if (_emailAlreadyExists()) yield AdminUserModEmailAlreadyExistsState();
@@ -138,7 +162,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   AdminState _canEnableUpdateUserButton() {
     if ((_selectedUser.forename.compareTo(_originalUser.forename) != 0 ||
             _selectedUser.surname.compareTo(_originalUser.surname) != 0 ||
-            _selectedUser.contactNo.compareTo(_originalUser.contactNo) != 0 ||
+            _selectedUser.body.compareTo(_originalUser.body) != 0 ||
             _selectedUser.adminLevel != _originalUser.adminLevel) &&
         (_selectedUser.forename.trim().isNotEmpty &&
             _selectedUser.surname.trim().isNotEmpty)) {

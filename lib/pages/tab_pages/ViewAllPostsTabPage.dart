@@ -113,6 +113,7 @@ class ViewAllEventsPage {
             delegate: SliverChildBuilderDelegate(
               (_, index) {
                 return PostArticle(
+                  mode: 'view',
                   allUsers: state.users,
                   post: _getPostFromID(state.timelines[index].postID, state.posts),
                   timelinePost: state.timelines[index],

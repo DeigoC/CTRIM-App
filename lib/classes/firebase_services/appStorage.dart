@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class AppStorage{
@@ -44,4 +47,18 @@ class AppStorage{
     print('-----------------FINISHED: INDEX IS ' + index.toString());
     post.noOfGalleryItems = index;
   }
+
+  Future<String> uploadAndGetUserImageSrc(User user, File file) async{
+    String downloadSrc;
+    String fullname = user.forename + ' ' + user.surname;
+    String filePath = 'users/${user.id}-$fullname';
+    StorageUploadTask task = _ref.child(filePath).putFile(file);
+    await task.onComplete.then((_) async{
+      await _ref.child(filePath).getDownloadURL().then((url){
+        downloadSrc = url;
+      });
+    });
+    return downloadSrc;
+  }
+
 }

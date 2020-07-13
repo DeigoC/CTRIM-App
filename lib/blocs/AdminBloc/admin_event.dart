@@ -23,6 +23,13 @@ class AdminReturnToLoginEmailEvent extends AdminLoginEvent {}
 class AdminLoginButtonClickedEvent extends AdminLoginEvent{}
 
 // ! Adding/Editing user
+class AdminSaveMyDetailsEvent extends AdminEvent{
+  final NotusDocument document;
+  final File file;
+  final bool hasDeletedSrc;
+  AdminSaveMyDetailsEvent({this.document, this.file,this.hasDeletedSrc});
+}
+
 class AdminModifyingUserEvent extends AdminEvent {}
 
 class AdminUserAdminLevelChangeEvent extends AdminModifyingUserEvent {

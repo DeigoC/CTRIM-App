@@ -11,13 +11,16 @@ class PostArticle extends StatelessWidget {
   final Post post;
   final List<User> allUsers;
   final TimelinePost timelinePost;
+  final String mode;
   bool _isOriginal;
   BuildContext _context;
 
   PostArticle(
       {@required this.post,
       @required this.timelinePost,
-      @required this.allUsers}):_isOriginal = false, _context = null;
+      @required this.allUsers,
+      @required this.mode,
+    });
        
  
   @override
@@ -27,7 +30,7 @@ class PostArticle extends StatelessWidget {
 
     return InkWell(
       splashColor: Colors.blue.withAlpha(30),
-      onTap: () => _moveToViewPost(post),
+      onTap: ()=>_performOnTapFunction(),
       child: Container(
         decoration: BoxDecoration(
             border: Border(
@@ -125,8 +128,10 @@ class PostArticle extends StatelessWidget {
     return result;
   }
 
-  void _moveToViewPost(Post post) {
-    BlocProvider.of<AppBloc>(_context).add(AppToViewPostPageEvent(post));
+  void _performOnTapFunction() {
+    if(mode.compareTo('view')==0) BlocProvider.of<AppBloc>(_context).add(AppToViewPostPageEvent(post));
+    else if(mode.compareTo('edit')==0)  BlocProvider.of<AppBloc>(_context).add(AppToEditPostPageEvent(post));
+   
   }
 }
 

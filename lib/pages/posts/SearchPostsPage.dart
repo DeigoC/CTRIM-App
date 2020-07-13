@@ -77,6 +77,7 @@ class _SearchPostsPageState extends State<SearchPostsPage> {
               post: _getPostFromID(timelinePost.postID, state.posts),
               allUsers: state.users,
               timelinePost: timelinePost,
+              mode: 'view',
             ))
         .toList();
 

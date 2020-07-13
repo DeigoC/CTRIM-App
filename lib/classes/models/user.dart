@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:zefyr/zefyr.dart';
 
 class User{
-  String id, forename,surname, contactNo, imgSrc, email, authID;
+  String id, forename,surname, body, imgSrc, email, authID;
   int adminLevel;
   List<String> likedPosts;
   bool disabled, onDarkTheme;
@@ -10,7 +13,7 @@ class User{
     this.id, 
     this.forename, 
     this.surname,
-    this.contactNo,
+    this.body,
     this.imgSrc,
     this.email,
     this.adminLevel,
@@ -26,7 +29,7 @@ class User{
   surname = data['Surname'],
   authID = data['AuthID'],
   adminLevel = data['AdminLevel'],
-  contactNo = data['ContactNo'],
+  body = data['Body'],
   disabled = data['Disabled'],
   imgSrc = data['ImgSrc'],
   likedPosts = List.from(data['LikedPosts'], growable: true),
@@ -37,7 +40,7 @@ class User{
     return {
       'AdminLevel':adminLevel,
       'AuthID':authID,
-      'ContactNo':contactNo,
+      'Body':body,
       'Disabled':disabled,
       'Email':email,
       'Forename':forename,
@@ -59,6 +62,17 @@ class User{
     return CircleAvatar(
       backgroundImage: NetworkImage(imgSrc),
     );
+  }
+
+  NotusDocument getBodyDocument(){
+    if(body == null || body == ''){
+      List<dynamic> initialWords = [
+        {"insert": "Body Starts Here\n"}
+      ];
+      return NotusDocument.fromJson(initialWords);
+    }
+    var jsonDecoded = jsonDecode(body);
+    return NotusDocument.fromJson(jsonDecoded);
   }
 
 }

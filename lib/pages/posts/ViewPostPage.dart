@@ -226,7 +226,7 @@ class _ViewPostPageState extends State<ViewPostPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          leading: user.buildAvatar(),
+          leading: Hero(child: user.buildAvatar(),tag: '0/'+user.imgSrc,),
           title: Text(user.forename + ' ' + user.surname[0] + '.'),
           subtitle: Text('Author'),
           onTap: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(user)),

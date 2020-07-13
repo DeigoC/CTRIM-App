@@ -20,7 +20,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   
   final AuthService _auth = AuthService();
   final UserFileDocument _userFileDocument = UserFileDocument();
-  //final UserDBManager _userDBManager = UserDBManager();
 
   // ! Bloc Fields
   final GlobalKey<NavigatorState> navigatorKey;
@@ -28,6 +27,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   bool get onDarkTheme => _onDark;
   User _currentUser = User(id: '99', likedPosts: [], adminLevel: 0);
   User get currentUser => _currentUser;
+  
+  void setCurrentUser(User user){
+    _currentUser = user;
+  }
 
   AppBloc(this.navigatorKey);
 

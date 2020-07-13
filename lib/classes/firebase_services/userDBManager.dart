@@ -12,7 +12,7 @@ class UserDBManager{
       surname: 'Collado',
       email: 'diego@email.com',
       adminLevel: 3,
-      contactNo: '012301230',
+      body: '012301230',
       authID: 'FWifjH3EcfR2u5xiPDsEFewLtro2',
       likedPosts: [],
     ),
@@ -22,7 +22,7 @@ class UserDBManager{
       surname: 'Collado',
       email: 'claudette@email',
       adminLevel: 2,
-      contactNo: '0111111111111110',
+      body: '0111111111111110',
       likedPosts: [],
     ),
     User(
@@ -31,7 +31,7 @@ class UserDBManager{
       surname: 'Collado',
       email: 'DaNa@email',
       adminLevel: 1,
-      contactNo: '0111111111111110',
+      body: '0111111111111110',
       likedPosts: [],
     ),
   ];
@@ -65,4 +65,8 @@ class UserDBManager{
     return _allUsers.firstWhere((u) => u.authID.compareTo(authID)==0,orElse: ()=> null);
   }
 
+  void updateListUser(User user){
+    int index = _allUsers.indexWhere((u) => u.id.compareTo(user.id)==0);
+    _allUsers[index] = user;
+  }
 }
