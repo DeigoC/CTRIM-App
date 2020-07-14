@@ -47,8 +47,7 @@ class PostArticle extends StatelessWidget {
       RichText(
         text: TextSpan(
           text: post.title,
-          style:
-              TextStyle(fontSize: isUpdatePost ? 22 : 26, color: Colors.black),
+          style:TextStyle(fontSize: isUpdatePost ? 22 : 26),
           children: [
             TextSpan(
                 text: _getAuthorNameAndTagsLine(timelinePost, post),

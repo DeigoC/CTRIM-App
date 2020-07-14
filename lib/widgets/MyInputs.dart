@@ -118,3 +118,74 @@ class MyCheckBox extends StatelessWidget {
     ];
   }
 }
+
+class MyRaisedButton extends StatelessWidget {
+  final String label;
+  final Function onPressed;
+  final EdgeInsets externalPadding;
+
+  const MyRaisedButton({
+    @required this.label,
+    @required this.onPressed,
+    this.externalPadding,
+    Key key
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: externalPadding??EdgeInsets.zero,
+      child: RaisedButton(
+        child: Text(label),
+        onPressed: onPressed,
+      ),
+    );
+  }
+}
+
+class MyFlatButton extends StatelessWidget {
+   final String label;
+  final Function onPressed;
+  final EdgeInsets externalPadding;
+  
+   const MyFlatButton({
+    @required this.label,
+    @required this.onPressed,
+    this.externalPadding,
+    Key key
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+     return Padding(
+      padding: externalPadding??EdgeInsets.zero,
+      child: FlatButton(
+        child: Text(label,style: TextStyle(color: Colors.blue),),
+        onPressed: onPressed,
+      ),
+    );
+  }
+}
+
+class MyFilterChip extends StatelessWidget {
+  final String label;
+  final bool selected, filteringPosts;
+  final Function(bool) onSelected;
+
+  MyFilterChip({
+    @required this.label,
+    @required this.selected,
+    @required this.onSelected, 
+    this.filteringPosts = false,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      backgroundColor: filteringPosts ? null : Colors.grey,
+      label: Text(label),
+      onSelected: onSelected,
+      selected: selected,
+    );
+  }
+}

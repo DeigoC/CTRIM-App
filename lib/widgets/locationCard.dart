@@ -66,7 +66,7 @@ class LocationCard extends StatelessWidget {
                   ListTile(
                     title: RichText(text: TextSpan(
                       text: location.addressLine,
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: Color(0xff236adb)),
                       recognizer: TapGestureRecognizer()..onTap =()=> BlocProvider.of<AppBloc>(context)
                       .add(AppToViewLocationOnMapEvent(location)),
                     ),),

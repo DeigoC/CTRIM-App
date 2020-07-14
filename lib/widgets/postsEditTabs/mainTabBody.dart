@@ -36,9 +36,7 @@ class _MainTabBodyState extends State<MainTabBody> {
       shrinkWrap: true,
       children: [
         PostDepartmentField(),
-        SizedBox(
-          height: 20,
-        ),
+        SizedBox(height: 20,),
         MyTextField(
           controller: _tecSubtitle,
           label: 'Description',
@@ -48,9 +46,7 @@ class _MainTabBodyState extends State<MainTabBody> {
           onTextChange: (newSubtitle) => BlocProvider.of<PostBloc>(context)
               .add(PostTextChangeEvent(description: newSubtitle)),
         ),
-        SizedBox(
-          height: 20,
-        ),
+        SizedBox(height: 20,),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: Text('Body'),

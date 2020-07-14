@@ -5,6 +5,7 @@ import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllLocationsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewGalleryTabPage.dart';
+import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -78,46 +79,52 @@ void initState() {
       }),
     floatingActionButton: _getFAB(selectedIndex),
     drawer: _getDrawer(selectedIndex),
-    bottomNavigationBar: BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: selectedIndex,
-      selectedItemColor: Colors.red,
-      unselectedItemColor: Colors.black,
-      onTap: (newIndex){
-        if(newIndex != _selectedIndex){
-          setState(() {
-            _selectedIndex = newIndex;
-          });
-        }else{
-          if(_selectedIndex == 0){
-           _postsScrollController.animateTo(_postsScrollController.position.minScrollExtent,
-          duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
-          }
-        }
-        BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
+    bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+      condition: (_,state){
+        if(state is SettingsState) return true;
+        return false;
       },
-      items: [
-         BottomNavigationBarItem(
-          title: Container(),
-          icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
-        ),
-        BottomNavigationBarItem(
-          title: Container(),
-          icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
-        ),
-        BottomNavigationBarItem(
-          title: Container(),
-          icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
-        ),
-         BottomNavigationBarItem(
-           title: Container(),
-          icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
-        ),
-        BottomNavigationBarItem(
-          title: Container(),
-          icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
-        ),
-      ],
+        builder:(_,state) => BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: selectedIndex,
+        selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
+        backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
+        onTap: (newIndex){
+          if(newIndex != _selectedIndex){
+            setState(() {
+              _selectedIndex = newIndex;
+            });
+          }else{
+            if(_selectedIndex == 0){
+             _postsScrollController.animateTo(_postsScrollController.position.minScrollExtent,
+            duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
+            }
+          }
+          BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
+        },
+        items: [
+           BottomNavigationBarItem(
+            title: Container(),
+            icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
+          ),
+          BottomNavigationBarItem(
+            title: Container(),
+            icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
+          ),
+          BottomNavigationBarItem(
+            title: Container(),
+            icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
+          ),
+           BottomNavigationBarItem(
+             title: Container(),
+            icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
+          ),
+          BottomNavigationBarItem(
+            title: Container(),
+            icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
+          ),
+        ],
+      ),
     ),
   );
   }

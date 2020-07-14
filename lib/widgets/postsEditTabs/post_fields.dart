@@ -103,16 +103,13 @@ class PostDepartmentField extends StatelessWidget {
                   .keys
                   .map((department) {
                 String departmentString = _mapDepartmentToString(department);
-                return FilterChip(
-                  label: Text(departmentString),
-                  selected: BlocProvider.of<PostBloc>(context)
-                      .selectedTags[department],
+
+                return MyFilterChip(
+                  filteringPosts: false,
+                  label: departmentString,
+                  selected:BlocProvider.of<PostBloc>(context).selectedTags[department],
                   onSelected: (newValue) {
-                    BlocProvider.of<PostBloc>(context)
-                        .add(PostDepartmentClickEvent(
-                      department,
-                      newValue,
-                    ));
+                    BlocProvider.of<PostBloc>(context).add(PostDepartmentClickEvent(department,newValue,));
                   },
                 );
               }).toList(),

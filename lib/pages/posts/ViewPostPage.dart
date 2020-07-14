@@ -3,6 +3,7 @@ import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/postsEditTabs/galleryTabBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -127,10 +128,13 @@ class _ViewPostPageState extends State<ViewPostPage>
   Widget _buildAboutTab() {
     return ListView(
       children: [
-        Container(
+         Container(
           padding: EdgeInsets.all(8),
-          child: ZefyrView(
-            document: widget._post.getBodyDoc(),
+          child: ZefyrTheme(
+            data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(
+              color: Colors.red
+            ),padding: EdgeInsets.all(0))), 
+            child: ZefyrView(document: widget._post.getBodyDoc(),),
           ),
         ),
         Padding(
@@ -142,9 +146,12 @@ class _ViewPostPageState extends State<ViewPostPage>
           child: Wrap(
             spacing: 4,
             children: widget._post.selectedTagsString.map((tag) {
-              return Chip(
-                label: Text(tag),
+              return MyFilterChip(
+                label: tag,
+                selected: false,
+                onSelected: (_)=>null,
               );
+              //return Chip(label: Text(tag),);
             }).toList(),
           ),
         ),

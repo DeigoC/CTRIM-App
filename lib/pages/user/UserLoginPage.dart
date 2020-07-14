@@ -75,9 +75,9 @@ class _UserLoginPageState extends State<UserLoginPage> {
                 readOnly: true,
               ),
             ),
-            FlatButton(
-              child: Text('Not you?'),
-              onPressed: () => _adminBloc.add(AdminReturnToLoginEmailEvent()),
+            MyFlatButton(
+              label: 'Not You?',
+              onPressed: () => _adminBloc.add(AdminReturnToLoginEmailEvent())
             ),
           ],
         ),
@@ -88,11 +88,11 @@ class _UserLoginPageState extends State<UserLoginPage> {
           onTextChange: (newPassword) =>_adminBloc.add(AdminLoginTextChangeEvent(password: newPassword)),
         ),
         Align(
-          alignment: Alignment.centerLeft,
-          child: FlatButton(
-            child: Text('Forgot Password'),
-            onPressed: () {},
-          ),
+          alignment: Alignment.centerRight,
+          child: MyFlatButton(
+            label: 'Forgot Password',
+            onPressed: ()=>null,
+          )
         ),
         BlocBuilder(
           bloc: _adminBloc,
@@ -125,11 +125,10 @@ class _UserLoginPageState extends State<UserLoginPage> {
             return false;
           },
           builder: (_, state) {
-            return RaisedButton(
-              onPressed: (state is AdminLoginEnableContinueState)
-                  ? () => _adminBloc.add(AdminContinueClickEvent())
-                  : null,
-              child: Text('CONTINUE'),
+            return MyRaisedButton(
+              externalPadding: EdgeInsets.all(8.0),
+              label: 'CONTINUE',
+              onPressed: (state is AdminLoginEnableContinueState) ? () => _adminBloc.add(AdminContinueClickEvent()): null,
             );
           }),
     ];

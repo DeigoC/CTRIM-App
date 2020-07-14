@@ -13,16 +13,17 @@ class SettingsPage{
 
   AppBar buildAppbar(){
     return AppBar(
-        leading: (BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0) ? Container():null,
-        automaticallyImplyLeading: true,
-        title: Text('Settings'),
-        centerTitle: true,
+      leading: (BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0) ? Container():null,
+      automaticallyImplyLeading: true,
+      title: Text('Settings', style: TextStyle(fontFamily: 'OpenSans'),),
+      centerTitle: true,
     );
   }
 
   Widget buildDrawer(){
     if(BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0)return null;
     User u = BlocProvider.of<AppBloc>(_context).currentUser;
+    
     return Drawer(
       child: ListView(
         children: [
@@ -83,13 +84,16 @@ class SettingsPage{
         return false;
       },
         builder:(_,state){
+
+          TextStyle testStyle = TextStyle(fontFamily: 'OpenSans');
+
           return ListView(
             children: [
               SwitchListTile(
                 value: BlocProvider.of<AppBloc>(_context).onDarkTheme, 
-                title: Text('Dark Mode'),
+                title: Text('Dark Mode', style: testStyle,),
                 secondary: Icon(Icons.brightness_medium),
-                subtitle: Text('Changes the brightness and colours of the app to be easy on the eyes'),
+                subtitle: Text('Changes the brightness and colours of the app to be easy on the eyes', style: testStyle,),
                 onChanged: (newValue){
                   AppSettingsEvent event = newValue ? AppChangeThemeToDarkEvent() : AppChangeThemeToLightEvent();
                   BlocProvider.of<AppBloc>(_context).add(event);
