@@ -79,41 +79,37 @@ class MyTextField extends StatelessWidget {
 
 class MyCheckBox extends StatelessWidget {
   final String label;
-  final bool value, leftToRight;
+  final bool value, boxLeftToRight;
   final Function(bool) onChanged;
 
   MyCheckBox({
     @required this.label,
     @required this.value,
     @required this.onChanged,
-    this.leftToRight = true,
+    this.boxLeftToRight = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment:
-          leftToRight ? MainAxisAlignment.start : MainAxisAlignment.end,
-      children: leftToRight ? _buildLeftToRight() : _buildRightToLeft(),
+          boxLeftToRight ? MainAxisAlignment.start : MainAxisAlignment.end,
+      children: boxLeftToRight ? _buildLeftToRight() : _buildRightToLeft(),
     );
   }
 
   List<Widget> _buildLeftToRight() {
     return [
+      Checkbox(value: value, onChanged: onChanged),
+      //SizedBox(width: 8,),
       Text(label),
-      SizedBox(
-        width: 8,
-      ),
-      Checkbox(value: value, onChanged: onChanged)
     ];
   }
 
   List<Widget> _buildRightToLeft() {
     return [
       Text(label),
-      SizedBox(
-        width: 8,
-      ),
+      SizedBox(width: 8,),
       Checkbox(value: value, onChanged: onChanged)
     ];
   }
@@ -123,11 +119,13 @@ class MyRaisedButton extends StatelessWidget {
   final String label;
   final Function onPressed;
   final EdgeInsets externalPadding;
+  final IconData icon;
 
   const MyRaisedButton({
     @required this.label,
     @required this.onPressed,
     this.externalPadding,
+    this.icon,
     Key key
   }) : super(key: key);
 
@@ -135,10 +133,22 @@ class MyRaisedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: externalPadding??EdgeInsets.zero,
-      child: RaisedButton(
-        child: Text(label),
-        onPressed: onPressed,
-      ),
+      child: icon==null?_buildNormalButton():_buildIconButton(),
+    );
+  }
+
+  RaisedButton _buildNormalButton(){
+    return RaisedButton(
+      child: Text(label),
+      onPressed: onPressed,
+    );
+  }
+
+  RaisedButton _buildIconButton(){
+    return RaisedButton.icon(
+      onPressed: onPressed, 
+      icon: Icon(icon,color: Colors.white,), 
+      label: Text(label,)
     );
   }
 }
@@ -147,11 +157,15 @@ class MyFlatButton extends StatelessWidget {
    final String label;
   final Function onPressed;
   final EdgeInsets externalPadding;
+  final IconData icon;
+  final bool border;
   
    const MyFlatButton({
     @required this.label,
     @required this.onPressed,
     this.externalPadding,
+    this.icon,
+    this.border = false,
     Key key
   }) : super(key: key);
 
@@ -159,10 +173,30 @@ class MyFlatButton extends StatelessWidget {
   Widget build(BuildContext context) {
      return Padding(
       padding: externalPadding??EdgeInsets.zero,
-      child: FlatButton(
-        child: Text(label,style: TextStyle(color: Colors.blue),),
-        onPressed: onPressed,
+      child: icon==null?_buildNormalButton():_buildIconButton(),
+    );
+  }
+
+  FlatButton _buildNormalButton(){
+    return FlatButton(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: border ? Colors.blue:Colors.transparent),
+        borderRadius: BorderRadius.circular(18)
       ),
+      child: Text(label,style: TextStyle(color: Colors.blue),),
+      onPressed: onPressed,
+    );
+  }
+
+  FlatButton _buildIconButton(){
+    return FlatButton.icon(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: border ? Colors.blue:Colors.transparent),
+        borderRadius: BorderRadius.circular(18)
+      ),
+      onPressed: onPressed, 
+      icon: Icon(icon,color: Colors.blue,), 
+      label: Text(label,style: TextStyle(color: Colors.blue),)
     );
   }
 }

@@ -62,7 +62,7 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
       width: double.infinity,
       height: MediaQuery.of(context).size.height * 0.3,
       child: PageView(
-        physics: BouncingScrollPhysics(),
+        physics: ClampingScrollPhysics(),
         controller: _pageController,
         children: [
           Container(

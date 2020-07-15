@@ -88,7 +88,6 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
             child: Text('Location Pastor'),
           ),
           _buildSelectPastorUID(),
-          padding,
           Padding(
             padding: EdgeInsets.only(left: 8.0),
             child: Text('Location Address'),
@@ -96,13 +95,18 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
           _buildSelectLocationID(),
           padding,
           _buildBodyView(),
-           FlatButton.icon(
+          MyRaisedButton(
+            externalPadding: EdgeInsets.all(8),
+            label: 'Edit Body',
+            icon: Icons.edit,
+            onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToEditAboutBodyEvent()),
+          ),
+          /*  FlatButton.icon(
             onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToEditAboutBodyEvent()), 
             icon: Icon(Icons.edit, color: Colors.white,), 
             label: Text('Edit Body', style: TextStyle(color: Colors.white),),
             color: Colors.blue,
-          ),
-          padding,
+          ), */
           _buildSaveButton(),
           padding,
         ],
@@ -117,12 +121,14 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
         return false;
       },
       builder: (_,state){
-        User pastor = BlocProvider.of<TimelineBloc>(context)
-        .allUsers.firstWhere((u) => u.id.compareTo(_aboutBloc.articleToEdit.locationPastorUID)==0);
-        return FlatButton(
-          color: Colors.blue,
-          child: Text(pastor.forename + ' ' + pastor.surname, style: TextStyle(color: Colors.white),),
-          onPressed: ()=>_selectNewPastorUID(),
+        User pastor = BlocProvider.of<TimelineBloc>(context).allUsers.firstWhere((u) => u.id.compareTo(_aboutBloc.articleToEdit.locationPastorUID)==0);
+        
+        return MyFlatButton(
+          externalPadding: EdgeInsets.all(8),
+          label: pastor.forename + ' ' + pastor.surname,
+          onPressed:()=>_selectNewPastorUID(),
+          icon:Icons.edit,
+          border: true,
         );
       },
     );
@@ -135,12 +141,13 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
         return false;
       },
       builder: (_,state){
-        Location l = BlocProvider.of<TimelineBloc>(context).allLocations
-        .firstWhere((e) => e.id.compareTo(_aboutBloc.articleToEdit.locationID)==0);
-        return FlatButton(
-          child: Text(l.addressLine, style: TextStyle(color: Colors.white),),
-          color: Colors.blue,
-          onPressed: ()=>_selectNewLocationID(),
+        Location l = BlocProvider.of<TimelineBloc>(context).allLocations.firstWhere((e) => e.id.compareTo(_aboutBloc.articleToEdit.locationID)==0);
+        
+        return MyFlatButton(
+          label: l.addressLine,
+          onPressed:()=>_selectNewLocationID(),
+          border: true,
+          icon: Icons.edit_location,
         );
       },
     );
@@ -235,6 +242,4 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
       },
     );
   }
-
-
 }

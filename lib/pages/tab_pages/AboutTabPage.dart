@@ -1,8 +1,8 @@
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:ctrim_app_v1/blocs/AboutBloc/about_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
-import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -161,6 +161,13 @@ class AboutTabPage{
            _launchYoutube();
          },
        ),
+       SizedBox(height: 8,),
+       RaisedButton(
+         child: Text('Random CALENDER link to add event'),
+         onPressed: (){
+           _addCalenderEventTest();
+         },
+       ),
      ],
    );
   }
@@ -192,5 +199,17 @@ class AboutTabPage{
     }else{
       print('--------------------------COULDNT LAUNCH!');
     }
+  }
+
+  void _addCalenderEventTest() async{
+    final Event event = Event(
+      title: 'title',
+      description: 'This is the description',
+      location: 'This is the location',
+      startDate: DateTime.now().add(Duration(days: 2)),
+      endDate: DateTime.now().add(Duration(days: 3, hours: 3))
+    );
+
+    await Add2Calendar.addEvent2Cal(event);
   }
 }

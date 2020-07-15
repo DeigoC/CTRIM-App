@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/aboutDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/postDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/timelinePostDBManager.dart';
@@ -42,7 +43,9 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
     UserDBManager userDBManager = UserDBManager();
     PostDBManager postDBManager = PostDBManager();
     TimelinePostDBManager timelinePostDBManager = TimelinePostDBManager();
-
+    AboutDBManager aboutDBManager = AboutDBManager();
+    
+    await aboutDBManager.fetchAllPosts();
     await locationDBManager.fetchAllLocations();
     await postDBManager.fetchAllPosts();
     await timelinePostDBManager.fetchAllTimelinePosts();

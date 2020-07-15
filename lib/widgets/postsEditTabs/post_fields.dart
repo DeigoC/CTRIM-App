@@ -10,8 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class PostDateTimeField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PostBloc, PostState>(
-        condition: (previousState, currentState) {
+    return _otherBuild();
+    /* return BlocBuilder<PostBloc, PostState>(
+      condition: (previousState, currentState) {
       if (currentState is PostScheduleState) return true;
       return false;
     }, builder: (_, state) {
@@ -39,17 +40,79 @@ class PostDateTimeField extends StatelessWidget {
                 ),
                 MyCheckBox(
                   label: 'Date Not Applicable',
-                  onChanged: (newValue) => BlocProvider.of<PostBloc>(context)
-                      .add(PostDateNotApplicableClick()),
-                  value:
-                      BlocProvider.of<PostBloc>(context).getIsDateNotApplicable,
+                  onChanged: (newValue) => BlocProvider.of<PostBloc>(context).add(PostDateNotApplicableClick()),
+                  value:BlocProvider.of<PostBloc>(context).getIsDateNotApplicable,
                 )
               ],
             ),
           ],
         ),
       );
-    });
+    }); */
+  }
+
+  Widget _otherBuild(){
+    return Container(
+      padding: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Start Date'),
+          Row(
+            children: [
+              Spacer(),
+              MyFlatButton(
+                label: 'Start Date',
+                border: true,
+                onPressed: ()=>null,
+              ),
+              Spacer(),
+              MyFlatButton(
+                label: 'Start Time',
+                border: true,
+                onPressed: ()=>null,
+              ),
+              Spacer(),
+            ],
+          ),
+          SizedBox(height: 8,),
+          Text('End Date'),
+          Row(
+            children: [
+              Spacer(),
+              MyFlatButton(
+                border: true,
+                label: 'End Date',
+                onPressed:null,
+              ),
+              Spacer(),
+              MyFlatButton(
+                border: true,
+                label: 'End Time',
+                onPressed: null,
+              ),
+              Spacer(),
+            ],
+          ),
+          Row(
+            children: [
+              MyCheckBox(
+                boxLeftToRight: true,
+                label: 'Not Applicable',
+                onChanged: (_)=>null,
+                value: false,
+              ),
+              MyCheckBox(
+                boxLeftToRight: true,
+                label: 'All Day',
+                onChanged: (_)=>null,
+                value: false,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 

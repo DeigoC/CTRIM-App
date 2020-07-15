@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:zefyr/zefyr.dart';
+
 class AboutArticle{
 
   String id, body, title, locationID, serviceTime, locationPastorUID;
@@ -31,5 +35,16 @@ class AboutArticle{
       'LocationPastorUID':locationPastorUID,
       'GallerySources':gallerySources,
     };
+  }
+
+  NotusDocument getBodyDocument(){
+    if(body == null || body == ''){
+      List<dynamic> initialWords = [
+        {"insert": "Body Starts Here\n"}
+      ];
+      return NotusDocument.fromJson(initialWords);
+    }
+    var jsonDecoded = jsonDecode(body);
+    return NotusDocument.fromJson(jsonDecoded);
   }
 }

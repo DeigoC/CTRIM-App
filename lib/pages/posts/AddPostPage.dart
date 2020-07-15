@@ -207,8 +207,7 @@ class _AddEventPageState extends State<AddEventPage>
 
   Future<void> _selectEventTime() async {
     TimeOfDay pickedTime;
-    pickedTime =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    pickedTime =await showTimePicker(context: context, initialTime: TimeOfDay.now());
     _postBloc.add(PostSetPostTimeEvent(pickedTime));
   }
 

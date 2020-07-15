@@ -20,9 +20,10 @@ class AboutDBManager{
 
   Future<Null> updateAboutArticle(AboutArticle article) async{
     await _ref.document(article.id).setData(article.toJson());
+    _updateListArticle(article);
   }
 
-  void updateListArticle(AboutArticle article){
+  void _updateListArticle(AboutArticle article){
     int index = _allAboutArticles.indexWhere((e) => e.id.compareTo(article.id)==0);
     _allAboutArticles[index] = article;
   }

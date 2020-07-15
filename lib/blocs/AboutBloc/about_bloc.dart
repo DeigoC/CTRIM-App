@@ -14,47 +14,7 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
 
   final AboutDBManager _aboutDBManager = AboutDBManager();
 
-  List<AboutArticle> _allArticles = [
-    AboutArticle(// ? This can be the MAIN about article, has no other data but the gallery
-      id: '0',
-      gallerySources: {},
-    ),
-    AboutArticle(
-      id: '1',
-      title: 'Belfast',
-      serviceTime: 'Belfast Service Time here',
-      locationID: '1',
-      body: '[{"insert":"Title for About Article\\n"}]',
-      locationPastorUID: '1',
-      gallerySources: {
-        'https://ctrim.co.uk/wp-content/uploads/2020/04/4-768x768.png':'img',
-      },
-    ),
-    AboutArticle(
-      id: '2',
-      body: '[{"insert":"Title for About Article\\n"}]',
-      title: 'Northcoast',
-      serviceTime: 'Belfast Service Time here',
-      locationID: '1',
-      locationPastorUID: '1',
-      gallerySources: {
-        'https://ctrim.co.uk/wp-content/uploads/2020/05/Untitled-design.png':'img',
-      },
-    ),
-    AboutArticle(
-      id: '3',
-      body: '[{"insert":"Title for About Article\\n"}]',
-      title: 'Portadown',
-      serviceTime: 'Belfast Service Time here',
-      locationID: '1',
-      locationPastorUID: '1',
-      gallerySources: {
-        'https://ctrim.co.uk/wp-content/uploads/2020/04/2.png':'img',
-      },
-    ),
-  ];
-
-  List<AboutArticle> get allArticles => _allArticles;
+  List<AboutArticle> get allArticles => AboutDBManager.allAboutArticles;
 
   AboutArticle _articleToEdit, _originalArticle;
   AboutArticle get articleToEdit => _articleToEdit;
@@ -115,8 +75,6 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
       yield AboutArticleBodyChangedState();
     }else if(event is AboutArticleSaveRecordEvent){
       yield AboutArticleAttemptingToSaveRecordState();
-      int index = _allArticles.indexWhere((e) => e.id.compareTo(_articleToEdit.id)==0);
-      _allArticles[index] = _articleToEdit;
       await _aboutDBManager.updateAboutArticle(_articleToEdit);
       yield AboutArticleRebuildAboutTabState();
     }
