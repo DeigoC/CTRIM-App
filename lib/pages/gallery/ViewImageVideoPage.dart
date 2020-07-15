@@ -23,7 +23,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   double _midScroll = 0;
   ScrollController _scrollController;
 
-
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -33,7 +32,8 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         _scrollController = ScrollController(initialScrollOffset: _midScroll);
        });
     });
-     _scrollController = ScrollController();
+    _scrollController = ScrollController();
+
 
     widget.imageSources.keys.forEach((src) {
       if (widget.imageSources[src].type == 'vid') {
@@ -79,11 +79,16 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   Widget _createImagePage(String src) {
     return NotificationListener(
       onNotification: (t){
+        
+        if(t is ScrollNotification){
+          if(_scrollController.position.activity is BallisticScrollActivity){
+           _scrollController.animateTo(_midScroll, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+          }
+        }
         if(t is ScrollEndNotification){
           if(t.metrics.pixels != _midScroll){
             Future.delayed(Duration(microseconds: 10),(){
-              _scrollController.animateTo(_midScroll, duration: Duration(milliseconds: 200), curve: Curves.easeIn).then((_){
-            });
+              _scrollController.animateTo(_midScroll, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
             });
           }
           if(t.metrics.atEdge){
@@ -94,7 +99,9 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       },
       child: SingleChildScrollView(
         controller: _scrollController,
-        physics: _isZoomedIn ? NeverScrollableScrollPhysics() : ClampingScrollPhysics(),
+        physics: _isZoomedIn ? NeverScrollableScrollPhysics() : ClampingScrollPhysics(
+          
+        ),
         child: Container(
           height: MediaQuery.of(context).size.height + 200,
           child: PhotoView(

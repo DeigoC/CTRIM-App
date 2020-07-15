@@ -33,7 +33,24 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
       },
       child: Scaffold(
         appBar: AppBar(title: Text('Edit About Article'),),
-        body: _buildBody(),
+        body: BlocListener(
+          bloc: _aboutBloc,
+          condition: (_,state){
+            if(state is AboutArticleAttemptingToSaveRecordState || 
+            state is AboutArticleRebuildAboutTabState) return true;
+            return false;
+          },
+          listener: (_,state){
+            if(state is AboutArticleAttemptingToSaveRecordState){
+              ConfirmationDialogue.uploadTaskStarted(context: context);
+            }else if(state is AboutArticleRebuildAboutTabState){
+              BlocProvider.of<TimelineBloc>(context).add(TimelineRebuildAboutTabEvent());
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            }
+          },
+          child: _buildBody()
+        ),
       ),
     );
   }
@@ -138,7 +155,13 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
       builder: (_,state){
         return RaisedButton(
           child: Text('Save Changes'),
-          onPressed: (state is AboutArticleEnableSaveButtonState) ? ()=>null:null,
+          onPressed: (state is AboutArticleEnableSaveButtonState) ? (){
+            ConfirmationDialogue.saveRecord(context: context, record: 'About Article',editing: true).then((result){
+              if(result){
+                _aboutBloc.add(AboutArticleSaveRecordEvent());
+              }
+            });
+          }:null,
         );
       },
     );

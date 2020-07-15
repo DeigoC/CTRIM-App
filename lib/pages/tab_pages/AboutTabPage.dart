@@ -81,47 +81,56 @@ class AboutTabPage{
   }
 
   Widget _buildTab2(){
-    List<AboutArticle> articles = List.from(BlocProvider.of<AboutBloc>(_context).allArticles);
-    articles.removeAt(0);
-    return ListView.builder(
-      itemCount: articles.length,
-      key: PageStorageKey<String>('AboutTabPageTab2'),
-      itemBuilder: (_,index){
-        AboutArticle thisArticle = articles[index];
-        return InkWell(
-          onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewChurchEvent(articles[index])),
-          splashColor: Colors.blue.withAlpha(30),
-          child: Container(
-            decoration: BoxDecoration(image: DecorationImage(
-              image: NetworkImage(thisArticle.gallerySources.keys.first),
-              fit: BoxFit.cover
-            )),
-            width: double.infinity,
-            height: MediaQuery.of(_context).size.height * 0.40,
-            child: Stack(
-              children:[ 
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: Icon(Icons.edit, color: Colors.white),
-                    onPressed: (){
-                      BlocProvider.of<AboutBloc>(_context).setArticleToEdit(thisArticle);
-                      BlocProvider.of<AppBloc>(_context).add(AppToEditAboutArticleEvent());
-                    },
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(thisArticle.title.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 24),),
-                  ),
-                ),
-              ],
-            )
-          ),
+    return BlocBuilder<TimelineBloc, TimelineState>(
+      condition: (_,state){
+        if(state is TimelineRebuildAboutTabState) return true;
+        return false;
+      },
+      builder:(_,state) {
+          List<AboutArticle> articles = List.from(BlocProvider.of<AboutBloc>(_context).allArticles);
+          articles.removeAt(0);
+
+        return ListView.builder(
+          itemCount: articles.length,
+          key: PageStorageKey<String>('AboutTabPageTab2'),
+          itemBuilder: (_,index){
+            AboutArticle thisArticle = articles[index];
+            return InkWell(
+              onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewChurchEvent(articles[index])),
+              splashColor: Colors.blue.withAlpha(30),
+              child: Container(
+                decoration: BoxDecoration(image: DecorationImage(
+                  image: NetworkImage(thisArticle.gallerySources.keys.first),
+                  fit: BoxFit.cover
+                )),
+                width: double.infinity,
+                height: MediaQuery.of(_context).size.height * 0.40,
+                child: Stack(
+                  children:[ 
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                        icon: Icon(Icons.edit, color: Colors.white),
+                        onPressed: (){
+                          BlocProvider.of<AboutBloc>(_context).setArticleToEdit(thisArticle);
+                          BlocProvider.of<AppBloc>(_context).add(AppToEditAboutArticleEvent());
+                        },
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(thisArticle.title.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 24),),
+                      ),
+                    ),
+                  ],
+                )
+              ),
+            );
+          }
         );
-      }
+      } 
     );
   }
 

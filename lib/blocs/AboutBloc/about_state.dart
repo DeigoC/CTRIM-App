@@ -11,3 +11,6 @@ class AboutArticleBodyChangedState extends AboutState{}
 
 class AboutArticleEnableSaveButtonState extends AboutState{}
 class AboutArticleDisableSaveButtonState extends AboutState{}
+
+class AboutArticleAttemptingToSaveRecordState extends AboutState{}
+class AboutArticleRebuildAboutTabState extends AboutState{}

@@ -92,3 +92,8 @@ class TimelineAlbumSearchTextChangeEvent extends TimelineAlbumSearchEvent {
   final String newSearch;
   TimelineAlbumSearchTextChangeEvent(this.newSearch);
 }
+
+// ! About tab
+class TimelineAboutTabEvent extends TimelineEvent{}
+
+class TimelineRebuildAboutTabEvent extends TimelineAboutTabEvent{}

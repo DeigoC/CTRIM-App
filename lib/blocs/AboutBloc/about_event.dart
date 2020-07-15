@@ -19,6 +19,8 @@ class AboutArticleTextChangeEvent extends AboutArticleEditEvent{
   final String title, serviceTime;
   AboutArticleTextChangeEvent({this.title,this.serviceTime});
 }
+  
+class AboutArticleSaveRecordEvent extends AboutArticleEditEvent{}
 
 class AboutArticleSaveBodyEvent extends AboutArticleEditEvent{
   final String body;

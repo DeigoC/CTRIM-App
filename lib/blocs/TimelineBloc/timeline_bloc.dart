@@ -158,6 +158,11 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     else if (event is TimelineUserEnabledEvent) yield* _mapUserEnabledToState(event);
     else if (event is TimelineLocationDeletedEvent) _mapLocationDeletedToState(event);
     else if (event is TimelineLocationUpdatedEvent) _updateLocation(event);
+    else if (event is TimelineAboutTabEvent) yield* _mapAboutTabEventToState(event);
+  }
+
+  Stream<TimelineState> _mapAboutTabEventToState(TimelineAboutTabEvent event) async*{
+    if(state is TimelineRebuildAboutTabEvent) yield TimelineRebuildAboutTabState();
   }
 
   Stream<TimelineState> _mapAlbumSearchEventToState(TimelineAlbumSearchEvent event) async* {

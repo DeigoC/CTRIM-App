@@ -23,7 +23,6 @@ class TimelineAttemptingToUploadNewPostState extends TimelineState{}
 
 // ! Search Post
 class TimelineSearchState extends TimelineState {}
-
 class TimelineDisplaySearchFeedState extends TimelineSearchState {
   final List<TimelinePost> timelines;
   final List<Post> posts;
@@ -31,9 +30,7 @@ class TimelineDisplaySearchFeedState extends TimelineSearchState {
   TimelineDisplaySearchFeedState(
       {@required this.timelines, @required this.posts, @required this.users});
 }
-
 class TimelineDisplayEmptyFeedState extends TimelineSearchState {}
-
 class TimelineDisplayEmptySearchState extends TimelineSearchState {}
 
 // ! Search Location
@@ -44,12 +41,10 @@ class TimelineDisplayLocationSearchResultsState extends TimelineState {
 
 // ! Album Search
 class TimelineAlbumSearchState extends TimelineState {}
-
 class TimelineAlbumDisplaySearchResultsState extends TimelineAlbumSearchState {
   final List<Post> queryResults;
   TimelineAlbumDisplaySearchResultsState(this.queryResults);
 }
-
 class TimelineRebuildMyPostsPageState extends TimelineState {
   final Map<Post, TimelinePost> postTime;
   TimelineRebuildMyPostsPageState(this.postTime);
@@ -57,3 +52,6 @@ class TimelineRebuildMyPostsPageState extends TimelineState {
 
 // ! User related
 class TimelineRebuildUserListState extends TimelineState{}
+
+// ! About tab
+class TimelineRebuildAboutTabState extends TimelineState{}

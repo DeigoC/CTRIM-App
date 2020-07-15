@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/aboutDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:meta/meta.dart';
 import 'package:zefyr/zefyr.dart';
@@ -10,6 +11,8 @@ part 'about_event.dart';
 part 'about_state.dart';
 
 class AboutBloc extends Bloc<AboutEvent, AboutState> {
+
+  final AboutDBManager _aboutDBManager = AboutDBManager();
 
   List<AboutArticle> _allArticles = [
     AboutArticle(// ? This can be the MAIN about article, has no other data but the gallery
@@ -64,6 +67,7 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
       serviceTime: articleToEdit.serviceTime,
       locationID: articleToEdit.locationID,
       locationPastorUID: articleToEdit.locationPastorUID,
+      gallerySources: articleToEdit.gallerySources
     );
 
     _originalArticle = AboutArticle(
@@ -73,6 +77,7 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
       serviceTime: articleToEdit.serviceTime,
       locationID: articleToEdit.locationID,
       locationPastorUID: articleToEdit.locationPastorUID,
+      gallerySources: articleToEdit.gallerySources
     );
   }
 
@@ -108,6 +113,12 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
     }else if(event is AboutArticleSaveBodyEvent){
       _articleToEdit.body = event.body;
       yield AboutArticleBodyChangedState();
+    }else if(event is AboutArticleSaveRecordEvent){
+      yield AboutArticleAttemptingToSaveRecordState();
+      int index = _allArticles.indexWhere((e) => e.id.compareTo(_articleToEdit.id)==0);
+      _allArticles[index] = _articleToEdit;
+      await _aboutDBManager.updateAboutArticle(_articleToEdit);
+      yield AboutArticleRebuildAboutTabState();
     }
     yield _canEnableSaveButton();
   }
