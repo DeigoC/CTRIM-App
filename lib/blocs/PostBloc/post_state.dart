@@ -44,17 +44,15 @@ class PostGalleryTabClickState extends PostTabClickState {}
 class PostUpdatesTabClickState extends PostTabClickState {}
 
 // ! Schedule States
+
 class PostScheduleState extends PostState {}
 
-class PostSelectDateState extends PostScheduleState {}
-
-class PostSelectTimeState extends PostScheduleState {}
-
-class PostDateSelectedState extends PostScheduleState {}
+class PostEndDateNotAcceptedState extends PostScheduleState{}
 
 class PostDateIsApplicableState extends PostScheduleState {}
 
 class PostDateIsNOTApplicableState extends PostScheduleState {}
+class PostAllDayDateTRUEState extends PostScheduleState{} // Delete
 
 class PostLocationSelectedState extends PostScheduleState {}
 

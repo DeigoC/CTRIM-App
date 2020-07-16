@@ -8,9 +8,9 @@ import 'package:zefyr/zefyr.dart';
 enum PostTag { CHURCH, YOUTH, WOMEN }
 
 class Post {
-  String id,title,description,body = '',duration,locationID,detailTableHeader;
-  DateTime eventDate;
-  bool isDateNotApplicable, deleted;
+  String id,title,description,body = '',locationID,detailTableHeader;
+  DateTime startDate, endDate;
+  bool isDateNotApplicable, allDayEvent, deleted;
   int noOfGalleryItems;
 
   //List<List<String>> detailTable;
@@ -24,7 +24,7 @@ class Post {
     this.id,
     this.title = '',
     this.body = '',
-    this.eventDate,
+    this.startDate,
     this.locationID = '',
     this.detailTableHeader,
     this.isDateNotApplicable = false,
@@ -34,16 +34,17 @@ class Post {
     this.detailTable,
     this.description = '',
     this.temporaryFiles,
-    this.duration,
     this.noOfGalleryItems = 0,
+    this.endDate,
+    this.allDayEvent= false,
   });
 
   Post.fromMap(String id, Map<String,dynamic> data)
   :id = id,
   title = data['Title'],
   body = data['Body'],
-  duration = data['Duration'],
-  eventDate = (data['EventDate'] as Timestamp).toDate(),
+  startDate = (data['StartDate'] as Timestamp).toDate(),
+  endDate = (data['EndDate'] as Timestamp).toDate(),
   locationID = data['LocationID'],
   detailTable = _toProperFormat(data['DetailTable']) ,
   detailTableHeader = data['DetailTableHeader'],
@@ -53,6 +54,7 @@ class Post {
   description = data['Description'],
   isDateNotApplicable = data['IsDateNotApplicable'],
   noOfGalleryItems = data['NoOfGalleryItems'],
+  allDayEvent = data['AllDayEvent'],
   temporaryFiles = {};
 
   static List<Map<String,String>> _toProperFormat(dynamic data){
@@ -68,8 +70,8 @@ class Post {
     return {
       'Title':title,
       'Body':body,
-      'Duration':duration??'',
-      'EventDate': Timestamp.fromDate(eventDate??DateTime.now()),
+      'StartDate': Timestamp.fromDate(startDate??DateTime.now()),
+      'EndDate':Timestamp.fromDate(endDate??DateTime.now()),
       'LocationID':locationID,
       'DetailTable':detailTable,
       'DetailTableHeader':detailTableHeader??'',
@@ -79,6 +81,7 @@ class Post {
       'Description':description,
       'IsDateNotApplicable':isDateNotApplicable??false,
       'NoOfGalleryItems':noOfGalleryItems,
+      'AllDayEvent':allDayEvent,
     };
   }
   
@@ -97,22 +100,39 @@ class Post {
     return null;
   }
 
-  void setTimeOfDay(TimeOfDay tod) {
-    if (eventDate == null) {
-      eventDate = DateTime(DateTime.now().year, DateTime.now().month,
-          DateTime.now().day, tod.hour, tod.minute);
-    } else {
-      eventDate = DateTime(
-          eventDate.year, eventDate.month, eventDate.day, tod.hour, tod.minute);
+  void setStartTimeOfDay(TimeOfDay tod) {
+    if(tod != null){
+      if (startDate == null) {
+      startDate = DateTime(DateTime.now().year, DateTime.now().month,DateTime.now().day, tod.hour, tod.minute);
+      } else {
+        startDate = DateTime(startDate.year, startDate.month, startDate.day, tod.hour, tod.minute);
+      }
     }
   }
 
-  void setEventDate(DateTime date) {
-    if (eventDate == null) {
-      eventDate = date;
+  void setStartDate(DateTime date) {
+    if (startDate == null) {
+      startDate = date;
     } else {
-      eventDate = DateTime(
-          date.year, date.month, date.day, eventDate.hour, eventDate.minute);
+      startDate = DateTime(date.year, date.month, date.day, startDate.hour, startDate.minute);
+    }
+  }
+
+  void setEndTimeOfDay(TimeOfDay tod) {
+    if(tod != null){
+      if (endDate == null) {
+      endDate = DateTime(DateTime.now().year, DateTime.now().month,DateTime.now().day, tod.hour, tod.minute);
+      } else {
+        endDate = DateTime(endDate.year, endDate.month, endDate.day, tod.hour, tod.minute);
+      }
+    }
+  }
+
+  void setEndDate(DateTime date) {
+    if (endDate == null) {
+      endDate = date;
+    } else {
+      endDate = DateTime(date.year, date.month, date.day, endDate.hour, endDate.minute);
     }
   }
 
@@ -141,7 +161,7 @@ class Post {
     return '';
   }
 
-  String getFirstImageSrc(){
+  String get firstImageSrc{
     if(gallerySources.length != 0){
       List<String> srcs = gallerySources.keys.toList();
     srcs.sort((a,b) => a.compareTo(b));
@@ -153,9 +173,23 @@ class Post {
     return null;
   }
 
+  File get firstFileImage{
+    if(temporaryFiles.length != 0){
+      for (var i = 0; i < temporaryFiles.length; i++) {
+        if(temporaryFiles.values.elementAt(i) == 'img'){
+          return temporaryFiles.keys.elementAt(i);
+        }
+      }
+    }
+    return null;
+  }
+
   String get dateString {
     if (!isDateNotApplicable) {
-      return DateFormat('EEEE, dd MMMM yyyy @ h:mm a').format(eventDate);
+      String result = 'Start - ' + DateFormat('EEEE, dd MMMM yyyy @ h:mm a').format(startDate);
+      result += '\nEnd - ' + DateFormat('EEEE, dd MMMM yyyy @ h:mm a').format(endDate);
+      if(allDayEvent) result += '\nAll Day';
+      return result;
     }
     return 'N/A';
   }

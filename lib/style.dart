@@ -40,6 +40,7 @@ final appLightTheme = ThemeData(
   brightness: Brightness.light,
 
   buttonTheme: ButtonThemeData(
+    disabledColor: LightDisabledColor,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(18.0)
     ),

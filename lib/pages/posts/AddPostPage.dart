@@ -45,9 +45,13 @@ class _AddEventPageState extends State<AddEventPage>
         resizeToAvoidBottomPadding: false,
         body: NestedScrollView(
           headerSliverBuilder: (_, __) {
+            bool hasImage = _postBloc.newPost.firstFileImage != null;
             return [
               SliverAppBar(
                 expandedHeight: 200,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: hasImage ? Image.file( _postBloc.newPost.firstFileImage, fit: BoxFit.cover,):null,
+                ),
                 actions: [
                   _buildAppBarActions(),
                 ],
@@ -146,9 +150,7 @@ class _AddEventPageState extends State<AddEventPage>
       _orientation = orientation;
       return BlocConsumer<PostBloc, PostState>(
         listener: (_, state) {
-          if (state is PostSelectDateState)
-            _selectEventDate();
-          else if (state is PostSelectTimeState) _selectEventTime();
+          
         },
         buildWhen: (previousState, currentState) {
           if (currentState is PostTabClickState) return true;
@@ -202,13 +204,13 @@ class _AddEventPageState extends State<AddEventPage>
       firstDate: DateTime.now().subtract(Duration(days: 1000)),
       lastDate: DateTime.now().add(Duration(days: 1000)),
     );
-    _postBloc.add(PostSetPostDateEvent(pickedDate));
+    _postBloc.add(PostSetStartPostDateEvent(pickedDate));
   }
 
   Future<void> _selectEventTime() async {
     TimeOfDay pickedTime;
     pickedTime =await showTimePicker(context: context, initialTime: TimeOfDay.now());
-    _postBloc.add(PostSetPostTimeEvent(pickedTime));
+    _postBloc.add(PostSetStartPostTimeEvent(pickedTime));
   }
 
   Future<bool> _confirmSave() async {

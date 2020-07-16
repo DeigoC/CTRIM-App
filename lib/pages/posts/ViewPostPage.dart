@@ -1,3 +1,4 @@
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
@@ -30,9 +31,12 @@ class _ViewPostPageState extends State<ViewPostPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: _buildFAB(),
+      //floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: NestedScrollView(
         headerSliverBuilder: (_, __) {
-          bool hasImage = widget._post.getFirstImageSrc() != null;
+          bool hasImage = widget._post.firstImageSrc != null;
+
           return [
             SliverAppBar(
               expandedHeight: 200,
@@ -59,12 +63,7 @@ class _ViewPostPageState extends State<ViewPostPage>
                 ),
               ],
               flexibleSpace: FlexibleSpaceBar(
-                background: hasImage
-                    ? Image.network(
-                        widget._post.getFirstImageSrc(),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
+                background: hasImage ? Image.network(widget._post.firstImageSrc, fit: BoxFit.cover,): null,
               ),
             ),
             SliverPadding(
@@ -107,6 +106,29 @@ class _ViewPostPageState extends State<ViewPostPage>
         body: _buildTabBody(_selectedTabIndex),
       ),
     );
+  }
+
+  Widget _buildFAB(){
+    if(!widget._post.isDateNotApplicable && widget._post.startDate.isAfter(DateTime.now())){
+      return FloatingActionButton.extended(
+        onPressed: (){
+          Event event = Event(
+            title: widget._post.title,
+            description: widget._post.description,
+            location: BlocProvider.of<TimelineBloc>(context).allLocations
+            .firstWhere((element) => element.id == widget._post.locationID)
+            .getAddressLine(),
+            startDate: widget._post.startDate,
+            endDate: widget._post.endDate,
+            allDay: widget._post.allDayEvent,
+          );
+          Add2Calendar.addEvent2Cal(event);
+        }, 
+        label: Text('Set Calender Reminder',style: TextStyle(color: Colors.white),),
+        icon: Icon(Icons.calendar_today,color: Colors.white,),
+      );
+    }
+    return null;
   }
 
   Widget _buildTabBody(int selectedIndex) {

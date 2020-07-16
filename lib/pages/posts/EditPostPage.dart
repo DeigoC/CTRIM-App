@@ -76,9 +76,17 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
           resizeToAvoidBottomPadding: false,
           body: NestedScrollView(
             headerSliverBuilder: (_, __) {
+              bool hasImage = _postBloc.newPost.firstImageSrc != null;
+              Image postImage = hasImage ? Image.network(_postBloc.newPost.firstImageSrc, fit: BoxFit.cover,):null;
+              if(!hasImage){
+                hasImage = _postBloc.newPost.firstFileImage != null;
+                postImage = hasImage ? Image.file(_postBloc.newPost.firstFileImage,fit: BoxFit.cover,):null;
+              }
+              
               return [
                 SliverAppBar(
                   expandedHeight: 200,
+                  flexibleSpace: FlexibleSpaceBar(background: postImage,),
                   actions: [
                     _buildUpdateButton(),
                     _buildDeleteButton(context),

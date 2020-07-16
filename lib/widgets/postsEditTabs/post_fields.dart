@@ -7,112 +7,136 @@ import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PostDateTimeField extends StatelessWidget {
+class PostDateTimeField extends StatefulWidget {
+  @override
+  _PostDateTimeFieldState createState() => _PostDateTimeFieldState();
+}
+
+class _PostDateTimeFieldState extends State<PostDateTimeField> {
+  
+  PostBloc _postBloc;
+
+  @override
+  void initState() {
+    _postBloc = BlocProvider.of<PostBloc>(context);
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return _otherBuild();
-    /* return BlocBuilder<PostBloc, PostState>(
-      condition: (previousState, currentState) {
-      if (currentState is PostScheduleState) return true;
-      return false;
-    }, builder: (_, state) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 8),
+  }
+
+  Widget _otherBuild(){
+    return BlocConsumer(
+      bloc: _postBloc,
+      listenWhen: (_,state){
+        if(state is PostEndDateNotAcceptedState) return true;
+        return false;
+      },
+      listener: (_,state){
+        if(state is PostEndDateNotAcceptedState){
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text('End Date MUST be set after Start Date!'),
+          ));
+        }
+      },
+      buildWhen: (_,state){
+        if(state is PostScheduleState) return true;
+        return false;
+      },
+      builder:(_,state)=> Container(
+        padding: EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Date'),
+            Text('Start'),
             Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
               children: [
-                FlatButton(
-                  child: Text(
-                      BlocProvider.of<PostBloc>(context).getSelectedDateString),
-                  onPressed: () => BlocProvider.of<PostBloc>(context)
-                      .add(PostSelectPostDateEvent()),
+                MyFlatButton(
+                  label: _postBloc.selectedStartDateString,
+                  border: true,
+                  onPressed: ()=>_selectStartDate(),
                 ),
-                Text(' AT '),
-                FlatButton(
-                  child: Text(
-                      BlocProvider.of<PostBloc>(context).getSelectedTimeString),
-                  onPressed: () => BlocProvider.of<PostBloc>(context)
-                      .add(PostSelectPostTimeEvent()),
+                MyFlatButton(
+                  label: _postBloc.selectedStartTimeString,
+                  border: true,
+                  onPressed: ()=> _selectStartTime(),
+                ),
+              ],
+            ),
+            SizedBox(height: 8,),
+            Text('End'),
+            Wrap(
+              spacing: 8,
+              children: [
+                MyFlatButton(
+                  border: true,
+                  label: _postBloc.selectedEndDateString,
+                  onPressed:_postBloc.isEndDateButtonEnabled ? ()=> _selectEndDate():null,
+                ),
+                MyFlatButton(
+                  border: true,
+                  label: _postBloc.selectedEndTimeString,
+                  onPressed:_postBloc.isEndDateButtonEnabled? ()=> _selectEndTime():null,
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                MyCheckBox(
+                  boxLeftToRight: true,
+                  label: 'Not Applicable',
+                  onChanged: (_)=>_postBloc.add(PostDateNotApplicableClickEvent()),
+                  value: _postBloc.isPostDateNotApplicable,
                 ),
                 MyCheckBox(
-                  label: 'Date Not Applicable',
-                  onChanged: (newValue) => BlocProvider.of<PostBloc>(context).add(PostDateNotApplicableClick()),
-                  value:BlocProvider.of<PostBloc>(context).getIsDateNotApplicable,
-                )
+                  boxLeftToRight: true,
+                  label: 'All Day',
+                  onChanged: (_)=>_postBloc.add(PostAllDayDateClickEvent()),
+                  value: _postBloc.isEventAllDay,
+                ),
               ],
             ),
           ],
         ),
-      );
-    }); */
-  }
-
-  Widget _otherBuild(){
-    return Container(
-      padding: EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Start Date'),
-          Row(
-            children: [
-              Spacer(),
-              MyFlatButton(
-                label: 'Start Date',
-                border: true,
-                onPressed: ()=>null,
-              ),
-              Spacer(),
-              MyFlatButton(
-                label: 'Start Time',
-                border: true,
-                onPressed: ()=>null,
-              ),
-              Spacer(),
-            ],
-          ),
-          SizedBox(height: 8,),
-          Text('End Date'),
-          Row(
-            children: [
-              Spacer(),
-              MyFlatButton(
-                border: true,
-                label: 'End Date',
-                onPressed:null,
-              ),
-              Spacer(),
-              MyFlatButton(
-                border: true,
-                label: 'End Time',
-                onPressed: null,
-              ),
-              Spacer(),
-            ],
-          ),
-          Row(
-            children: [
-              MyCheckBox(
-                boxLeftToRight: true,
-                label: 'Not Applicable',
-                onChanged: (_)=>null,
-                value: false,
-              ),
-              MyCheckBox(
-                boxLeftToRight: true,
-                label: 'All Day',
-                onChanged: (_)=>null,
-                value: false,
-              ),
-            ],
-          ),
-        ],
       ),
     );
+  }
+
+  Future<Null> _selectStartDate() async{
+     DateTime pickedDate = _postBloc.selectedStartDate;
+    pickedDate = await showDatePicker(
+      context: context,
+      initialDate: pickedDate,
+      firstDate: DateTime.now().subtract(Duration(days: 1000)),
+      lastDate: DateTime.now().add(Duration(days: 1000)),
+    );
+    _postBloc.add(PostSetStartPostDateEvent(pickedDate));
+  }
+
+  Future<Null> _selectEndDate() async{
+     DateTime pickedDate = _postBloc.selectedEndDate;
+    pickedDate = await showDatePicker(
+      context: context,
+      initialDate: pickedDate,
+      firstDate: DateTime.now().subtract(Duration(days: 1000)),
+      lastDate: DateTime.now().add(Duration(days: 1000)),
+    );
+    _postBloc.add(PostSetEndPostDateEvent(pickedDate));
+  }
+
+  Future<Null> _selectStartTime() async{
+    TimeOfDay pickedTime = TimeOfDay.fromDateTime(_postBloc.selectedStartDate);
+    pickedTime =await showTimePicker(context: context, initialTime: pickedTime);
+    _postBloc.add(PostSetStartPostTimeEvent(pickedTime));
+  }
+
+  Future<Null> _selectEndTime() async{
+    TimeOfDay pickedTime = TimeOfDay.fromDateTime(_postBloc.selectedEndDate);
+    pickedTime =await showTimePicker(context: context, initialTime: pickedTime);
+    _postBloc.add(PostSetEndPostTimeEvent(pickedTime));
   }
 }
 
@@ -129,10 +153,8 @@ class PostLocationField extends StatelessWidget {
             if (currentState is PostLocationSelectedState) return true;
             return false;
           }, builder: (_, state) {
-            String locationID =
-                BlocProvider.of<PostBloc>(context).newPost.locationID;
-            String addressLine = BlocProvider.of<TimelineBloc>(context)
-                .getLocationAddressLine(locationID);
+            String locationID = BlocProvider.of<PostBloc>(context).newPost.locationID;
+            String addressLine = BlocProvider.of<TimelineBloc>(context) .getLocationAddressLine(locationID);
             return FlatButton(
               child: Text(addressLine),
               onPressed: () => BlocProvider.of<AppBloc>(context).add(

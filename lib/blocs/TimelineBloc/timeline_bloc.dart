@@ -94,7 +94,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
             unsortedResult[thisDate] = _createList(unsortedResult[thisDate]);
             unsortedResult[thisDate].add(thisPost);
           } else {
-            DateTime thisDate = DateTime(thisPost.eventDate.year, thisPost.eventDate.month, thisPost.eventDate.day);
+            DateTime thisDate = DateTime(thisPost.startDate.year, thisPost.startDate.month, thisPost.startDate.day);
             unsortedResult[thisDate] =_createList(unsortedResult[thisDate]);
             unsortedResult[thisDate].add(thisPost);
           }

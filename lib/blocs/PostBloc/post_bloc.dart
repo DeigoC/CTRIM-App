@@ -48,14 +48,21 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   };
 
   // ! Post Fields - Details Tab
-  DateTime get getSelectedDate => _post.eventDate;
-  String get getSelectedDateString => _post.eventDate == null
-      ? 'Pending'
-      : DateFormat('EEE, dd MMM yyyy').format(_post.eventDate);
-  bool get getIsDateNotApplicable => _post.isDateNotApplicable;
-  String get getSelectedTimeString => _post.eventDate == null
-      ? 'Pending'
-      : DateFormat('h:mm a').format(_post.eventDate);
+  bool _endDateButtonEnabled = false;
+  bool get isEndDateButtonEnabled => _endDateButtonEnabled;
+  DateTime get selectedStartDate => _post.startDate??DateTime.now();
+  DateTime get selectedEndDate => _post.endDate??DateTime.now();
+  DateTime _endDateTOD;
+
+  String get selectedStartDateString => _post.startDate == null? 'Start Date - PENDING': DateFormat('EEE, dd MMM yyyy').format(_post.startDate);
+  String get selectedStartTimeString => _post.startDate == null? 'Start Time - PENDING': DateFormat('h:mm a').format(_post.startDate);
+  String get selectedEndDateString => _post.endDate == null? 'End Date - PENDING': DateFormat('EEE, dd MMM yyyy').format(_post.endDate);
+  String get selectedEndTimeString => _endDateTOD == null? 'End Time - PENDING': DateFormat('h:mm a').format(_endDateTOD);
+
+
+  bool get isPostDateNotApplicable => _post.isDateNotApplicable;
+  bool get isEventAllDay => _post.allDayEvent;
+  
 
   // ! Post Fields - Details Tab - Detail Table
   List<Map<String,String>> get detailTable => _post.detailTable;
@@ -90,8 +97,10 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   PostBloc();
   PostBloc.editMode(Post postToEdit) {
     _editMode = true;
+   
+    _endDateTOD = postToEdit.endDate;
+    _endDateButtonEnabled = _endDateTOD != null;
 
-    // ? Testing this
     _post = Post(
         id: postToEdit.id,
         title: postToEdit.title,
@@ -101,10 +110,12 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         detailTable: List<Map<String,String>>.from(postToEdit.detailTable),
         detailTableHeader: postToEdit.detailTableHeader??'',
         locationID: postToEdit.locationID,
-        eventDate: postToEdit.eventDate,
+        startDate: postToEdit.startDate,
         isDateNotApplicable: postToEdit.isDateNotApplicable,
         gallerySources: Map.from(postToEdit.gallerySources),
         noOfGalleryItems: postToEdit.noOfGalleryItems,
+        endDate: postToEdit.endDate,
+        allDayEvent: postToEdit.allDayEvent,
         temporaryFiles: {});
 
     _originalPost = Post(
@@ -115,10 +126,12 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       detailTable: List<Map<String,String>>.from(postToEdit.detailTable),
       detailTableHeader: postToEdit.detailTableHeader??'',
       locationID: _post.locationID,
-      eventDate: postToEdit.eventDate,
+      startDate: postToEdit.startDate,
       isDateNotApplicable: _post.isDateNotApplicable,
       gallerySources: Map.from(_post.gallerySources),
       noOfGalleryItems: postToEdit.noOfGalleryItems,
+      endDate: postToEdit.endDate,
+      allDayEvent: postToEdit.allDayEvent,
       temporaryFiles: {},
     );
 
@@ -138,8 +151,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       yield* _mapTextChangeToState(event);
     else if (event is PostDepartmentClickEvent)
       yield* _mapDepartmentClickToState(event);
-    else if (event is PostScheduleTabEvent)
-      yield* _mapScheduleTabEventsToState(event);
+    else if (event is PostScheduleTabEvent||event is PostSelectedLocationEvent) yield* _mapScheduleTabEventsToState(event);
     else if (event is PostSaveBodyDocumentEvent) {
       _post.body = event.bodyContent;
       yield PostUpdateBodyState();
@@ -204,31 +216,76 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-  Stream<PostState> _mapScheduleTabEventsToState(PostScheduleTabEvent event) async* {
-    if (event is PostSelectPostDateEvent) {
-      yield PostSelectDateState();
-    } else if (event is PostSelectPostTimeEvent) {
-      yield PostSelectTimeState();
-    } else if (event is PostSetPostDateEvent) {
-      if (event.selectedDate != null) _post.setEventDate(event.selectedDate);
-      yield PostDateSelectedState();
-    } else if (event is PostSetPostTimeEvent) {
-      _post.setTimeOfDay(event.selectedTOD);
-      yield PostDateSelectedState(); // ? Need to change this name perhaps
-    } else if (event is PostDateNotApplicableClick) {
+  // TODO this is messy - clean this up!
+  Stream<PostState> _mapScheduleTabEventsToState(PostEvent event) async* {
+    // * Start date stuff
+    if (event is PostSetStartPostDateEvent) {
+      if (event.selectedDate != null){
+        _post.setStartDate(event.selectedDate);
+        _post.endDate = null;
+        _endDateTOD = null;
+        _endDateButtonEnabled = false;
+        if(_post.endDate == null) _endDateButtonEnabled = true;
+      }
+      yield PostScheduleState();
+    } else if (event is PostSetStartPostTimeEvent) {
+      if(event.selectedTOD != null){
+         _post.setStartTimeOfDay(event.selectedTOD);
+        _post.endDate = null;
+        _endDateTOD = null;
+        _endDateButtonEnabled = false;
+        if(_post.endDate == null) _endDateButtonEnabled = true;
+        yield PostScheduleState();
+      } 
+    } 
+
+    // * End date stuff
+    else if(event is PostSetEndPostDateEvent){
+      if(event.selectedDate != null) _post.setEndDate(event.selectedDate);
+      _endDateTOD = null;
+      yield PostScheduleState();
+     
+    }else if(event is PostSetEndPostTimeEvent){
+      if(event.selectedTOD != null){
+         _post.setEndTimeOfDay(event.selectedTOD);
+          _endDateTOD = DateTime(DateTime.now().year, DateTime.now().month, 
+          DateTime.now().day, event.selectedTOD.hour, event.selectedTOD.minute);
+          if(_isStartTimeBeforeEndTime()) yield PostScheduleState(); 
+          else{
+            _endDateTOD = null;
+            yield PostEndDateNotAcceptedState();
+          }
+      }
+    }
+
+    // * All day post stuff
+    else if(event is PostAllDayDateClickEvent){
+      _post.allDayEvent = !_post.allDayEvent;
+      yield PostScheduleState();
+    }
+    
+    // * Date not applicable
+    else if (event is PostDateNotApplicableClickEvent) {
       if (_post.isDateNotApplicable) {
         _post.isDateNotApplicable = false;
-        yield PostDateIsNOTApplicableState();
       } else {
         _post.isDateNotApplicable = true;
-        yield PostDateIsApplicableState();
       }
-    } else if (event is PostSelectedLocationEvent) {
+      yield PostScheduleState();
+    } 
+    
+    // * Selected Location
+    else if (event is PostSelectedLocationEvent) {
       _post.locationID = event.locationID;
       _addressLine = event.addressLine;
       yield PostLocationSelectedState();
     }
     yield* _canEnableSaveButton();
+  }
+
+  bool _isStartTimeBeforeEndTime(){
+    if(_post.startDate.isBefore(_post.endDate)) return true;
+    return false;
   }
 
   Stream<PostState> _mapDepartmentClickToState(PostDepartmentClickEvent event) async* {
@@ -266,7 +323,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Stream<PostState> _canEnableSaveButton() async* {
     if (_editMode) {
-      if (_haveAnyChangedFields()) {
+      if (_haveAnyChangedFields() && !_haveAnyEmptyFields()) {
         yield PostEnableSaveButtonState();
       } else{
         yield PostDisableSaveButtonState();
@@ -290,8 +347,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     else if (_originalPost.locationID.compareTo(_post.locationID) != 0)return true;
     else if (_originalPost.isDateNotApplicable != _post.isDateNotApplicable)return true;
     else if(hasAlbumChanged) return true;
-    else if(_originalPost.eventDate != null){
-      if (_originalPost.eventDate.compareTo(_post.eventDate) != 0 &&!_post.isDateNotApplicable)return true;
+    else if(_originalPost.startDate != null || _originalPost.endDate != null){
+      if (_originalPost.startDate.compareTo(_post.startDate) != 0 &&!_post.isDateNotApplicable)return true;
+      else if(_originalPost.endDate.compareTo(_post.endDate) !=0 && !_post.isDateNotApplicable)return true;
     }
     return false;
   }
@@ -307,7 +365,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   bool _isDateFieldValid() {
-    if (_post.eventDate != null || _post.isDateNotApplicable) return true;
+    if (_post.endDate != null && _endDateTOD != null) return true;
+    else if(_post.allDayEvent) return true;
+    else if(_post.isDateNotApplicable) return true;
     return false;
   }
 

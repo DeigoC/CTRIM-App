@@ -159,8 +159,9 @@ class MyFlatButton extends StatelessWidget {
   final EdgeInsets externalPadding;
   final IconData icon;
   final bool border;
+  final TextStyle _disabledText = TextStyle(color: Colors.white);
   
-   const MyFlatButton({
+   MyFlatButton({
     @required this.label,
     @required this.onPressed,
     this.externalPadding,
@@ -178,12 +179,15 @@ class MyFlatButton extends StatelessWidget {
   }
 
   FlatButton _buildNormalButton(){
+    bool disabled = onPressed==null;
     return FlatButton(
+      disabledColor: Colors.grey,
+      disabledTextColor: Colors.grey,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: border ? Colors.blue:Colors.transparent),
+        side: BorderSide(color: border&&!disabled ? Colors.blue:Colors.transparent),
         borderRadius: BorderRadius.circular(18)
       ),
-      child: Text(label,style: TextStyle(color: Colors.blue),),
+      child: Text(label,style: disabled? _disabledText: TextStyle(color: Colors.blue),),
       onPressed: onPressed,
     );
   }

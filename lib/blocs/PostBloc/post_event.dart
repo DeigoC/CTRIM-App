@@ -30,23 +30,30 @@ class PostSaveBodyDocumentEvent extends PostEvent {
 // ! Details Events
 class PostScheduleTabEvent extends PostEvent {}
 
-class PostSelectPostDateEvent extends PostScheduleTabEvent {}
-
-class PostSelectPostTimeEvent extends PostScheduleTabEvent {}
-
-class PostSetPostDateEvent extends PostScheduleTabEvent {
+// * Time related
+class PostSetStartPostDateEvent extends PostScheduleTabEvent {
   final DateTime selectedDate;
-  PostSetPostDateEvent(this.selectedDate);
+  PostSetStartPostDateEvent(this.selectedDate);
 }
-
-class PostSetPostTimeEvent extends PostScheduleTabEvent {
+class PostSetStartPostTimeEvent extends PostScheduleTabEvent {
   final TimeOfDay selectedTOD;
-  PostSetPostTimeEvent(this.selectedTOD);
+  PostSetStartPostTimeEvent(this.selectedTOD);
+}
+class PostSetEndPostDateEvent extends PostScheduleTabEvent {
+  final DateTime selectedDate;
+  PostSetEndPostDateEvent(this.selectedDate);
+}
+class PostSetEndPostTimeEvent extends PostScheduleTabEvent {
+  final TimeOfDay selectedTOD;
+  PostSetEndPostTimeEvent(this.selectedTOD);
 }
 
-class PostDateNotApplicableClick extends PostScheduleTabEvent {}
 
-class PostSelectedLocationEvent extends PostScheduleTabEvent {
+class PostAllDayDateClickEvent extends PostScheduleTabEvent{}
+class PostDateNotApplicableClickEvent extends PostScheduleTabEvent {}
+
+// * End of time related classes
+class PostSelectedLocationEvent extends PostEvent {
   final String locationID, addressLine;
   PostSelectedLocationEvent({this.locationID, this.addressLine});
 }
