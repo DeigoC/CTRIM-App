@@ -48,13 +48,12 @@ class _AddEventPageState extends State<AddEventPage>
             bool hasImage = _postBloc.newPost.firstFileImage != null;
             return [
               SliverAppBar(
-                expandedHeight: 200,
+                expandedHeight: MediaQuery.of(context).size.height * 0.33,
                 flexibleSpace: FlexibleSpaceBar(
+                  titlePadding: EdgeInsets.zero,
                   background: hasImage ? Image.file( _postBloc.newPost.firstFileImage, fit: BoxFit.cover,):null,
                 ),
-                actions: [
-                  _buildAppBarActions(),
-                ],
+                actions: [_buildAppBarActions(),],
               ),
               SliverPadding(
                 padding: EdgeInsets.all(8.0),
@@ -125,22 +124,21 @@ class _AddEventPageState extends State<AddEventPage>
         return false;
       },
       builder: (_, state) {
-        Widget result = RaisedButton(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        return MyRaisedButton(
+          externalPadding: EdgeInsets.all(8),
+          label: 'Save',
           onPressed: (state is PostEnableSaveButtonState)? (){
-                  _confirmSave().then((confirmation) {
-                    if (confirmation) {
-                      BlocProvider.of<TimelineBloc>(context).add(TimelineAddNewPostEvent(
-                        _postBloc.newPost,
-                        BlocProvider.of<AppBloc>(context).currentUser.id,
-                      ));
-                    }
-                  });
-                }
-              : null,
-          child: Text('Save',),
+            _confirmSave().then((confirmation) {
+              if (confirmation) {
+                BlocProvider.of<TimelineBloc>(context).add(TimelineAddNewPostEvent(
+                  _postBloc.newPost,
+                  BlocProvider.of<AppBloc>(context).currentUser.id,
+                ));
+              }
+            });
+          }
+        : null,
         );
-        return result;
       },
     );
   }
@@ -194,23 +192,6 @@ class _AddEventPageState extends State<AddEventPage>
     return Center(
       child: Text('Index is ' + selectedIndex.toString()),
     );
-  }
-
-  Future<void> _selectEventDate() async {
-    DateTime pickedDate;
-    pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(Duration(days: 1000)),
-      lastDate: DateTime.now().add(Duration(days: 1000)),
-    );
-    _postBloc.add(PostSetStartPostDateEvent(pickedDate));
-  }
-
-  Future<void> _selectEventTime() async {
-    TimeOfDay pickedTime;
-    pickedTime =await showTimePicker(context: context, initialTime: TimeOfDay.now());
-    _postBloc.add(PostSetStartPostTimeEvent(pickedTime));
   }
 
   Future<bool> _confirmSave() async {

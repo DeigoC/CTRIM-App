@@ -2,7 +2,7 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
-import 'package:flutter/gestures.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,12 +64,18 @@ class LocationCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ListTile(
-                    title: RichText(text: TextSpan(
+                    title: MyFlatButton(
+                      externalPadding: EdgeInsets.zero,
+                      label: location.addressLine,
+                      onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location)),
+                      internalPadding: EdgeInsets.zero,
+                    ),
+                    /* RichText(text: TextSpan(
                       text: location.addressLine,
                       style: TextStyle(color: Color(0xff236adb)),
                       recognizer: TapGestureRecognizer()..onTap =()=> BlocProvider.of<AppBloc>(context)
                       .add(AppToViewLocationOnMapEvent(location)),
-                    ),),
+                    ),), */
                     subtitle: Text(location.description),
                   ),
                   ButtonBar(

@@ -12,6 +12,7 @@ import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:ctrim_app_v1/App.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -33,6 +34,14 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   AppBloc(this.navigatorKey);
+
+  static openURL(String url) async{
+    if(await canLaunch(url)){
+      await launch(url);
+    }else{
+      print('--------------------------COULDNT LAUNCH!');
+    }
+  }
 
   // ! Mapping events to states
   @override
@@ -113,7 +122,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   Stream<AppState> _currentUserLogsOut() async*{
-    //TODO log out through auth and load the guest account
     _auth.logoutCurrentUser();
     await _userFileDocument.deleteSaveData().then((_)async{
       await _userFileDocument.attpemtToLoginSavedUser().then((user){

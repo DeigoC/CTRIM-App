@@ -16,10 +16,8 @@ class ViewGalleryPage {
     Tab(icon: Icon(Icons.view_module),),
     Tab( icon: Icon(Icons.folder,))
   ];
- 
   Map<DateTime, List<Post>> _allPosts;
 
-  //TODO may not need the controller at the end
   ViewGalleryPage(this._context, this._tabController);
 
   Widget buildAppBar() {

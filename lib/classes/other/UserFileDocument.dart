@@ -11,11 +11,9 @@ class UserFileDocument{
     
     try{
        await _readLoginData().then((data) async{
-         //TODO login as normal user
         rememberedUser = await _auth.loginWithEmail(email: data[0], password: data[1]);
        });
     }catch(e){
-      //print('----------------ERROR AT FIRST BLOCK: '+ e.toString());
       // ! Maybe the password was changed in a different phone?
     }finally{
       if(rememberedUser==null){
@@ -54,7 +52,7 @@ class UserFileDocument{
 
   Future<Null> deleteSaveData() async{
     final file = await _localLoginFile;
-    file.delete();//TODO need to test this
+    file.delete();
   }
 
   // * WRITING THE DATA

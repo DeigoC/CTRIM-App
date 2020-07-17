@@ -64,14 +64,7 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
       itemBuilder: (_, i) {
         File file = _selectedFiles[i];
         String fileType = basename(file.path).split('.').last.toLowerCase();
-        double photoSize = MediaQuery.of(_).size.width * 0.2;
-        Widget leading = _imageTypes.contains(fileType)
-            ? AddingFileItem(
-              file: file,
-              fileType: fileType,
-            )
-            : Container(width: photoSize,height: photoSize, child: Icon(Icons.video_library),);
-        
+
         return Dismissible(
           background: Container(
             color: Colors.red,
@@ -86,7 +79,7 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
     );
   }
 
-  //TODO needs different technique with iOS
+  // ! Needs different technique with iOS
   Future<List<File>> _pickFiles() async {
     List<File> results;
     results = await FilePicker.getMultiFile(

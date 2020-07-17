@@ -17,7 +17,7 @@ class ViewAllEventsPage {
 
   Widget buildFAB() {
     return FloatingActionButton(
-      child: Icon(Icons.add, size: 29,),
+      child: Icon(Icons.add, size: 29,color: Colors.white,),
       onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToAddPostPageEvent()),
       tooltip: 'Add New Post',
     );

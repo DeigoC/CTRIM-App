@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/galleryItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,14 +53,12 @@ class GalleryTabBody extends StatelessWidget {
   Widget _buildGalleryAddPost() {
     return ListView(
       children: [
-        FlatButton(
-          child: Text('ADD/EDIT'),
-          onPressed: () => BlocProvider.of<AppBloc>(_context)
-              .add(AppToCreateAlbumEvent(BlocProvider.of<PostBloc>(_context))),
+        MyRaisedButton(
+          label:'ADD/EDIT',
+          externalPadding: EdgeInsets.symmetric(horizontal: 8),
+          onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToCreateAlbumEvent(BlocProvider.of<PostBloc>(_context))),
         ),
-        SizedBox(
-          height: 20,
-        ),
+        SizedBox(height: 20,),
         Wrap(
           children: BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
             String type = BlocProvider.of<PostBloc>(_context).files[file];
@@ -100,8 +97,9 @@ class GalleryTabBody extends StatelessWidget {
 
     return ListView(
       children: [
-        FlatButton(
-          child: Text('Add/Edit Album'),
+        MyRaisedButton(
+          label: 'Add/Edit Album',
+          externalPadding: EdgeInsets.symmetric(horizontal: 8),
           onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToEditAlbumEvent(BlocProvider.of<PostBloc>(_context))),
         ),
         SizedBox( height: 20,),

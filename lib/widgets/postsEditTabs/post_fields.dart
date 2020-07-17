@@ -146,7 +146,7 @@ class PostLocationField extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text('Location'),
           BlocBuilder<PostBloc, PostState>(condition: (_, currentState) {
@@ -155,10 +155,9 @@ class PostLocationField extends StatelessWidget {
           }, builder: (_, state) {
             String locationID = BlocProvider.of<PostBloc>(context).newPost.locationID;
             String addressLine = BlocProvider.of<TimelineBloc>(context) .getLocationAddressLine(locationID);
-            return FlatButton(
-              child: Text(addressLine),
-              onPressed: () => BlocProvider.of<AppBloc>(context).add(
-                  AppToSelectLocationForPostEvent(
+            return MyFlatButton(
+              label: addressLine,
+              onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent(
                       BlocProvider.of<PostBloc>(context))),
             );
           }),

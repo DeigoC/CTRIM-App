@@ -73,7 +73,6 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       yield LocationDisplayConfirmedQueryAddressState(_selectedAddressLine);
       yield _canUpdateLocation();
     } else if (event is LocationEditUpdateLocationEvent) {
-      //TODO need to sort image in the future
       yield LocationEditChangesSavedState(_location);
     }
   }
@@ -130,14 +129,10 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   }
 
   Stream<LocationQueryState> _mapQueryToResultsState(LocationFindAddressEvent event) async*{
-    // TODO could add a loading thing here?
     _queryAddresses.clear();
     String query = event.streetAddress + ',' +event.townCityAddress + ',' + event.postcode;
     await Geocoder.local.findAddressesFromQuery(query).then((results){
       results.forEach((address){
-      /* print('---------------ADDRESS LINE: ' + address.addressLine +'\nCo ords: ' + address.coordinates.toString());
-        print('-----------Lat: '+address.coordinates.latitude.toString());
-        print('-----------Long: '+address.coordinates.longitude.toString()); */
         _queryAddresses.add(address);
       });
     });

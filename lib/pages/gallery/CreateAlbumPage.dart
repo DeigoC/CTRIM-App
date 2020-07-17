@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/galleryItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,14 +32,17 @@ class _EditAlbumState extends State<EditAlbum> {
 
   List<Widget> _buildNormalActions(){
     return [
-      FlatButton(
-        child: Text('Remove'),
+      MyRaisedButton(
+        externalPadding: EdgeInsets.all(8),
+        isDestructive: true,
+        label: 'Remove',
         onPressed: () {
           setState(() {_onDeleteMode = true; });
         },
       ),
-      FlatButton(
-        child: Text('Add'),
+      MyRaisedButton(
+        externalPadding: EdgeInsets.all(8),
+        label: 'Add',
         onPressed: () {
            BlocProvider.of<AppBloc>(context).add(AppToAddGalleryFileEvent(widget._postBloc));
         }),
@@ -47,8 +51,9 @@ class _EditAlbumState extends State<EditAlbum> {
 
   List<Widget> _buildDeleteActions(){
     return [
-      FlatButton(
-        child: Text('Cancel'),
+      MyRaisedButton(
+        externalPadding: EdgeInsets.all(8),
+        label: 'Cancel',
         onPressed: () {
           setState(() {
             _onDeleteMode = false;
@@ -62,8 +67,9 @@ class _EditAlbumState extends State<EditAlbum> {
   SizedBox _buildDeleteButton(){
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.8,
-      child: RaisedButton(
-        child: Text('Delete ${_selectedFiles.length} items'),
+      child: MyRaisedButton(
+        label: 'Delete ${_selectedFiles.length} items',
+        isDestructive: true,
         onPressed: (){
           widget._postBloc.add(PostFilesRemoveSelectedEvent(_selectedFiles));
           setState(() {

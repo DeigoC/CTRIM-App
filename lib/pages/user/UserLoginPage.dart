@@ -101,10 +101,11 @@ class _UserLoginPageState extends State<UserLoginPage> {
             return false;
           },
           builder:(_,state){
-            return RaisedButton(
+            return MyRaisedButton(
               onPressed:(state is AdminLoginEnableLoginState) ? () => _adminBloc.add(AdminLoginButtonClickedEvent()) 
               : null,
-              child: Text('LOGIN'),
+              label: 'LOGIN',
+              externalPadding: EdgeInsets.symmetric(horizontal: 8),
             );
           } 
         ),

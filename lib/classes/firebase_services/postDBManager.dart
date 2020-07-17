@@ -22,7 +22,10 @@ class PostDBManager{
 
   Future<Null> addPost(Post post) async{
     await _ref.getDocuments().then((collection){
-      //TODO need to sort by id in numbers!
+      List<int> allIDs = collection.documents.map((e) => int.parse(e.documentID)).toList();
+      allIDs.sort();
+      print('-------------LAST: ' + allIDs.last.toString()); //TODO test this
+
       post.id = (int.parse(collection.documents.last.documentID) + 1).toString();
     });
     await _appStorage.uploadNewPostFiles(post);

@@ -25,6 +25,14 @@ class _ViewUserPageState extends State<ViewUserPage> {
   @override
   void initState() {
     _zefyrController = ZefyrController(widget.user.getBodyDocument());
+    
+    _zefyrController.addListener(() {
+      NotusStyle style =  _zefyrController.getSelectionStyle();
+      if(style.contains(NotusAttribute.link)){
+        AppBloc.openURL(style.values.first.value);
+      }
+    });
+
     _focusNode = FocusNode();
     _userPosts = BlocProvider.of<TimelineBloc>(context).getUserPosts(widget.user.id);
     super.initState();
@@ -44,20 +52,20 @@ class _ViewUserPageState extends State<ViewUserPage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 180,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               titlePadding: EdgeInsets.all(0),
               title:  Container(
                 color: Colors.white,
                 width: double.infinity,
-              height: 90,
+              height: 54,
               child: Stack(
                 overflow: Overflow.visible,
                 alignment: Alignment.bottomCenter,
                 children: [
                   Positioned(
-                    top: -40,
+                    top: -50,
                     child: Hero(
                       tag: '0/'+ widget.user.imgSrc,
                       child: Container(
@@ -82,8 +90,9 @@ class _ViewUserPageState extends State<ViewUserPage> {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 Text(
-                  widget.user.forename + '\n' + widget.user.surname, 
-                  style: TextStyle(color: Colors.black, fontSize: 24),
+                  widget.user.forename + ' ' + widget.user.surname, 
+                  style: TextStyle(color: Colors.black, fontSize: 30),
+                  textAlign: TextAlign.center,
                 ),
                 Container(
                   height: 150,

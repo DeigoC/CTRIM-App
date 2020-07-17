@@ -58,9 +58,7 @@ class _EditLocationState extends State<EditLocation> {
         );
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Edit Location'),
-        ),
+        appBar: AppBar( title: Text('Edit Location'),centerTitle: true,),
         body: BlocListener(
             bloc: _locationBloc,
             listener: (_, state) {
@@ -141,19 +139,17 @@ class _EditLocationState extends State<EditLocation> {
             builder: (_, state) {
               bool enabled = false;
               if (state is LocationEnableFindButtonState) enabled = true;
-              return Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: RaisedButton(
-                  child: Text('Find Address'),
-                  onPressed: enabled
-                      ? () {
-                          _locationBloc.add(LocationFindAddressEvent(
-                              streetAddress: _tecStreetAddress.text,
-                              townCityAddress: _tecTownCity.text,
-                              postcode: _tecPostcode.text));
-                        }
-                      : null,
-                ),
+              return MyRaisedButton(
+                externalPadding: EdgeInsets.all(8),
+                label: 'Find Address',
+                onPressed: enabled
+                    ? () {
+                        _locationBloc.add(LocationFindAddressEvent(
+                            streetAddress: _tecStreetAddress.text,
+                            townCityAddress: _tecTownCity.text,
+                            postcode: _tecPostcode.text));
+                      }
+                    : null,
               );
             }),
         SizedBox(height: 32,),
@@ -172,35 +168,30 @@ class _EditLocationState extends State<EditLocation> {
         BlocBuilder(
           bloc: _locationBloc,
           condition: (_, state) {
-            if (state is LocationEditEnableUpdateButtonState)
-              return true;
+            if (state is LocationEditEnableUpdateButtonState) return true;
             else if (state is LocationEditDisableUpdateButtonState) return true;
             return false;
           },
           builder: (_, state) {
-            return Container(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              width: MediaQuery.of(context).size.width * 0.85,
-              child: RaisedButton(
-                onPressed: (state is LocationEditEnableUpdateButtonState)
-                    ? () {
-                        ConfirmationDialogue.saveRecord(
-                                context: context,
-                                record: 'Location',
-                                editing: true)
-                            .then((confirmation) {
-                          if (confirmation)
-                            _locationBloc
-                                .add(LocationEditUpdateLocationEvent());
-                        });
-                      }
-                    : null,
-                child: Text('Update Location'),
-              ),
+            return MyRaisedButton(
+              externalPadding: EdgeInsets.all(8),
+              label: 'Update Location',
+              onPressed: (state is LocationEditEnableUpdateButtonState)
+                  ? () {
+                      ConfirmationDialogue.saveRecord(
+                              context: context,
+                              record: 'Location',
+                              editing: true)
+                          .then((confirmation) {
+                        if (confirmation)
+                          _locationBloc
+                              .add(LocationEditUpdateLocationEvent());
+                      });
+                    }
+                  : null,
             );
           },
         ),
-         SizedBox(height: itemPaddingHeight,),
        _buildDeleteButton(),
       ],
     );
@@ -208,8 +199,10 @@ class _EditLocationState extends State<EditLocation> {
 
   Widget _buildDeleteButton(){
     bool hasEvents = BlocProvider.of<TimelineBloc>(context).doesLocationHaveEvents(widget._location.id);
-    return  RaisedButton(
-      child: Text('Delete Location'),
+    return  MyRaisedButton(
+      externalPadding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+      label: 'Delete Location',
+      isDestructive: true,
       onPressed: hasEvents ? null :(){
         ConfirmationDialogue.deleteRecord(context: context, record: 'Location').then((confirmation){
           if(confirmation){

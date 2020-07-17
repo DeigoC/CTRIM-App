@@ -2,6 +2,7 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
+import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -90,6 +91,7 @@ class SettingsPage{
           return ListView(
             children: [
               SwitchListTile(
+                activeColor: LightSecondaryColor,
                 value: BlocProvider.of<AppBloc>(_context).onDarkTheme, 
                 title: Text('Dark Mode', style: testStyle,),
                 secondary: Icon(Icons.brightness_medium),

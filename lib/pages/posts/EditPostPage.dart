@@ -45,29 +45,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        bool result = false;
-        await showDialog(
-            context: context,
-            builder: (_) {
-              return AlertDialog(
-                title: Text('Close Page?'),
-                content: Text('Any changes made will be discarded.'),
-                actions: [
-                  FlatButton(
-                      child: Text('Cancel'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      }),
-                  FlatButton(
-                      child: Text('Discard'),
-                      onPressed: () {
-                        result = true;
-                        Navigator.of(context).pop();
-                      }),
-                ],
-              );
-            });
-        return result;
+        return await ConfirmationDialogue.leaveEditPage(context: context);
       },
       child: BlocProvider(
         create: (_) => _postBloc,
@@ -157,8 +135,10 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
 
   Widget _buildDeleteButton(BuildContext context) {
     if(widget._post.deleted) return Container();
-    return RaisedButton(
-      child: Text('Delete'),
+    return MyRaisedButton(
+      externalPadding: EdgeInsets.all(8),
+      label: 'Delete',
+      isDestructive: true,
       onPressed: () {
         ConfirmationDialogue.deleteRecord(context: context, record: 'Post').then((confirmation) {
           if(confirmation){
@@ -178,14 +158,11 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
         return false;
       },
       builder: (_, state) {
-        Widget result = RaisedButton(
-          shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-          onPressed: (state is PostEnableSaveButtonState)
-              ? () { _confirmSave();}
-              : null,
-          child: Text('Update',),
+        return MyRaisedButton(
+          externalPadding: EdgeInsets.all(8),
+          label: 'Update',
+          onPressed: (state is PostEnableSaveButtonState)? () { _confirmSave();}: null,
         );
-        return result;
       },
     );
   }

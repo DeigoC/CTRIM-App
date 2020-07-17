@@ -1,3 +1,4 @@
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmationDialogue{
@@ -13,10 +14,10 @@ class ConfirmationDialogue{
           title: Text('Logout Confirmation'),
           content: Text('Do you wish to continue?'),
           actions: [
-          FlatButton(child: Text('Cancel'), onPressed: (){
+          MyFlatButton(label: 'Cancel', onPressed: (){
             Navigator.of(context).pop();
           }),
-          FlatButton(child: Text('Yes'), onPressed: (){
+          MyFlatButton(label: 'Yes', onPressed: (){
             result = true;
             Navigator.of(context).pop();
           }),
@@ -40,10 +41,10 @@ class ConfirmationDialogue{
           title: Text('Deletion Confirmation'),
           content: Text('Do you want to delete this $record?'),
           actions: [
-          FlatButton(child: Text('Cancel'), onPressed: (){
+          MyFlatButton(label: 'Cancel', onPressed: (){
             Navigator.of(context).pop();
           }),
-          FlatButton(child: Text('Delete'), onPressed: (){
+          MyFlatButton(label: 'Delete', isDestructive: true, onPressed: (){
             result = true;
             Navigator.of(context).pop();
           }),
@@ -70,10 +71,10 @@ class ConfirmationDialogue{
           title: Text(title),
           content: Text(content),
           actions: [
-          FlatButton(child: Text('Cancel'), onPressed: (){
+          MyFlatButton(label: 'Cancel', onPressed: (){
             Navigator.of(context).pop();
           }),
-          FlatButton(child: Text(button), onPressed: (){
+          MyFlatButton(label: button, onPressed: (){
             result = true;
             Navigator.of(context).pop();
           }),
@@ -95,10 +96,10 @@ class ConfirmationDialogue{
           title: Text('Leave Page'),
           content: Text('Any changes made will be discarded, do you wish to continue?'),
           actions: [
-          FlatButton(child: Text('Cancel'), onPressed: (){
+          MyFlatButton(label: 'Cancel', onPressed: (){
             Navigator.of(context).pop();
           }),
-          FlatButton(child: Text('Discard'), onPressed: (){
+          MyFlatButton(label: 'Continue', onPressed: (){
             result = true;
             Navigator.of(context).pop();
           }),
@@ -132,10 +133,10 @@ class ConfirmationDialogue{
               Navigator.of(context).pop();
             },
           ):Container(),
-          FlatButton(child: Text(discardOption ? 'Discard':'Cancel'), onPressed: (){
+          MyFlatButton(label: discardOption ? 'Discard':'Cancel', onPressed: (){
             Navigator.of(context).pop();
           }),
-          FlatButton(child: Text('Continue'), onPressed: (){
+          MyFlatButton(label: 'Continue', onPressed: (){
             result = true;
             Navigator.of(context).pop();
           }),

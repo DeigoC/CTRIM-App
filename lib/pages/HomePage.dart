@@ -1,5 +1,4 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
-import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/AboutTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';

@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
+import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -100,7 +101,7 @@ class MyCheckBox extends StatelessWidget {
 
   List<Widget> _buildLeftToRight() {
     return [
-      Checkbox(value: value, onChanged: onChanged),
+      Checkbox(value: value, onChanged: onChanged,activeColor: LightSecondaryColor,),
       //SizedBox(width: 8,),
       Text(label),
     ];
@@ -110,7 +111,7 @@ class MyCheckBox extends StatelessWidget {
     return [
       Text(label),
       SizedBox(width: 8,),
-      Checkbox(value: value, onChanged: onChanged)
+      Checkbox(value: value, onChanged: onChanged,activeColor: LightSecondaryColor,)
     ];
   }
 }
@@ -120,12 +121,14 @@ class MyRaisedButton extends StatelessWidget {
   final Function onPressed;
   final EdgeInsets externalPadding;
   final IconData icon;
+  final bool isDestructive;
 
   const MyRaisedButton({
     @required this.label,
     @required this.onPressed,
     this.externalPadding,
     this.icon,
+    this.isDestructive = false,
     Key key
   }) : super(key: key);
 
@@ -139,6 +142,7 @@ class MyRaisedButton extends StatelessWidget {
 
   RaisedButton _buildNormalButton(){
     return RaisedButton(
+      color: isDestructive ? Color(0xffd11a2a):null,
       child: Text(label),
       onPressed: onPressed,
     );
@@ -156,10 +160,10 @@ class MyRaisedButton extends StatelessWidget {
 class MyFlatButton extends StatelessWidget {
    final String label;
   final Function onPressed;
-  final EdgeInsets externalPadding;
+  final EdgeInsets externalPadding, internalPadding;
   final IconData icon;
-  final bool border;
-  final TextStyle _disabledText = TextStyle(color: Colors.white);
+  final bool border, isDestructive;
+  final TextStyle _disabledText = TextStyle(color: Color(0xffb3b3b3));
   
    MyFlatButton({
     @required this.label,
@@ -167,6 +171,8 @@ class MyFlatButton extends StatelessWidget {
     this.externalPadding,
     this.icon,
     this.border = false,
+    this.isDestructive = false,
+    this.internalPadding,
     Key key
   }) : super(key: key);
 
@@ -181,8 +187,10 @@ class MyFlatButton extends StatelessWidget {
   FlatButton _buildNormalButton(){
     bool disabled = onPressed==null;
     return FlatButton(
-      disabledColor: Colors.grey,
+      disabledColor: Color(0xff676767),
+      padding: internalPadding,
       disabledTextColor: Colors.grey,
+      color: isDestructive ? Color(0xffd11a2a):null,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: border&&!disabled ? Colors.blue:Colors.transparent),
         borderRadius: BorderRadius.circular(18)
@@ -205,6 +213,30 @@ class MyFlatButton extends StatelessWidget {
   }
 }
 
+/* class MyFAB extends StatelessWidget {
+  final String label;
+  final Function onPressed;
+  final bool isDestrucive;
+  final IconData icon;
+  
+  MyFAB({
+    @required this.label,
+    @required this.onPressed,
+    this.isDestrucive = false,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.extended(
+      label: Text(label),
+      onPressed:onPressed,
+      backgroundColor: isDestrucive ? Color(0xffd11a2a):null,
+      icon: icon == null ? null:Icon(icon),
+    );
+  }
+}
+ */
 class MyFilterChip extends StatelessWidget {
   final String label;
   final bool selected, filteringPosts;

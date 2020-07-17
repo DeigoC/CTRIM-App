@@ -84,7 +84,8 @@ final appDarkTheme = ThemeData(
   scaffoldBackgroundColor: DarkSurfaceColor,
   bottomAppBarColor: DarkPrimaryColor,
   disabledColor: Colors.grey,
-
+  
+  accentColor: LightSecondaryColor,
   colorScheme: ColorScheme(
     primary: DarkPrimaryColor, 
     primaryVariant: Color(0xffac4020), 
@@ -116,7 +117,4 @@ final appDarkTheme = ThemeData(
     headline5:  normalDarkTextTheme,
     headline6:  normalDarkTextTheme,
   ),
-
-  
-  
 );

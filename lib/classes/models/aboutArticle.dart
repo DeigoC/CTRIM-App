@@ -5,7 +5,7 @@ import 'package:zefyr/zefyr.dart';
 class AboutArticle{
 
   String id, body, title, locationID, serviceTime, locationPastorUID;
-  Map<String, String> gallerySources;
+  Map<String, String> gallerySources, socialLinks;
 
   AboutArticle({
     this.id,
@@ -15,6 +15,7 @@ class AboutArticle{
     this.serviceTime,
     this.locationPastorUID,
     this.gallerySources,
+    this.socialLinks
   });
 
   AboutArticle.fromMap(String id, Map<String,dynamic> data )
@@ -24,6 +25,7 @@ class AboutArticle{
   locationID = data['LocationID'],
   serviceTime = data['ServiceTime'],
   locationPastorUID = data['LocationPastorUID'],
+  socialLinks = Map<String,String>.from(data['SocialLinks']),
   gallerySources = Map<String,String>.from(data['GallerySources']);
 
   toJson(){
@@ -33,6 +35,7 @@ class AboutArticle{
       'LocationID':locationID,
       'ServiceTime':serviceTime,
       'LocationPastorUID':locationPastorUID,
+      'SocialLinks':socialLinks,
       'GallerySources':gallerySources,
     };
   }

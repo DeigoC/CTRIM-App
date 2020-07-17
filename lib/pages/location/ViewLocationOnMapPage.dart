@@ -12,7 +12,7 @@ class ViewLocationOnMap extends StatefulWidget {
 
 class _ViewLocationOnMapState extends State<ViewLocationOnMap> {
   
-  GoogleMapController _mapController;
+  //GoogleMapController _mapController;
   LatLng latLng;
 
   @override
@@ -54,7 +54,7 @@ class _ViewLocationOnMapState extends State<ViewLocationOnMap> {
         )
       ]),
       onMapCreated: (controller){
-        setState(() {_mapController = controller;});
+        //setState(() {_mapController = controller;});
       },
     );
   }

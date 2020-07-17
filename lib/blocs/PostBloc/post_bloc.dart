@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zefyr/zefyr.dart';
@@ -215,48 +214,12 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     };
     }
   }
-
-  // TODO this is messy - clean this up!
+  
   Stream<PostState> _mapScheduleTabEventsToState(PostEvent event) async* {
-    // * Start date stuff
-    if (event is PostSetStartPostDateEvent) {
-      if (event.selectedDate != null){
-        _post.setStartDate(event.selectedDate);
-        _post.endDate = null;
-        _endDateTOD = null;
-        _endDateButtonEnabled = false;
-        if(_post.endDate == null) _endDateButtonEnabled = true;
-      }
-      yield PostScheduleState();
-    } else if (event is PostSetStartPostTimeEvent) {
-      if(event.selectedTOD != null){
-         _post.setStartTimeOfDay(event.selectedTOD);
-        _post.endDate = null;
-        _endDateTOD = null;
-        _endDateButtonEnabled = false;
-        if(_post.endDate == null) _endDateButtonEnabled = true;
-        yield PostScheduleState();
-      } 
-    } 
-
-    // * End date stuff
-    else if(event is PostSetEndPostDateEvent){
-      if(event.selectedDate != null) _post.setEndDate(event.selectedDate);
-      _endDateTOD = null;
-      yield PostScheduleState();
-     
-    }else if(event is PostSetEndPostTimeEvent){
-      if(event.selectedTOD != null){
-         _post.setEndTimeOfDay(event.selectedTOD);
-          _endDateTOD = DateTime(DateTime.now().year, DateTime.now().month, 
-          DateTime.now().day, event.selectedTOD.hour, event.selectedTOD.minute);
-          if(_isStartTimeBeforeEndTime()) yield PostScheduleState(); 
-          else{
-            _endDateTOD = null;
-            yield PostEndDateNotAcceptedState();
-          }
-      }
-    }
+    if (event is PostSetStartPostDateEvent) yield _setStartDate(event);
+    else if (event is PostSetStartPostTimeEvent) yield _setStartTime(event);
+    else if(event is PostSetEndPostDateEvent) yield _setEndDate(event);
+    else if(event is PostSetEndPostTimeEvent) yield* _setEndTime(event);
 
     // * All day post stuff
     else if(event is PostAllDayDateClickEvent){
@@ -266,11 +229,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     
     // * Date not applicable
     else if (event is PostDateNotApplicableClickEvent) {
-      if (_post.isDateNotApplicable) {
-        _post.isDateNotApplicable = false;
-      } else {
-        _post.isDateNotApplicable = true;
-      }
+      if (_post.isDateNotApplicable) _post.isDateNotApplicable = false;
+      else  _post.isDateNotApplicable = true;
       yield PostScheduleState();
     } 
     
@@ -281,6 +241,47 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       yield PostLocationSelectedState();
     }
     yield* _canEnableSaveButton();
+  }
+
+  PostScheduleState _setStartDate(PostSetStartPostDateEvent event){
+    if (event.selectedDate != null){
+        _post.setStartDate(event.selectedDate);
+        _post.endDate = null;
+        _endDateTOD = null;
+        _endDateButtonEnabled = false;
+        if(_post.endDate == null) _endDateButtonEnabled = true;
+      }
+    return PostScheduleState();
+  }
+
+  PostScheduleState _setStartTime(PostSetStartPostTimeEvent event){
+    if(event.selectedTOD != null){
+         _post.setStartTimeOfDay(event.selectedTOD);
+        _post.endDate = null;
+        _endDateTOD = null;
+        _endDateButtonEnabled = false;
+        if(_post.endDate == null) _endDateButtonEnabled = true;
+      } 
+    return PostScheduleState();
+  }
+
+  PostScheduleState _setEndDate(PostSetEndPostDateEvent event){
+    if(event.selectedDate != null) _post.setEndDate(event.selectedDate);
+      _endDateTOD = null;
+    return  PostScheduleState();
+  }
+
+  Stream<PostState> _setEndTime(PostSetEndPostTimeEvent event) async*{
+    if(event.selectedTOD != null){
+         _post.setEndTimeOfDay(event.selectedTOD);
+          _endDateTOD = DateTime(DateTime.now().year, DateTime.now().month, 
+          DateTime.now().day, event.selectedTOD.hour, event.selectedTOD.minute);
+          if(_isStartTimeBeforeEndTime()) yield PostScheduleState(); 
+          else{
+            _endDateTOD = null;
+            yield PostEndDateNotAcceptedState();
+          }
+      }
   }
 
   bool _isStartTimeBeforeEndTime(){

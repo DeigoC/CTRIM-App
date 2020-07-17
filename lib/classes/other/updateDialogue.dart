@@ -1,7 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
-import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,8 +56,8 @@ class _UpdateLogDialogueState extends State<UpdateLogDialogue> {
             ),
             Padding(
               padding: EdgeInsets.all(8),
-              child: RaisedButton(
-                child: Text('Update Post'),
+              child: MyRaisedButton(
+                label: 'Update Post',
                 onPressed: _hasText
                     ? () {
                         String userID =BlocProvider.of<AppBloc>(context).currentUser.id;

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 
+// ignore: must_be_immutable
 class PostArticle extends StatelessWidget {
   final Post post;
   final List<User> allUsers;

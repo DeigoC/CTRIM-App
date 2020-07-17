@@ -17,22 +17,36 @@ class ViewPostPage extends StatefulWidget {
   _ViewPostPageState createState() => _ViewPostPageState();
 }
 
-class _ViewPostPageState extends State<ViewPostPage>
-    with SingleTickerProviderStateMixin {
+class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderStateMixin {
   TabController _tabController;
   int _selectedTabIndex = 0;
+  ZefyrController _zefyrController;
+  FocusNode _fn;
 
   @override
   void initState() {
     _tabController = TabController(vsync: this, length: 4);
+    _zefyrController = ZefyrController(widget._post.getBodyDoc())..addListener(() {
+      NotusStyle style =  _zefyrController.getSelectionStyle();
+      if(style.contains(NotusAttribute.link)){
+        AppBloc.openURL(style.values.first.value);
+      }
+    });
+    _fn = FocusNode();
     super.initState();
+  }
+
+  @override
+  void dispose() { 
+    _zefyrController.dispose();
+    _fn.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: _buildFAB(),
-      //floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: NestedScrollView(
         headerSliverBuilder: (_, __) {
           bool hasImage = widget._post.firstImageSrc != null;
@@ -148,35 +162,45 @@ class _ViewPostPageState extends State<ViewPostPage>
   }
 
   Widget _buildAboutTab() {
-    return ListView(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-         Container(
-          padding: EdgeInsets.all(8),
-          child: ZefyrTheme(
-            data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(
-              color: Colors.red
-            ),padding: EdgeInsets.all(0))), 
-            child: ZefyrView(document: widget._post.getBodyDoc(),),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: Text('Tags'),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: Wrap(
-            spacing: 4,
-            children: widget._post.selectedTagsString.map((tag) {
-              return MyFilterChip(
-                label: tag,
-                selected: false,
-                onSelected: (_)=>null,
-              );
-              //return Chip(label: Text(tag),);
-            }).toList(),
-          ),
-        ),
+        Container(
+           padding: EdgeInsets.only(left: 8),
+           child: Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               Text('Tags:'),
+               Wrap(
+                spacing: 4,
+                children: widget._post.selectedTagsString.map((tag) {
+                  return MyFilterChip(
+                    label: tag,
+                    selected: false,
+                    onSelected: (_)=>null,
+                  );
+                  //return Chip(label: Text(tag),);
+                }).toList(),
+              ),
+             ],
+           ),
+         ),
+         Divider(),
+         Expanded(
+            child: ZefyrTheme(
+             data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(
+               color: Colors.red
+             ),padding: EdgeInsets.all(8))), 
+             child: ZefyrScaffold(
+               child: ZefyrEditor(
+                 focusNode: _fn,
+                 autofocus: false,
+                 mode: ZefyrMode.view,
+                 controller: _zefyrController,
+               ),
+             ),
+           ),
+         ),
       ],
     );
   }

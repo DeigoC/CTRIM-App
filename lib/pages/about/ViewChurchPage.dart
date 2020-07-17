@@ -1,7 +1,13 @@
 import 'dart:async';
 
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
+import 'package:ctrim_app_v1/classes/models/location.dart';
+import 'package:ctrim_app_v1/classes/models/user.dart';
+import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -44,41 +50,128 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
   }
 
   Widget _buildBody(){
-    
+    TextStyle headerStyle = TextStyle(fontSize: 36);
+    TextStyle bodyStyle = TextStyle(fontSize: 18);
+    User pastorUser = UserDBManager.allUsers
+    .firstWhere((e) => e.id.compareTo(widget._aboutArticle.locationPastorUID)==0);
+    Location location = LocationDBManager.allLocations
+    .firstWhere((e) => e.id.compareTo(widget._aboutArticle.locationID)==0);
+
     return ListView(
       children: [
         _buildGallerySlideShow(),
-        SizedBox(height: 8,),
-        RaisedButton(
-          child: Text('Get To Know Them'),
-          onPressed: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewPastorEvent(widget._aboutArticle)),
-        )
+        SizedBox(height: 16,),
+
+        Text('Location',style: headerStyle, textAlign: TextAlign.center,),
+        FlatButton(
+          child: Text(location.addressLine,textAlign: TextAlign.center,style: bodyStyle,),
+          onPressed: (){
+            BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location));
+          },
+        ),
+        SizedBox(height: 32,),
+
+        Text('Service Times',style: headerStyle,textAlign: TextAlign.center,),
+        Text(widget._aboutArticle.serviceTime, textAlign: TextAlign.center,style: bodyStyle,),
+        SizedBox(height: 32,),
+
+       Text('Location Pastor',style: headerStyle,textAlign: TextAlign.center,),
+        FlatButton(
+          child: Text(pastorUser.forename + ' ' + pastorUser.surname,style: bodyStyle,),
+          onPressed: (){
+            BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(pastorUser));
+          },
+        ),
+
+        GestureDetector(
+          onTap: (){
+            BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({
+              widget._aboutArticle.gallerySources.keys.elementAt(1):ImageTag(
+                src: widget._aboutArticle.gallerySources.keys.elementAt(1),
+                type: 'img'
+              )
+            }, 0));
+          },
+          child: AspectRatio(
+            aspectRatio: 16/9,
+            child: Hero(
+              tag: '0/'+widget._aboutArticle.gallerySources.keys.elementAt(1),
+              child: Image.network(widget._aboutArticle.gallerySources.keys.elementAt(1), fit: BoxFit.cover,)
+            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RaisedButton(
+              child: Text('Get To Know Them',style: TextStyle(fontSize: 20),),
+              onPressed: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewPastorEvent(widget._aboutArticle)),
+            ),
+          ],
+        ),
+        SizedBox(height: 16,),
+
+
+        Text("We're on social. Follow us",style: headerStyle,textAlign: TextAlign.center,),
+        _buildSocialLinksWidget(),
+        SizedBox(height: 32,),
       ],
     );
   }
 
   Widget _buildGallerySlideShow(){
+    List<String> imageSrcs = widget._aboutArticle.gallerySources.keys.toList().sublist(3);
+    Map<String,ImageTag> gallery = {};
+    imageSrcs.forEach((src) {
+      gallery[src] = ImageTag(
+        src: src,
+        type: 'img'
+      );
+    });
+
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height * 0.3,
-      child: PageView(
-        physics: ClampingScrollPhysics(),
+      child:PageView.builder(
         controller: _pageController,
-        children: [
-          Container(
-            color: Colors.red,
-          ),
-          Container(
-            color: Colors.green,
-          ),
-          Container(
-            color: Colors.blue,
-          ),
-          Container(
-            color: Colors.purple,
-          ),
-        ],
+        itemCount: imageSrcs.length,
+        itemBuilder: (_,index){
+          return GestureDetector(
+            onTap: (){
+              BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(gallery, index));
+            },
+            child: Hero(
+              tag: gallery[imageSrcs[index]].heroTag,
+              child: Image.network(imageSrcs[index], fit: BoxFit.cover,)
+            )
+          );
+        }
       ),
     );
+  }
+
+  Widget _buildSocialLinksWidget(){
+    return Align(
+      alignment: Alignment.center,
+      child: Wrap(
+        children: widget._aboutArticle.socialLinks.keys.map((link){
+          return IconButton(
+            icon: _getIconFromString(widget._aboutArticle.socialLinks[link]),
+            onPressed: (){
+              AppBloc.openURL(link);
+            },
+          );
+        }).toList()
+      ),
+    );
+  }
+
+  Icon _getIconFromString(String socialName){
+    switch(socialName){
+      case 'youtube':return Icon(Icons.youtube_searched_for,);
+      case 'facebook': return Icon(Icons.book);
+      case 'instagram':return Icon(Icons.camera);
+    }
+    return null;
   }
 }
