@@ -18,7 +18,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
 
   String _streetAddress = '', _townCity = '', _postCode = '';
   String _selectedAddressLine = '';
-  File _locationImage;
+  File _imageFile;
 
   Location _location, _originalLocation;
   void setLocationForEdit(Location location) {
@@ -27,11 +27,13 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       addressLine: location.addressLine,
       description: location.description,
       imgSrc: location.imgSrc,
+      coordinates: Map<String,double>.from(location.coordinates) 
     );
 
     _originalLocation = Location(
       addressLine: location.addressLine,
       description: location.description,
+      coordinates: Map<String,double>.from(location.coordinates),
     );
   }
 
@@ -47,7 +49,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     else if (event is LocationQueryAddressEvent)yield* _mapQueryEventsToQueryStates(event);
     else if (event is LocationImageSelectedEvent)yield* _mapImageSetEventToState(event);
     else if (event is LocationRemoveSelectedImageEvent) {
-      _locationImage = null;
+      _imageFile = null;
       yield LocationRemoveSelectedImageState();
     } else if (event is LocationEditLocationEvent)yield* _mapEditLocationToState(event);
     else if(event is LocationSaveNewLocationEvent) yield* _saveNewLocation();
@@ -55,8 +57,9 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
 
   Stream<LocationState> _mapImageSetEventToState(LocationImageSelectedEvent event) async* {
     if (event.selectedFile != null) {
-      _locationImage = event.selectedFile;
-      yield LocationSetNewLocationImageState(_locationImage);
+      _imageFile = event.selectedFile;
+      yield LocationSetNewLocationImageState(_imageFile);
+      yield _canUpdateLocation();
     }
   }
 
@@ -72,8 +75,17 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       _location.addressLine = _selectedAddressLine;
       yield LocationDisplayConfirmedQueryAddressState(_selectedAddressLine);
       yield _canUpdateLocation();
+
+      // ! REDO THIS
     } else if (event is LocationEditUpdateLocationEvent) {
-      yield LocationEditChangesSavedState(_location);
+      yield LocationEditAttemptToUpdateState();
+      await _locationDBManager.updateLocation(_location, _imageFile);
+      yield LocationEditUpdateCompleteState();
+    }else if(event is LocationEditDeleteLocationEvent){
+      yield LocationEditAttemptToUpdateState();
+      _location.deleted = true;
+      await _locationDBManager.updateLocation(_location, _imageFile);
+      yield LocationEditUpdateCompleteState();
     }
   }
 
@@ -108,7 +120,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   LocationState _canUpdateLocation() {
     if (_location.description.compareTo(_originalLocation.description) != 0 ||
         _location.addressLine.compareTo(_originalLocation.addressLine) != 0 ||
-        _location.imgSrc == '') {
+        _location.imgSrc == ''|| _imageFile != null) {
       return LocationEditEnableUpdateButtonState();
     }
     return LocationEditDisableUpdateButtonState();
@@ -116,15 +128,15 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
 
   Stream<LocationState> _saveNewLocation() async*{
     Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
+
     Location newLocation = Location(
       addressLine: _selectedAddressLine,
       coordinates: {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude},
       deleted: false,
       description: 'Used for Events',
     );
-    await _locationDBManager.addLocation(newLocation).then((_){
-      LocationDBManager.allLocations.add(newLocation);
-    });
+
+    await _locationDBManager.addLocation(newLocation, _imageFile);
     yield LocationCreatedState();
   }
 
@@ -138,6 +150,5 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     });
     yield LocationDisplayQueryResultsState(_queryAddresses.map((a) => a.addressLine).toList());
   }
-
 
 }

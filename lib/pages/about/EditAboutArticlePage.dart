@@ -141,7 +141,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
         return false;
       },
       builder: (_,state){
-        Location l = BlocProvider.of<TimelineBloc>(context).allLocations.firstWhere((e) => e.id.compareTo(_aboutBloc.articleToEdit.locationID)==0);
+        Location l = BlocProvider.of<TimelineBloc>(context).selectableLocations.firstWhere((e) => e.id.compareTo(_aboutBloc.articleToEdit.locationID)==0);
         
         return MyFlatButton(
           label: l.addressLine,
@@ -160,8 +160,9 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
         return false;
       },
       builder: (_,state){
-        return RaisedButton(
-          child: Text('Save Changes'),
+        return MyRaisedButton(
+          externalPadding: EdgeInsets.symmetric(horizontal: 8),
+          label: 'Save Changes',
           onPressed: (state is AboutArticleEnableSaveButtonState) ? (){
             ConfirmationDialogue.saveRecord(context: context, record: 'About Article',editing: true).then((result){
               if(result){
@@ -219,7 +220,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
     showDialog(
       context: context,
       builder: (_){
-        List<Location> allLcoations = List.from(BlocProvider.of<TimelineBloc>(context).allLocations);
+        List<Location> allLcoations = List.from(BlocProvider.of<TimelineBloc>(context).selectableLocations);
         allLcoations.removeWhere((e) => e.id=='0');
         return Dialog(
           child: Container(

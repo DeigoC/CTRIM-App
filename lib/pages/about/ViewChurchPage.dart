@@ -7,9 +7,9 @@ import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
-import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class ViewChurchPage extends StatefulWidget {
   final AboutArticle _aboutArticle;
@@ -44,7 +44,7 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('View Church'),),
+      appBar: AppBar(title: Text(widget._aboutArticle.title + ' Church'),centerTitle: true,),
       body: _buildBody(),
     );
   }
@@ -83,20 +83,20 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
           },
         ),
 
-        GestureDetector(
-          onTap: (){
-            BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({
-              widget._aboutArticle.gallerySources.keys.elementAt(1):ImageTag(
-                src: widget._aboutArticle.gallerySources.keys.elementAt(1),
-                type: 'img'
-              )
-            }, 0));
-          },
-          child: AspectRatio(
-            aspectRatio: 16/9,
+        AspectRatio(
+          aspectRatio: 16/9,
+          child: GestureDetector(
+            onTap: (){
+              BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({
+                widget._aboutArticle.secondImage:ImageTag(
+                  src: widget._aboutArticle.secondImage,
+                  type: 'img'
+                )
+              }, 0));
+            },
             child: Hero(
-              tag: '0/'+widget._aboutArticle.gallerySources.keys.elementAt(1),
-              child: Image.network(widget._aboutArticle.gallerySources.keys.elementAt(1), fit: BoxFit.cover,)
+              tag: '0/'+widget._aboutArticle.secondImage,
+              child: Image.network(widget._aboutArticle.secondImage,)
             ),
           ),
         ),
@@ -120,29 +120,27 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
   }
 
   Widget _buildGallerySlideShow(){
-    List<String> imageSrcs = widget._aboutArticle.gallerySources.keys.toList().sublist(3);
     Map<String,ImageTag> gallery = {};
-    imageSrcs.forEach((src) {
+    widget._aboutArticle.imageSrcList.forEach((src) {
       gallery[src] = ImageTag(
         src: src,
         type: 'img'
       );
     });
 
-    return Container(
-      width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.3,
+    return AspectRatio(
+      aspectRatio: 16/9,
       child:PageView.builder(
         controller: _pageController,
-        itemCount: imageSrcs.length,
+        itemCount: widget._aboutArticle.imageSrcList.length,
         itemBuilder: (_,index){
           return GestureDetector(
             onTap: (){
               BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(gallery, index));
             },
             child: Hero(
-              tag: gallery[imageSrcs[index]].heroTag,
-              child: Image.network(imageSrcs[index], fit: BoxFit.cover,)
+              tag: gallery[widget._aboutArticle.imageSrcList[index]].heroTag,
+              child: Image.network(widget._aboutArticle.imageSrcList[index], fit: BoxFit.cover,)
             )
           );
         }
@@ -154,12 +152,20 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
     return Align(
       alignment: Alignment.center,
       child: Wrap(
+        spacing: 4,
         children: widget._aboutArticle.socialLinks.keys.map((link){
-          return IconButton(
-            icon: _getIconFromString(widget._aboutArticle.socialLinks[link]),
-            onPressed: (){
-              AppBloc.openURL(link);
-            },
+          return Container(
+            padding: EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.blue,
+            ),
+            child:  IconButton(
+              icon: _getIconFromString(widget._aboutArticle.socialLinks[link]),
+              onPressed: (){
+                AppBloc.openURL(link);
+              },
+            ),
           );
         }).toList()
       ),
@@ -168,9 +174,10 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
 
   Icon _getIconFromString(String socialName){
     switch(socialName){
-      case 'youtube':return Icon(Icons.youtube_searched_for,);
-      case 'facebook': return Icon(Icons.book);
-      case 'instagram':return Icon(Icons.camera);
+      case 'youtube':return Icon(AntDesign.youtube,color: Colors.white,);
+      case 'facebook': return Icon(AntDesign.facebook_square,color: Colors.white,);
+      case 'instagram':return Icon(AntDesign.instagram,color: Colors.white,);
+      case 'twitter': return Icon(AntDesign.twitter,color: Colors.white,);
     }
     return null;
   }

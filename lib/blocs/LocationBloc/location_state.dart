@@ -54,7 +54,6 @@ class LocationEditDisableUpdateButtonState extends LocationEditLocationState {}
 
 class LocationEditEnableUpdateButtonState extends LocationEditLocationState {}
 
-class LocationEditChangesSavedState extends LocationEditLocationState {
-  final Location updatedLocation;
-  LocationEditChangesSavedState(this.updatedLocation);
-}
+class LocationEditAttemptToUpdateState extends LocationEditLocationState {}
+
+class LocationEditUpdateCompleteState extends LocationEditLocationState{}

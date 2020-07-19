@@ -57,4 +57,6 @@ class LocationEditRemoveSrcEvent extends LocationEditLocationEvent {}
 
 class LocationEditConfirmedQueryAddressEvent extends LocationEditLocationEvent {}
 
+class LocationEditDeleteLocationEvent extends LocationEditLocationEvent{}
+
 class LocationEditUpdateLocationEvent extends LocationEditLocationEvent {}

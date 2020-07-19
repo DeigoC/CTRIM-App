@@ -129,7 +129,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           Event event = Event(
             title: widget._post.title,
             description: widget._post.description,
-            location: BlocProvider.of<TimelineBloc>(context).allLocations
+            location: BlocProvider.of<TimelineBloc>(context).selectableLocations
             .firstWhere((element) => element.id == widget._post.locationID)
             .getAddressLine(),
             startDate: widget._post.startDate,
@@ -208,7 +208,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   Widget _buildDetailsTab() {
     List<Widget> children = [
       Text('Location'),
-      Text(BlocProvider.of<TimelineBloc>(context).allLocations
+      Text(BlocProvider.of<TimelineBloc>(context).selectableLocations
           .firstWhere((element) => element.id == widget._post.locationID)
           .getAddressLine()),
       SizedBox(height: 8,),

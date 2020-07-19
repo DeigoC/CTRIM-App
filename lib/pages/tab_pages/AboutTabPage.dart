@@ -100,7 +100,7 @@ class AboutTabPage{
               splashColor: Colors.blue.withAlpha(30),
               child: Container(
                 decoration: BoxDecoration(image: DecorationImage(
-                  image: NetworkImage(thisArticle.gallerySources.keys.first),
+                  image: NetworkImage(thisArticle.firstImage),
                   fit: BoxFit.cover
                 )),
                 width: double.infinity,

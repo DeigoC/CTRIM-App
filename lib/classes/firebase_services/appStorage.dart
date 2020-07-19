@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -57,6 +58,17 @@ class AppStorage{
       await _ref.child(filePath).getDownloadURL().then((url){
         downloadSrc = url;
       });
+    });
+    return downloadSrc;
+  }
+
+  Future<String> uploadAndGetLocationImageSrc(Location location, File file) async{
+    String downloadSrc;
+    String filePath = 'locations/${location.id}';
+    StorageUploadTask task = _ref.child(filePath).putFile(file);
+    await task.onComplete;
+    await _ref.child(filePath).getDownloadURL().then((url){
+      downloadSrc = url;
     });
     return downloadSrc;
   }

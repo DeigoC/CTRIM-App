@@ -190,12 +190,11 @@ class MyFlatButton extends StatelessWidget {
       disabledColor: Color(0xff676767),
       padding: internalPadding,
       disabledTextColor: Colors.grey,
-      color: isDestructive ? Color(0xffd11a2a):null,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: border&&!disabled ? Colors.blue:Colors.transparent),
         borderRadius: BorderRadius.circular(18)
       ),
-      child: Text(label,style: disabled? _disabledText: TextStyle(color: Colors.blue),),
+      child: Text(label,style: disabled? _disabledText: TextStyle(color: isDestructive ? Color(0xffd11a2a): Colors.blue),),
       onPressed: onPressed,
     );
   }

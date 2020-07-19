@@ -40,7 +40,7 @@ class LocationCard extends StatelessWidget {
                   }
                 },
                 child: Hero(
-                  tag: location.imgSrc == null
+                  tag: location.imgSrc == ''
                       ? location.addressLine
                       : '0/' + location.imgSrc,
                   child: Container(
@@ -64,7 +64,7 @@ class LocationCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ListTile(
-                    title: MyFlatButton(
+                    title: location.id == '0' ? Text('Address not Required') : MyFlatButton(
                       externalPadding: EdgeInsets.zero,
                       label: location.addressLine,
                       onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location)),

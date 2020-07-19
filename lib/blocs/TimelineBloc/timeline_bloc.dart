@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
@@ -111,10 +112,14 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return sortedResult;
   }
 
-  List<Location> get allLocations => LocationDBManager.allLocations;
+  List<Location> get selectableLocations{
+    List<Location> result = List.from(LocationDBManager.allLocations);
+    result.removeWhere((e) => e.deleted);
+    return result;
+  }
 
   List<Location> get locationsForTab {
-    List<Location> result = List.from(allLocations);
+    List<Location> result = List.from(LocationDBManager.allLocations);
     result.removeAt(0);
     result.removeWhere((e) => e.deleted);
     return result;
@@ -122,7 +127,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   String getLocationAddressLine(String locationID) {
     if (locationID.trim().isNotEmpty) 
-      return allLocations.firstWhere((location) => location.id.compareTo(locationID) == 0).addressLine;
+      return LocationDBManager.allLocations.firstWhere((location) => location.id.compareTo(locationID) == 0).addressLine;
     return 'Pending';
   }
 
@@ -156,9 +161,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     else if (event is TimelineDisplayCurrentUserLikedPosts)yield _getCurrentUserLikedPosts(event.likedPosts);
     else if (event is TimelineUserDisabledEvent) yield* _mapUserDisabledToState(event);
     else if (event is TimelineUserEnabledEvent) yield* _mapUserEnabledToState(event);
-    else if (event is TimelineLocationDeletedEvent) _mapLocationDeletedToState(event);
-    else if (event is TimelineLocationUpdatedEvent) _updateLocation(event);
     else if (event is TimelineAboutTabEvent) yield* _mapAboutTabEventToState(event);
+    else if(event is TimelineLocationUpdateOccuredEvent) this.mapEventToState(TimelineLocationSearchTextChangeEvent(null));
   }
 
   Stream<TimelineState> _mapAboutTabEventToState(TimelineAboutTabEvent event) async*{
@@ -373,10 +377,10 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   // ! Location Related
-  Stream<TimelineState> _mapLocationSearchEventToState( TimelineLocationSearchTextChangeEvent event) async* {
+  Stream<TimelineState> _mapLocationSearchEventToState(TimelineLocationSearchTextChangeEvent event) async* {
     List<Location> result = [];
     _locationSearchString = event.searchString ?? _locationSearchString;
-    allLocations.forEach((location) {
+    selectableLocations.forEach((location) {
       if (location.id != '0' &&
           location.addressLine
               .toLowerCase()
@@ -386,19 +390,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     });
     yield TimelineDisplayLocationSearchResultsState(result);
     yield TimelineEmptyState();
-  }
-
-  void _mapLocationDeletedToState(TimelineLocationDeletedEvent event){
-    int index = allLocations.indexWhere((e) => e.id.compareTo(event.location.id)==0);
-    allLocations[index].deleted = true;
-    _locationDBManager.updateLocation(allLocations[index]);
-    this.mapEventToState(TimelineLocationSearchTextChangeEvent(null));
-  }
-
-  void _updateLocation(TimelineLocationUpdatedEvent event) {
-    int index = allLocations.indexWhere((l) => l.id.compareTo(event.location.id) == 0);
-    allLocations[index] = event.location;
-    _locationDBManager.updateLocation(event.location);
   }
 
   // ! Lower level details

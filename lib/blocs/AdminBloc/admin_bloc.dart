@@ -121,7 +121,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       _selectedUser.adminLevel = event.selectedLevel;
       yield AdminUserAdminLevelChangedState();
       yield _canEnableAddUserButton();
-      yield _canEnableUpdateUserButton(); // ? Weird?
+      if(_originalUser != null) yield _canEnableUpdateUserButton(); 
     } else if (event is AdminUserModTextChangeEvent) {
       _selectedUser.forename = event.forename ?? _selectedUser.forename;
       _selectedUser.surname = event.surname ?? _selectedUser.surname;

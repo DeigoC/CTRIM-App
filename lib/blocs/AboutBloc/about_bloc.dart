@@ -27,7 +27,8 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
       serviceTime: articleToEdit.serviceTime,
       locationID: articleToEdit.locationID,
       locationPastorUID: articleToEdit.locationPastorUID,
-      gallerySources: articleToEdit.gallerySources
+      gallerySources: articleToEdit.gallerySources,
+      socialLinks: articleToEdit.socialLinks,
     );
 
     _originalArticle = AboutArticle(
@@ -37,7 +38,8 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
       serviceTime: articleToEdit.serviceTime,
       locationID: articleToEdit.locationID,
       locationPastorUID: articleToEdit.locationPastorUID,
-      gallerySources: articleToEdit.gallerySources
+      gallerySources: articleToEdit.gallerySources,
+      socialLinks: articleToEdit.socialLinks,
     );
   }
 

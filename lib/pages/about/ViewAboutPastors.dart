@@ -46,8 +46,8 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
           GestureDetector(
             onTap: (){
               BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({
-              widget._aboutArticle.gallerySources.keys.elementAt(2):ImageTag(
-                src: widget._aboutArticle.gallerySources.keys.elementAt(2),
+              widget._aboutArticle.thirdImage:ImageTag(
+                src: widget._aboutArticle.thirdImage,
                 type: 'img'
               )
             }, 0));
@@ -55,8 +55,8 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
             child: AspectRatio(
               aspectRatio: 16/9,
               child: Hero(
-                child: Image.network(widget._aboutArticle.gallerySources.keys.elementAt(2),fit: BoxFit.cover,),
-                tag: '0/' + widget._aboutArticle.gallerySources.keys.elementAt(2),
+                child: Image.network(widget._aboutArticle.thirdImage,fit: BoxFit.cover,),
+                tag: '0/' + widget._aboutArticle.thirdImage,
               ),
             ),
           ),

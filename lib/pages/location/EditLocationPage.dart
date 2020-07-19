@@ -68,9 +68,11 @@ class _EditLocationState extends State<EditLocation> {
                 Navigator.of(context).pop();
               } else if (state is LocationDisplayConfirmedQueryAddressState) {
                 Navigator.of(context).pop();
-              } else if (state is LocationEditChangesSavedState) {
-                BlocProvider.of<TimelineBloc>(context).add(TimelineLocationUpdatedEvent(state.updatedLocation));
-                BlocProvider.of<TimelineBloc>(context).add(TimelineLocationSearchTextChangeEvent(null));
+              } else if (state is LocationEditAttemptToUpdateState) {
+                ConfirmationDialogue.uploadTaskStarted(context: context);
+              }else if(state is LocationEditUpdateCompleteState){
+                BlocProvider.of<TimelineBloc>(context).add(TimelineLocationUpdateOccuredEvent());
+                Navigator.of(context).pop();
                 Navigator.of(context).pop();
               }
             },
@@ -187,8 +189,7 @@ class _EditLocationState extends State<EditLocation> {
                           _locationBloc
                               .add(LocationEditUpdateLocationEvent());
                       });
-                    }
-                  : null,
+                    }: null,
             );
           },
         ),
@@ -206,7 +207,7 @@ class _EditLocationState extends State<EditLocation> {
       onPressed: hasEvents ? null :(){
         ConfirmationDialogue.deleteRecord(context: context, record: 'Location').then((confirmation){
           if(confirmation){
-            BlocProvider.of<TimelineBloc>(context).add(TimelineLocationDeletedEvent(widget._location));
+            _locationBloc.add(LocationEditDeleteLocationEvent());
             Navigator.of(context).pop();
           }
         });
@@ -228,8 +229,8 @@ class _EditLocationState extends State<EditLocation> {
               return false;
             },
             builder: (_, state) {
-              bool hasFile = false,
-                  hasSrc = _locationBloc.locationToEdit.imgSrc != null;
+              bool hasFile = false, 
+              hasSrc = _locationBloc.locationToEdit.imgSrc != null && _locationBloc.locationToEdit.imgSrc != '';
               File imageFile;
               String src = _locationBloc.locationToEdit.imgSrc;
 

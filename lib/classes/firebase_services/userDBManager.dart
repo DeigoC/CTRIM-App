@@ -4,37 +4,7 @@ import 'package:ctrim_app_v1/classes/models/user.dart';
 class UserDBManager{
 
   // ! This class will hold all the users staticly
-  static List<User> _allUsers =[
-    User(
-      // * password1
-      id: '1',
-      forename: 'Diego',
-      surname: 'Collado',
-      email: 'diego@email.com',
-      adminLevel: 3,
-      body: '012301230',
-      authID: 'FWifjH3EcfR2u5xiPDsEFewLtro2',
-      likedPosts: [],
-    ),
-    User(
-      id: '3',
-      forename: 'Claudette',
-      surname: 'Collado',
-      email: 'claudette@email',
-      adminLevel: 2,
-      body: '0111111111111110',
-      likedPosts: [],
-    ),
-    User(
-      id: '2',
-      forename: 'Dana',
-      surname: 'Collado',
-      email: 'DaNa@email',
-      adminLevel: 1,
-      body: '0111111111111110',
-      likedPosts: [],
-    ),
-  ];
+  static List<User> _allUsers;
 
   static List<User> get allUsers => _allUsers;
 
@@ -48,9 +18,13 @@ class UserDBManager{
 
   Future<Null> addUser(User user) async{
     await _ref.getDocuments().then((collection){
+      List<int> allIDs = collection.documents.map((e) => int.parse(e.documentID)).toList();
+      allIDs.sort();
+      print('-------------LAST: ' + allIDs.last.toString()); 
+
       user.id = (int.parse(collection.documents.last.documentID) + 1).toString();
-      _ref.document(user.id).setData(user.toJson());
     });
+    await _ref.document(user.id).setData(user.toJson());
   }
 
   Future<Null> updateUser(User user) async{

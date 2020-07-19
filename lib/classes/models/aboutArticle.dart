@@ -6,6 +6,7 @@ class AboutArticle{
 
   String id, body, title, locationID, serviceTime, locationPastorUID;
   Map<String, String> gallerySources, socialLinks;
+  List<String> _imgSrc =[];
 
   AboutArticle({
     this.id,
@@ -39,6 +40,17 @@ class AboutArticle{
       'GallerySources':gallerySources,
     };
   }
+
+  String get firstImage{
+    _imgSrc = gallerySources.keys.toList();
+    _imgSrc.sort();
+    return _imgSrc.first;
+  }
+
+  String get secondImage => _imgSrc[1];
+  String get thirdImage => _imgSrc[2];
+  List<String> get imageSrcList => _imgSrc.sublist(3);
+  
 
   NotusDocument getBodyDocument(){
     if(body == null || body == ''){

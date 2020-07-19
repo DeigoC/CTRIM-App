@@ -33,19 +33,19 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
 
   ListView _buildBody() {
     return ListView.builder(
-        itemCount: BlocProvider.of<TimelineBloc>(context).allLocations.length,
-        itemBuilder: (_, index) {
-          Location location =BlocProvider.of<TimelineBloc>(context).allLocations[index];
-          return LocationCard.addressSelect(
-            location: location,
-            onTap: () {
-              widget._postBloc.add(PostSelectedLocationEvent(
-                locationID: location.id,
-                addressLine: location.addressLine,
-              ));
-              Navigator.of(context).pop();
-            },
-          );
-        });
+      itemCount: BlocProvider.of<TimelineBloc>(context).selectableLocations.length,
+      itemBuilder: (_, index) {
+        Location location =BlocProvider.of<TimelineBloc>(context).selectableLocations[index];
+        return LocationCard.addressSelect(
+          location: location,
+          onTap: () {
+            widget._postBloc.add(PostSelectedLocationEvent(
+              locationID: location.id,
+              addressLine: location.addressLine,
+            ));
+            Navigator.of(context).pop();
+          },
+        );
+      });
   }
 }

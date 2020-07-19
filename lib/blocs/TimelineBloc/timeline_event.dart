@@ -74,16 +74,8 @@ class TimelineLocationSearchTextChangeEvent extends TimelineEvent {
   final String searchString;
   TimelineLocationSearchTextChangeEvent(this.searchString);
 }
-  
-class TimelineLocationDeletedEvent extends TimelineEvent{
-  final Location location;
-  TimelineLocationDeletedEvent(this.location);
-}
 
-class TimelineLocationUpdatedEvent extends TimelineEvent{
-  final Location location;
-  TimelineLocationUpdatedEvent(this.location);
-}
+class TimelineLocationUpdateOccuredEvent extends TimelineEvent{}
 
 // ! Search Album
 class TimelineAlbumSearchEvent extends TimelineEvent {}
