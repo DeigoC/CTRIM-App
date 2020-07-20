@@ -29,6 +29,12 @@ class AppStartupLoadUserEvent extends AppEvent{}
 
 class AppCurrentUserLogsOutEvent extends AppEvent{}
 
+// ! Uploading?
+class AppUploadTaskStartedEvent extends AppEvent{
+  final StorageUploadTask task;
+  AppUploadTaskStartedEvent(this.task);
+}
+
 // ! Navigation Events
 class AppNavigateToPageEvent extends AppEvent {}
 

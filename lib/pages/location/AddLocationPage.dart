@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/LocationBloc/location_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
@@ -31,7 +32,7 @@ class _AddLocationState extends State<AddLocation> {
     _tecPostcode = TextEditingController();
     _tecSelectedAddress = TextEditingController();
     _tecDescription = TextEditingController();
-    _locationBloc = LocationBloc();
+    _locationBloc = LocationBloc(BlocProvider.of<AppBloc>(context));
   }
 
   @override

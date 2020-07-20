@@ -112,6 +112,7 @@ class _EditAlbumState extends State<EditAlbum> {
   GalleryItem _buildVideoContainer(File file){
     bool selected = _selectedFiles.contains(file);
     return GalleryItem.file(
+      thumbnails: widget._postBloc.newPost.thumbnails,
       type: 'vid', file: file,
       child: InkWell(
         onTap: (){
@@ -145,6 +146,7 @@ class _EditAlbumState extends State<EditAlbum> {
     ); */
     bool selected = _selectedFiles.contains(file);
     return GalleryItem.file(
+      thumbnails: widget._postBloc.newPost.thumbnails,
       type: 'img',
       file: file,
       child: InkWell(

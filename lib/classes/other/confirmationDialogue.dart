@@ -1,5 +1,8 @@
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ConfirmationDialogue{
 
@@ -149,6 +152,7 @@ class ConfirmationDialogue{
 
   static void uploadTaskStarted({
     @required BuildContext context,
+    AppBloc appBloc,
   }){
     showDialog(
       context: context,
@@ -166,7 +170,35 @@ class ConfirmationDialogue{
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircularProgressIndicator(),
-                Text('Uploading...')
+                Text('Uploading...'),
+                BlocBuilder(
+                  bloc: appBloc,
+                  condition: (_,state){
+                    if(state is AppMapUploadTaskToDialogueState) return true;
+                    return false;
+                  },
+                  builder: (_,state){
+                    if(state is AppMapUploadTaskToDialogueState){
+                      return StreamBuilder<StorageTaskEvent>(
+                        stream: state.task.events,
+                        builder: (_,snap){
+                          String message;
+                          if(snap.hasData){
+                            String totalByteCount = snap.data.snapshot.totalByteCount.toString();
+                            String amountTransfered = snap.data.snapshot.bytesTransferred.toString();
+                            message = 'Bytes Transferred: ' + amountTransfered + '\nTotal Count: ' 
+                            + totalByteCount.toString();
+                          }else{
+                            message = 'Starting...';
+                          }
+
+                          return Text(message);
+                        },
+                      );
+                    }
+                    return Text('Awaiting next Task...');
+                  },
+                ),
               ],
             ),
           ),

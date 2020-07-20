@@ -17,7 +17,7 @@ class Post {
   List<Map<String, String>> detailTable;
 
   List<PostTag> selectedTags;
-  Map<String, String> gallerySources;
+  Map<String, String> gallerySources, thumbnails;
   Map<File, String> temporaryFiles;
 
   Post({
@@ -36,6 +36,7 @@ class Post {
     this.temporaryFiles,
     this.noOfGalleryItems = 0,
     this.endDate,
+    this.thumbnails,
     this.allDayEvent= false,
   });
 
@@ -51,6 +52,7 @@ class Post {
   deleted = data['Deleted'],
   selectedTags = _setSelectedTags(data['SelectedTags']),
   gallerySources = Map<String,String>.from(data['GallerySources']),
+  thumbnails =  Map<String,String>.from(data['Thumbnails']),
   description = data['Description'],
   isDateNotApplicable = data['IsDateNotApplicable'],
   noOfGalleryItems = data['NoOfGalleryItems'],
@@ -78,6 +80,7 @@ class Post {
       'Deleted':deleted??false,
       'SelectedTags':selectedTagsString,
       'GallerySources':gallerySources,
+      'Thumbnails':thumbnails,
       'Description':description,
       'IsDateNotApplicable':isDateNotApplicable??false,
       'NoOfGalleryItems':noOfGalleryItems,

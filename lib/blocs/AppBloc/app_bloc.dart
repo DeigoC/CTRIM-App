@@ -10,6 +10,7 @@ import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/UserFileDocument.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:ctrim_app_v1/App.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -56,6 +57,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if (event is AppCurrentUserEvent) yield* _mapCurrentUserEventToState(event);
     else if(event is AppStartupLoadUserEvent) _appStartupLoad();
     else if(event is AppCurrentUserLogsOutEvent) yield* _currentUserLogsOut();
+    else if(event is AppUploadTaskStartedEvent){
+      yield AppMapUploadTaskToDialogueState(event.task);
+      yield SettingsState();
+    } 
   }
  
   Stream<AppState> _mapCurrentUserEventToState(AppCurrentUserEvent event) async* {

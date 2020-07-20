@@ -207,6 +207,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
       case 0: return MainTabBody();
       case 1: return PostDetailsTabBody();
       case 2: return GalleryTabBody.edit(
+        thumbnails: _postBloc.newPost.thumbnails,
           orientation: _orientation,
           gallerySrc: _postBloc.newPost.gallerySources,
         );

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/LocationBloc/location_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
@@ -27,7 +28,7 @@ class _EditLocationState extends State<EditLocation> {
 
   @override
   void initState() {
-    _locationBloc = LocationBloc();
+    _locationBloc = LocationBloc(BlocProvider.of<AppBloc>(context));
     _locationBloc.setLocationForEdit(widget._location);
     _tecDescription = TextEditingController(text: widget._location.description);
     _tecSelectedAddress =

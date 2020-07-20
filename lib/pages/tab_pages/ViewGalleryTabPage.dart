@@ -58,10 +58,13 @@ class ViewGalleryPage {
           itemBuilder: (_, index) {
 
             DateTime date = _allPosts.keys.toList().reversed.elementAt(index);
-            Map<String, String> srcs = {};
+            Map<String, String> srcs = {}, thumbs = {};
             String dateString = DateFormat('dd MMMM yyyy').format(date);
 
-            _allPosts[date].forEach((post) => srcs.addAll(post.gallerySources));
+            _allPosts[date].forEach((post){
+              srcs.addAll(post.gallerySources);
+              thumbs.addAll(post.thumbnails);
+            });
 
             Map<String, ImageTag> galleryTags = _createGalleryTags(srcs);
             return Column(
@@ -75,6 +78,7 @@ class ViewGalleryPage {
                     int pos = srcs.keys.toList().indexOf(src);
                     if (srcs[src].compareTo('vid') == 0) {
                       return GalleryItem(
+                        thumbnails: thumbs,
                         src: src,
                         type: srcs[src],
                         heroTag: galleryTags.values.elementAt(pos).heroTag,
@@ -82,6 +86,7 @@ class ViewGalleryPage {
                       );
                     }
                     return GalleryItem(
+                      thumbnails: thumbs,
                         src: src,
                         type: srcs[src],
                         heroTag: galleryTags.values.elementAt(pos).heroTag,
@@ -116,9 +121,10 @@ class ViewGalleryPage {
       itemBuilder: (_, index) {
         Post post = individualPosts[index];
         if (post.gallerySources.values.first == 'vid'){
+          String vidSrc = post.gallerySources.keys.first;
           return AlbumCoverItem(
             type: 'vid',
-            src: post.gallerySources.keys.first,
+            src: post.thumbnails[vidSrc],
             onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post)),
             title: post.title,
             itemCount: post.gallerySources.length.toString(),

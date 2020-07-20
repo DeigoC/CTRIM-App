@@ -144,6 +144,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
   GalleryItem _buildVideoSrcContainer(String src){
     bool selected = _selectedFiles.contains(src);
     return GalleryItem(
+      thumbnails: widget._postBloc.newPost.thumbnails,
       onTap: null,
       heroTag: src,// ? Not required
       src: src,
@@ -176,6 +177,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
   GalleryItem _buildVideoFileContainer(File file){
     bool selected = _selectedFiles.contains(file.path);
     return GalleryItem.file(
+      thumbnails: widget._postBloc.newPost.thumbnails,
       file: file,
       type: 'vid',
       child: InkWell(
@@ -206,6 +208,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
   GalleryItem _buildPictureFileContainer(File file){
     bool selected = _selectedFiles.contains(file.path);
     return GalleryItem.file(
+      thumbnails: widget._postBloc.newPost.thumbnails,
       type: 'img', 
       file: file,
       child: InkWell(
@@ -236,6 +239,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
   GalleryItem _buildPictureSrcContainer(String src){
     bool selected = _selectedFiles.contains(src);
     return GalleryItem(
+      thumbnails: widget._postBloc.newPost.thumbnails,
       heroTag: src,
       onTap: null,
       type: 'img', 

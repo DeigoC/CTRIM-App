@@ -19,7 +19,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
   @override
   void initState() {
     super.initState();
-    _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers);
+    _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers,BlocProvider.of<AppBloc>(context));
     _tecEmail = TextEditingController();
   }
 

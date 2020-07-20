@@ -154,6 +154,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           return _buildDetailsTab();
         else if (_selectedTabIndex == 2)
           return GalleryTabBody.view(
+            thumbnails: widget._post.thumbnails,
               orientation: orientation,
               gallerySrc: widget._post.gallerySources);
         return _buildUpdatesTab();
@@ -206,6 +207,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
 
   Widget _buildDetailsTab() {
+    print('----------------------BUILDING DETAILS TAB');
+
     List<Widget> children = [
       Text('Location'),
       Text(BlocProvider.of<TimelineBloc>(context).selectableLocations

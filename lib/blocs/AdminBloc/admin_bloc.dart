@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
@@ -19,7 +20,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
   final AuthService _auth = AuthService();
   final UserDBManager _userDBManager = UserDBManager();
-  final AppStorage _appStorage = AppStorage();
+  final AppStorage _appStorage;
 
   List<User> _users = [];
   void setUsers(List<User> users) {
@@ -31,7 +32,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
   String _loginEmail = '', _loginPassword = '', _creationPassword = '';
 
-  AdminBloc(this._users);
+  AdminBloc(this._users, AppBloc appBloc):_appStorage = AppStorage(appBloc);
 
   void setupUserToRegister() {
     _selectedUser = User(

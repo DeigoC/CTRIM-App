@@ -33,7 +33,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
       body: originalU.body,
       imgSrc: originalU.imgSrc
     );
-    _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers);
+    _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers,BlocProvider.of<AppBloc>(context));
     _adminBloc.setupUserToEdit(originalU);
 
     _fnBody = FocusNode();

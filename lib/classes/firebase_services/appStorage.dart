@@ -1,13 +1,21 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class AppStorage{
   
   StorageReference _ref =  FirebaseStorage(storageBucket: 'gs://ctrim-app.appspot.com/').ref();
+
+  final AppBloc _appBloc;
+  AppStorage(this._appBloc);
+
 
   Future<Null> uploadNewPostFiles(Post post) async{
     StorageUploadTask task;
@@ -17,15 +25,40 @@ class AppStorage{
         String filePath = 'posts/${post.id}/item_$index';
         task = _ref.child(filePath).putFile(file);
         
+        _appBloc.add(AppUploadTaskStartedEvent(task));
+        
         await  task.onComplete.then((_) async{
-         await _ref.child(filePath).getDownloadURL().then((url){
+         await _ref.child(filePath).getDownloadURL().then((url) async{
           post.gallerySources[url] = post.temporaryFiles[file];
+          if(post.temporaryFiles[file] == 'vid'){
+            post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(file, filePath);
+          }
          });
          index++;
         });
       });
     }
     post.noOfGalleryItems = index;
+  }
+
+  Future<String> _uploadAndGetVideoThumbnailSrc(File file, String filePath) async{
+    Uint8List data = await VideoThumbnail.thumbnailData(video: file.path);
+    String newFilePath = filePath +'_thumbnail';
+
+    StorageUploadTask task;
+
+    String directory;
+    await getApplicationDocumentsDirectory().then((d) => directory = d.path);
+    print('---------------DIRECTORY IS : ' + directory);
+    await File('$directory/thing.png').create(recursive: true)
+    .then((thumbnail) async{
+      final buffer = data.buffer;
+      var anotherFile = await thumbnail.writeAsBytes(buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+      task =_ref.child(newFilePath).putFile(anotherFile);
+    });
+
+    await task.onComplete;
+    return (await _ref.child(newFilePath).getDownloadURL()).toString();
   }
 
   Future<Null> uploadEditPostNewFiles(Post post,) async{

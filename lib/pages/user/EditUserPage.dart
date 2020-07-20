@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
@@ -19,7 +20,7 @@ class _EditUserPageState extends State<EditUserPage> {
 
   @override
   void initState() {
-    _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers);
+    _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers,BlocProvider.of<AppBloc>(context));
     _adminBloc.setupUserToEdit(widget.user);
     super.initState();
   }

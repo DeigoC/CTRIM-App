@@ -102,7 +102,7 @@ class _AppState extends State<App> {
         create: (_) => _appBloc,
       ),
       BlocProvider<TimelineBloc>(
-        create: (_) => TimelineBloc(),
+        create: (_) => TimelineBloc(_appBloc),
       ),
       BlocProvider<AboutBloc>(
         create: (_)=> AboutBloc(),

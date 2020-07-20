@@ -11,18 +11,23 @@ class GalleryItem extends StatefulWidget {
   final bool isItemAFile;
   final File file;
   final Widget child;
+  final Map<String,String> thumbnails;
+
+  
 
   GalleryItem({
    @required this.onTap,
    @required this.heroTag,
    @required this.src,
     @required this.type,
+    @required this.thumbnails,
     this.child
   }):isItemAFile = false, file = null;
 
   GalleryItem.file({
     @required this.type,
     @required this.file,
+    @required this.thumbnails,
     this.child,
     this.onTap,
   }):isItemAFile = true, src = null, heroTag = null;
@@ -39,13 +44,12 @@ class _GalleryItemState extends State<GalleryItem> {
   @override
   void initState() {
     if(widget.type=='vid'){
-      _videoPlayerController = widget.isItemAFile ? VideoPlayerController.file(widget.file):
-       VideoPlayerController.network(widget.src);
-      _videoPlayerController.initialize().then((_){
-        if(mounted){
-          setState(() { });
-        }
-      });
+      if(widget.isItemAFile){
+        _videoPlayerController = VideoPlayerController.file(widget.file);
+      }else{
+        _videoPlayerController = VideoPlayerController.network(widget.src);
+      }
+      _videoPlayerController.initialize().then((_){ setState(() {});});
     }
     super.initState();
   }
@@ -93,21 +97,26 @@ class _GalleryItemState extends State<GalleryItem> {
   }
 
   Widget _buildSRCVideoContainer(){
+    String thumbSrc = widget.thumbnails[widget.src];
     return Padding(
-      padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        width: _pictureSize,
-        height: _pictureSize,
-        child: GestureDetector(
-          onTap: widget.onTap,
+     padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          width: _pictureSize,
+          height: _pictureSize,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: NetworkImage(thumbSrc),fit: BoxFit.cover)
+          ),
           child: Stack(
-          alignment: Alignment.center,
-          children:[ 
-            VideoPlayer(_videoPlayerController),
-            Icon(Icons.play_circle_outline, color: Colors.white,)
-          ]),
+            alignment: Alignment.center,
+            children: [
+              widget.child??Container(),
+              Icon(Icons.play_circle_outline,color: Colors.white,)
+            ],
+          ),
         ),
       ),
     );
@@ -165,20 +174,10 @@ class AlbumCoverItem extends StatefulWidget {
 }
 
 class _AlbumCoverItemState extends State<AlbumCoverItem> {
-  
-  VideoPlayerController _videoPlayerController;
 
   @override
   void initState() { 
     super.initState();
-    if(widget.type=='vid'){
-      _videoPlayerController = VideoPlayerController.network(widget.src);
-      _videoPlayerController.initialize().then((_){
-        if(mounted){
-          setState(() { });
-        }
-      });
-    }
   }
 
   @override
@@ -188,6 +187,7 @@ class _AlbumCoverItemState extends State<AlbumCoverItem> {
 
   Widget _buildVideoItem(){
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: GestureDetector(onTap: widget.onTap, child: Hero(
@@ -196,19 +196,19 @@ class _AlbumCoverItemState extends State<AlbumCoverItem> {
               padding: EdgeInsets.all(4),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                child: Stack(
+                child:Container(
                   alignment: Alignment.center,
-                  children: [
-                    VideoPlayer(_videoPlayerController),
-                    Icon(Icons.play_circle_outline, color: Colors.white,),
-                  ],
-                ),
+                  child: Icon(Icons.play_circle_outline,color: Colors.white,),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: NetworkImage(widget.src),fit: BoxFit.cover)
+                  ),
+                )
               ),
             ),
           ),),
         ),
         Text(widget.title,textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,),
-        Text('(${widget.itemCount})')
+        Text('(${widget.itemCount})',textAlign: TextAlign.center),
       ],
     );
   }

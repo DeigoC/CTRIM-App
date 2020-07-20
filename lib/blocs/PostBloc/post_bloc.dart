@@ -17,6 +17,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     temporaryFiles: {},
     detailTable: [],
     gallerySources: {},
+    thumbnails: {},
     deleted: false,
   );
 

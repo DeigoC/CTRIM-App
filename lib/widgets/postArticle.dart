@@ -1,3 +1,4 @@
+
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
@@ -5,7 +6,6 @@ import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:video_player/video_player.dart';
 
 // ignore: must_be_immutable
 class PostArticle extends StatelessWidget {
@@ -147,8 +147,7 @@ class PostArticleMediaContainer extends StatefulWidget {
 }
 
 class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
-  
-  VideoPlayerController _videoController;
+ 
   Map<String, ImageTag> _gallerySrc ={};
 
    String _initalPostID;
@@ -163,7 +162,6 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
 
   @override
   void dispose() { 
-    if(_videoController != null) _videoController.dispose();
     super.dispose();
   }
 
@@ -171,20 +169,20 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
     if(widget.post.gallerySources.length !=0 && !_initialisedData){
       String type = widget.post.gallerySources.values.elementAt(0);
       String src = widget.post.gallerySources.keys.elementAt(0);
-      if(type =='vid' && _videoController == null){
+      if(type =='vid'){
         _gallerySrc[src] = ImageTag(
           src: src,
           type: type,
           tPostID: widget.isOriginal ? '0' : widget.timelinePost.id
         );
-        _videoController = VideoPlayerController.network(widget.post.gallerySources.keys.elementAt(0));
+       /*  _videoController = VideoPlayerController.network(widget.post.gallerySources.keys.elementAt(0));
         _videoController.initialize().then((_){
           if(mounted){
             setState(() {
               _initialisedData = true;
             });
           }
-        });
+        }); */
       }else{
         int imageNo = 0;
         List<String> srcs = widget.post.gallerySources.keys.toList();
@@ -210,7 +208,6 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
       // ! Data has changed
       WidgetsBinding.instance.addPostFrameCallback((_) {
          setState(() {
-         _videoController = null;
           _initialisedData = false;
           _initalPostID = widget.post.id;
           _gallerySrc.clear();
@@ -228,6 +225,7 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: _buildImageLayoutChildren(),
         ),
       ),
@@ -240,9 +238,9 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
         Expanded(
           child: Column(
             children: [
-              Expanded(child:_buildMediaSlot(_gallerySrc, 0),),
+              Expanded(child:_buildMediaSlot(0),),
               SizedBox(height: 2,),
-              Expanded( child:_buildMediaSlot(_gallerySrc, 2),),
+              Expanded( child:_buildMediaSlot(2),),
             ],
           ),
         ),
@@ -250,75 +248,69 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
         Expanded(
           child: Column(
             children: [
-              Expanded(child:_buildMediaSlot(_gallerySrc, 1),),
+              Expanded(child:_buildMediaSlot(1),),
               SizedBox( height: 2,),
-              Expanded(child:_buildMediaSlot(_gallerySrc, 3),),
+              Expanded(child:_buildMediaSlot(3),),
             ],
           ),
         ),
       ];
     }else if (_gallerySrc.length == 3){
       return [
-       Expanded( child:_buildMediaSlot(_gallerySrc, 0),),
+       Expanded( child:_buildMediaSlot(0),),
         SizedBox(width: 2,),
         Expanded(
           child: Column(
             children: [
-              Expanded( child:_buildMediaSlot(_gallerySrc, 1),),
+              Expanded( child:_buildMediaSlot(1),),
               SizedBox(height: 2,),
-              Expanded( child:_buildMediaSlot(_gallerySrc, 2),),
+              Expanded( child:_buildMediaSlot(2),),
             ],
           ),
         ),
       ];
     }else if (_gallerySrc.length == 2){
       return[
-        Expanded(child:_buildMediaSlot(_gallerySrc, 0),),
+        Expanded(child:_buildMediaSlot(0),),
         SizedBox(width: 2,),
-         Expanded(child:_buildMediaSlot(_gallerySrc, 1),),
+         Expanded(child:_buildMediaSlot(1),),
       ];
     }
-      return [ Expanded(child:_buildMediaSlot(_gallerySrc, 0),), ];
+      return [ Expanded(child:_buildMediaSlot(0),), ];
   }
 
-  Widget _buildMediaSlot(Map<String, ImageTag> gallerySrc, int index){
-    if(gallerySrc.values.elementAt(index).type=='img') return _buildImageContainer(gallerySrc, index);
-    return _buildVideoContainer(gallerySrc, index);
+  Widget _buildMediaSlot(int index){
+    if(_gallerySrc.values.elementAt(index).type=='img') return _buildImageContainer(index);
+    return _buildVideoContainer(index);
   }
 
-  Widget _buildVideoContainer(Map<String, ImageTag> gallerySrc, int index){
-    double iconSize = MediaQuery.of(context).size.width*0.15;
-    if(_videoController == null){
-      return CircularProgressIndicator();
-    }
-    return Stack(
-      alignment: Alignment.center,
-          children:[ 
-            Container(
-            child: GestureDetector(
-            onTap: (){ _moveToViewImageVideo(gallerySrc, index);},
-            child: VideoPlayer(_videoController)
-          ),
-        ),
-        Icon(Icons.play_circle_outline, color: Colors.white, size: iconSize,),
-          ]
-    );
-  }
-
-  Hero _buildImageContainer(Map<String, ImageTag> gallerySrc, int index){
-    return Hero(
-      tag: gallerySrc.values.elementAt(index).heroTag,
+  Widget _buildVideoContainer(int index){
+    String thumbnailSrc = widget.post.thumbnails[_gallerySrc.keys.elementAt(index)];
+    return GestureDetector(
+      onTap: ()=>_moveToViewImageVideo(index),
       child: Container(
-        child: GestureDetector(onTap: ()=>_moveToViewImageVideo(gallerySrc, index),),
+        child: Icon(Icons.play_circle_outline),
         decoration: BoxDecoration(
-          image: DecorationImage(image: NetworkImage(gallerySrc.keys.elementAt(index),),fit: BoxFit.cover)
+          image: DecorationImage(image: NetworkImage(thumbnailSrc),fit: BoxFit.cover)
         ),
       ),
     );
   }
 
-  void _moveToViewImageVideo(Map<String, ImageTag> gallery, int index) {
-    BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(gallery, index));
+  Hero _buildImageContainer(int index){
+    return Hero(
+      tag: _gallerySrc.values.elementAt(index).heroTag,
+      child: Container(
+        child: GestureDetector(onTap: ()=>_moveToViewImageVideo(index),),
+        decoration: BoxDecoration(
+          image: DecorationImage(image: NetworkImage(_gallerySrc.keys.elementAt(index),),fit: BoxFit.cover)
+        ),
+      ),
+    );
+  }
+
+  void _moveToViewImageVideo(int index) {
+    BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(_gallerySrc, index));
   }
 
 }

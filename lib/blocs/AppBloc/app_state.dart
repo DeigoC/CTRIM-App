@@ -17,6 +17,12 @@ class AppRebuildSettingsDrawerState extends AppState{}
 
 class AppAttemptingToLogoutUserState extends AppState{}
 
+// ! Uploading Task
+class AppMapUploadTaskToDialogueState extends AppState{
+  final StorageUploadTask task;
+  AppMapUploadTaskToDialogueState(this.task);
+}
+
 // ! Tabs Being clicked
 class AppTabClickedState extends AppState {}
 

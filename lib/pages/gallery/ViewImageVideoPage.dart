@@ -118,7 +118,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
                       });
                     }
                     if(t.metrics.atEdge){
-                      Navigator.of(context).pop();
+                      //Navigator.of(context).pop();
                     }
                   }
                 }
@@ -148,7 +148,12 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       },
       child: Container(
         height:  MediaQuery.of(context).size.height + 200,
-        child: (type.compareTo('vid') == 0) ? MyVideoPlayer(_videoControllers[src]) : _createImagePage(src),
+        alignment: Alignment.center,
+        color: Colors.red,
+        child: AspectRatio(
+          aspectRatio: 9/16,
+          child: (type.compareTo('vid') == 0) ? MyVideoPlayer(_videoControllers[src]) : _createImagePage(src),
+        ),
       ),
     );
   }

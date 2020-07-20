@@ -39,9 +39,9 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
   }
 
   Future<Null> _loadAllData() async{
-    LocationDBManager locationDBManager = LocationDBManager();
+    LocationDBManager locationDBManager = LocationDBManager(BlocProvider.of<AppBloc>(context));
     UserDBManager userDBManager = UserDBManager();
-    PostDBManager postDBManager = PostDBManager();
+    PostDBManager postDBManager = PostDBManager(BlocProvider.of<AppBloc>(context));
     TimelinePostDBManager timelinePostDBManager = TimelinePostDBManager();
     AboutDBManager aboutDBManager = AboutDBManager();
     

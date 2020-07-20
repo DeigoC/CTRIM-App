@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 
@@ -10,7 +11,9 @@ class LocationDBManager{
   static List<Location> _allLocations;
   static List<Location> get allLocations => _allLocations;
 
-  final AppStorage _appStorage = AppStorage();
+  final AppStorage _appStorage;
+
+  LocationDBManager(AppBloc appBloc):_appStorage = AppStorage(appBloc);
  
   Future<List<Location>> fetchAllLocations() async{
     var collection = await _ref.getDocuments();

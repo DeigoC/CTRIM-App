@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/postDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/timelinePostDBManager.dart';
@@ -17,11 +17,15 @@ part 'timeline_state.dart';
 
 class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   
-  final LocationDBManager _locationDBManager = LocationDBManager();
+  final LocationDBManager _locationDBManager;
   final UserDBManager _userDBManager = UserDBManager();
-  final PostDBManager _postDBManager = PostDBManager();
+  final PostDBManager _postDBManager;
   final TimelinePostDBManager _timelinePostDBManager = TimelinePostDBManager();
  
+  TimelineBloc(AppBloc appBloc)
+  :_locationDBManager = LocationDBManager(appBloc),
+  _postDBManager = PostDBManager(appBloc);
+
   // ! Bloc Fields
   String _locationSearchString = '';
 
