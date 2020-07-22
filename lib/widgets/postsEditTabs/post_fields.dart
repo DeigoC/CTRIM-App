@@ -145,24 +145,54 @@ class PostLocationField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text('Location'),
-          BlocBuilder<PostBloc, PostState>(condition: (_, currentState) {
+      child: BlocBuilder<PostBloc, PostState>(
+        condition: (_, currentState) {
             if (currentState is PostLocationSelectedState) return true;
             return false;
-          }, builder: (_, state) {
+        }, 
+        builder: (_, state) {
             String locationID = BlocProvider.of<PostBloc>(context).newPost.locationID;
             String addressLine = BlocProvider.of<TimelineBloc>(context) .getLocationAddressLine(locationID);
-            return MyFlatButton(
+            
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Location'),
+                MyFlatButton(
+                  border: true,
+                  label: addressLine,
+                  onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent(
+                          BlocProvider.of<PostBloc>(context))),
+                ),
+                MyCheckBox(
+                  label: 'Not Applicable',
+                  value: BlocProvider.of<PostBloc>(context).newPost.locationID == '0',
+                  onChanged: (newValue){
+                    if(newValue){
+                      BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
+                        locationID: '0',
+                        addressLine: 'Location Not Applicable'
+                      ));
+                    }else{
+                      BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
+                        locationID: '',
+                        addressLine: 'PENDING'
+                      ));
+                    }
+                    
+                  },
+                ),
+              ],
+            );
+            
+            
+            /* return MyFlatButton(
+              border: true,
               label: addressLine,
               onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent(
                       BlocProvider.of<PostBloc>(context))),
-            );
+            ); */
           }),
-        ],
-      ),
     );
   }
 }

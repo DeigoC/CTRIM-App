@@ -25,7 +25,8 @@ class AppStorage{
         String filePath = 'posts/${post.id}/item_$index';
         task = _ref.child(filePath).putFile(file);
         
-        _appBloc.add(AppUploadTaskStartedEvent(task));
+        //TODO apply this to all upload tasks
+        _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: index + 1,totalLength: post.temporaryFiles.length));
         
         await  task.onComplete.then((_) async{
          await _ref.child(filePath).getDownloadURL().then((url) async{
@@ -49,7 +50,6 @@ class AppStorage{
 
     String directory;
     await getApplicationDocumentsDirectory().then((d) => directory = d.path);
-    print('---------------DIRECTORY IS : ' + directory);
     await File('$directory/thing.png').create(recursive: true)
     .then((thumbnail) async{
       final buffer = data.buffer;
@@ -67,9 +67,10 @@ class AppStorage{
     if(post.temporaryFiles.length != 0){
       await Future.forEach(post.temporaryFiles.keys, (file) async{
         String filePath = 'posts/${post.id}/item_$index';
-        print('-----------------INDEX IS ' + index.toString());
         task = _ref.child(filePath).putFile(file);
         
+         _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: index + 1,totalLength: post.temporaryFiles.length));
+
         await task.onComplete.then((_) async{
           await _ref.child(filePath).getDownloadURL().then((url){
             post.gallerySources[url] = post.temporaryFiles[file];
@@ -78,7 +79,6 @@ class AppStorage{
         });
       });
     }
-    print('-----------------FINISHED: INDEX IS ' + index.toString());
     post.noOfGalleryItems = index;
   }
 

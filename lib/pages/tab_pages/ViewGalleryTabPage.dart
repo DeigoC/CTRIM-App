@@ -51,53 +51,55 @@ class ViewGalleryPage {
   }
 
   Widget _timelineView() {
-    return OrientationBuilder(builder: (_, orientation) {
-      return ListView.builder(
-          key: PageStorageKey<String>('TimlineTab'),
-          itemCount: _allPosts.keys.length,
-          itemBuilder: (_, index) {
+    return ListView.builder(
+      key: PageStorageKey<String>('TimlineTab'),
+      itemCount: _allPosts.keys.length,
+      itemBuilder: (_, index) {
+        DateTime date = _allPosts.keys.toList().reversed.elementAt(index);
+        String dateString = DateFormat('dd MMMM yyyy').format(date);
 
-            DateTime date = _allPosts.keys.toList().reversed.elementAt(index);
-            Map<String, String> srcs = {}, thumbs = {};
-            String dateString = DateFormat('dd MMMM yyyy').format(date);
+        List<String> orderedSrcs = [];
+        Map<String, String> srcs = {}, thumbs = {};
 
-            _allPosts[date].forEach((post){
-              srcs.addAll(post.gallerySources);
-              thumbs.addAll(post.thumbnails);
-            });
+        _allPosts[date].forEach((post){
+          srcs.addAll(post.gallerySources);
+          thumbs.addAll(post.thumbnails);
+          orderedSrcs.addAll(post.gallerySources.keys.toList());
+        });
+        orderedSrcs.sort();
 
-            Map<String, ImageTag> galleryTags = _createGalleryTags(srcs);
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 16,),
-                Text(' ' + dateString,style: TextStyle(fontSize: 28),),
-                SizedBox(height: 4,),
-                Wrap(
-                  children: srcs.keys.map((src) {
-                    int pos = srcs.keys.toList().indexOf(src);
-                    if (srcs[src].compareTo('vid') == 0) {
-                      return GalleryItem(
-                        thumbnails: thumbs,
-                        src: src,
-                        type: srcs[src],
-                        heroTag: galleryTags.values.elementAt(pos).heroTag,
-                        onTap: ()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
-                      );
-                    }
-                    return GalleryItem(
-                      thumbnails: thumbs,
-                        src: src,
-                        type: srcs[src],
-                        heroTag: galleryTags.values.elementAt(pos).heroTag,
-                        onTap: ()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
-                      );
-                  }).toList(),
-                ),
-              ],
-            );
-          });
-    });
+
+        Map<String, ImageTag> galleryTags = _createGalleryTags(srcs);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 16,),
+            Text(' ' + dateString,style: TextStyle(fontSize: 28),),
+            SizedBox(height: 4,),
+            Wrap(
+              children: orderedSrcs.map((src) {
+                int pos = srcs.keys.toList().indexOf(src);
+                if (srcs[src].compareTo('vid') == 0) {
+                  return GalleryItem(
+                    thumbnails: thumbs,
+                    src: src,
+                    type: srcs[src],
+                    heroTag: galleryTags.values.elementAt(pos).heroTag,
+                    onTap: ()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
+                  );
+                }
+                return GalleryItem(
+                  thumbnails: thumbs,
+                    src: src,
+                    type: srcs[src],
+                    heroTag: galleryTags.values.elementAt(pos).heroTag,
+                    onTap: ()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
+                  );
+              }).toList(),
+            ),
+          ],
+        );
+      });
   }
   
   Map<String, ImageTag> _createGalleryTags(Map<String, String> gallery) {
@@ -120,8 +122,11 @@ class ViewGalleryPage {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (_, index) {
         Post post = individualPosts[index];
-        if (post.gallerySources.values.first == 'vid'){
-          String vidSrc = post.gallerySources.keys.first;
+        List<String> gallery = post.gallerySources.keys.toList();
+        gallery.sort();
+
+        if (post.gallerySources[gallery.first] == 'vid'){
+          String vidSrc = gallery.first;
           return AlbumCoverItem(
             type: 'vid',
             src: post.thumbnails[vidSrc],
@@ -132,7 +137,7 @@ class ViewGalleryPage {
         }
         return AlbumCoverItem(
           type: 'img',
-          src: post.gallerySources.keys.first,
+          src: gallery.first,
           onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post)),
           title: post.title,
           itemCount: post.gallerySources.length.toString(),

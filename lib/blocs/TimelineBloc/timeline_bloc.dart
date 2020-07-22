@@ -118,6 +118,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   List<Location> get selectableLocations{
     List<Location> result = List.from(LocationDBManager.allLocations);
+    result.removeAt(0);
     result.removeWhere((e) => e.deleted);
     return result;
   }
@@ -298,11 +299,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   Stream<TimelineState> _mapPostUpdateToState(TimelineUpdatePostEvent event) async*{
-    int index = _allPosts.indexWhere((post) => post.id.compareTo(event.post.id) == 0);
 
     yield TimelineAttemptingToUploadNewPostState();
     await _postDBManager.updatePost(event.post);
-    _allPosts[index] = event.post;
     _createUpdateTPost(event);
    
     yield TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
@@ -310,9 +309,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   Stream<TimelineState> _mapPostDeletedToState(TimelinePostUpdateEvent event) async*{
-    int index = _allPosts.indexWhere((post) => post.id.compareTo(event.post.id) == 0);
-    _allPosts[index].deleted = true;
-    _postDBManager.updatePost(_allPosts[index]);
+    event.post.deleted = true;
+    _postDBManager.updatePost(event.post);
     _createUpdateTPost(event);
     yield TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
     yield TimelineEmptyState();
@@ -435,7 +433,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
         updateLog: event.updateLog,
         postType: 'update'
       );
-    _allTimelinePosts.add(thisTPost);
     _timelinePostDBManager.addTimelinePost(thisTPost);
   }
 

@@ -22,7 +22,6 @@ class EditPostPage extends StatefulWidget {
 class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderStateMixin {
   PostBloc _postBloc;
   TabController _tabController;
-  Orientation _orientation;
   TextEditingController _tecTitle;
 
   @override
@@ -167,30 +166,27 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
     );
   }
 
-  OrientationBuilder _buildBody() {
-    return OrientationBuilder(builder: (_, orientation) {
-      _orientation = orientation;
-      return BlocConsumer<PostBloc, PostState>(
-        listener: (_, state) {
-          //if(state is PostSelectDateState) _selectEventDate();
-          //else if(state is PostSelectTimeState) _selectEventTime();
-        },
-        buildWhen: (previousState, currentState) {
-          if (currentState is PostTabClickState) return true;
-          return false;
-        },
-        builder: (_, state) {
-          Widget result = _buildTabBody(0);
+  BlocConsumer _buildBody() {
+    return BlocConsumer<PostBloc, PostState>(
+      listener: (_, state) {
+        //if(state is PostSelectDateState) _selectEventDate();
+        //else if(state is PostSelectTimeState) _selectEventTime();
+      },
+      buildWhen: (previousState, currentState) {
+        if (currentState is PostTabClickState) return true;
+        return false;
+      },
+      builder: (_, state) {
+        Widget result = _buildTabBody(0);
 
-          if (state is PostTabClickState) {
-            int selectedIndex = _getIndexFromState(state);
-            result = _buildTabBody(selectedIndex);
-          }
+        if (state is PostTabClickState) {
+          int selectedIndex = _getIndexFromState(state);
+          result = _buildTabBody(selectedIndex);
+        }
 
-          return result;
-        },
-      );
-    });
+        return result;
+      },
+    );
   }
 
   int _getIndexFromState(PostTabClickState state) {
@@ -208,7 +204,6 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
       case 1: return PostDetailsTabBody();
       case 2: return GalleryTabBody.edit(
         thumbnails: _postBloc.newPost.thumbnails,
-          orientation: _orientation,
           gallerySrc: _postBloc.newPost.gallerySources,
         );
     }

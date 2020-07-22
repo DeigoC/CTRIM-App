@@ -17,7 +17,6 @@ class AddEventPage extends StatefulWidget {
 class _AddEventPageState extends State<AddEventPage>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
-  Orientation _orientation;
   TextEditingController _tecTitle;
   PostBloc _postBloc;
 
@@ -143,29 +142,28 @@ class _AddEventPageState extends State<AddEventPage>
     );
   }
 
-  OrientationBuilder _buildBody() {
-    return OrientationBuilder(builder: (_, orientation) {
-      _orientation = orientation;
-      return BlocConsumer<PostBloc, PostState>(
-        listener: (_, state) {
-          
-        },
-        buildWhen: (previousState, currentState) {
-          if (currentState is PostTabClickState) return true;
-          return false;
-        },
-        builder: (_, state) {
-          Widget result = _buildTabBody(0);
+  BlocConsumer _buildBody() {
+  
+    return BlocConsumer<PostBloc, PostState>(
+      listener: (_, state) {
+        
+      },
+      buildWhen: (previousState, currentState) {
+        if (currentState is PostTabClickState) return true;
+        return false;
+      },
+      builder: (_, state) {
+        Widget result = _buildTabBody(0);
 
-          if (state is PostTabClickState) {
-            int selectedIndex = _getIndexFromState(state);
-            result = _buildTabBody(selectedIndex);
-          }
+        if (state is PostTabClickState) {
+          int selectedIndex = _getIndexFromState(state);
+          result = _buildTabBody(selectedIndex);
+        }
 
-          return result;
-        },
-      );
-    });
+        return result;
+      },
+    );
+ 
   }
 
   int _getIndexFromState(PostTabClickState state) {
@@ -185,7 +183,6 @@ class _AddEventPageState extends State<AddEventPage>
         return PostDetailsTabBody();
       case 2:
         return GalleryTabBody(
-          orientation: _orientation,
           gallerySrc: {},
         );
     }

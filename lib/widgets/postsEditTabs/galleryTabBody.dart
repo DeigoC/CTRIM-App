@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GalleryTabBody extends StatelessWidget {
-  final Orientation orientation;
+  Orientation _orientation;
   final Map<String, String> gallerySrc;
   final Map<String, String> thumbnails;
 
@@ -15,16 +15,15 @@ class GalleryTabBody extends StatelessWidget {
   static String _mode = 'addingPost';
   static BuildContext _context;
 
-  GalleryTabBody({@required this.orientation, this.gallerySrc, this.thumbnails}) {
+  GalleryTabBody({this.gallerySrc, this.thumbnails}) {
     _mode = 'addingPost';
   }
 
-  GalleryTabBody.view({@required this.orientation, @required this.gallerySrc, @required this.thumbnails}) {
+  GalleryTabBody.view({@required this.gallerySrc, @required this.thumbnails}) {
     _mode = 'viewingPost';
   }
 
   GalleryTabBody.edit({
-    @required this.orientation,
     @required this.gallerySrc,
     @required this.thumbnails,
   }) {
@@ -33,6 +32,8 @@ class GalleryTabBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _orientation = MediaQuery.of(context).orientation;
+    
     _context = context;
     _setupSizes();
     if (_mode == 'viewingPost')
@@ -45,7 +46,7 @@ class GalleryTabBody extends StatelessWidget {
     pictureSize = MediaQuery.of(_context).size.width *
         0.32; // * 3 accross so 4% width left 0.04/4 = 0.01
     paddingSize = MediaQuery.of(_context).size.width * 0.01;
-    if (orientation == Orientation.landscape) {
+    if (_orientation == Orientation.landscape) {
       // * 4 blocks accross so 5 paddings accross
       pictureSize = MediaQuery.of(_context).size.width * 0.2375;
       paddingSize = MediaQuery.of(_context).size.width * 0.01;
@@ -114,7 +115,6 @@ class GalleryTabBody extends StatelessWidget {
   }
 
   Widget _buildGalleryViewPost() {
-    print('----------------------BUILDING GALLERY TAB');
     if (gallerySrc.length == 0) return Center(child: Text('No Images or Videos'),);
    
    Map<String, ImageTag> galleryTags = _createGalleryTags(gallerySrc);
@@ -122,9 +122,8 @@ class GalleryTabBody extends StatelessWidget {
     srcs.sort((a,b) => a.compareTo(b));
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text('Insert Statistics?'),
         Expanded(
           child: SingleChildScrollView(
             child: Wrap(

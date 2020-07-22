@@ -32,7 +32,8 @@ class AppCurrentUserLogsOutEvent extends AppEvent{}
 // ! Uploading?
 class AppUploadTaskStartedEvent extends AppEvent{
   final StorageUploadTask task;
-  AppUploadTaskStartedEvent(this.task);
+  final int itemNo, totalLength;
+  AppUploadTaskStartedEvent({@required this.task,  @required this.itemNo,@required this.totalLength});
 }
 
 // ! Navigation Events

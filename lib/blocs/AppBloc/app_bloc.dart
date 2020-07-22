@@ -58,7 +58,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppStartupLoadUserEvent) _appStartupLoad();
     else if(event is AppCurrentUserLogsOutEvent) yield* _currentUserLogsOut();
     else if(event is AppUploadTaskStartedEvent){
-      yield AppMapUploadTaskToDialogueState(event.task);
+      yield AppMapUploadTaskToDialogueState(task: event.task, itemNo: event.itemNo, totalLength: event.totalLength);
       yield SettingsState();
     } 
   }

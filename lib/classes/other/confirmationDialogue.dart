@@ -130,8 +130,8 @@ class ConfirmationDialogue{
           title: Text(title),
           content: Text(content),
           actions: [
-          discardOption ? FlatButton(
-            child: Text('Cancel'), onPressed: (){
+          discardOption ? MyFlatButton(
+            label: 'Cancel', onPressed: (){
               result = null;
               Navigator.of(context).pop();
             },
@@ -158,48 +158,54 @@ class ConfirmationDialogue{
       context: context,
       barrierDismissible: false,
       builder: (_){
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16.0))
-          ),
-          child: Container(
-            height: MediaQuery.of(context).size.height *0.3,
-            width:  MediaQuery.of(context).size.width *0.3,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                Text('Uploading...'),
-                BlocBuilder(
-                  bloc: appBloc,
-                  condition: (_,state){
-                    if(state is AppMapUploadTaskToDialogueState) return true;
-                    return false;
-                  },
-                  builder: (_,state){
-                    if(state is AppMapUploadTaskToDialogueState){
-                      return StreamBuilder<StorageTaskEvent>(
-                        stream: state.task.events,
-                        builder: (_,snap){
-                          String message;
-                          if(snap.hasData){
-                            String totalByteCount = snap.data.snapshot.totalByteCount.toString();
-                            String amountTransfered = snap.data.snapshot.bytesTransferred.toString();
-                            message = 'Bytes Transferred: ' + amountTransfered + '\nTotal Count: ' 
-                            + totalByteCount.toString();
-                          }else{
-                            message = 'Starting...';
-                          }
+        return WillPopScope(
+          onWillPop: ()async=>false,
+          child: Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
+            child: Container(
+              height: MediaQuery.of(context).size.height *0.3,
+              width:  MediaQuery.of(context).size.width *0.3,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(child: CircularProgressIndicator(),
+                  height: MediaQuery.of(context).size.width *0.1,
+                  width: MediaQuery.of(context).size.width *0.1,),
+                  SizedBox(height: 8,),
+                  BlocBuilder(
+                    bloc: appBloc,
+                    condition: (_,state){
+                      if(state is AppMapUploadTaskToDialogueState) return true;
+                      return false;
+                    },
+                    builder: (_,state){
+                      if(state is AppMapUploadTaskToDialogueState){
+                        return StreamBuilder<StorageTaskEvent>(
+                          stream: state.task.events,
+                          builder: (_,snap){
+                            String percentage;
+                            if(snap.hasData){
+                              int totalByteCount = snap.data.snapshot.totalByteCount;
+                              int amountTransfered = snap.data.snapshot.bytesTransferred;
+                              percentage = ((amountTransfered/totalByteCount) * 100).round().toString() + '%';
+                            }else{
+                              percentage = '0%';
+                            }
 
-                          return Text(message);
-                        },
-                      );
-                    }
-                    return Text('Awaiting next Task...');
-                  },
-                ),
-              ],
+                            return ListTile(
+                              title: Text('Item ${state.itemNo} / ${state.totalLength}'),
+                              subtitle: Text('Uploading...'),
+                              trailing: Text(percentage),
+                            );
+                          },
+                        );
+                      }
+                      return Text('Initiating upload task...');
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         );

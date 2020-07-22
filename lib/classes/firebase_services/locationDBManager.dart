@@ -27,8 +27,9 @@ class LocationDBManager{
 
   Future<Null> addLocation(Location location, File file) async{
     await _ref.getDocuments().then((collection){
-      // TODO: remember to sort ids first!
-      location.id = (int.parse(collection.documents.last.documentID) + 1).toString();
+      List<int> allIDs = collection.documents.map((e) => int.parse(e.documentID)).toList();
+      allIDs.sort();
+      location.id = (allIDs.last + 1).toString();
     });
     if(file != null){
       location.imgSrc = await _appStorage.uploadAndGetLocationImageSrc(location, file);

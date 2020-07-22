@@ -146,20 +146,15 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
 
   Widget _buildTabBody(int selectedIndex) {
-    return OrientationBuilder(
-      builder: (_, orientation) {
-        if (_selectedTabIndex == 0)
-          return _buildAboutTab();
-        else if (_selectedTabIndex == 1)
-          return _buildDetailsTab();
-        else if (_selectedTabIndex == 2)
-          return GalleryTabBody.view(
-            thumbnails: widget._post.thumbnails,
-              orientation: orientation,
-              gallerySrc: widget._post.gallerySources);
-        return _buildUpdatesTab();
-      },
-    );
+    if (_selectedTabIndex == 0)
+      return _buildAboutTab();
+    else if (_selectedTabIndex == 1)
+      return _buildDetailsTab();
+    else if (_selectedTabIndex == 2)
+      return GalleryTabBody.view(
+        thumbnails: widget._post.thumbnails,
+          gallerySrc: widget._post.gallerySources);
+    return _buildUpdatesTab();
   }
 
   Widget _buildAboutTab() {

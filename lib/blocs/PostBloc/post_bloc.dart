@@ -19,6 +19,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     gallerySources: {},
     thumbnails: {},
     deleted: false,
+    locationID: '',
   );
 
   Post _originalPost;
@@ -116,6 +117,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         noOfGalleryItems: postToEdit.noOfGalleryItems,
         endDate: postToEdit.endDate,
         allDayEvent: postToEdit.allDayEvent,
+        thumbnails: Map<String,String>.from(postToEdit.thumbnails),
         temporaryFiles: {});
 
     _originalPost = Post(
@@ -132,6 +134,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       noOfGalleryItems: postToEdit.noOfGalleryItems,
       endDate: postToEdit.endDate,
       allDayEvent: postToEdit.allDayEvent,
+      thumbnails: Map<String,String>.from(postToEdit.thumbnails),
       temporaryFiles: {},
     );
 

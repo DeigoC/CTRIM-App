@@ -13,8 +13,6 @@ class GalleryItem extends StatefulWidget {
   final Widget child;
   final Map<String,String> thumbnails;
 
-  
-
   GalleryItem({
    @required this.onTap,
    @required this.heroTag,
@@ -46,10 +44,8 @@ class _GalleryItemState extends State<GalleryItem> {
     if(widget.type=='vid'){
       if(widget.isItemAFile){
         _videoPlayerController = VideoPlayerController.file(widget.file);
-      }else{
-        _videoPlayerController = VideoPlayerController.network(widget.src);
+        _videoPlayerController.initialize().then((_){ setState(() {});});
       }
-      _videoPlayerController.initialize().then((_){ setState(() {});});
     }
     super.initState();
   }

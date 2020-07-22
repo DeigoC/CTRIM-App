@@ -88,7 +88,6 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     _selectedUser.body = jsonEncode(event.document);
 
     await _userDBManager.updateUser(_selectedUser);
-    _userDBManager.updateListUser(_selectedUser);
     yield AdminUserModUpdateUserState(_selectedUser);
     yield AdminUserImageUploadCompleteState();
   }

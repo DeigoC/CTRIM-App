@@ -19,12 +19,19 @@ class TimelinePostDBManager{
 
   Future<Null> addTimelinePost(TimelinePost timelinePost) async{
     await _ref.getDocuments().then((collection){
-      timelinePost.id = (int.parse(collection.documents.last.documentID) + 1).toString();
+      List<int> allIDs = collection.documents.map((e) => int.parse(e.documentID)).toList();
+      allIDs.sort();
+
+      timelinePost.id = (allIDs.last + 1).toString();
     });
     await _ref.document(timelinePost.id).setData(timelinePost.toJson());
+    _allTimelinePosts.add(timelinePost);
   }
 
   Future<Null> updateTimelinePost(TimelinePost timelinePost) async{
     await _ref.document(timelinePost.id).setData(timelinePost.toJson());
+    
+    int index = _allTimelinePosts.indexWhere((e) => e.id.compareTo(timelinePost.id)==0);
+    _allTimelinePosts[index] = timelinePost;
   }
 }

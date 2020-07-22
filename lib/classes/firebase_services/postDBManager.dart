@@ -27,7 +27,7 @@ class PostDBManager{
     await _ref.getDocuments().then((collection){
       List<int> allIDs = collection.documents.map((e) => int.parse(e.documentID)).toList();
       allIDs.sort();
-      post.id = (int.parse(collection.documents.last.documentID) + 1).toString();
+      post.id = (allIDs.last + 1).toString();
     });
     
     await _appStorage.uploadNewPostFiles(post);
@@ -41,6 +41,9 @@ class PostDBManager{
     await _appStorage.uploadEditPostNewFiles(post);
     post.temporaryFiles.clear();
     await _ref.document(post.id).setData(post.toJson());
+
+    int index = _allPosts.indexWhere((e) => e.id.compareTo(post.id)==0);
+    _allPosts[index] = post;
   }
 
 }

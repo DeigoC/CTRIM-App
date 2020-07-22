@@ -1,7 +1,9 @@
+import 'package:chewie/chewie.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:ctrim_app_v1/widgets/MyVideoPlayer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
 
@@ -21,21 +23,31 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   bool _isZoomedIn = false, _hideAppBar = false;
   double _midScroll = 0;
   ScrollController _scrollController;
-   Map<String, VideoPlayerController> _videoControllers = <String, VideoPlayerController>{};
+
+  Map<String, VideoPlayerController> _videoControllers = <String, VideoPlayerController>{};
+  Map<String, ChewieController> _chewieControllers = {};
+ 
 
   @override
   void initState() {
     /* SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitUp,
     ]); */
 
-    widget.imageSources.keys.forEach((src) {
+   /*  widget.imageSources.keys.forEach((src) {
       if (widget.imageSources[src].type == 'vid') {
         VideoPlayerController controller = VideoPlayerController.network(src);
         _videoControllers[src] = controller;
+        
+         _chewieControllers[src] = ChewieController(
+            videoPlayerController: controller,
+            aspectRatio: controller.value.aspectRatio,
+            autoPlay: false,
+            autoInitialize: false,
+            //deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp]
+          );
       }
-    });
-    
+    }); */
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
        setState(() {
@@ -50,16 +62,17 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
 
   @override
   void dispose() {
-    /* SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
        DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
-    ]); */
-    _videoControllers.forEach((key, value) {
-      if(value != null){
-        value.dispose();
-      }
+    ]);
+
+    _chewieControllers.keys.forEach((src) {
+      _chewieControllers[src].dispose();
+      _videoControllers[src].dispose();
+      print('------------------SRC DISPOSED: ' +src);
     });
     _scrollController.dispose();
     super.dispose();
@@ -76,7 +89,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
               setState(() {
                   _midScroll = _scrollController.position.maxScrollExtent / 2;
-                  print('------------------NEW MID SCROLL IS: ' +  _midScroll.toString());
+                  _midScroll -= 20;
                   _scrollController.jumpTo(_midScroll);
                   _scrollController = ScrollController(initialScrollOffset: _midScroll);
               });
@@ -98,7 +111,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
           itemBuilder: (_, index) {
             String src = widget.imageSources.keys.elementAt(index);
             String type = widget.imageSources[src].type;
-            
 
               return NotificationListener(
               onNotification: (t){
@@ -118,7 +130,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
                       });
                     }
                     if(t.metrics.atEdge){
-                      //Navigator.of(context).pop();
+                      Navigator.of(context).pop();
                     }
                   }
                 }
@@ -129,10 +141,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
                 physics: _isZoomedIn ? NeverScrollableScrollPhysics() : ClampingScrollPhysics(),
                 child: orientation == Orientation.portrait ? _buildPortraitContainer(type, src)
                 : _buildLandscapeContainer(type, src),
-                /* Container(
-                  height:  MediaQuery.of(context).size.height + 200,
-                  child: (type.compareTo('vid') == 0) ? MyVideoPlayer(src) : _createImagePage(src),
-                  ), */
                 ),
               );
           }),
@@ -141,7 +149,8 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   }
 
   Widget _buildPortraitContainer(String type, String src,){
-    return GestureDetector(
+    return InkWell(
+      splashColor: Colors.transparent,
       onTap: (){
         print('--------------------TAPPED!');
         setState(() {_hideAppBar= !_hideAppBar;});
@@ -149,30 +158,77 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       child: Container(
         height:  MediaQuery.of(context).size.height + 200,
         alignment: Alignment.center,
-        color: Colors.red,
-        child: AspectRatio(
-          aspectRatio: 9/16,
-          child: (type.compareTo('vid') == 0) ? MyVideoPlayer(_videoControllers[src]) : _createImagePage(src),
-        ),
+        child: (type.compareTo('vid') == 0) ? _buildPortraitVideo(src) : _createImagePage(src),
+      ),
+    );
+  }
+
+  Widget _buildPortraitVideo(String src){
+    if(_videoControllers[src]==null){
+      _videoControllers[src] = VideoPlayerController.network(src);
+      _videoControllers[src].initialize().then((_){
+        setState(() {
+          _chewieControllers[src] = ChewieController(
+            videoPlayerController: _videoControllers[src],
+            aspectRatio: _videoControllers[src].value.aspectRatio,
+            autoPlay: true
+          );
+        });
+      });
+     return CircularProgressIndicator();
+    }
+    
+    return Container(
+      color: Colors.grey,
+      child: AspectRatio(
+        aspectRatio: 16/9,
+        child: Chewie(controller: _chewieControllers[src],)
       ),
     );
   }
 
   Widget _buildLandscapeContainer(String type, String src,){
-    /* return AspectRatio(
-          aspectRatio: 16/9,
-          child: (type.compareTo('vid') == 0) ? MyVideoPlayer(src) : _createImagePage(src),
-        ); */
+    return InkWell(
+      splashColor: Colors.transparent,
+      onTap: (){
+        print('--------------------TAPPED!');
+        setState(() {_hideAppBar= !_hideAppBar;});
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: _midScroll+20,),
+          AspectRatio(
+            aspectRatio: 16/9,
+            child: (type.compareTo('vid') == 0) ? _buildLandscapeVideo(src) : _createImagePage(src),
+          ),
+          SizedBox(height: _midScroll,),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLandscapeVideo(String src){
+    if(_videoControllers[src]==null){
+      _videoControllers[src] = VideoPlayerController.network(src);
+      _videoControllers[src].initialize().then((_){
+        setState(() {
+          _chewieControllers[src] = ChewieController(
+            videoPlayerController: _videoControllers[src],
+            aspectRatio: _videoControllers[src].value.aspectRatio,
+            autoPlay: true
+          );
+        });
+      });
+     return Center(child: CircularProgressIndicator());
+    }
     
-    return Column(
-      children: [
-        SizedBox(height: _midScroll,),
-        AspectRatio(
-          aspectRatio: 16/9,
-          child: (type.compareTo('vid') == 0) ? MyVideoPlayer(_videoControllers[src]) : _createImagePage(src),
-        ),
-        SizedBox(height: _midScroll,),
-      ],
+    return Container(
+      color: Colors.grey,
+      child: AspectRatio(
+        aspectRatio: 16/9,
+        child: Chewie(controller: _chewieControllers[src],)
+      ),
     );
   }
 

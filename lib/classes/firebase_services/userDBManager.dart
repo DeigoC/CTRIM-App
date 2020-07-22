@@ -20,15 +20,16 @@ class UserDBManager{
     await _ref.getDocuments().then((collection){
       List<int> allIDs = collection.documents.map((e) => int.parse(e.documentID)).toList();
       allIDs.sort();
-      print('-------------LAST: ' + allIDs.last.toString()); 
 
-      user.id = (int.parse(collection.documents.last.documentID) + 1).toString();
+      user.id = (allIDs.last + 1).toString();
     });
     await _ref.document(user.id).setData(user.toJson());
+    _allUsers.add(user);
   }
 
   Future<Null> updateUser(User user) async{
     await _ref.document(user.id).setData(user.toJson());
+    _updateListUser(user);
   }
 
   User getUserByID(String id) {
@@ -39,7 +40,7 @@ class UserDBManager{
     return _allUsers.firstWhere((u) => u.authID.compareTo(authID)==0,orElse: ()=> null);
   }
 
-  void updateListUser(User user){
+  void _updateListUser(User user){
     int index = _allUsers.indexWhere((u) => u.id.compareTo(user.id)==0);
     _allUsers[index] = user;
   }

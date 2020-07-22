@@ -80,8 +80,8 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       _location.addressLine = _selectedAddressLine;
       yield LocationDisplayConfirmedQueryAddressState(_selectedAddressLine);
       yield _canUpdateLocation();
-
-      // ! REDO THIS
+     
+     
     } else if (event is LocationEditUpdateLocationEvent) {
       yield LocationEditAttemptToUpdateState();
       await _locationDBManager.updateLocation(_location, _imageFile);

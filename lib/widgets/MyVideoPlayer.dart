@@ -1,3 +1,4 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -13,6 +14,8 @@ class MyVideoPlayer extends StatefulWidget {
 class _MyVideoPlayerState extends State<MyVideoPlayer> with SingleTickerProviderStateMixin{
   
   VideoPlayerController _videoController;
+  ChewieController _chewieController;
+
   AnimationController _animationController;
   bool _showControls = false, _isVideoFinished = false;
   Duration _currentVideoDuration;
@@ -23,25 +26,37 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> with SingleTickerProvider
   @override
   void initState() {
     _videoController = widget._controller;
-    if(!_videoController.value.initialized){
+
+    //if(!_videoController.value.initialized) _videoController.initialize();
+    _chewieController = ChewieController(
+      videoPlayerController: _videoController,
+      aspectRatio: _videoController.value.aspectRatio,
+      autoPlay: true, 
+      autoInitialize: true,
+      showControls: true,
+      allowFullScreen: false,
+    );
+
+
+    /* if(!_videoController.value.initialized){
       _videoController.initialize().then((_){
         setState(() {_videoController.play();});
       });
     }else{
-      if(!_videoController.value.isPlaying) _animatedIcon = AnimatedIcons.play_pause;
       _currentVideoDuration = _videoController.value.position;
     }
 
-    _videoController.addListener(_videoListener);
+    _videoController.addListener(_videoListener); */
 
-
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    // ! This messes up the button state when changing orientation.
+    //_animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     super.initState();
   }
 
   void _videoListener(){
     setState(() {
       _currentVideoDuration = _videoController.value.position;
+      _isVideoFinished = false;
       if(_videoController.value.position.compareTo(_videoController.value.duration)==0){
         _isVideoFinished = true;
       }
@@ -54,27 +69,35 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> with SingleTickerProvider
   void dispose() { 
     _videoController.removeListener(_videoListener);
     //_videoController.dispose();
-    _animationController.dispose();
+    _chewieController.dispose();
+    //_animationController.dispose();
     super.dispose();
   }
 
   
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(
+
+    return _buildPortrait();
+
+    /* return OrientationBuilder(
       builder: (_,orintation){
-        if(_videoController.value.initialized){
-           return _buildPortrait();
+        return _buildPortrait();
+           
           /* if(orintation == Orientation.portrait) return _buildPortrait();
           return _buildLandscape(); */
-        }
-        return Center(child: CircularProgressIndicator(),);
+        
+        //return Center(child: CircularProgressIndicator(),);
       },
-    );
+    ); */
   }
 
   Widget _buildPortrait(){
-    return GestureDetector(
+    return Chewie(
+      controller: _chewieController,
+    );  
+
+    /* return GestureDetector(
       onTap: (){
         setState(() {_showControls = !_showControls;});
       },
@@ -90,7 +113,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> with SingleTickerProvider
             aspectRatio: _videoController.value.aspectRatio,
           ),
       ),
-    );
+    ); */
   }
 
   Widget _buildLandscape(){
@@ -130,7 +153,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> with SingleTickerProvider
                   onPressed: (){
                     if(_isVideoFinished){
                       setState(() {
-                        _isVideoFinished = false;
+                        //_isVideoFinished = false;
                         _videoController.seekTo(Duration(seconds: 0, minutes: 0));
                         _videoController.play();
                       });
