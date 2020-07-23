@@ -19,7 +19,6 @@ class ViewPostPage extends StatefulWidget {
 
 class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderStateMixin {
   TabController _tabController;
-  int _selectedTabIndex = 0;
   ZefyrController _zefyrController;
   FocusNode _fn;
 
@@ -29,7 +28,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     _zefyrController = ZefyrController(widget._post.getBodyDoc())..addListener(() {
       NotusStyle style =  _zefyrController.getSelectionStyle();
       if(style.contains(NotusAttribute.link)){
-        AppBloc.openURL(style.values.first.value);
+        AppBloc.openURL(style.values.first.value, context);
       }
     });
     _fn = FocusNode();
@@ -86,7 +85,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                 delegate: SliverChildListDelegate([
                   Text(widget._post.title),
                   TabBar(
-                    labelColor: Colors.black,
+                    labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
                     controller: _tabController,
                     tabs: [
                       Tab(
@@ -106,18 +105,24 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                         text: 'Updates',
                       ),
                     ],
-                    onTap: (newIndex) {
-                      setState(() {
-                        _selectedTabIndex = newIndex;
-                      });
-                    },
                   ),
                 ]),
               ),
             )
           ];
         },
-        body: _buildTabBody(_selectedTabIndex),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildAboutTab(),
+            _buildDetailsTab(),
+            GalleryTabBody.view(
+              thumbnails: widget._post.thumbnails,
+              gallerySrc: widget._post.gallerySources),
+            _buildUpdatesTab(),
+          ],
+          //child: _buildTabBody(_selectedTabIndex)
+        ),
       ),
     );
   }
@@ -145,18 +150,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     return null;
   }
 
-  Widget _buildTabBody(int selectedIndex) {
-    if (_selectedTabIndex == 0)
-      return _buildAboutTab();
-    else if (_selectedTabIndex == 1)
-      return _buildDetailsTab();
-    else if (_selectedTabIndex == 2)
-      return GalleryTabBody.view(
-        thumbnails: widget._post.thumbnails,
-          gallerySrc: widget._post.gallerySources);
-    return _buildUpdatesTab();
-  }
-
   Widget _buildAboutTab() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -175,7 +168,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                     selected: false,
                     onSelected: (_)=>null,
                   );
-                  //return Chip(label: Text(tag),);
                 }).toList(),
               ),
              ],
@@ -184,9 +176,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
          Divider(),
          Expanded(
             child: ZefyrTheme(
-             data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(
-               color: Colors.red
-             ),padding: EdgeInsets.all(8))), 
+             data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
              child: ZefyrScaffold(
                child: ZefyrEditor(
                  focusNode: _fn,
@@ -202,11 +192,10 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
 
   Widget _buildDetailsTab() {
-    print('----------------------BUILDING DETAILS TAB');
-
     List<Widget> children = [
+      SizedBox(height: 16,),
       Text('Location'),
-      Text(BlocProvider.of<TimelineBloc>(context).selectableLocations
+      Text(BlocProvider.of<TimelineBloc>(context).allLocations
           .firstWhere((element) => element.id == widget._post.locationID)
           .getAddressLine()),
       SizedBox(height: 8,),
@@ -279,18 +268,26 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         ListTile(
           leading: Hero(child: user.buildAvatar(),tag: '0/'+user.imgSrc,),
           title: Text(user.forename + ' ' + user.surname[0] + '.'),
-          subtitle: Text('Author'),
+          subtitle: Text(user.role),
           onTap: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(user)),
-          trailing: Container(
-            padding: EdgeInsets.all(8),
-            child: Text('CONTACT'),
-            decoration: BoxDecoration(
-              border: Border.all(),
-              borderRadius: BorderRadius.circular(16),
-            ),
-          )
+          trailing: Text('AUTHOR',style: TextStyle(fontSize: 18),),
         ),
         Divider(),
+        Padding(
+          padding: EdgeInsets.only(top:8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text('DATE', textAlign: TextAlign.center,),
+                flex: 1,
+              ),
+              Expanded(
+                child: Text('TIME / UPDATE LOG',textAlign: TextAlign.center,),
+                flex: 2,
+              )
+            ],
+          ),
+        ),
         Expanded(child: ListView.separated(
           itemCount: sortedDates.length,
           separatorBuilder: (_,index)=>Divider(),
@@ -299,7 +296,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
             updates.sort((a,b) => b.postDate.compareTo(a.postDate));
             
             return Container(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.only(bottom: 8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

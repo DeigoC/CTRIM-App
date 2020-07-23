@@ -49,7 +49,14 @@ class AboutArticle{
 
   String get secondImage => _imgSrc[1];
   String get thirdImage => _imgSrc[2];
-  List<String> get imageSrcList => _imgSrc.sublist(3);
+
+  Map<String, String> get slideShowItems {
+    Map<String, String> result = {};
+    _imgSrc.sublist(3).forEach((src) {
+      result[src] = gallerySources[src];
+    });
+    return result;
+  } 
   
 
   NotusDocument getBodyDocument(){

@@ -30,6 +30,8 @@ class AdminSaveMyDetailsEvent extends AdminEvent{
   AdminSaveMyDetailsEvent({this.document, this.file,this.hasDeletedSrc});
 }
 
+class AdminRebuildSocialLinksEvent extends AdminEvent{}
+
 class AdminModifyingUserEvent extends AdminEvent {}
 
 class AdminUserAdminLevelChangeEvent extends AdminModifyingUserEvent {

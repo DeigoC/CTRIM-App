@@ -25,6 +25,8 @@ class AdminLoginEnableLoginState extends AdminLoginButtonState {}
 // ! Login - Errors
 class AdminLoginErrorState extends AdminLoginState{}
 
+class AdminLoginPopLoginDialogState extends AdminLoginState{}
+
 class AdminLoginEmailNotRecognisedState extends AdminLoginErrorState {}
 
 class AdminLoginIncorrectPasswordState extends AdminLoginErrorState{}
@@ -52,6 +54,7 @@ class AdminLoginLoadingState extends AdminLoginState{}
 // ! User modification states
 class AdminUserImageUploadingState extends AdminState{}
 class AdminUserImageUploadCompleteState extends AdminState{}
+class AdminUserRebuildSocialLinkState extends AdminState{}
 
 class AdminUserModificationState extends AdminState {}
 

@@ -44,6 +44,12 @@ class _UserLoginPageState extends State<UserLoginPage> {
             listener: (_, state) {
               if (state is AdminLoginErrorState) _mapErrorStatesToSnackbars(state);
               else if(state is AdminLoginCompletedState) _loginCompleted(state);
+              else if(state is AdminLoginPopLoginDialogState){
+                Navigator.of(context).pop();
+              }
+              else if(state is AdminLoginLoadingState){
+                _showLoadingDialog();
+              }
             },
             buildWhen: (previousState, currentState) {
               if (currentState is AdminLoginContinueToPasswordState)
@@ -52,10 +58,15 @@ class _UserLoginPageState extends State<UserLoginPage> {
               return false;
             },
             builder: (_, state) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _buildChildren(state),
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(top:MediaQuery.of(context).size.height*0.1),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: _buildChildren(state),
+                  ),
+                ),
               );
             });
       }),
@@ -84,6 +95,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
         SizedBox(height: 8),
         MyTextField(
           label: 'Password',
+          autoFocus: true,
           controller: null,
           onTextChange: (newPassword) =>_adminBloc.add(AdminLoginTextChangeEvent(password: newPassword)),
         ),
@@ -116,6 +128,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
       MyTextField(
         label: 'Email',
         controller: _tecEmail,
+        autoFocus: true,
         onTextChange: (newEmail) =>
             _adminBloc.add(AdminLoginTextChangeEvent(email: newEmail)),
       ),
@@ -147,7 +160,32 @@ class _UserLoginPageState extends State<UserLoginPage> {
     else if(state is AdminLoginTooManyRequestsState)_showErrorSnackbar('Too many requests made, try again another time');
     else if(state is AdminLoginOperationNotAllowedState)_showErrorSnackbar('Operation not Available');
     else _showErrorSnackbar('Unknown Error Occurred');
-    
+  }
+
+  void _showLoadingDialog(){
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_){
+        return WillPopScope(
+          onWillPop: ()async=> false,
+          child: Dialog(
+            child: Container(
+              width: MediaQuery.of(context).size.width*0.3,
+              height: MediaQuery.of(context).size.width*0.3,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16,),
+                  Text('Loggin in...'),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+    );
   }
 
   void _showErrorSnackbar(String content) {

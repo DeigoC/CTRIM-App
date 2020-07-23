@@ -47,7 +47,12 @@ class AppToViewPostPageEvent extends AppNavigateToPageEvent {
   AppToViewPostPageEvent(this.post);
 }
 class AppToAddPostPageEvent extends AppNavigateToPageEvent {}
-class AppToViewAllPostsForLocationEvent extends AppNavigateToPageEvent {}
+
+class AppToViewAllPostsForLocationEvent extends AppNavigateToPageEvent {
+  final String locationID;
+  AppToViewAllPostsForLocationEvent(this.locationID);
+}
+
 class AppToPostBodyEditorEvent extends AppNavigateToPageEvent {
   final PostBloc postBloc;
   AppToPostBodyEditorEvent(this.postBloc);

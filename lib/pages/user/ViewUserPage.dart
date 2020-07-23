@@ -4,7 +4,8 @@ import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
-import 'package:ctrim_app_v1/widgets/postArticle.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zefyr/zefyr.dart';
@@ -19,29 +20,15 @@ class ViewUserPage extends StatefulWidget {
 class _ViewUserPageState extends State<ViewUserPage> {
   
   Map<Post,TimelinePost> _userPosts = {};
-  ZefyrController _zefyrController;
-  FocusNode _focusNode;
 
   @override
   void initState() {
-    _zefyrController = ZefyrController(widget.user.getBodyDocument());
-    
-    _zefyrController.addListener(() {
-      NotusStyle style =  _zefyrController.getSelectionStyle();
-      if(style.contains(NotusAttribute.link)){
-        AppBloc.openURL(style.values.first.value);
-      }
-    });
-
-    _focusNode = FocusNode();
     _userPosts = BlocProvider.of<TimelineBloc>(context).getUserPosts(widget.user.id);
     super.initState();
   }
 
   @override
   void dispose() { 
-    _zefyrController.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -91,22 +78,19 @@ class _ViewUserPageState extends State<ViewUserPage> {
               delegate: SliverChildListDelegate([
                 Text(
                   widget.user.forename + ' ' + widget.user.surname, 
-                  style: TextStyle(color: Colors.black, fontSize: 30),
+                  style: TextStyle(color: Colors.black, fontSize: 32),
                   textAlign: TextAlign.center,
                 ),
-                Container(
-                  height: 150,
-                  width: double.infinity,
-                  child: ZefyrScaffold(
-                    child: ZefyrEditor(
-                      controller: _zefyrController,
-                      focusNode: _focusNode,
-                      autofocus: false,
-                      mode: ZefyrMode.view,
-                      physics: NeverScrollableScrollPhysics(),
-                    ),
-                  ),
+                Text(widget.user.role, style: TextStyle(fontStyle: FontStyle.italic,fontSize: 18),textAlign: TextAlign.center,),
+                SizedBox(height: 16,),
+                Text(
+                  'Social Links and Contacts', 
+                  style: TextStyle(color: Colors.black, fontSize: 18),
+                  textAlign: TextAlign.center,
                 ),
+                SizedBox(height: 8,),
+                SocialLinksDisplay(widget.user.socialLinks),
+                SizedBox(height: 8,),
                 Divider(),
               ]),
             ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/auth.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
@@ -36,11 +37,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   AppBloc(this.navigatorKey);
 
-  static openURL(String url) async{
+  static openURL(String url, BuildContext context) async{
     if(await canLaunch(url)){
       await launch(url);
     }else{
-      print('--------------------------COULDNT LAUNCH!');
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Couldn't open link!"),
+      ));
     }
   }
 
@@ -55,7 +58,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if (event is AppNavigateToPageEvent) _openPageFromEvent(event);
     else if (event is AppSettingsEvent) yield* _mapSettingsEventToState(event);
     else if (event is AppCurrentUserEvent) yield* _mapCurrentUserEventToState(event);
-    else if(event is AppStartupLoadUserEvent) _appStartupLoad();
+    else if(event is AppStartupLoadUserEvent) yield* _appStartupLoad();
     else if(event is AppCurrentUserLogsOutEvent) yield* _currentUserLogsOut();
     else if(event is AppUploadTaskStartedEvent){
       yield AppMapUploadTaskToDialogueState(task: event.task, itemNo: event.itemNo, totalLength: event.totalLength);
@@ -66,10 +69,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Stream<AppState> _mapCurrentUserEventToState(AppCurrentUserEvent event) async* {
     if (event is AppPostLikeClickedEvent) {
       bool alreadySaved = _currentUser.likedPosts.contains(event.post.id);
-      if (alreadySaved)
-        _currentUser.likedPosts.remove(event.post.id);
-      else
-        _currentUser.likedPosts.add(event.post.id);
+      if (alreadySaved) _currentUser.likedPosts.remove(event.post.id);
+      else _currentUser.likedPosts.add(event.post.id);
+
+      _saveCurrentUser();
+
       yield AppCurrentUserLikedPostState();
       yield AppCurrentUserState();
     }else if(event is AppCurrentUserLoggedInEvent){
@@ -83,7 +87,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     if (event is AppToViewPostPageEvent) state.pushNamed(ViewEventRoute, arguments: {'post': event.post});
     else if(event is AppToHomePageEvent) state.pushNamed(HomeRoute);
     else if (event is AppToAddPostPageEvent) state.pushNamed(AddEventRoute);
-    else if (event is AppToViewAllPostsForLocationEvent) state.pushNamed(ViewAllEventsForLocationRoute);
+    else if (event is AppToViewAllPostsForLocationEvent) state.pushNamed(ViewAllEventsForLocationRoute,arguments: 
+    {'locationID':event.locationID});
     else if (event is AppToViewLocationOnMapEvent) state.pushNamed(ViewLocationOnMapRoute, arguments: 
     {'location':event.location});
     else if (event is AppToRegisterUserEvent) state.pushNamed(RegisterUserRoute);
@@ -119,11 +124,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToViewUserPageEvent) state.pushNamed(ViewUserPageRoute, arguments: {'user':event.user});
   }
 
-  Future<void> _appStartupLoad() async{
+  Stream<AppState> _appStartupLoad() async*{
     await _userFileDocument.attpemtToLoginSavedUser().then((user){
       _currentUser = user;
-      _openPageFromEvent(AppToHomePageEvent());
     });
+    yield _currentUser.onDarkTheme ? _changeThemeToDarkState():_changeThemeToLightState();
+    _openPageFromEvent(AppToHomePageEvent());
   }
 
   Stream<AppState> _currentUserLogsOut() async*{
@@ -165,11 +171,26 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   AppState _changeThemeToDarkState() {
     _onDark = true;
+    _currentUser.onDarkTheme = true;
+    _saveCurrentUser();
     return AppThemeToDarkState();
   }
 
   AppState _changeThemeToLightState() {
     _onDark = false;
+    _currentUser.onDarkTheme = false;
+    _saveCurrentUser();
     return AppThemeToLightState();
   }
+
+  void _saveCurrentUser(){
+    if(_currentUser.id != '0'){
+      UserDBManager dbManager = UserDBManager();
+      dbManager.updateUser(_currentUser);
+    }else{
+      UserFileDocument userFileDocument = UserFileDocument();
+      userFileDocument.saveGuestUserData(_currentUser);
+    }
+  }
+
 }

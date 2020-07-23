@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/galleryItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -74,9 +75,26 @@ class _SearchAlbumsPageState extends State<SearchAlbumsPage> {
           SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (_, index) {
         Post post = individualPosts[index];
-        if (post.gallerySources.values.first == 'vid')
-          return _createVideoAlbumItem(post);
-        return _createPictureAlbumItem(post);
+        List<String> gallery = post.gallerySources.keys.toList();
+        gallery.sort();
+
+        if (post.gallerySources.values.first == 'vid'){
+          String vidSrc = post.gallerySources.keys.first;
+           return AlbumCoverItem(
+            type: 'vid',
+            src: post.thumbnails[vidSrc],
+            onTap: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewPostAlbumEvent(post)),
+            title: post.title,
+            itemCount: post.gallerySources.length.toString(),
+          );
+        } 
+          return AlbumCoverItem(
+          type: 'img',
+          src: gallery.first,
+          onTap: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewPostAlbumEvent(post)),
+          title: post.title,
+          itemCount: post.gallerySources.length.toString(),
+        );
       },
     );
   }

@@ -18,11 +18,9 @@ final appLightTheme = ThemeData(
   scaffoldBackgroundColor: LightSurfaceColor,
   bottomAppBarColor: LightPrimaryColor,
   disabledColor: LightDisabledColor,
-  toggleableActiveColor: LightPrimaryColor,
+  toggleableActiveColor: LightSecondaryColor,
   
-  toggleButtonsTheme: ToggleButtonsThemeData(
-    selectedColor: LightPrimaryColor,
-  ),
+  toggleButtonsTheme: ToggleButtonsThemeData(selectedColor: LightPrimaryColor,),
   
   chipTheme: ChipThemeData(
   backgroundColor: Color(0xffaf761c),
@@ -52,7 +50,7 @@ final appLightTheme = ThemeData(
     backgroundColor: LightSecondaryColor
   ),
 
-  colorScheme: ColorScheme(
+ /*  colorScheme: ColorScheme(
     primary: LightPrimaryColor,
     primaryVariant: Color(0xffac4020), 
     secondary: LightSecondaryColor, 
@@ -66,7 +64,7 @@ final appLightTheme = ThemeData(
     onBackground: Colors.black, 
     onError: Colors.white, 
     brightness: Brightness.light
-  ),
+  ), */
     appBarTheme: AppBarTheme(
     color: LightPrimaryColor,
   ),
@@ -86,7 +84,8 @@ final appDarkTheme = ThemeData(
   disabledColor: Colors.grey,
   
   accentColor: LightSecondaryColor,
-  colorScheme: ColorScheme(
+  
+  /* colorScheme: ColorScheme(
     primary: DarkPrimaryColor, 
     primaryVariant: Color(0xffac4020), 
     secondary: LightSecondaryColor, 
@@ -100,9 +99,22 @@ final appDarkTheme = ThemeData(
     onBackground: Colors.black, 
     onError: Colors.white, 
     brightness: Brightness.dark
-  ),
+  ), */
 
   brightness: Brightness.dark,
+
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: LightSecondaryColor
+  ),
+
+  buttonTheme: ButtonThemeData(
+    disabledColor: LightDisabledColor,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(18.0)
+    ),
+    buttonColor: LightSecondaryColor,
+    textTheme: ButtonTextTheme.primary
+  ),
 
   appBarTheme: AppBarTheme(color: DarkPrimaryColor,brightness: Brightness.dark),
   textTheme: TextTheme(

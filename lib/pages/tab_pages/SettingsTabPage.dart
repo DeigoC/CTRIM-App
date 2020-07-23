@@ -5,6 +5,7 @@ import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class SettingsPage{
   
@@ -16,7 +17,7 @@ class SettingsPage{
     return AppBar(
       leading: (BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0) ? Container():null,
       automaticallyImplyLeading: true,
-      title: Text('Settings', style: TextStyle(fontFamily: 'OpenSans'),),
+      title: Text('Settings',),
       centerTitle: true,
     );
   }
@@ -86,16 +87,14 @@ class SettingsPage{
       },
         builder:(_,state){
 
-          TextStyle testStyle = TextStyle(fontFamily: 'OpenSans');
-
           return ListView(
             children: [
               SwitchListTile(
                 activeColor: LightSecondaryColor,
                 value: BlocProvider.of<AppBloc>(_context).onDarkTheme, 
-                title: Text('Dark Mode', style: testStyle,),
+                title: Text('Dark Mode',),
                 secondary: Icon(Icons.brightness_medium),
-                subtitle: Text('Changes the brightness and colours of the app to be easy on the eyes', style: testStyle,),
+                subtitle: Text('Change the color theme of the app',),
                 onChanged: (newValue){
                   AppSettingsEvent event = newValue ? AppChangeThemeToDarkEvent() : AppChangeThemeToLightEvent();
                   BlocProvider.of<AppBloc>(_context).add(event);
@@ -103,26 +102,32 @@ class SettingsPage{
               ),
               ListTile(
                 title: Text('Admin Login'),
-                subtitle: Text('Admins are registered by developer'),
+                subtitle: Text('Admins are registered by other admins'),
                 leading: Icon(Icons.person),
                 onTap: (){
                    BlocProvider.of<AppBloc>(_context).add(AppToUserLoginEvent());
                 },
               ),
               ListTile(
-                title: Text('My Liked Posts'),
-                subtitle: Text('View Posts that you have saved'),
+                title: Text('Liked Posts'),
+                subtitle: Text('Keep track of posts of interest'),
                 leading: Icon(Icons.favorite),
                 onTap: (){
                   BlocProvider.of<AppBloc>(_context).add(AppToLikedPostsPageEvent());
                 },
               ),
               ListTile(
-                title: Text('App Details'),
+                title: Text('More Info'),
                 subtitle: Text('Extra details about the app'),
                 leading: Icon(Icons.info_outline),
                 onTap: (){
-                  showAboutDialog(context: _context);
+                  showAboutDialog(
+                    context: _context,
+                    applicationVersion: 'Still developing',
+                    applicationLegalese: 'This will contain the application legalese',
+                    applicationName: 'CTRIM App',
+                    applicationIcon: Icon(FontAwesome5Solid.church),
+                  );
                 },
               ),
             ],

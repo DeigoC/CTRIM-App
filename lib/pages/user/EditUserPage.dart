@@ -77,13 +77,7 @@ class _EditUserPageState extends State<EditUserPage> {
               .add(AdminUserModEditTextChangeEvent(surname: newString)),
         ),
         padding,
-        MyTextField(
-          label: 'Contact No',
-          controller: TextEditingController(text: widget.user.body),
-          hint: 'Optional',
-          onTextChange: (newString) => _adminBloc
-              .add(AdminUserModEditTextChangeEvent(contactNo: newString)),
-        ),
+        Text('Social Links HERE!'),
         _buildAdminLvlSelector(),
         padding,
         MyTextField(

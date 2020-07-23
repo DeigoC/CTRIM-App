@@ -7,9 +7,10 @@ import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/gallerySlideShow.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 class ViewChurchPage extends StatefulWidget {
   final AboutArticle _aboutArticle;
@@ -59,7 +60,8 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
 
     return ListView(
       children: [
-        _buildGallerySlideShow(),
+        //_buildGallerySlideShow(),
+        GallerySlideShow(galleryItems: widget._aboutArticle.slideShowItems,),
         SizedBox(height: 16,),
 
         Text('Location',style: headerStyle, textAlign: TextAlign.center,),
@@ -113,15 +115,15 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
 
 
         Text("We're on social. Follow us",style: headerStyle,textAlign: TextAlign.center,),
-        _buildSocialLinksWidget(),
+        SocialLinksDisplay(widget._aboutArticle.socialLinks),
         SizedBox(height: 32,),
       ],
     );
   }
 
-  Widget _buildGallerySlideShow(){
+ /*  Widget _buildGallerySlideShow(){
     Map<String,ImageTag> gallery = {};
-    widget._aboutArticle.imageSrcList.forEach((src) {
+    widget._aboutArticle.slideShowItems.forEach((src) {
       gallery[src] = ImageTag(
         src: src,
         type: 'img'
@@ -132,53 +134,20 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
       aspectRatio: 16/9,
       child:PageView.builder(
         controller: _pageController,
-        itemCount: widget._aboutArticle.imageSrcList.length,
+        itemCount: widget._aboutArticle.slideShowItems.length,
         itemBuilder: (_,index){
           return GestureDetector(
             onTap: (){
               BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(gallery, index));
             },
             child: Hero(
-              tag: gallery[widget._aboutArticle.imageSrcList[index]].heroTag,
-              child: Image.network(widget._aboutArticle.imageSrcList[index], fit: BoxFit.cover,)
+              tag: gallery[widget._aboutArticle.slideShowItems[index]].heroTag,
+              child: Image.network(widget._aboutArticle.slideShowItems[index], fit: BoxFit.cover,)
             )
           );
         }
       ),
     );
-  }
-
-  Widget _buildSocialLinksWidget(){
-    return Align(
-      alignment: Alignment.center,
-      child: Wrap(
-        spacing: 4,
-        children: widget._aboutArticle.socialLinks.keys.map((link){
-          return Container(
-            padding: EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.blue,
-            ),
-            child:  IconButton(
-              icon: _getIconFromString(widget._aboutArticle.socialLinks[link]),
-              onPressed: (){
-                AppBloc.openURL(link);
-              },
-            ),
-          );
-        }).toList()
-      ),
-    );
-  }
-
-  Icon _getIconFromString(String socialName){
-    switch(socialName){
-      case 'youtube':return Icon(AntDesign.youtube,color: Colors.white,);
-      case 'facebook': return Icon(AntDesign.facebook_square,color: Colors.white,);
-      case 'instagram':return Icon(AntDesign.instagram,color: Colors.white,);
-      case 'twitter': return Icon(AntDesign.twitter,color: Colors.white,);
-    }
-    return null;
-  }
+  } */
+ 
 }

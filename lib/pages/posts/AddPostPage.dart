@@ -14,8 +14,7 @@ class AddEventPage extends StatefulWidget {
   _AddEventPageState createState() => _AddEventPageState();
 }
 
-class _AddEventPageState extends State<AddEventPage>
-    with SingleTickerProviderStateMixin {
+class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderStateMixin {
   TabController _tabController;
   TextEditingController _tecTitle;
   PostBloc _postBloc;
@@ -66,7 +65,7 @@ class _AddEventPageState extends State<AddEventPage>
                           _postBloc.add(PostTextChangeEvent(title: newTitle)),
                     ),
                     TabBar(
-                      labelColor: Colors.black,
+                      labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
                       controller: _tabController,
                       tabs: [
                         Tab(
@@ -109,7 +108,15 @@ class _AddEventPageState extends State<AddEventPage>
                  ConfirmationDialogue.uploadTaskStarted(context: context);
                }
             },
-            child: _buildBody()
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                MainTabBody(),
+                PostDetailsTabBody(),
+                GalleryTabBody(gallerySrc: {},),
+                Center(child: Text('N/A'),),
+              ],
+            )
           ),
         ),
       ),
@@ -139,55 +146,6 @@ class _AddEventPageState extends State<AddEventPage>
         : null,
         );
       },
-    );
-  }
-
-  BlocConsumer _buildBody() {
-  
-    return BlocConsumer<PostBloc, PostState>(
-      listener: (_, state) {
-        
-      },
-      buildWhen: (previousState, currentState) {
-        if (currentState is PostTabClickState) return true;
-        return false;
-      },
-      builder: (_, state) {
-        Widget result = _buildTabBody(0);
-
-        if (state is PostTabClickState) {
-          int selectedIndex = _getIndexFromState(state);
-          result = _buildTabBody(selectedIndex);
-        }
-
-        return result;
-      },
-    );
- 
-  }
-
-  int _getIndexFromState(PostTabClickState state) {
-    if (state is PostAboutTabClickState)
-      return 0;
-    else if (state is PostDetailsTabClickState)
-      return 1;
-    else if (state is PostGalleryTabClickState) return 2;
-    return 3;
-  }
-
-  Widget _buildTabBody(int selectedIndex) {
-    switch (selectedIndex) {
-      case 0:
-        return MainTabBody();
-      case 1:
-        return PostDetailsTabBody();
-      case 2:
-        return GalleryTabBody(
-          gallerySrc: {},
-        );
-    }
-    return Center(
-      child: Text('Index is ' + selectedIndex.toString()),
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ViewLocationOnMap extends StatefulWidget {
@@ -14,6 +15,7 @@ class _ViewLocationOnMapState extends State<ViewLocationOnMap> {
   
   //GoogleMapController _mapController;
   LatLng latLng;
+  BuildContext _context;
 
   @override
   void initState() {
@@ -27,8 +29,11 @@ class _ViewLocationOnMapState extends State<ViewLocationOnMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Insert the map here'),),
-      body: _buildBody(),
+      appBar: AppBar(title: Text('Google Maps'),centerTitle: true,),
+      body: Builder(builder:(_){
+        _context = _;
+         return _buildBody();
+      }),
     );
   }
 
@@ -46,9 +51,11 @@ class _ViewLocationOnMapState extends State<ViewLocationOnMap> {
           position: latLng,
           icon: BitmapDescriptor.defaultMarker,
           infoWindow: InfoWindow(
-            title: widget.location.addressLine, snippet: widget.location.description,
+            title: widget.location.addressLine, 
+            snippet: 'Tap again to copy address',
             onTap: (){
-              print('--------------------TAPPED!');
+              Clipboard.setData(ClipboardData(text: widget.location.addressLine));
+              Scaffold.of(_context).showSnackBar(SnackBar(content: Text('Address line copied')));
             }
           )
         )

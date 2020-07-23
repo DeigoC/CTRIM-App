@@ -1,25 +1,29 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:zefyr/zefyr.dart';
 
 class User{
-  String id, forename,surname, body, imgSrc, email, authID;
+  String id, forename,surname, imgSrc, email, authID, role;
   int adminLevel;
   List<String> likedPosts;
+  Map<String, String> socialLinks;
   bool disabled, onDarkTheme;
+
+  String get roleString {
+    if(role.trim().isEmpty) return 'N/A';
+    return role;
+  }
 
   User({
     this.id, 
     this.forename, 
     this.surname,
-    this.body,
+    this.socialLinks,
     this.imgSrc,
     this.email,
     this.adminLevel,
     this.likedPosts,
     this.disabled = false,
     this.onDarkTheme = false,
+    this.role = '',
     this.authID = '',
   });
 
@@ -27,9 +31,10 @@ class User{
   : id = id,
   forename = data['Forename'],
   surname = data['Surname'],
+  role = data['Role'],
   authID = data['AuthID'],
   adminLevel = data['AdminLevel'],
-  body = data['Body'],
+  socialLinks = Map<String,String>.from(data['SocialLinks']),
   disabled = data['Disabled'],
   imgSrc = data['ImgSrc'],
   likedPosts = List.from(data['LikedPosts'], growable: true),
@@ -40,13 +45,14 @@ class User{
     return {
       'AdminLevel':adminLevel,
       'AuthID':authID,
-      'Body':body,
+      'SocialLinks':socialLinks??{},
       'Disabled':disabled,
       'Email':email,
       'Forename':forename,
       'ImgSrc':imgSrc??'',
       'LikedPosts':likedPosts??[],
       'OnDarkTheme':onDarkTheme,
+      'Role':role,
       'Surname':surname,
     };
   }
@@ -63,16 +69,4 @@ class User{
       backgroundImage: NetworkImage(imgSrc),
     );
   }
-
-  NotusDocument getBodyDocument(){
-    if(body == null || body == ''){
-      List<dynamic> initialWords = [
-        {"insert": "Body Starts Here\n"}
-      ];
-      return NotusDocument.fromJson(initialWords);
-    }
-    var jsonDecoded = jsonDecode(body);
-    return NotusDocument.fromJson(jsonDecoded);
-  }
-
 }

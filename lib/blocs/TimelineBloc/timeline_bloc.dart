@@ -86,6 +86,19 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return results;
   }
 
+  Map<Post, TimelinePost> getPostsFromLocation(String locationID){
+    Map<Post, TimelinePost> results = {};
+    _allPosts.forEach((post) {
+      if(post.locationID.compareTo(locationID)==0 && !post.deleted){
+        TimelinePost tPost = _allTimelinePosts.firstWhere((e){
+          return (e.postID.compareTo(post.id)==0 && e.postType.compareTo('original')==0);
+        });
+        results[post] = tPost;
+      }
+    });
+    return results;
+  }
+
   Map<DateTime, List<Post>> getPostsForGalleryTab() {
     Map<DateTime, List<Post>> unsortedResult = {};
     Map<DateTime, List<Post>> sortedResult = {};
@@ -115,6 +128,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     });
     return sortedResult;
   }
+
+  List<Location> get allLocations =>LocationDBManager.allLocations;
 
   List<Location> get selectableLocations{
     List<Location> result = List.from(LocationDBManager.allLocations);
@@ -254,7 +269,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   Stream<TimelineState> _displayFeed() async*{
-    _allTimelinePosts.sort((x, y) => y.postDate.compareTo(x.postDate));
+    //_allTimelinePosts.sort((x, y) => y.postDate.compareTo(x.postDate));
     List<Post> posts = [];
     List<TimelinePost> tPosts = [];
     List<PostTag> selectedTags = [];
@@ -289,6 +304,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
    
     posts.removeWhere((element) => element.deleted);
     tPosts.removeWhere((tPost) => posts.firstWhere((post) => post.id == tPost.postID, orElse: ()=> null) ==null);
+    tPosts.sort((x, y) => y.postDate.compareTo(x.postDate));
 
     yield TimelineDisplayFeedState(
       users: allUsers,

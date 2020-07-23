@@ -1,6 +1,6 @@
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
-import 'package:ctrim_app_v1/widgets/locationCard.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/locationCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,6 +14,7 @@ class ViewAllLocationsPage {
     List<Location> allLocations = BlocProvider.of<TimelineBloc>(_context).locationsForTab;
 
     return CustomScrollView(
+      key: PageStorageKey('viewAllLocationsKey'),
       slivers: [
         LocationSearchBar(),
         BlocBuilder<TimelineBloc, TimelineState>(

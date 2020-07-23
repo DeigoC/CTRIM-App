@@ -1,6 +1,5 @@
 import 'package:chewie/chewie.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
-import 'package:ctrim_app_v1/widgets/MyVideoPlayer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -30,25 +29,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
 
   @override
   void initState() {
-    /* SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]); */
-
-   /*  widget.imageSources.keys.forEach((src) {
-      if (widget.imageSources[src].type == 'vid') {
-        VideoPlayerController controller = VideoPlayerController.network(src);
-        _videoControllers[src] = controller;
-        
-         _chewieControllers[src] = ChewieController(
-            videoPlayerController: controller,
-            aspectRatio: controller.value.aspectRatio,
-            autoPlay: false,
-            autoInitialize: false,
-            //deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp]
-          );
-      }
-    }); */
-    
     WidgetsBinding.instance.addPostFrameCallback((_) {
        setState(() {
           _midScroll = _scrollController.position.maxScrollExtent / 2;
@@ -72,7 +52,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
     _chewieControllers.keys.forEach((src) {
       _chewieControllers[src].dispose();
       _videoControllers[src].dispose();
-      print('------------------SRC DISPOSED: ' +src);
     });
     _scrollController.dispose();
     super.dispose();
@@ -89,7 +68,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
               setState(() {
                   _midScroll = _scrollController.position.maxScrollExtent / 2;
-                  _midScroll -= 20;
+                  //_midScroll -= 20;
                   _scrollController.jumpTo(_midScroll);
                   _scrollController = ScrollController(initialScrollOffset: _midScroll);
               });
@@ -151,20 +130,17 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   Widget _buildPortraitContainer(String type, String src,){
     return InkWell(
       splashColor: Colors.transparent,
-      onTap: (){
-        print('--------------------TAPPED!');
-        setState(() {_hideAppBar= !_hideAppBar;});
-      },
+      onTap: (){setState(() {_hideAppBar= !_hideAppBar;});},
       child: Container(
         height:  MediaQuery.of(context).size.height + 200,
         alignment: Alignment.center,
-        child: (type.compareTo('vid') == 0) ? _buildPortraitVideo(src) : _createImagePage(src),
+        child: (type.compareTo('vid') == 0) ? _buildVideoContainer(src) : _createImagePage(src),
       ),
     );
   }
 
-  Widget _buildPortraitVideo(String src){
-    if(_videoControllers[src]==null){
+  Widget _buildVideoContainer(String src){
+    if(_chewieControllers[src]==null){
       _videoControllers[src] = VideoPlayerController.network(src);
       _videoControllers[src].initialize().then((_){
         setState(() {
@@ -190,17 +166,14 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
   Widget _buildLandscapeContainer(String type, String src,){
     return InkWell(
       splashColor: Colors.transparent,
-      onTap: (){
-        print('--------------------TAPPED!');
-        setState(() {_hideAppBar= !_hideAppBar;});
-      },
+      onTap: (){setState(() {_hideAppBar= !_hideAppBar;});},
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: _midScroll+20,),
+          SizedBox(height: _midScroll,),
           AspectRatio(
             aspectRatio: 16/9,
-            child: (type.compareTo('vid') == 0) ? _buildLandscapeVideo(src) : _createImagePage(src),
+            child: (type.compareTo('vid') == 0) ? _buildVideoContainer(src) : _createImagePage(src),
           ),
           SizedBox(height: _midScroll,),
         ],
@@ -208,7 +181,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
     );
   }
 
-  Widget _buildLandscapeVideo(String src){
+  /* Widget _buildLandscapeVideo(String src){
     if(_videoControllers[src]==null){
       _videoControllers[src] = VideoPlayerController.network(src);
       _videoControllers[src].initialize().then((_){
@@ -230,7 +203,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         child: Chewie(controller: _chewieControllers[src],)
       ),
     );
-  }
+  } */
 
   Widget _buildAppBar(Orientation orientation){
     return PreferredSize(

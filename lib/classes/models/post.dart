@@ -147,7 +147,7 @@ class Post {
   String getTagsString() {
     String result = '';
     selectedTags.forEach((tag) {
-      result += ' ' + _tagToString(tag) + ',';
+      result += ' • ' + _tagToString(tag);
     });
     return result;
   }

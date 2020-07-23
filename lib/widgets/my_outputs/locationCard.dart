@@ -24,7 +24,7 @@ class LocationCard extends StatelessWidget {
           if(isSelecting){
             onTap();
           }else{
-            BlocProvider.of<AppBloc>(context).add(AppToViewAllPostsForLocationEvent());
+            BlocProvider.of<AppBloc>(context).add(AppToViewAllPostsForLocationEvent(location.id));
           }
         },
         child: Row(

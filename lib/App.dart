@@ -152,7 +152,7 @@ class _AppState extends State<App> {
         case ViewLocationOnMapRoute: screen = ViewLocationOnMap(arguments['location']);
         break;
 
-        case ViewAllEventsForLocationRoute: screen = ViewAllEventsForLocation();
+        case ViewAllEventsForLocationRoute: screen = ViewAllEventsForLocation(arguments['locationID']);
         break;
         
         case RegisterUserRoute: screen = RegisterUser();

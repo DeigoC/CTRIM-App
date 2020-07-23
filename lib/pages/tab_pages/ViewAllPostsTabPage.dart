@@ -1,7 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
-import 'package:ctrim_app_v1/widgets/postArticle.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -77,8 +77,12 @@ class ViewAllEventsPage {
             ],
             floating: true,
             bottom: PreferredSize(
+              preferredSize: Size.fromHeight(40),
               child: Container(
-                height: 35,
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(width: 0.5)),
+                ),
+                height: 40,
                 child: BlocBuilder<TimelineBloc, TimelineState>(
                     condition: (_, state) {
                   if (state is TimelineTagChangedState) return true;
@@ -105,7 +109,6 @@ class ViewAllEventsPage {
                   );
                 }),
               ),
-              preferredSize: Size.fromHeight(35),
             ),
           ),
           SliverList(

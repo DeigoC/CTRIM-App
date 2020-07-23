@@ -156,7 +156,6 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
    @override
   void initState() {
     _initalPostID = widget.post.id;
-    //_initialiseData();
     super.initState();
   }
 
@@ -175,14 +174,6 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
           type: type,
           tPostID: widget.isOriginal ? '0' : widget.timelinePost.id
         );
-       /*  _videoController = VideoPlayerController.network(widget.post.gallerySources.keys.elementAt(0));
-        _videoController.initialize().then((_){
-          if(mounted){
-            setState(() {
-              _initialisedData = true;
-            });
-          }
-        }); */
       }else{
         int imageNo = 0;
         List<String> srcs = widget.post.gallerySources.keys.toList();
@@ -289,7 +280,7 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
     return GestureDetector(
       onTap: ()=>_moveToViewImageVideo(index),
       child: Container(
-        child: Icon(Icons.play_circle_outline),
+        child: Icon(Icons.play_circle_outline,color: Colors.white,),
         decoration: BoxDecoration(
           image: DecorationImage(image: NetworkImage(thumbnailSrc),fit: BoxFit.cover)
         ),

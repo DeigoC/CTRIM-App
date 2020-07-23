@@ -86,7 +86,7 @@ void initState() {
         builder:(_,state) => BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: selectedIndex,
-        selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
+        selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: Colors.black87,
         backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
         onTap: (newIndex){
           if(newIndex != _selectedIndex){

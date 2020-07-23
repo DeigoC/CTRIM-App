@@ -5,10 +5,11 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zefyr/zefyr.dart';
 
 class EditMyDetailsPage extends StatefulWidget {
   @override
@@ -18,33 +19,32 @@ class EditMyDetailsPage extends StatefulWidget {
 class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
   
   User _user;
-  ZefyrController _textController;
-  FocusNode _fnBody;
   AdminBloc _adminBloc;
   File _imageFile;
+  TextEditingController _tecRole;
 
   @override
   void initState() {
     User originalU = BlocProvider.of<AppBloc>(context).currentUser;
     _user = User(
+      role: originalU.role,
       id: originalU.id,
       forename: originalU.forename,
       surname: originalU.surname,
-      body: originalU.body,
+      socialLinks: Map<String,String>.from(originalU.socialLinks),
+      likedPosts: List.from(originalU.likedPosts),
       imgSrc: originalU.imgSrc
     );
     _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers,BlocProvider.of<AppBloc>(context));
     _adminBloc.setupUserToEdit(originalU);
-
-    _fnBody = FocusNode();
-    _textController = ZefyrController(_user.getBodyDocument());
+   
+    _tecRole = TextEditingController(text: _user.roleString);
     super.initState();
   }
 
   @override
   void dispose() { 
-    _fnBody.dispose();
-    _textController.dispose();
+    _tecRole.dispose();
     super.dispose();
   }
   
@@ -57,10 +57,11 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
           editing: true, discardOption: true, context: context,record: 'User details').then((_){
           if(_ != null){
             if(_){
+              _user.role = _tecRole.text.trim();
               _adminBloc.add(AdminSaveMyDetailsEvent(
-                document: _textController.document,
                 file: _imageFile,
                 hasDeletedSrc: _user.imgSrc=='',
+
               ));
                 result = false;
             }else{
@@ -92,34 +93,57 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
   }
 
   Widget _buildBody(){
-    return ZefyrScaffold(
-      child: ListView(
-        children: [
-          _buildUserImageControls(),
-          SizedBox(height: 8,),
-          Text(_user.forename + ' ' + _user.surname, textAlign: TextAlign.center, style: TextStyle(fontSize: 24),),
-          Text('(Contact users of higher admin levels to modify name.)', textAlign: TextAlign.center,),
-          SizedBox(height: 32,),
-          Text('Edit your details. The first lines visible in the box will be displayed.', textAlign: TextAlign.center,),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(16)
-              ),
-              width: double.infinity,
-              height: 150,
-                child: ZefyrEditor(
-                mode: ZefyrMode.edit,
-                controller: _textController,
-                focusNode: _fnBody,
-                autofocus: false,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return ListView(
+      children: [
+        _buildUserImageControls(),
+        SizedBox(height: 8,),
+        Text(_user.forename + ' ' + _user.surname, textAlign: TextAlign.center, style: TextStyle(fontSize: 24),),
+        Text('(Contact users of higher admin levels to modify name.)', textAlign: TextAlign.center,),
+        SizedBox(height: 32,),
+        MyTextField(
+          label: 'Role/Status?',
+          controller: _tecRole,
+        ),
+        SizedBox(height: 8,),
+        Text('Social Links / Contacts', textAlign: TextAlign.center,),
+        SizedBox(height: 8,),
+        Column(
+          children: [
+            BlocBuilder(
+              bloc: _adminBloc,
+              condition: (_,state){
+                if(state is AdminUserRebuildSocialLinkState) return true;
+                return false;
+              },
+              builder:(_,state)=> SocialLinksDisplay(_adminBloc.selectedUser.socialLinks)),
+            SizedBox(height: 8,),
+            MyRaisedButton(
+              label: 'Edit Social Links',
+              onPressed: (){
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_){
+                    return Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height*0.5,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16.0),
+                          child: SocialLinksEdit(_adminBloc),
+                        ),
+                      ),
+                    );
+                  }
+                );
+                
+              },
+            )
+          ],
+        ),
+      ],
     );
   }
 

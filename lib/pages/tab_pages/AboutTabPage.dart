@@ -3,6 +3,8 @@ import 'package:ctrim_app_v1/blocs/AboutBloc/about_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/gallerySlideShow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -44,6 +46,7 @@ class AboutTabPage{
   }
 
   Widget _buildTab1(){
+    AboutArticle thisArticle = BlocProvider.of<AboutBloc>(_context).allArticles.first;
     String matthewVerse = '“Therefore go and make disciples of all nations, baptizing them in the ' +
     'name of the Father and of the Son and of the Holy Spirit, and ' +
     'teaching them to obey everything I have commanded you. And ' +
@@ -55,10 +58,7 @@ class AboutTabPage{
     return ListView(
       key: PageStorageKey<String>('AboutTabPageTab1'),
       children: [
-        AspectRatio(
-          aspectRatio: 16/9,
-          child: Container(color: Colors.pink,),
-        ),
+        GallerySlideShow(galleryItems:thisArticle.gallerySources,),
         SizedBox(height: 8,),
         Text('Christ the Redeemer International Ministries is dedicated and '+
         'committed to making true disciples who will passionately advance the Kingdom of God.', 
@@ -76,6 +76,15 @@ class AboutTabPage{
         Text('To become an effective and strategic disciple-making church.',textAlign: TextAlign.center,),
         SizedBox(height: 8,),
         Text(visionParagraph,textAlign: TextAlign.center,),
+        SizedBox(height: 16,),
+        MyRaisedButton(
+          externalPadding: EdgeInsets.all(8),
+          label: 'Learn More',
+          onPressed: (){
+            AppBloc.openURL(thisArticle.socialLinks['Website'], _context);
+          },
+        ),
+        SizedBox(height: 16,),
       ],
     );
   }
@@ -137,37 +146,21 @@ class AboutTabPage{
   Widget _buildTab3(){
    return ListView(
      children: [
+       SizedBox(height: MediaQuery.of(_context).size.height * 0.1,),
+       Padding(
+         padding: const EdgeInsets.all(8.0),
+         child: Text('Got Questions? Get In Touch With Us', textAlign: TextAlign.center, style: TextStyle(fontSize: 32),),
+       ),
        SizedBox(height: 8,),
-       Text('Got Questions? Get In Touch With Us', textAlign: TextAlign.center,),
-       SizedBox(height: 8,),
-       RaisedButton(
-         child: Text('Contact Us'),
+       MyRaisedButton(
+         externalPadding: EdgeInsets.all(8),
+         label: 'hello@ctrim.co.uk',
+         icon: Icons.email,
          onPressed: (){
            _launchEmail();
          },
        ),
       SizedBox(height: 8,),
-       RaisedButton(
-         child: Text('Random twitter link'),
-         onPressed: (){
-           _launchTwitter();
-         },
-       ),
-       
-      SizedBox(height: 8,),
-       RaisedButton(
-         child: Text('Random YOUTUBE link'),
-         onPressed: (){
-           _launchYoutube();
-         },
-       ),
-       SizedBox(height: 8,),
-       RaisedButton(
-         child: Text('Random CALENDER link to add event'),
-         onPressed: (){
-           _addCalenderEventTest();
-         },
-       ),
      ],
    );
   }
@@ -175,41 +168,11 @@ class AboutTabPage{
   void _launchEmail() {
     final Uri email = Uri(
       scheme: 'mailto',
-      path: 'diegocollado117@gmail.com',
+      path: 'hello@ctrim.co.uk',
       queryParameters: {
-        'subject':'This is the subject!'
+        'subject':'[Your Subject]'
       }
     );
-    launch(email.toString(),forceSafariVC: false, universalLinksOnly: true).then((value) => print('--------SOMETHING HAPPENDED: ' + value.toString()));
-  }
-
-  void _launchTwitter() async{
-    String url = 'https://twitter.com/nytimes';
-    if(await canLaunch(url)){
-      await launch(url).then((value) => print('--------SOMETHING HAPPENDED twitter: ' + value.toString()));
-    }else{
-      print('--------------------------COULDNT LAUNCH!');
-    }
-  }
-
-  void _launchYoutube() async{
-    String url = 'https://www.youtube.com/watch?v=dgZDICFDY5o&t=587s';
-    if(await canLaunch(url)){
-      await launch(url);
-    }else{
-      print('--------------------------COULDNT LAUNCH!');
-    }
-  }
-
-  void _addCalenderEventTest() async{
-    final Event event = Event(
-      title: 'title',
-      description: 'This is the description',
-      location: 'This is the location',
-      startDate: DateTime.now().add(Duration(days: 2)),
-      endDate: DateTime.now().add(Duration(days: 3, hours: 3))
-    );
-
-    await Add2Calendar.addEvent2Cal(event);
+    launch(email.toString(),forceSafariVC: false, universalLinksOnly: true);
   }
 }

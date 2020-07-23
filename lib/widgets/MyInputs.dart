@@ -40,7 +40,7 @@ class MyTextField extends StatelessWidget {
   final String label, hint;
   final TextEditingController controller;
   final Function(String) onTextChange;
-  final bool readOnly;
+  final bool readOnly,autoFocus;
   final int maxLength, maxLines;
   final TextInputAction textInputAction;
 
@@ -50,6 +50,7 @@ class MyTextField extends StatelessWidget {
     this.onTextChange,
     this.hint,
     this.readOnly = false,
+    this.autoFocus = false,
     this.maxLength,
     this.maxLines,
     this.textInputAction = TextInputAction.done,
@@ -68,6 +69,7 @@ class MyTextField extends StatelessWidget {
             onChanged: onTextChange,
             readOnly: readOnly,
             maxLength: maxLength,
+            autofocus: autoFocus,
             maxLines: maxLines,
             textInputAction: textInputAction,
             decoration: InputDecoration(hintText: hint ?? ''),
@@ -255,6 +257,46 @@ class MyFilterChip extends StatelessWidget {
       label: Text(label),
       onSelected: onSelected,
       selected: selected,
+    );
+  }
+}
+
+class MyDropdownList extends StatelessWidget {
+  
+  final String value;
+  final Function(String) onChanged;
+  final List<String> items;
+  final String label;
+  final bool disable;
+
+  MyDropdownList({
+    @required this.value,
+    @required this.onChanged,
+    @required this.items,
+    this.label,
+    this.disable = false,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return AbsorbPointer(
+      absorbing: disable,
+      child: Row(
+        children: <Widget>[
+          Text(label),
+          SizedBox(width: 8,),
+          DropdownButton<String>(
+            value: value,
+            onChanged: onChanged,
+            items: items.map((value){
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 }
