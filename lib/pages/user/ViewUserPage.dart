@@ -4,6 +4,7 @@ import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/style.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:flutter/material.dart';
@@ -44,9 +45,9 @@ class _ViewUserPageState extends State<ViewUserPage> {
               centerTitle: true,
               titlePadding: EdgeInsets.all(0),
               title:  Container(
-                color: Colors.white,
+                color: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkSurfaceColor : Colors.white,
                 width: double.infinity,
-              height: 54,
+              height: 52,
               child: Stack(
                 overflow: Overflow.visible,
                 alignment: Alignment.bottomCenter,
@@ -73,19 +74,19 @@ class _ViewUserPageState extends State<ViewUserPage> {
           ),
           ),
           SliverPadding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.zero,
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 Text(
                   widget.user.forename + ' ' + widget.user.surname, 
-                  style: TextStyle(color: Colors.black, fontSize: 32),
+                  style: TextStyle(fontSize: 32),
                   textAlign: TextAlign.center,
                 ),
                 Text(widget.user.role, style: TextStyle(fontStyle: FontStyle.italic,fontSize: 18),textAlign: TextAlign.center,),
-                SizedBox(height: 16,),
+                SizedBox(height: 32,),
                 Text(
                   'Social Links and Contacts', 
-                  style: TextStyle(color: Colors.black, fontSize: 18),
+                  style: TextStyle(fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 8,),

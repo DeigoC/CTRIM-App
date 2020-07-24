@@ -3,9 +3,9 @@ import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
-import 'package:ctrim_app_v1/widgets/postsEditTabs/galleryTabBody.dart';
-import 'package:ctrim_app_v1/widgets/postsEditTabs/mainTabBody.dart';
-import 'package:ctrim_app_v1/widgets/postsEditTabs/detailsTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts_widgets/mainTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts_widgets/detailsTabBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,7 +22,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 4);
+    _tabController = TabController(vsync: this, length: 3);
     _tecTitle = TextEditingController();
     _postBloc = PostBloc();
   }
@@ -80,10 +80,6 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                           icon: Icon(Icons.photo_library),
                           text: 'Gallery',
                         ),
-                        Tab(
-                          icon: Icon(Icons.track_changes),
-                          text: 'Updates',
-                        ),
                       ],
                       onTap: (newIndex) {
                         _postBloc.add(PostTabClickEvent(newIndex));
@@ -114,7 +110,6 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                 MainTabBody(),
                 PostDetailsTabBody(),
                 GalleryTabBody(gallerySrc: {},),
-                Center(child: Text('N/A'),),
               ],
             )
           ),

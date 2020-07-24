@@ -89,6 +89,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   Stream<AdminState> _mapSaveUserDetailsToState(AdminSaveMyDetailsEvent event) async*{
     yield AdminUserImageUploadingState();
     _selectedUser.imgSrc = event.hasDeletedSrc ? '':_selectedUser.imgSrc;
+    _selectedUser.role = event.role;
     if(event.file != null){
       _selectedUser.imgSrc = await _appStorage.uploadAndGetUserImageSrc(_selectedUser, event.file);
     }

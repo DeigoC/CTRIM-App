@@ -24,10 +24,10 @@ class AdminLoginButtonClickedEvent extends AdminLoginEvent{}
 
 // ! Adding/Editing user
 class AdminSaveMyDetailsEvent extends AdminEvent{
-  final NotusDocument document;
   final File file;
   final bool hasDeletedSrc;
-  AdminSaveMyDetailsEvent({this.document, this.file,this.hasDeletedSrc});
+  final String role;
+  AdminSaveMyDetailsEvent({ this.file,this.hasDeletedSrc,this.role});
 }
 
 class AdminRebuildSocialLinksEvent extends AdminEvent{}

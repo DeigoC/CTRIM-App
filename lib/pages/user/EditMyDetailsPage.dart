@@ -61,7 +61,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
               _adminBloc.add(AdminSaveMyDetailsEvent(
                 file: _imageFile,
                 hasDeletedSrc: _user.imgSrc=='',
-
+                role: _tecRole.text,
               ));
                 result = false;
             }else{

@@ -5,7 +5,8 @@ import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
-import 'package:ctrim_app_v1/widgets/postsEditTabs/galleryTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts_widgets/updatesTabBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zefyr/zefyr.dart';
@@ -119,7 +120,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
             GalleryTabBody.view(
               thumbnails: widget._post.thumbnails,
               gallerySrc: widget._post.gallerySources),
-            _buildUpdatesTab(),
+            PostUpdatesTab(widget._post),
           ],
           //child: _buildTabBody(_selectedTabIndex)
         ),

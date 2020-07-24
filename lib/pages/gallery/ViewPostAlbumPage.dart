@@ -1,5 +1,5 @@
 import 'package:ctrim_app_v1/classes/models/post.dart';
-import 'package:ctrim_app_v1/widgets/postsEditTabs/galleryTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
 import 'package:flutter/material.dart';
 
 class ViewPostAlbumPage extends StatelessWidget {

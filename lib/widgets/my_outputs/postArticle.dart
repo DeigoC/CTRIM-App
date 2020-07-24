@@ -53,7 +53,8 @@ class PostArticle extends StatelessWidget {
           children: [
             TextSpan(
                 text: _getAuthorNameAndTagsLine(timelinePost, post),
-                style: TextStyle(fontSize: isUpdatePost ? 8 : 12))
+                style: TextStyle(fontSize: isUpdatePost ? 8 : 12,color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
+          ? Colors.white60 : Colors.black.withOpacity(0.6)))
           ],
         ),
       ),
@@ -95,7 +96,8 @@ class PostArticle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Update: ' + timelinePost.getPostDateString(), style: TextStyle(fontSize: 12)),
+        Text('UPDATE: ' + timelinePost.getPostDateString(), style: TextStyle(fontSize: 16,color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
+          ? Colors.white60 : Colors.black.withOpacity(0.6))),
         Text(timelinePost.updateLog,style: TextStyle(fontSize: 26),),
         SizedBox(height: 8,),
         Container(

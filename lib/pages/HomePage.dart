@@ -5,6 +5,7 @@ import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllLocationsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewGalleryTabPage.dart';
 import 'package:ctrim_app_v1/style.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,26 +16,53 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
+  // ! Tab pages
   ViewAllEventsPage _eventPage;
   ViewGalleryPage _galleryPage;
   ViewAllLocationsPage _locationsPage;
   SettingsPage _settingsPage;
   AboutTabPage _aboutTabPage;
-
   int _selectedIndex =0;
-  ScrollController _postsScrollController;
-  
-@override
-void initState() { 
-  super.initState();
-  _postsScrollController = ScrollController();
 
-   _eventPage = ViewAllEventsPage(context,_postsScrollController);
+  // ! Tab page scroll controllers
+  ScrollController _postsScrollController;
+
+  // ! Firebase messaging
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  
+  @override
+  void initState() { 
+    super.initState();
+    // ! Controllers
+    _postsScrollController = ScrollController();
+
+    // ! Tab Pages
+    _eventPage = ViewAllEventsPage(context,_postsScrollController);
     _galleryPage = ViewGalleryPage(context, TabController(length: 2, vsync: this));
     _locationsPage = ViewAllLocationsPage(context);
     _settingsPage = SettingsPage(context);
     _aboutTabPage = AboutTabPage(context, TabController(length: 3, vsync: this));
-}
+      
+    // ! Firebase messaging
+    _firebaseMessaging.configure(
+      onMessage: (message)async{
+        // * When app's open
+        print('-------------------ON MESSAGE: ' + message.toString());
+      },
+      onResume: (message)async{
+
+      },
+      onLaunch: (message)async{
+
+      },
+    );
+  }
+
+  @override
+  void dispose() { 
+    _postsScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

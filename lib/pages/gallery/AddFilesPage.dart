@@ -13,6 +13,7 @@ class AddGalleryFiles extends StatefulWidget {
 }
 
 class _AddGalleryFilesState extends State<AddGalleryFiles> {
+  
   List<String> _videoTypes = [
     'mp4',
     'mkv',
@@ -20,6 +21,7 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
   ];
   List<String> _imageTypes = ['jpg', 'png', 'gif', 'svg'];
   List<File> _selectedFiles = [];
+  bool _selectingFiles = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,10 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
         _selectedFiles.forEach((file) {
           String fileType = basename(file.path).split('.').last.toLowerCase();
           String type = (_videoTypes.contains(fileType)) ? 'vid' : 'img';
-          widget._postBloc.files[file] = type;
+
+          if(_isFileValid(file, type)){
+             widget._postBloc.files[file] = type;
+          }
         });
         widget._postBloc.add(PostFilesReceivedEvent());
         return true;
@@ -37,16 +42,17 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
         appBar: AppBar(
           title: Text('Add Files'),
         ),
-        floatingActionButton: FloatingActionButton.extended(
+        floatingActionButton: _selectingFiles ? null: FloatingActionButton(
           onPressed: () {
+            setState(() { _selectingFiles = true; });
             _pickFiles().then((newFiles) {
               setState(() {
+                _selectingFiles = false;
                 _selectedFiles.addAll(newFiles);
               });
             });
           },
-          label: Text('Add Images And Videos'),
-          icon: Icon(Icons.add_photo_alternate),
+          child: Icon(Icons.add_photo_alternate),
         ),
         body: _buildBody(),
       ),
@@ -54,10 +60,11 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
   }
 
   Widget _buildBody() {
-    if (_selectedFiles.length == 0) {
-      return Center(
-        child: Text('Insert info here'),
-      );
+    if(_selectingFiles){
+      return Center(child: CircularProgressIndicator(),);
+    }
+    else if (_selectedFiles.length == 0) {
+      return Center(child: Text('Max Image Size: 2.0 MB\nMax Video Size: 75.0 MB',textAlign: TextAlign.center,),);
     }
     return ListView.builder(
       itemCount: _selectedFiles.length,
@@ -104,6 +111,15 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
       files.remove(toBeRemoved);
     });
   }
+
+  bool _isFileValid(File file, String type){
+    if(type == 'vid'){
+      if((file.lengthSync() / (1026*1000)) >75.0) return false;
+    }else{
+      if((file.lengthSync() / (1026*1000)) >2.0) return false;
+    }
+    return true;
+  }
 }
 
 class AddingFileItem extends StatefulWidget {
@@ -136,9 +152,7 @@ class _AddingFileItemState extends State<AddingFileItem> {
 
   @override
   void dispose() { 
-    if(_videoPlayerController != null){
-      _videoPlayerController.dispose();
-    }
+    if(_videoPlayerController != null) _videoPlayerController.dispose();
     super.dispose();
   }
 
@@ -156,7 +170,7 @@ class _AddingFileItemState extends State<AddingFileItem> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(basename(widget.file.path), overflow: TextOverflow.ellipsis,),
-                Text('Type: ' + widget.fileType),
+                _getFileSizeText(),
               ],
             ),
           )
@@ -196,5 +210,19 @@ class _AddingFileItemState extends State<AddingFileItem> {
         ),
       ),
     );
+  }
+
+  Text _getFileSizeText(){
+    double sizeMB = (widget.file.lengthSync() / (1026*1000));
+    bool isVideo = _videoPlayerController != null;
+    bool isSizeValid = true;
+    if(isVideo){
+      isSizeValid = sizeMB <= 75.0;
+    }else{
+      isSizeValid = sizeMB <= 2.0;
+    }
+
+    return Text(sizeMB.toStringAsFixed(2) + ' MB', style: isSizeValid ? 
+    null:TextStyle(color: Colors.red, fontWeight: FontWeight.bold),);
   }
 }

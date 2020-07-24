@@ -77,12 +77,10 @@ class ViewAllEventsPage {
             ],
             floating: true,
             bottom: PreferredSize(
-              preferredSize: Size.fromHeight(40),
+              preferredSize: Size.fromHeight(35),
               child: Container(
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(width: 0.5)),
-                ),
-                height: 40,
+                padding: EdgeInsets.only(bottom: 4),
+                height: 35,
                 child: BlocBuilder<TimelineBloc, TimelineState>(
                     condition: (_, state) {
                   if (state is TimelineTagChangedState) return true;

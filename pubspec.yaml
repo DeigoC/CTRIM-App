@@ -43,6 +43,7 @@ dependencies:
   flutter_icons: ^1.1.0
   video_thumbnail: ^0.2.2
   chewie: ^0.9.10
+  firebase_messaging: ^6.0.16
 
 dev_dependencies:
   flutter_test:
