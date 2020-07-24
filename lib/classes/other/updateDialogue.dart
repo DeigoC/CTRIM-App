@@ -34,43 +34,45 @@ class _UpdateLogDialogueState extends State<UpdateLogDialogue> {
       child: Container(
         padding: EdgeInsets.all(8),
         height: MediaQuery.of(context).size.height * 0.3,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            MyTextField(
-              controller: _tecUpdateLog,
-              label: 'Update Log',
-              onTextChange: (newString) {
-                if (_tecUpdateLog.text.trim().isEmpty) {
-                  setState(() {
-                    _hasText = false;
-                  });
-                } else {
-                  if (!_hasText)
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              MyTextField(
+                controller: _tecUpdateLog,
+                label: 'Update Log',
+                onTextChange: (newString) {
+                  if (_tecUpdateLog.text.trim().isEmpty) {
                     setState(() {
-                      _hasText = true;
+                      _hasText = false;
                     });
-                }
-              },
-              hint: 'e.g. Changed location and time',
-            ),
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: MyRaisedButton(
-                label: 'Update Post',
-                onPressed: _hasText
-                    ? () {
-                        String userID =BlocProvider.of<AppBloc>(context).currentUser.id;
-                        BlocProvider.of<TimelineBloc>(context).add(TimelineUpdatePostEvent(
-                          post: widget.postBloc.newPost, 
-                          uid: userID, 
-                          updateLog:_tecUpdateLog.text)
-                        );
-                      }
-                    : null,
+                  } else {
+                    if (!_hasText)
+                      setState(() {
+                        _hasText = true;
+                      });
+                  }
+                },
+                hint: 'e.g. Changed location and time',
               ),
-            )
-          ],
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: MyRaisedButton(
+                  label: 'Update Post',
+                  onPressed: _hasText
+                      ? () {
+                          String userID =BlocProvider.of<AppBloc>(context).currentUser.id;
+                          BlocProvider.of<TimelineBloc>(context).add(TimelineUpdatePostEvent(
+                            post: widget.postBloc.newPost, 
+                            uid: userID, 
+                            updateLog:_tecUpdateLog.text)
+                          );
+                        }
+                      : null,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

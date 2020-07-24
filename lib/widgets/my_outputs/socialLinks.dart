@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,22 +31,68 @@ class SocialLinksDisplay extends StatelessWidget {
             child: IconButton(
               tooltip: type + ' link',
               icon: _getIconFromString(type),
-              onPressed: () async{
+              onPressed: (){
                 //AppBloc.openURL(socialLinks[type]);
-                if(await canLaunch(socialLinks[type])){
+                _iconClick(type,context);
+                /* if(await canLaunch(socialLinks[type])){
                   await launch(socialLinks[type]);
                 }else{
                   Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text("Couldn't open the link!"),
                     action: SnackBarAction(label: 'Ok',onPressed: (){},),
                   ));
-                }
+                } */
               },
             ),
           );
         }).toList()
       ),
     );
+  }
+
+  void _iconClick(String type, BuildContext context)async{
+    if(type.compareTo('Email')==0){
+       final Uri email = Uri(
+        scheme: 'mailto',
+        path: socialLinks['Email'],
+    );
+    launch(email.toString(),forceSafariVC: false, universalLinksOnly: true);
+    }else if(type.compareTo('Phone no.')==0){
+      showDialog(
+        context: context,
+        builder: (_){
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18)
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListTile(
+                title: Text(socialLinks[type]),
+                subtitle: Text('Phone No.'),
+                trailing: IconButton(
+                  icon: Icon(Icons.content_copy),
+                  onPressed: (){
+                    Clipboard.setData(ClipboardData(text: socialLinks[type]));
+                    Scaffold.of(context).showSnackBar(SnackBar(content: Text('Address line copied')));
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            ),
+          );
+        }
+      );
+    }else{
+      if(await canLaunch(socialLinks[type])){
+        await launch(socialLinks[type]);
+      }else{
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("Couldn't open the link!"),
+          action: SnackBarAction(label: 'Ok',onPressed: (){},),
+        ));
+      }
+    }
   }
 
    Icon _getIconFromString(String socialName){
@@ -173,41 +220,43 @@ class _SocialLinksEditState extends State<SocialLinksEdit> {
     availableTypes.removeWhere((e) => widget._adminBloc.selectedUser.socialLinks.containsKey(e));
     if(_editing) availableTypes.add(_selectedTypeToEdit);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: MyDropdownList(
-            label: 'Type: ',
-            disable: _editing,
-            items: availableTypes,
-            value: _selectedTypeToEdit,
-            onChanged: (newValue){
-              setState(() {
-                _selectedTypeToEdit = newValue;
-              });
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: MyDropdownList(
+              label: 'Type: ',
+              disable: _editing,
+              items: availableTypes,
+              value: _selectedTypeToEdit,
+              onChanged: (newValue){
+                setState(() {
+                  _selectedTypeToEdit = newValue;
+                });
+                _canEnableSaveButton();
+              },
+            ),
+          ),
+          MyTextField(
+            label: 'Link/Email/Contact No.',
+            controller: _tecLinkContact,
+            onTextChange: (_){
               _canEnableSaveButton();
             },
           ),
-        ),
-        MyTextField(
-          label: 'Link/Contact',
-          controller: _tecLinkContact,
-          onTextChange: (_){
-            _canEnableSaveButton();
-          },
-        ),
-        MyRaisedButton(
-          externalPadding: EdgeInsets.all(8),
-          label: 'Save',
-          onPressed: _enableButton? (){
-            widget._adminBloc.selectedUser.socialLinks[_selectedTypeToEdit] = _tecLinkContact.text.trim();
-            _backToViewList();
-          }:null,
-        ),
-      ],
+          MyRaisedButton(
+            externalPadding: EdgeInsets.all(8),
+            label: 'Save',
+            onPressed: _enableButton? (){
+              widget._adminBloc.selectedUser.socialLinks[_selectedTypeToEdit] = _tecLinkContact.text.trim();
+              _backToViewList();
+            }:null,
+          ),
+        ],
+      ),
     );
   }
 
@@ -226,7 +275,7 @@ class _SocialLinksEditState extends State<SocialLinksEdit> {
           },
           child: ListTile(
             leading: _getIconFromLinkType(type),
-            title: Text(socialLinks[type]),
+            title: Text(socialLinks[type],overflow: TextOverflow.ellipsis),
             subtitle: Text(type),
             onTap: (){
               _editLinkClick(socialLinks[type], type);

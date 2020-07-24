@@ -35,7 +35,8 @@ class PostArticle extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             border: Border(
-          bottom: BorderSide(width: 0.25),
+          bottom: BorderSide(width: 0.25, 
+          color: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white:Colors.black),
         )),
         padding: EdgeInsets.all(8),
         child: _isOriginal ? _buildOriginalPost(false) : _buildUpdatePost(),
@@ -59,19 +60,48 @@ class PostArticle extends StatelessWidget {
         ),
       ),
     ];
+    /* colChildren =[
+      Text(post.title, style:TextStyle(fontSize: isUpdatePost ? 22 : 26, color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
+           ? Colors.white : Colors.black),),
+      Text(
+        _getAuthorNameAndTagsLine(timelinePost, post),
+        style: TextStyle(fontSize: isUpdatePost ? 8 : 12,color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
+              ? Colors.white60 : Colors.black.withOpacity(0.6),),
+      )
+    ]; */
+
+
     _addDescription(colChildren);
     _addImages(colChildren);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: colChildren,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: isUpdatePost? [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: colChildren,
+          ),
+        ),
+      ]: [
+        allUsers.firstWhere((e) => timelinePost.authorID.compareTo(e.id)==0).buildAvatar(_context),
+        SizedBox(width: 8,),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: colChildren,
+          ),
+        ),
+      ],
     );
   }
 
   void _addDescription(List<Widget> colChildren) {
     if (post.description.trim().length > 0) {
-      colChildren.add(Padding(
+      colChildren.add(
+        Padding(
         padding: EdgeInsets.only(top: 8),
-        child: Text(
+        child:
+        Text(
           post.description,
           style: TextStyle(fontSize: 16),
         ),
@@ -93,20 +123,32 @@ class PostArticle extends StatelessWidget {
   }
 
   Widget _buildUpdatePost() {
-    return Column(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('UPDATE: ' + timelinePost.getPostDateString(), style: TextStyle(fontSize: 16,color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
-          ? Colors.white60 : Colors.black.withOpacity(0.6))),
-        Text(timelinePost.updateLog,style: TextStyle(fontSize: 26),),
-        SizedBox(height: 8,),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(width: 0.25),
-            borderRadius: BorderRadius.circular(16.0),
+        allUsers.firstWhere((e) => timelinePost.authorID.compareTo(e.id)==0).buildAvatar(_context),
+        SizedBox(width: 8,),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('UPDATE: ' + timelinePost.getPostDateString(), style: TextStyle(fontSize: 16,color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
+                ? Colors.white60 : Colors.black.withOpacity(0.6))),
+              Text(timelinePost.updateLog,style: TextStyle(fontSize: 26),),
+              SizedBox(height: 8,),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 0.25,
+                    color: BlocProvider.of<AppBloc>(_context).onDarkTheme ? Colors.white:Colors.black,
+                  ),
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                padding: EdgeInsets.all(8),
+                child: _buildOriginalPost(true),
+              ),
+            ],
           ),
-          padding: EdgeInsets.all(8),
-          child: _buildOriginalPost(true),
         ),
       ],
     );

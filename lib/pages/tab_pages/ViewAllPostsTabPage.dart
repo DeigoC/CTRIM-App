@@ -5,6 +5,7 @@ import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class ViewAllEventsPage {
   
@@ -17,9 +18,9 @@ class ViewAllEventsPage {
 
   Widget buildFAB() {
     return FloatingActionButton(
-      child: Icon(Icons.add, size: 29,color: Colors.white,),
+      child: Icon(MaterialCommunityIcons.newspaper_plus, size: 29,color: Colors.white,),
       onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToAddPostPageEvent()),
-      tooltip: 'Add New Post',
+      tooltip: 'New Post',
     );
   }
 

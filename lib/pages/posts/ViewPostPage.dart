@@ -48,10 +48,9 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
       body: NestedScrollView(
         headerSliverBuilder: (_, __) {
           bool hasImage = widget._post.firstImageSrc != null;
-
           return [
             SliverAppBar(
-              expandedHeight: 200,
+              expandedHeight: MediaQuery.of(context).size.height * 0.30,
               actions: [
                 BlocBuilder<AppBloc, AppState>(
                   condition: (_, state) {

@@ -168,9 +168,9 @@ class AboutTabPage{
     final Uri email = Uri(
       scheme: 'mailto',
       path: 'hello@ctrim.co.uk',
-      queryParameters: {
-        'subject':'[Your Subject]'
-      }
+      /* queryParameters: {
+        'subject':'*Subject*'
+      } */
     );
     launch(email.toString(),forceSafariVC: false, universalLinksOnly: true);
   }

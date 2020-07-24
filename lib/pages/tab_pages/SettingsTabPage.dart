@@ -94,7 +94,7 @@ class SettingsPage{
                 value: BlocProvider.of<AppBloc>(_context).onDarkTheme, 
                 title: Text('Dark Mode',),
                 secondary: Icon(Icons.brightness_medium),
-                subtitle: Text('Change the color theme of the app',),
+                subtitle: Text('Switch to a darker color theme',),
                 onChanged: (newValue){
                   AppSettingsEvent event = newValue ? AppChangeThemeToDarkEvent() : AppChangeThemeToLightEvent();
                   BlocProvider.of<AppBloc>(_context).add(event);

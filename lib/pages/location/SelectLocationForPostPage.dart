@@ -22,11 +22,11 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
         title: Text('Select Location'),
       ),
       body: _buildBody(),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'New Location',
         onPressed: () =>
             BlocProvider.of<AppBloc>(context).add(AppToAddLocationEvent(widget._postBloc)),
-        label: Text('New Location'),
-        icon: Icon(Icons.add_location),
+        child: Icon(Icons.add_location,color: Colors.white,),
       ),
     );
   }

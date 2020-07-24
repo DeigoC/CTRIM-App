@@ -43,6 +43,7 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
           title: Text('Add Files'),
         ),
         floatingActionButton: _selectingFiles ? null: FloatingActionButton(
+          tooltip: 'Browse Files',
           onPressed: () {
             setState(() { _selectingFiles = true; });
             _pickFiles().then((newFiles) {

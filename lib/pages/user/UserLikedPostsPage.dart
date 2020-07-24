@@ -25,7 +25,6 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
         User currentU = BlocProvider.of<AppBloc>(context).currentUser;
 
         if (state is TimelineDisplaySearchFeedState) {
-          print('--------------------STATE length IS ' + state.posts.length.toString());
           if (state.posts.length == 0) {
             return Center(
               child: Text('No liked Posts'),

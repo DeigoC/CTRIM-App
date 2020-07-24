@@ -32,7 +32,7 @@ class PostUpdatesTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          leading: Hero(child: user.buildAvatar(),tag: '0/'+user.imgSrc,),
+          leading: Hero(child: user.buildAvatar(context),tag: '0/'+user.imgSrc,),
           title: Text(user.forename + ' ' + user.surname[0] + '.'),
           subtitle: Text(user.role),
           onTap: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(user)),
