@@ -16,13 +16,16 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Liked Posts'),
+        title: Text('Liked Posts'),
       ),
       body: BlocBuilder<TimelineBloc, TimelineState>(condition: (_, state) {
         if (state is TimelineDisplaySearchFeedState) return true;
         return false;
       }, builder: (_, state) {
+        User currentU = BlocProvider.of<AppBloc>(context).currentUser;
+
         if (state is TimelineDisplaySearchFeedState) {
+          print('--------------------STATE length IS ' + state.posts.length.toString());
           if (state.posts.length == 0) {
             return Center(
               child: Text('No liked Posts'),
@@ -43,7 +46,7 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
                 );
               });
         }
-        User currentU = BlocProvider.of<AppBloc>(context).currentUser;
+    
         BlocProvider.of<TimelineBloc>(context)
             .add(TimelineDisplayCurrentUserLikedPosts(currentU.likedPosts));
         return Center(

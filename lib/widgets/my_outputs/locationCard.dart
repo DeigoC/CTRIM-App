@@ -2,6 +2,7 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
+import 'package:ctrim_app_v1/style.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,11 +22,8 @@ class LocationCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: (){
-          if(isSelecting){
-            onTap();
-          }else{
-            BlocProvider.of<AppBloc>(context).add(AppToViewAllPostsForLocationEvent(location.id));
-          }
+          if(isSelecting){onTap();}
+          else{BlocProvider.of<AppBloc>(context).add(AppToViewAllPostsForLocationEvent(location.id));}
         },
         child: Row(
           children: [
@@ -39,23 +37,7 @@ class LocationCard extends StatelessWidget {
                     }, 0));
                   }
                 },
-                child: Hero(
-                  tag: location.imgSrc == ''
-                      ? location.addressLine
-                      : '0/' + location.imgSrc,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.30,
-                    height: MediaQuery.of(context).size.width * 0.30,
-                    decoration: BoxDecoration(
-                        color: Colors.pink,
-                        borderRadius: BorderRadius.circular(8),
-                        image: location.imgSrc.isNotEmpty
-                            ? DecorationImage(
-                                image: NetworkImage(location.imgSrc),
-                                fit: BoxFit.cover)
-                            : null),
-                  ),
-                ),
+                child: _buildImageContainer(context),
               ),
             ),
             Expanded(
@@ -70,12 +52,6 @@ class LocationCard extends StatelessWidget {
                       onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location)),
                       internalPadding: EdgeInsets.zero,
                     ),
-                    /* RichText(text: TextSpan(
-                      text: location.addressLine,
-                      style: TextStyle(color: Color(0xff236adb)),
-                      recognizer: TapGestureRecognizer()..onTap =()=> BlocProvider.of<AppBloc>(context)
-                      .add(AppToViewLocationOnMapEvent(location)),
-                    ),), */
                     subtitle: Text(location.description),
                   ),
                   ButtonBar(
@@ -108,6 +84,34 @@ class LocationCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageContainer(BuildContext context) {
+    if(location.imgSrc==''){
+      return Container(
+        width: MediaQuery.of(context).size.width * 0.30,
+        height: MediaQuery.of(context).size.width * 0.30,
+        decoration: BoxDecoration(
+          color: LightPrimaryColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+      );
+    }
+    return Hero(
+      tag:'0/' + location.imgSrc,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.30,
+        height: MediaQuery.of(context).size.width * 0.30,
+        decoration: BoxDecoration(
+            color: Colors.pink,
+            borderRadius: BorderRadius.circular(8),
+            image:DecorationImage(
+            image: NetworkImage(location.imgSrc),
+            fit: BoxFit.cover
+          )
         ),
       ),
     );

@@ -9,7 +9,6 @@ import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zefyr/zefyr.dart';
 
 class ViewUserPage extends StatefulWidget {
   final User user;

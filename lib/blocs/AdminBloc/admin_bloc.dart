@@ -9,7 +9,6 @@ import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/UserFileDocument.dart';
 import 'package:equatable/equatable.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/auth.dart';
-import 'package:zefyr/zefyr.dart';
 
 part 'admin_event.dart';
 part 'admin_state.dart';

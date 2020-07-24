@@ -23,8 +23,9 @@ class SocialLinksDisplay extends StatelessWidget {
           return Container(
             padding: EdgeInsets.all(4),
             decoration: BoxDecoration(
+              gradient: _getIconGradient(type),
               shape: BoxShape.circle,
-              color: Colors.blue,
+              color: _getIconColor(type),
             ),
             child: IconButton(
               tooltip: type + ' link',
@@ -53,6 +54,32 @@ class SocialLinksDisplay extends StatelessWidget {
       case 'Facebook': return Icon(AntDesign.facebook_square,color: Colors.white,);
       case 'Instagram':return Icon(AntDesign.instagram,color: Colors.white,);
       case 'Twitter': return Icon(AntDesign.twitter,color: Colors.white,);
+      case 'Email':return Icon(Icons.email,color: Colors.white,);
+      case 'Phone no.':return Icon(Icons.phone,color: Colors.white);
+      
+    }
+    return null;
+  }
+
+  Color _getIconColor(String type){
+    switch(type){
+      case 'Youtube':return Color(0xffc4302b);
+      case 'Facebook': return Color(0xff3b5998);
+      case 'Instagram':return Colors.pink;
+      case 'Twitter': return Color(0xff00acee);
+      case 'Email':return Colors.red;
+      case 'Phone no.':return Colors.green;
+    }
+    return null;
+  }
+
+  Gradient _getIconGradient(String type){
+    if(type.compareTo('Instagram')==0){
+      return LinearGradient(
+        begin: Alignment.bottomLeft,
+        end: Alignment.topRight,
+        colors: [Color(0xffF58529), Color(0xffFEDA77), Color(0xffDD2A7B),Color(0xff8134AF),Color(0xff515BD4)]
+      );
     }
     return null;
   }
@@ -72,7 +99,7 @@ class _SocialLinksEditState extends State<SocialLinksEdit> {
   TextEditingController _tecLinkContact;
 
   List<String> _availableTypes =[
-    'Youtube','Facebook','Instagram'
+    'Youtube','Facebook','Instagram', 'Twitter','Email','Phone no.'
   ];
 
   @override
@@ -239,6 +266,8 @@ class _SocialLinksEditState extends State<SocialLinksEdit> {
       case 'Facebook': return Icon(AntDesign.facebook_square,);
       case 'Instagram':return Icon(AntDesign.instagram,);
       case 'Twitter': return Icon(AntDesign.twitter,);
+      case 'Email':return Icon(Icons.email);
+      case 'Phone no.':return Icon(Icons.phone);
     }
     return null;
   }
