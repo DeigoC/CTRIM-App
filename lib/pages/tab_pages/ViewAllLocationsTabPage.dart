@@ -3,6 +3,7 @@ import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/locationCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class ViewAllLocationsPage {
   BuildContext _context;
@@ -64,6 +65,8 @@ class _LocationSearchBarState extends State<LocationSearchBar> {
   Widget build(BuildContext context) {
     return SliverAppBar(
       automaticallyImplyLeading: false,
+      titleSpacing: 8,
+      //leading: _searchMode ? null: Icon(FontAwesome5Solid.church,color: Colors.white,),
       floating: true,
       actions: _searchMode ? null: [
               IconButton(
@@ -109,7 +112,13 @@ class _LocationSearchBarState extends State<LocationSearchBar> {
                       }
                     },
                   )),
-            ): Text('Locations'),
+            ): Row(
+              children: [
+                Icon(FontAwesome5Solid.church,color: Colors.white,),
+                SizedBox(width: 16,),
+                Text('Locations'),
+              ],
+            ),
             centerTitle: true,
     );
   }

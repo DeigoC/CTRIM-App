@@ -6,43 +6,59 @@ import 'package:ctrim_app_v1/widgets/my_outputs/galleryItem.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 
 class ViewGalleryPage {
-  BuildContext _context;
-  void setContext(BuildContext context) => _context = context;
-  final TabController _tabController;
+  BuildContext context;
+  void setContext(BuildContext c) => context = c;// ? What??!
+  final TabController tabController;
+  final ScrollController timelineController,albumController;
+
   final List<Tab> _myTabs = [
     Tab(icon: Icon(Icons.view_module),),
     Tab( icon: Icon(Icons.folder,))
   ];
   Map<DateTime, List<Post>> _allPosts;
 
-  ViewGalleryPage(this._context, this._tabController);
+  ViewGalleryPage({
+    this.context,
+    this.tabController,
+    this.timelineController,
+    this.albumController,
+  });
 
   Widget buildAppBar() {
     return AppBar(
       automaticallyImplyLeading: false,
-      title: Text('Gallery'),
+      titleSpacing: 8,
+     // leading: Icon(FontAwesome5Solid.church,color: Colors.white,),
+      title: Row(
+        children: [
+          Icon(FontAwesome5Solid.church,color: Colors.white,),
+          SizedBox(width: 16,),
+          Text('Gallery'),
+        ],
+      ),
       centerTitle: true,
       bottom: TabBar(
-          controller: _tabController,
+          controller: tabController,
           tabs: _myTabs,
         ),
       actions: [
         IconButton(
           icon: Icon(Icons.search),
           tooltip: 'Search by post title',
-          onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToSearchAlbumPageEvent()),
+          onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSearchAlbumPageEvent()),
         )
       ],
     );
   }
 
   Widget buildBody() {
-     _allPosts = BlocProvider.of<TimelineBloc>(_context).getPostsForGalleryTab();
+     _allPosts = BlocProvider.of<TimelineBloc>(context).getPostsForGalleryTab();
     return TabBarView(
-      controller: _tabController,
+      controller: tabController,
       children: [
         _timelineView(),
         _ablumView(),
@@ -52,6 +68,7 @@ class ViewGalleryPage {
 
   Widget _timelineView() {
     return ListView.builder(
+      controller: timelineController,
       key: PageStorageKey<String>('TimlineTab'),
       itemCount: _allPosts.keys.length,
       itemBuilder: (_, index) {
@@ -70,22 +87,23 @@ class ViewGalleryPage {
 
 
         Map<String, ImageTag> galleryTags = _createGalleryTags(srcs);
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16,),
-            Text(' ' + dateString,style: TextStyle(fontSize: 28),),
+            Text(' ' + dateString,style: TextStyle(fontSize: 18),),
             SizedBox(height: 4,),
             Wrap(
               children: orderedSrcs.map((src) {
-                int pos = srcs.keys.toList().indexOf(src);
+                int pos = orderedSrcs.indexOf(src);
                 if (srcs[src].compareTo('vid') == 0) {
                   return GalleryItem(
                     thumbnails: thumbs,
                     src: src,
                     type: srcs[src],
                     heroTag: galleryTags.values.elementAt(pos).heroTag,
-                    onTap: ()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
+                    onTap: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
                   );
                 }
                 return GalleryItem(
@@ -93,7 +111,7 @@ class ViewGalleryPage {
                     src: src,
                     type: srcs[src],
                     heroTag: galleryTags.values.elementAt(pos).heroTag,
-                    onTap: ()=>BlocProvider.of<AppBloc>(_context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
+                    onTap: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(galleryTags, pos)),
                   );
               }).toList(),
             ),
@@ -102,10 +120,13 @@ class ViewGalleryPage {
       });
   }
   
-  Map<String, ImageTag> _createGalleryTags(Map<String, String> gallery) {
+  Map<String, ImageTag> _createGalleryTags(Map<String, String> gallery,) {
     Map<String, ImageTag> result = {};
-    gallery.forEach((src, type) {
-      result[src] = ImageTag(src: src, type: type);
+    List<String> srcs = gallery.keys.toList();
+    srcs.sort();
+
+    srcs.forEach((src) {
+      result[src] = ImageTag(src: src, type: gallery[src]);
     });
     return result;
   }
@@ -117,6 +138,7 @@ class ViewGalleryPage {
     });
 
     return GridView.builder(
+      controller: albumController,
       key: PageStorageKey<String>('GalleryView'),
       itemCount: individualPosts.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
@@ -130,7 +152,7 @@ class ViewGalleryPage {
           return AlbumCoverItem(
             type: 'vid',
             src: post.thumbnails[vidSrc],
-            onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post)),
+            onTap: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewPostAlbumEvent(post)),
             title: post.title,
             itemCount: post.gallerySources.length.toString(),
           );
@@ -138,7 +160,7 @@ class ViewGalleryPage {
         return AlbumCoverItem(
           type: 'img',
           src: gallery.first,
-          onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewPostAlbumEvent(post)),
+          onTap: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewPostAlbumEvent(post)),
           title: post.title,
           itemCount: post.gallerySources.length.toString(),
         );

@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryItem extends StatefulWidget {
@@ -230,7 +232,8 @@ class _AlbumCoverItemState extends State<AlbumCoverItem> {
           ),),
         ),
         Text(widget.title,textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,),
-        Text('(${widget.itemCount})')
+        Text('${widget.itemCount}',style: TextStyle(color:  BlocProvider.of<AppBloc>(context).onDarkTheme 
+          ? Colors.white60 : Colors.black.withOpacity(0.6)),)
       ],
     );
   }

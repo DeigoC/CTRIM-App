@@ -49,7 +49,7 @@ class _RegisterUserState extends State<RegisterUser> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text('ID: ' + _adminBloc.selectedUser.id),
+          child: Text('ID: ' + _adminBloc.selectedUser.id,style: TextStyle(fontSize: 18),),
         ),
         padding,
         MyTextField(
@@ -67,20 +67,20 @@ class _RegisterUserState extends State<RegisterUser> {
           onTextChange: (newString) =>
               _adminBloc.add(AdminUserModTextChangeEvent(surname: newString)),
         ),
-        padding,
+        /* padding,
         MyTextField(
           label: 'Contact No',
           controller: null,
           hint: 'Optional',
           onTextChange: (newString) =>
               _adminBloc.add(AdminUserModTextChangeEvent(contactNo: newString)),
-        ),
+        ), */
         padding,
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: AdminDropdownList(),
         ),
-        padding,
+        SizedBox(height: 32,),
         MyTextField(
           label: 'Email',
           controller: null,

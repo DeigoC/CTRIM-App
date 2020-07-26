@@ -191,8 +191,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   Stream<PostState> _mapDetailListEventToState(PostDetailListEvent event) async* {
     if (event is PostDetailListReorderEvent) {
       int newIndex = event.newIndex;
-      if (newIndex >= _post.detailTable.length)
-        newIndex = _post.detailTable.length - 1;
+      if (newIndex >= _post.detailTable.length) newIndex = _post.detailTable.length - 1;
       var temp = _post.detailTable.removeAt(event.oldIndex);
       _post.detailTable.insert(newIndex, temp);
       yield PostDetailListReorderState();

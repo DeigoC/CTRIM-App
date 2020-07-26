@@ -13,14 +13,16 @@ class SocialLinksDisplay extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    if(socialLinks.length == 0){
-      return Center(child: Text('N/A'));
-    }
+    List<String> types = socialLinks.keys.toList();
+    types.sort();
+
+    if(socialLinks.length == 0) return Center(child: Text('N/A'));
     return Align(
       alignment: Alignment.center,
       child: Wrap(
+        alignment: WrapAlignment.center,
         spacing: 4,
-        children: socialLinks.keys.map((type){
+        children: types.map((type){
           return Container(
             padding: EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -29,19 +31,10 @@ class SocialLinksDisplay extends StatelessWidget {
               color: _getIconColor(type),
             ),
             child: IconButton(
-              tooltip: type + ' link',
+              tooltip: type,
               icon: _getIconFromString(type),
               onPressed: (){
-                //AppBloc.openURL(socialLinks[type]);
                 _iconClick(type,context);
-                /* if(await canLaunch(socialLinks[type])){
-                  await launch(socialLinks[type]);
-                }else{
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text("Couldn't open the link!"),
-                    action: SnackBarAction(label: 'Ok',onPressed: (){},),
-                  ));
-                } */
               },
             ),
           );
@@ -68,7 +61,7 @@ class SocialLinksDisplay extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ListTile(
-                title: Text(socialLinks[type]),
+                title: Text(socialLinks[type],overflow: TextOverflow.ellipsis,),
                 subtitle: Text('Phone No.'),
                 trailing: IconButton(
                   icon: Icon(Icons.content_copy),
@@ -167,9 +160,6 @@ class _SocialLinksEditState extends State<SocialLinksEdit> {
       onWillPop: ()async=>false,
       child: Scaffold(
         appBar: AppBar(
-          /* shape:  RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-          ), */
           automaticallyImplyLeading: false,
           title:Text('Social Links'),
           actions: [ 
@@ -261,12 +251,14 @@ class _SocialLinksEditState extends State<SocialLinksEdit> {
   }
 
   Widget _buildViewing(){
-     Map<String,String> socialLinks = widget._adminBloc.selectedUser.socialLinks;
+    Map<String,String> socialLinks = widget._adminBloc.selectedUser.socialLinks;
+    List<String> types = socialLinks.keys.toList();
+    types.sort();
 
     return ListView(
-      children: socialLinks.keys.map((type){
+      children: types.map((type){
         return Dismissible(
-          key: ValueKey(socialLinks[type]),
+          key: ValueKey(type),
           background: Container(color: Colors.red,),
           onDismissed: (_){
             setState(() {

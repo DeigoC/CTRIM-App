@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/gallerySlideShow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutTabPage{
@@ -21,7 +22,14 @@ class AboutTabPage{
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text('About Us'),
+          //leading: Icon(FontAwesome5Solid.church,color: Colors.white,),
+          title: Row(
+            children: [
+              Icon(FontAwesome5Solid.church,color: Colors.white,),
+              SizedBox(width: 16,),
+              Text('About Us'),
+            ],
+          ),
           centerTitle: true,
           bottom: TabBar(
             controller: _tabController,
@@ -58,24 +66,49 @@ class AboutTabPage{
       key: PageStorageKey<String>('AboutTabPageTab1'),
       children: [
         GallerySlideShow(galleryItems:thisArticle.gallerySources,),
-        SizedBox(height: 8,),
-        Text('Christ the Redeemer International Ministries is dedicated and '+
-        'committed to making true disciples who will passionately advance the Kingdom of God.', 
-        textAlign: TextAlign.center,),
+        SizedBox(height: 32,),
+
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal:8.0),
+          child: Text('Christ the Redeemer International Ministries is dedicated and '+
+          'committed to making true disciples who will passionately advance the Kingdom of God.', 
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18
+            ),
+          ),
+        ),
+        SizedBox(height: 64,),
+
+        Text('OUR MISSION',textAlign: TextAlign.center,style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),),
+        SizedBox(height: 18,),
+
+        Text('To Win Souls and Make Disciples.',textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 18),),
+        SizedBox(height: 18,),
+
+        Text('Matthew 28:19-20',textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 18,fontStyle: FontStyle.italic,decoration: TextDecoration.underline),),
+        
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(matthewVerse,textAlign: TextAlign.center,style: TextStyle(fontSize: 18),),
+        ),
+        SizedBox(height: 64,),
+
+        Text('OUR VISION',textAlign: TextAlign.center,style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),),
+        SizedBox(height: 18,),
+
+        Text('To become an effective and strategic disciple-making church.',textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 18),),
+        SizedBox(height: 18,),
+
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal:8.0),
+          child: Text(visionParagraph,textAlign: TextAlign.center,style: TextStyle(fontSize: 18),),
+        ),
         SizedBox(height: 16,),
-        Text('OUR MISSION',textAlign: TextAlign.center,),
-        SizedBox(height: 8,),
-        Text('To Win Souls and Make Disciples.',textAlign: TextAlign.center,),
-        SizedBox(height: 8,),
-        Text('Matthew 28:19-20',textAlign: TextAlign.center,),
-        Text(matthewVerse,textAlign: TextAlign.center,),
-        SizedBox(height: 16,),
-        Text('OUR VISION',textAlign: TextAlign.center,),
-        SizedBox(height: 8,),
-        Text('To become an effective and strategic disciple-making church.',textAlign: TextAlign.center,),
-        SizedBox(height: 8,),
-        Text(visionParagraph,textAlign: TextAlign.center,),
-        SizedBox(height: 16,),
+
         MyRaisedButton(
           externalPadding: EdgeInsets.all(8),
           label: 'Learn More',

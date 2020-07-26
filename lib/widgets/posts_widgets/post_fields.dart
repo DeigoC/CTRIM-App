@@ -50,7 +50,7 @@ class _PostDateTimeFieldState extends State<PostDateTimeField> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Start'),
+            Text('Start (Required)',style: TextStyle(fontSize: 18),),
             Wrap(
               spacing: 8,
               children: [
@@ -67,7 +67,7 @@ class _PostDateTimeFieldState extends State<PostDateTimeField> {
               ],
             ),
             SizedBox(height: 8,),
-            Text('End'),
+            Text('End (Required)',style: TextStyle(fontSize: 18),),
             Wrap(
               spacing: 8,
               children: [
@@ -157,41 +157,36 @@ class PostLocationField extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Location'),
+                Text('Location (Required)',style: TextStyle(fontSize: 18),),
                 MyFlatButton(
                   border: true,
                   label: addressLine,
                   onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent(
                           BlocProvider.of<PostBloc>(context))),
                 ),
-                MyCheckBox(
-                  label: 'Not Applicable',
-                  value: BlocProvider.of<PostBloc>(context).newPost.locationID == '0',
-                  onChanged: (newValue){
-                    if(newValue){
-                      BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
-                        locationID: '0',
-                        addressLine: 'Location Not Applicable'
-                      ));
-                    }else{
-                      BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
-                        locationID: '',
-                        addressLine: 'PENDING'
-                      ));
-                    }
-                    
-                  },
+                Row(
+                  children: [
+                    MyCheckBox(
+                      label: 'Not Applicable',
+                      value: BlocProvider.of<PostBloc>(context).newPost.locationID == '0',
+                      onChanged: (newValue){
+                        if(newValue){
+                          BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
+                            locationID: '0',
+                            addressLine: 'Location Not Applicable'
+                          ));
+                        }else{
+                          BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
+                            locationID: '',
+                            addressLine: 'PENDING'
+                          ));
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ],
             );
-            
-            
-            /* return MyFlatButton(
-              border: true,
-              label: addressLine,
-              onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent(
-                      BlocProvider.of<PostBloc>(context))),
-            ); */
           }),
     );
   }
@@ -205,7 +200,7 @@ class PostDepartmentField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Departments'),
+          Text('Tags (Required)',style: TextStyle(fontSize: 18),),
           BlocBuilder<PostBloc, PostState>(condition: (_, state) {
             if (state is PostDepartmentClickState) return true;
             return false;
@@ -280,7 +275,7 @@ class DetailTable extends StatelessWidget {
                           text: BlocProvider.of<PostBloc>(context)
                               .newPost
                               .detailTableHeader),
-                      hint: '(Optional table-like thing?)',
+                      hint: 'Optional',
                       onTextChange: (newHeader) {
                         BlocProvider.of<PostBloc>(context)
                             .newPost

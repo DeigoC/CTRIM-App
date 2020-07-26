@@ -8,7 +8,6 @@ import 'package:ctrim_app_v1/style.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -26,7 +25,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   int _selectedIndex =0;
 
   // ! Tab page scroll controllers
-  ScrollController _postsScrollController;
+  ScrollController _postsScrollController,_timelineController,_albumController;
 
   // ! Firebase messaging
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -36,10 +35,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     super.initState();
     // ! Controllers
     _postsScrollController = ScrollController();
+    _timelineController = ScrollController();
+    _albumController= ScrollController();
 
     // ! Tab Pages
     _eventPage = ViewAllEventsPage(context,_postsScrollController);
-    _galleryPage = ViewGalleryPage(context, TabController(length: 2, vsync: this));
+    _galleryPage = ViewGalleryPage(
+      context: context,
+      tabController: TabController(length: 2, vsync: this),
+      timelineController: _timelineController,
+      albumController: _albumController,
+    );
     _locationsPage = ViewAllLocationsPage(context);
     _settingsPage = SettingsPage(context);
     _aboutTabPage = AboutTabPage(context, TabController(length: 3, vsync: this));
@@ -62,6 +68,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   @override
   void dispose() { 
     _postsScrollController.dispose();
+    _timelineController.dispose();
+    _albumController.dispose();
     super.dispose();
   }
 
@@ -118,16 +126,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: Colors.black87,
         backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
         onTap: (newIndex){
-          if(newIndex != _selectedIndex){
-            setState(() {
-              _selectedIndex = newIndex;
-            });
-          }else{
-            if(_selectedIndex == 0){
-             _postsScrollController.animateTo(_postsScrollController.position.minScrollExtent,
-            duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
-            }
-          }
+          _scrollToTop(newIndex);
           BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
         },
         items: [
@@ -155,6 +154,29 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       ),
     ),
   );
+  }
+
+  void _scrollToTop(int newIndex){
+    if(newIndex != _selectedIndex){
+      setState(() {
+        _selectedIndex = newIndex;
+      });
+    }else{
+      if(_selectedIndex == 0){
+        _postsScrollController.animateTo(_postsScrollController.position.minScrollExtent,
+      duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
+      }else if(_selectedIndex == 1){
+        if(_timelineController.hasClients){
+          _timelineController.animateTo(_timelineController.position.minScrollExtent, 
+          duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
+        }else{
+          _albumController.animateTo(_albumController.position.minScrollExtent, 
+          duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
+        }
+      }else if(_selectedIndex == 2){
+        
+      }
+    }
   }
 
   void _setNewContext(BuildContext context){

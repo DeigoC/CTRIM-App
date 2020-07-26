@@ -14,11 +14,17 @@ class SettingsPage{
   SettingsPage(this._context);
 
   AppBar buildAppbar(){
+    bool isGuestUser = (BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0);
     return AppBar(
-      leading: (BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0) ? Container():null,
-      automaticallyImplyLeading: true,
-      title: Text('Settings',),
-      centerTitle: true,
+      automaticallyImplyLeading: !isGuestUser,
+      titleSpacing: isGuestUser?16:0,
+      title: isGuestUser ? Row(
+        children: [
+          Icon(FontAwesome5Solid.church,color: Colors.white,),
+          SizedBox(width: 16,),
+          Text('Settings',),
+        ],
+      ):Text('Settings'),
     );
   }
 

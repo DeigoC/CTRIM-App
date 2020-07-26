@@ -4,8 +4,10 @@ import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/postDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/timelinePostDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
+import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class InitialLoadingPage extends StatefulWidget {
   @override
@@ -23,15 +25,20 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.redAccent,
+      backgroundColor: LightPrimaryColor,
       body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 20,),
-            Text('Initialising User',style: TextStyle(fontSize: 34, color: Colors.white),),
+            Icon(FontAwesome5Solid.church, color: Colors.white,size: MediaQuery.of(context).size.width * 0.4,),
+            SizedBox(height: 40,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+              ],
+            ),
           ],
         ),
       ),

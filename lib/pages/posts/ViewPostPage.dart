@@ -1,6 +1,7 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
@@ -50,7 +51,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           bool hasImage = widget._post.firstImageSrc != null;
           return [
             SliverAppBar(
-              expandedHeight: MediaQuery.of(context).size.height * 0.30,
+              expandedHeight: MediaQuery.of(context).size.height * 0.27,
               actions: [
                 BlocBuilder<AppBloc, AppState>(
                   condition: (_, state) {
@@ -81,7 +82,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
               padding: EdgeInsets.all(8.0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  Text(widget._post.title),
+                  Text(widget._post.title,style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),),
                   TabBar(
                     labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
                     controller: _tabController,
@@ -155,19 +156,25 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         Container(
            padding: EdgeInsets.only(left: 8),
            child: Column(
-             crossAxisAlignment: CrossAxisAlignment.start,
+             crossAxisAlignment: CrossAxisAlignment.stretch,
              children: [
-               Text('Tags:'),
-               Wrap(
-                spacing: 4,
-                children: widget._post.selectedTagsString.map((tag) {
-                  return MyFilterChip(
-                    label: tag,
-                    selected: false,
-                    onSelected: (_)=>null,
-                  );
-                }).toList(),
+               //Text('Tags',style: TextStyle(fontSize: 18),textAlign: TextAlign.start,),
+               Row(
+                 crossAxisAlignment: CrossAxisAlignment.center,
+                 children: [
+                   Text('Tags: ',style: TextStyle(fontSize: 18),),
+                   Wrap(
+                    spacing: 4,
+                    children: widget._post.selectedTagsString.map((tag) {
+                      return MyFilterChip(
+                        label: tag,
+                        selected: false,
+                        onSelected: (_)=>null,
+                      );
+                    }).toList(),
               ),
+                 ],
+               ),
              ],
            ),
          ),
@@ -192,13 +199,11 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   Widget _buildDetailsTab() {
     List<Widget> children = [
       SizedBox(height: 16,),
-      Text('Location'),
-      Text(BlocProvider.of<TimelineBloc>(context).allLocations
-          .firstWhere((element) => element.id == widget._post.locationID)
-          .getAddressLine()),
-      SizedBox(height: 8,),
-      Text('Time'),
-      Text(widget._post.dateString),
+      Text('Location',style: TextStyle(fontSize: 24),),
+      _buildLocationWidget(),
+      SizedBox(height: 16,),
+      Text('Time',style: TextStyle(fontSize: 24),),
+      Text(widget._post.dateString,style: TextStyle(fontSize: 18),),
     ];
     if (widget._post.detailTable.length != 0) {
       children.addAll(_buildDetailListItems());
@@ -210,18 +215,32 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     );
   }
 
+  Widget _buildLocationWidget(){
+    Location l = BlocProvider.of<TimelineBloc>(context).allLocations
+      .firstWhere((element) => element.id == widget._post.locationID);
+      
+    if(l.id.compareTo('0')==0) return Text('N/A');
+    return MyFlatButton(
+      fontSize: 18,
+      label: l.getAddressLine(),
+      onPressed: (){
+        BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(l));
+      },
+    );
+  }
+
   List<Widget> _buildDetailListItems() {
     return [
-      SizedBox(height: 24,),
-      Text(widget._post.detailTableHeader),
+      SizedBox(height: 32,),
+      Text(widget._post.detailTableHeader,style: TextStyle(fontSize: 24),),
       SizedBox(height: 8,),
       Expanded(
-        child: ListView.builder(
+        child: ListView.separated(
           itemCount: widget._post.detailTable.length,
           padding: EdgeInsets.all(8),
+          separatorBuilder: (_,index)=>Divider(thickness: 0.4,),
           itemBuilder: (_, index) {
             return Container(
-              decoration: BoxDecoration(border: Border(bottom: BorderSide())),
               padding: EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,7 +249,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                     child: Text(widget._post.detailTable[index]['Leading']),
                     flex: 1,
                   ),
-                  Text(' | '),
                   Expanded(
                     child: Text(widget._post.detailTable[index]['Trailing']),
                     flex: 2,

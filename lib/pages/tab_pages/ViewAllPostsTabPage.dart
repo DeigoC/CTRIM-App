@@ -66,8 +66,16 @@ class ViewAllEventsPage {
         key: PageStorageKey<String>('ViewAllPostsTab'),
         slivers: [
           SliverAppBar(
-            leading: Container(),
-            title: Text('Posts'),
+            automaticallyImplyLeading: false,
+            titleSpacing: 8,
+            //leading: Icon(FontAwesome5Solid.church,color: Colors.white,),
+            title: Row(
+              children: [
+                Icon(FontAwesome5Solid.church,color: Colors.white,),
+                SizedBox(width: 16,),
+                Text('Posts'),
+              ],
+            ),
             centerTitle: true,
             actions: [
               IconButton(

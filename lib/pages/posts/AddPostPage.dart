@@ -59,7 +59,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                   delegate: SliverChildListDelegate([
                     MyTextField(
                       label: 'Title',
-                      hint: 'e.g. Youth Day Out!',
+                      hint: 'Required',
                       controller: _tecTitle,
                       onTextChange: (newTitle) =>
                           _postBloc.add(PostTextChangeEvent(title: newTitle)),

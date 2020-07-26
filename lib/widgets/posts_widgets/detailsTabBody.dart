@@ -28,19 +28,9 @@ class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
       shrinkWrap: true,
       children: [
         PostLocationField(),
-        SizedBox(
-          height: 8,
-        ),
+        SizedBox(height: 8,),
         PostDateTimeField(),
-        SizedBox(
-          height: 8,
-        ),
-        MyTextField(
-          controller: _tecDuration,
-          label: 'Duration',
-          hint: '(Optional) e.g. 2-3 Hours, Whole Day, Pending',
-          onTextChange: (newDuration) => null,
-        ),
+        SizedBox(height: 8,),
         SizedBox( height: 16,),
         Divider(thickness: 2,),
         SizedBox( height: 8,),

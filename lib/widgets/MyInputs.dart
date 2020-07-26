@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +9,7 @@ class AdminDropdownList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('Admin Level'),
+        Text('Admin Level',style: TextStyle(fontSize: 18),),
         SizedBox(
           width: 8,
         ),
@@ -17,6 +18,10 @@ class AdminDropdownList extends StatelessWidget {
           return false;
         }, builder: (_, state) {
           return DropdownButton<int>(
+            style: TextStyle(
+              fontSize: 18,
+              color: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white:Colors.black
+            ),
             hint: Text('Required'),
             value: BlocProvider.of<AdminBloc>(context).selectedUser.adminLevel,
             items: [1, 2, 3].map((item) {
@@ -63,7 +68,7 @@ class MyTextField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,),
+          Text(label,style: TextStyle(fontSize: 18),),
           TextField(
             controller: controller,
             onChanged: onTextChange,
@@ -94,18 +99,22 @@ class MyCheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment:
-          boxLeftToRight ? MainAxisAlignment.start : MainAxisAlignment.end,
-      children: boxLeftToRight ? _buildLeftToRight() : _buildRightToLeft(),
+    return InkWell(
+      onTap: (){
+        onChanged(!value);
+      },
+          child: Row(
+        mainAxisAlignment:
+            boxLeftToRight ? MainAxisAlignment.start : MainAxisAlignment.end,
+        children: boxLeftToRight ? _buildLeftToRight() : _buildRightToLeft(),
+      ),
     );
   }
 
   List<Widget> _buildLeftToRight() {
     return [
       Checkbox(value: value, onChanged: onChanged,activeColor: LightSecondaryColor,),
-      //SizedBox(width: 8,),
-      Text(label),
+      Text(label,),
     ];
   }
 
@@ -165,6 +174,7 @@ class MyFlatButton extends StatelessWidget {
   final EdgeInsets externalPadding, internalPadding;
   final IconData icon;
   final bool border, isDestructive;
+  final double fontSize;
   final TextStyle _disabledText = TextStyle(color: Color(0xffb3b3b3));
   
    MyFlatButton({
@@ -175,6 +185,7 @@ class MyFlatButton extends StatelessWidget {
     this.border = false,
     this.isDestructive = false,
     this.internalPadding,
+    this.fontSize,
     Key key
   }) : super(key: key);
 
@@ -196,7 +207,13 @@ class MyFlatButton extends StatelessWidget {
         side: BorderSide(color: border&&!disabled ? Colors.blue:Colors.transparent),
         borderRadius: BorderRadius.circular(18)
       ),
-      child: Text(label,style: disabled? _disabledText: TextStyle(color: isDestructive ? Color(0xffd11a2a): Colors.blue),),
+      child: Text(label,style: disabled? _disabledText: 
+      TextStyle(
+        color: isDestructive ? Color(0xffd11a2a): Colors.blue,
+        fontSize: fontSize,
+      ),
+      textAlign: TextAlign.center,
+      ),
       onPressed: onPressed,
     );
   }

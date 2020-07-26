@@ -40,8 +40,8 @@ class _MainTabBodyState extends State<MainTabBody> {
         MyTextField(
           controller: _tecSubtitle,
           label: 'Description',
-          hint: 'Brief summary of the post',
-          maxLength: 250,
+          hint: 'Required (Brief summary of the post)',
+          maxLength: 200,
           maxLines: 5,
           onTextChange: (newSubtitle) => BlocProvider.of<PostBloc>(context)
               .add(PostTextChangeEvent(description: newSubtitle)),
@@ -49,7 +49,7 @@ class _MainTabBodyState extends State<MainTabBody> {
         SizedBox(height: 20,),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Text('Body'),
+          child: Text('Body (Required)',style: TextStyle(fontSize: 18),),
         ),
         Divider(),
         BlocBuilder<PostBloc, PostState>(
