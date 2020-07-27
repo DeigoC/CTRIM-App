@@ -50,6 +50,12 @@ final appLightTheme = ThemeData(
     backgroundColor: LightSecondaryColor
   ),
 
+  snackBarTheme: SnackBarThemeData(
+    backgroundColor: LightPrimaryColor,
+    behavior: SnackBarBehavior.floating,
+    actionTextColor: LightSecondaryColor,
+  ),
+
  /*  colorScheme: ColorScheme(
     primary: LightPrimaryColor,
     primaryVariant: Color(0xffac4020), 

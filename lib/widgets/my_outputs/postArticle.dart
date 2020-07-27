@@ -206,13 +206,17 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
   Widget build(BuildContext context) {
     if(_initalPostID.compareTo(widget.post.id) != 0){
       // ! Data has changed
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
-         setState(() {
+         if(mounted){
+           setState(() {
           _initialisedData = false;
           _initalPostID = widget.post.id;
           _gallerySrc.clear();
         });
+         }
       });
+      return Center(child: CircularProgressIndicator(),);
     }else{
       _initialiseData();
     }
@@ -297,7 +301,7 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
     );
   }
 
-  Hero _buildImageContainer(int index){
+  Widget _buildImageContainer(int index){
     return Hero(
       tag: _gallerySrc.values.elementAt(index).heroTag,
       child: Container(

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zefyr/zefyr.dart';
 
-enum PostTag { CHURCH, YOUTH, WOMEN }
+enum PostTag { MEN, YOUTH, WOMEN, KIDS, BELFAST, NORTHCOAST, PORTADOWN, EVENTS, TESTIMONIES }
 
 class Post {
   String id,title,description,body = '',locationID,detailTableHeader;
@@ -98,7 +98,14 @@ class Post {
     switch(s){
       case 'Women': return PostTag.WOMEN;
       case 'Youth':return PostTag.YOUTH;
-      case 'Church':return PostTag.CHURCH;
+      case 'Men':return PostTag.MEN;
+      case 'Kids':return PostTag.KIDS;
+      case 'Belfast':return PostTag.BELFAST;
+      case 'Northcoast':return PostTag.NORTHCOAST;
+      case 'Portadown':return PostTag.PORTADOWN;
+      case 'Testimonies':return PostTag.TESTIMONIES;
+      case 'Events':return PostTag.EVENTS;
+      
     }
     return null;
   }
@@ -147,21 +154,9 @@ class Post {
   String getTagsString() {
     String result = '';
     selectedTags.forEach((tag) {
-      result += ' • ' + _tagToString(tag);
+      result += ' • ' + tagToString(tag).toUpperCase();
     });
     return result;
-  }
-
-  String _tagToString(PostTag dept) {
-    switch (dept) {
-      case PostTag.CHURCH:
-        return 'CHURCH';
-      case PostTag.YOUTH:
-        return 'YOUTH';
-      case PostTag.WOMEN:
-        return 'WOMEN';
-    }
-    return '';
   }
 
   String get firstImageSrc{
@@ -189,23 +184,44 @@ class Post {
 
   String get dateString {
     if (!isDateNotApplicable) {
+      if(allDayEvent){
+        String result = DateFormat('EEEE, dd MMMM yyyy').format(startDate)+'\nAll Day';
+        return result;
+      }
       String result = 'Start - ' + DateFormat('EEEE, dd MMMM yyyy @ h:mm a').format(startDate);
       result += '\nEnd - ' + DateFormat('EEEE, dd MMMM yyyy @ h:mm a').format(endDate);
-      if(allDayEvent) result += '\nAll Day';
       return result;
     }
     return 'N/A';
   }
 
+  static String tagToString(PostTag dept) {
+    switch (dept) {
+      case PostTag.MEN:return 'Men';
+      case PostTag.YOUTH:return 'Youth';
+      case PostTag.WOMEN:return 'Women';
+      case PostTag.KIDS:return 'Kids';
+      case PostTag.BELFAST: return 'Belfast';
+      case PostTag.NORTHCOAST: return 'Northcoast';
+      case PostTag.PORTADOWN: return 'Portadown';
+      case PostTag.TESTIMONIES: return 'Testimonies';
+      case PostTag.EVENTS: return 'Events';
+    }
+    return '';
+  }
+
   List<String> get selectedTagsString {
     return selectedTags.map((tag) {
       switch (tag) {
-        case PostTag.YOUTH:
-          return 'Youth';
-        case PostTag.WOMEN:
-          return 'Women';
-        case PostTag.CHURCH:
-          return 'Church';
+        case PostTag.YOUTH:return 'Youth';
+        case PostTag.WOMEN:return 'Women';
+        case PostTag.MEN:return 'Men';
+        case PostTag.KIDS:return 'Kids';
+        case PostTag.BELFAST:return 'Belfast';
+        case PostTag.NORTHCOAST:return 'Northcoast';
+        case PostTag.PORTADOWN:return 'Portadown';
+        case PostTag.TESTIMONIES:return 'Testimonies';
+        case PostTag.EVENTS:return 'Events';
       }
       return null;
     }).toList();

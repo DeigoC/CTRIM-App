@@ -36,9 +36,15 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   List<TimelinePost> get _allTimelinePosts => TimelinePostDBManager.allTimelinePosts;
 
   Map<PostTag, bool> _selectedTags = {
+    PostTag.BELFAST: false,
+    PostTag.NORTHCOAST: false,
+    PostTag.PORTADOWN: false,
+    PostTag.TESTIMONIES: false,
+    PostTag.EVENTS: false,
     PostTag.YOUTH: false,
-    PostTag.CHURCH: false,
+    PostTag.MEN: false,
     PostTag.WOMEN: false,
+    PostTag.KIDS: false,
   };
 
   // ! Bloc Functions
@@ -59,7 +65,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   Map<String, bool> getSelectedTags() {
     Map<String, bool> result = {};
     _selectedTags.forEach((key, value) {
-      result[_tagToString(key)] = value;
+      result[Post.tagToString(key)] = value;
     });
     return result;
   }
@@ -162,13 +168,15 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return result;
   }
 
+  TimelineDisplayFeedState get initialPostsData => _buildFeedData();
+
   // ! Mapping events to state
   @override
   TimelineState get initialState => TimelineInitial();
 
   @override
   Stream<TimelineState> mapEventToState(TimelineEvent event,) async* {
-    if (event is TimelineFetchAllPostsEvent)yield* _displayFeed();
+    if (event is TimelineFetchAllPostsEvent)yield* _displayFeedStream();
     else if (event is TimelineAddNewPostEvent) yield* _mapNewPostEventToState(event);
     else if (event is TimelinePostUpdateEvent){
       if(event is TimelineUpdatePostEvent) yield* _mapPostUpdateToState(event);
@@ -208,7 +216,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     PostTag selectedTag = _stringToTag(event.tag);
     _selectedTags[selectedTag] = !_selectedTags[selectedTag];
     
-    yield* _displayFeed();
+    yield* _displayFeedStream();
     yield TimelineTagChangedState();
   }
 
@@ -263,13 +271,17 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     await _postDBManager.addPost(event.post).then((_){
       _allPosts.add(_postDBManager.getPostByID(event.post.id));
     });
-    await _timelinePostDBManager.addTimelinePost(timelinePost).then((_) =>  _allTimelinePosts.add(timelinePost));
+    await _timelinePostDBManager.addTimelinePost(timelinePost);
     yield TimelineNewPostUploadedState();
-    yield* _displayFeed();
+    yield* _displayFeedStream();
   }
 
-  Stream<TimelineState> _displayFeed() async*{
-    //_allTimelinePosts.sort((x, y) => y.postDate.compareTo(x.postDate));
+  Stream<TimelineState> _displayFeedStream() async*{
+    yield TimelineEmptyState();
+    yield _buildFeedData();
+  }
+
+  TimelineDisplayFeedState _buildFeedData(){
     List<Post> posts = [];
     List<TimelinePost> tPosts = [];
     List<PostTag> selectedTags = [];
@@ -305,13 +317,12 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     posts.removeWhere((element) => element.deleted);
     tPosts.removeWhere((tPost) => posts.firstWhere((post) => post.id == tPost.postID, orElse: ()=> null) ==null);
     tPosts.sort((x, y) => y.postDate.compareTo(x.postDate));
-
-    yield TimelineDisplayFeedState(
+    
+    return TimelineDisplayFeedState(
       users: allUsers,
       posts: posts,
       timelines: tPosts,
     );
-    yield TimelineEmptyState();
   }
 
   Stream<TimelineState> _mapPostUpdateToState(TimelineUpdatePostEvent event) async*{
@@ -413,26 +424,17 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   // ! Lower level details
   PostTag _stringToTag(String tag) {
     switch (tag) {
-      case 'Women':
-        return PostTag.WOMEN;
-      case 'Church':
-        return PostTag.CHURCH;
-      case 'Youth':
-        return PostTag.YOUTH;
+      case 'Women':return PostTag.WOMEN;
+      case 'Men':return PostTag.MEN;
+      case 'Youth':return PostTag.YOUTH;
+      case 'Kids':return PostTag.KIDS;
+      case 'Belfast':return PostTag.BELFAST;
+      case 'Northcoast':return PostTag.NORTHCOAST;
+      case 'Portadown':return PostTag.PORTADOWN;
+      case 'Testimonies':return PostTag.TESTIMONIES;
+      case 'Events':return PostTag.EVENTS;
     }
     return null;
-  }
-
-  String _tagToString(PostTag tag) {
-    switch (tag) {
-      case PostTag.CHURCH:
-        return 'Church';
-      case PostTag.WOMEN:
-        return 'Women';
-      case PostTag.YOUTH:
-        return 'Youth';
-    }
-    return '';
   }
 
   void _insertPostID(Post post) {

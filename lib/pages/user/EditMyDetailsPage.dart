@@ -98,7 +98,48 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
         _buildUserImageControls(),
         SizedBox(height: 8,),
         Text(_user.forename + ' ' + _user.surname, textAlign: TextAlign.center, style: TextStyle(fontSize: 24),),
-        Text('(Contact users of higher admin levels to modify name.)', textAlign: TextAlign.center,),
+        Text('(Contact other admins to modify name.)', textAlign: TextAlign.center,),
+        MyFlatButton(
+          label: 'View viable admins',
+          onPressed: (){
+            showDialog(
+              context: context,
+              builder: (_){
+                List<User> users = List.from(BlocProvider.of<TimelineBloc>(context).allUsers);
+                users.removeWhere((e) => e.adminLevel < 2);
+
+                return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18)
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: Column(
+                      children: [
+                        Text('Users able to modify details:',style: TextStyle(fontSize: 18),),
+                        SizedBox(height: 8,),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: users.length,
+                            itemBuilder: (_,index){
+                              User u = users[index];
+                              return ListTile(
+                                title: Text(u.forename + ' ' + u.surname),
+                                leading: u.buildAvatar(context),
+                                subtitle: Text('Lvl: ' + u.adminLevel.toString())
+                              );
+                            }
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            );
+          },
+        ),
         SizedBox(height: 32,),
         MyTextField(
           label: 'Role/Status?',

@@ -36,7 +36,7 @@ class ViewGalleryPage {
       title: Row(
         children: [
           Icon(FontAwesome5Solid.church,color: Colors.white,),
-          SizedBox(width: 16,),
+          SizedBox(width: 24,),
           Text('Gallery'),
         ],
       ),

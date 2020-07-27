@@ -195,12 +195,14 @@ class _EditLocationState extends State<EditLocation> {
           },
         ),
        _buildDeleteButton(),
+       SizedBox(height: 16,),
       ],
     );
   }
 
   Widget _buildDeleteButton(){
     bool hasEvents = BlocProvider.of<TimelineBloc>(context).doesLocationHaveEvents(widget._location.id);
+    if(BlocProvider.of<AppBloc>(context).currentUser.adminLevel != 3) return Container();
     return  MyRaisedButton(
       externalPadding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
       label: 'Delete Location',

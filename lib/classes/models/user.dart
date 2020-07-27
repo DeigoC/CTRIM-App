@@ -66,7 +66,7 @@ class User{
       );
     }
     return CircleAvatar(
-      radius: MediaQuery.of(context).size.width*0.07,
+      //radius: MediaQuery.of(context).size.width*0.07,
       backgroundImage: NetworkImage(imgSrc),
     );
   }

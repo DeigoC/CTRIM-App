@@ -203,7 +203,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
       _buildLocationWidget(),
       SizedBox(height: 16,),
       Text('Time',style: TextStyle(fontSize: 24),),
-      Text(widget._post.dateString,style: TextStyle(fontSize: 18),),
+      Text(widget._post.dateString,style: TextStyle(fontSize: 18),textAlign: TextAlign.center,),
     ];
     if (widget._post.detailTable.length != 0) {
       children.addAll(_buildDetailListItems());

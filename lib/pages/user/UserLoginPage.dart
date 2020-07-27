@@ -190,9 +190,8 @@ class _UserLoginPageState extends State<UserLoginPage> {
 
   void _showErrorSnackbar(String content) {
     Scaffold.of(_context).showSnackBar(SnackBar(
-      content: Text(content),
-      behavior: SnackBarBehavior.fixed,
-      action: SnackBarAction(label: 'OK', onPressed: () => null),
+      content: Text('ERROR: '+content),
+      //action: SnackBarAction(label: 'OK', textColor: Colors.black, onPressed: () => null),
     ));
   }
 }

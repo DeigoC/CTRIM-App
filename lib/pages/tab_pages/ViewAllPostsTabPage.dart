@@ -17,6 +17,7 @@ class ViewAllEventsPage {
   ViewAllEventsPage(this._context,this._scrollController);
 
   Widget buildFAB() {
+    if(BlocProvider.of<AppBloc>(_context).currentUser.adminLevel == 0) return null;
     return FloatingActionButton(
       child: Icon(MaterialCommunityIcons.newspaper_plus, size: 29,color: Colors.white,),
       onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToAddPostPageEvent()),
@@ -25,7 +26,6 @@ class ViewAllEventsPage {
   }
 
   Widget buildBody() {
-    BlocProvider.of<TimelineBloc>(_context).add(TimelineFetchAllPostsEvent());
     return BlocConsumer<TimelineBloc, TimelineState>(
       listenWhen: (_,state){
         if(state is TimelineNewPostUploadedState) return true;
@@ -44,13 +44,14 @@ class ViewAllEventsPage {
       buildWhen: (_, state) {
         if (state is TimelineDisplayFeedState) return true;
         return false;
-      }, builder: (_, state) {
+      },
+      builder: (_, state) {
         if (state is TimelineDisplayFeedState) {
           return _buildBodyWithData(state);
+        }else{
+          var allData = BlocProvider.of<TimelineBloc>(_context).initialPostsData;
+          return _buildBodyWithData(allData);
         }
-        return Center(
-          child: CircularProgressIndicator(),
-        );
     });
   }
 
@@ -72,7 +73,7 @@ class ViewAllEventsPage {
             title: Row(
               children: [
                 Icon(FontAwesome5Solid.church,color: Colors.white,),
-                SizedBox(width: 16,),
+                SizedBox(width: 24,),
                 Text('Posts'),
               ],
             ),

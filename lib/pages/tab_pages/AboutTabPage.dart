@@ -2,6 +2,7 @@ import 'package:ctrim_app_v1/blocs/AboutBloc/about_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
+import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/gallerySlideShow.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class AboutTabPage{
           title: Row(
             children: [
               Icon(FontAwesome5Solid.church,color: Colors.white,),
-              SizedBox(width: 16,),
+              SizedBox(width: 24,),
               Text('About Us'),
             ],
           ),
@@ -148,6 +149,7 @@ class AboutTabPage{
                 height: MediaQuery.of(_context).size.height * 0.40,
                 child: Stack(
                   children:[ 
+                    AdminCheck.isCurrentUserAboveLvl2(_context)?
                     Align(
                       alignment: Alignment.topRight,
                       child: IconButton(
@@ -157,7 +159,7 @@ class AboutTabPage{
                           BlocProvider.of<AppBloc>(_context).add(AppToEditAboutArticleEvent());
                         },
                       ),
-                    ),
+                    ):Container(),
                     Align(
                       alignment: Alignment.bottomLeft,
                       child: Padding(

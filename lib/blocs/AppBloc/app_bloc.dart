@@ -28,7 +28,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final GlobalKey<NavigatorState> navigatorKey;
   bool _onDark = false;
   bool get onDarkTheme => _onDark;
-  User _currentUser = User(id: '99', likedPosts: [], adminLevel: 0);
+
+  User _currentUser = User(id: '0', likedPosts: [], adminLevel: 0);
   User get currentUser => _currentUser;
   
   void setCurrentUser(User user){

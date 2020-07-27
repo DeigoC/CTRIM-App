@@ -21,7 +21,7 @@ class SettingsPage{
       title: isGuestUser ? Row(
         children: [
           Icon(FontAwesome5Solid.church,color: Colors.white,),
-          SizedBox(width: 16,),
+          SizedBox(width: 24,),
           Text('Settings',),
         ],
       ):Text('Settings'),
@@ -31,12 +31,12 @@ class SettingsPage{
   Widget buildDrawer(){
     if(BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0)return null;
     User u = BlocProvider.of<AppBloc>(_context).currentUser;
-    
+
     return Drawer(
       child: ListView(
         children: [
           SizedBox(height: 36,),
-          Text('Admin Facility',textAlign: TextAlign.center,),
+          Text('Admin Facility',textAlign: TextAlign.center,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
           SizedBox(height: 16,),
           ListTile(
             title: Text(u.forename + ' ' + u.surname),
@@ -53,15 +53,17 @@ class SettingsPage{
             },
           ),
           ListTile(
+            enabled: u.adminLevel > 1,
             title: Text('Register User'),
             leading: Icon(Icons.person_add),
             onTap: AdminCheck.isCurrentUserAboveLvl1(_context) ? 
               ()=> BlocProvider.of<AppBloc>(_context).add(AppToRegisterUserEvent()): null,
           ),
           ListTile(
+            enabled: u.adminLevel > 1,
             title: Text('Edit User'),
             leading: Icon(Icons.people),
-            onTap: AdminCheck.isCurrentUserAboveLvl1(_context) ? 
+            onTap: u.adminLevel > 1 ? 
             ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewAllUsersEvent()) : null,
           ),
           ListTile(
@@ -95,17 +97,26 @@ class SettingsPage{
 
           return ListView(
             children: [
+              ListTile(
+                title: Text('Liked Posts'),
+                subtitle: Text('Keep track of posts of interest'),
+                leading: Icon(Icons.favorite),
+                onTap: (){
+                  BlocProvider.of<AppBloc>(_context).add(AppToLikedPostsPageEvent());
+                },
+              ),
               SwitchListTile(
                 activeColor: LightSecondaryColor,
                 value: BlocProvider.of<AppBloc>(_context).onDarkTheme, 
                 title: Text('Dark Mode',),
                 secondary: Icon(Icons.brightness_medium),
-                subtitle: Text('Switch to a darker color theme',),
+                subtitle: Text('Switch to a darker colour scheme',),
                 onChanged: (newValue){
                   AppSettingsEvent event = newValue ? AppChangeThemeToDarkEvent() : AppChangeThemeToLightEvent();
                   BlocProvider.of<AppBloc>(_context).add(event);
                 }
               ),
+              
               ListTile(
                 title: Text('Admin Login'),
                 subtitle: Text('Admins are registered by other admins'),
@@ -115,15 +126,7 @@ class SettingsPage{
                 },
               ),
               ListTile(
-                title: Text('Liked Posts'),
-                subtitle: Text('Keep track of posts of interest'),
-                leading: Icon(Icons.favorite),
-                onTap: (){
-                  BlocProvider.of<AppBloc>(_context).add(AppToLikedPostsPageEvent());
-                },
-              ),
-              ListTile(
-                title: Text('More Info'),
+                title: Text('Other Info'),
                 subtitle: Text('Extra details about the app'),
                 leading: Icon(Icons.info_outline),
                 onTap: (){

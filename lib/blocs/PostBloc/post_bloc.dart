@@ -43,9 +43,15 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Map<PostTag, bool> selectedTags = {
-    PostTag.CHURCH: false,
-    PostTag.YOUTH: false,
+    PostTag.BELFAST:false,
+    PostTag.NORTHCOAST:false,
+    PostTag.PORTADOWN:false,
+    PostTag.TESTIMONIES:false,
+    PostTag.EVENTS:false,
+    PostTag.MEN: false,
     PostTag.WOMEN: false,
+    PostTag.YOUTH: false,
+    PostTag.KIDS:false,
   };
 
   // ! Post Fields - Details Tab
@@ -55,11 +61,14 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   DateTime get selectedEndDate => _post.endDate??DateTime.now();
   DateTime _endDateTOD;
 
-  String get selectedStartDateString => _post.startDate == null? 'Start Date - PENDING': DateFormat('EEE, dd MMM yyyy').format(_post.startDate);
-  String get selectedStartTimeString => _post.startDate == null? 'Start Time - PENDING': DateFormat('h:mm a').format(_post.startDate);
-  String get selectedEndDateString => _post.endDate == null? 'End Date - PENDING': DateFormat('EEE, dd MMM yyyy').format(_post.endDate);
-  String get selectedEndTimeString => _endDateTOD == null? 'End Time - PENDING': DateFormat('h:mm a').format(_endDateTOD);
-
+  String get selectedStartDateString => _post.startDate == null ? 'Start Date - PENDING': DateFormat('EEE, dd MMM yyyy')
+  .format(_post.startDate);
+  String get selectedStartTimeString => _post.startDate == null ? 'Start Time - PENDING': DateFormat('h:mm a')
+  .format(_post.startDate);
+  String get selectedEndDateString => _post.endDate == null ? 'End Date - PENDING': DateFormat('EEE, dd MMM yyyy')
+  .format(_post.endDate);
+  String get selectedEndTimeString => _endDateTOD == null ? 'End Time - PENDING': DateFormat('h:mm a')
+  .format(_endDateTOD);
 
   bool get isPostDateNotApplicable => _post.isDateNotApplicable;
   bool get isEventAllDay => _post.allDayEvent;
@@ -70,7 +79,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   String get detailTableHeader => _post.detailTableHeader;
   String _leadingDetailItem = '', _trailingDetailItem = '';
   void prepareNewDetailListItem() {
-    _leadingDetailItem = '';
+    int index = _post.detailTable.length + 1;
+    _leadingDetailItem = '$index.';
     _trailingDetailItem = '';
   }
 
@@ -159,8 +169,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       _post.body = event.bodyContent;
       yield PostUpdateBodyState();
       yield* _canEnableSaveButton();
-    } else if (event is PostDetailListEvent)
-      yield* _mapDetailListEventToState(event);
+    } else if (event is PostDetailListEvent)  yield* _mapDetailListEventToState(event);
     else if (event is PostGalleryEvent) yield* _mapGalleryEventsToState(event);
   }
 
@@ -195,20 +204,16 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       var temp = _post.detailTable.removeAt(event.oldIndex);
       _post.detailTable.insert(newIndex, temp);
       yield PostDetailListReorderState();
-      yield PostDetailListState();
     } else if (event is PostDetailListTextChangeEvent) {
       _leadingDetailItem = event.leading ?? _leadingDetailItem;
       _trailingDetailItem = event.trailing ?? _trailingDetailItem;
-      if (_leadingDetailItem.isNotEmpty || _trailingDetailItem.isNotEmpty)
-        yield PostDetailListSaveEnabledState();
-      else
-        yield PostDetailListSaveDisabledState();
+      if (_leadingDetailItem.isNotEmpty || _trailingDetailItem.isNotEmpty) yield PostDetailListSaveEnabledState();
+      else yield PostDetailListSaveDisabledState();
     } else if (event is PostDetailListItemRemovedEvent) {
       _post.detailTable.remove(event.item);
       yield PostDetailListReorderState();
     } else if (event is PostDetailListAddItemEvent) {
       _post.detailTable.add({'Leading':_leadingDetailItem, 'Trailing':_trailingDetailItem});
-      //_post.detailTable.add([_leadingDetailItem, _trailingDetailItem]);
       yield PostDetailListReorderState();
     } else if (event is PostDetailListSaveEditEvent) {
       _post.detailTable[event.itemIndex] = {
@@ -216,6 +221,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         'Trailing':_trailingDetailItem
     };
     }
+    yield* _canEnableSaveButton();
   }
   
   Stream<PostState> _mapScheduleTabEventsToState(PostEvent event) async* {
@@ -276,15 +282,15 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Stream<PostState> _setEndTime(PostSetEndPostTimeEvent event) async*{
     if(event.selectedTOD != null){
-         _post.setEndTimeOfDay(event.selectedTOD);
-          _endDateTOD = DateTime(DateTime.now().year, DateTime.now().month, 
-          DateTime.now().day, event.selectedTOD.hour, event.selectedTOD.minute);
-          if(_isStartTimeBeforeEndTime()) yield PostScheduleState(); 
-          else{
-            _endDateTOD = null;
-            yield PostEndDateNotAcceptedState();
-          }
+      _post.setEndTimeOfDay(event.selectedTOD);
+      _endDateTOD = DateTime(DateTime.now().year, DateTime.now().month, 
+      DateTime.now().day, event.selectedTOD.hour, event.selectedTOD.minute);
+      if(_isStartTimeBeforeEndTime()) yield PostScheduleState(); 
+      else{
+        _endDateTOD = null;
+        yield PostEndDateNotAcceptedState();
       }
+    }
   }
 
   bool _isStartTimeBeforeEndTime(){
@@ -293,29 +299,11 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Stream<PostState> _mapDepartmentClickToState(PostDepartmentClickEvent event) async* {
-    if (event.selected) {
-      _post.selectedTags.add(event.department);
-    } else {
-      _post.selectedTags.remove(event.department);
-    }
+    if (event.selected) _post.selectedTags.add(event.department);
+    else _post.selectedTags.remove(event.department);
+    
     selectedTags[event.department] = event.selected;
-    bool selected = event.selected;
-    switch (event.department) {
-      case PostTag.CHURCH:
-        if (selected) yield PostDepartmentChurchEnabledState();
-        else yield PostDepartmentChurchDisabledState();
-        break;
-
-      case PostTag.YOUTH:
-        if (selected) yield PostDepartmentYouthEnabledState();
-        else yield PostDepartmentYouthDisabledState();
-        break;
-
-      case PostTag.WOMEN:
-        if (selected) yield PostDepartmentWomenEnabledState();
-        else yield PostDepartmentWomenDisabledState();
-        break;
-    }
+    yield PostDepartmentClickState();
     yield* _canEnableSaveButton();
   }
 
@@ -370,7 +358,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   bool _isDateFieldValid() {
     if (_post.endDate != null && _endDateTOD != null) return true;
-    else if(_post.allDayEvent) return true;
+    else if(_post.allDayEvent && _post.startDate!=null) return true;
     else if(_post.isDateNotApplicable) return true;
     return false;
   }

@@ -74,7 +74,10 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   @override
   Stream<AdminState> mapEventToState(AdminEvent event,) async* {
     if (event is AdminLoginTextChangeEvent) yield* _mapLoginTextChangeEventToState(event);
-    else if (event is AdminContinueClickEvent)  yield _canContinueToPasswordState(event);
+    else if (event is AdminContinueClickEvent) {
+      yield _canContinueToPasswordState(event);
+      yield AdminLoginState();
+    }
     else if (event is AdminReturnToLoginEmailEvent) yield AdminLognReturnToEmailState();
     else if (event is AdminRebuildSocialLinksEvent){
       yield AdminUserRebuildSocialLinkState();

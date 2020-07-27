@@ -201,22 +201,21 @@ class PostDepartmentField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Tags (Required)',style: TextStyle(fontSize: 18),),
-          BlocBuilder<PostBloc, PostState>(condition: (_, state) {
+          BlocBuilder<PostBloc, PostState>(
+          condition: (_, state) {
             if (state is PostDepartmentClickState) return true;
             return false;
-          }, builder: (_, state) {
+          }, 
+          builder: (_, state) {
             return Wrap(
               spacing: 8.0,
-              children: BlocProvider.of<PostBloc>(context)
-                  .selectedTags
-                  .keys
-                  .map((department) {
+              children: BlocProvider.of<PostBloc>(context).selectedTags.keys.map((department) {
                 String departmentString = _mapDepartmentToString(department);
 
                 return MyFilterChip(
                   filteringPosts: false,
                   label: departmentString,
-                  selected:BlocProvider.of<PostBloc>(context).selectedTags[department],
+                  selected: BlocProvider.of<PostBloc>(context).selectedTags[department],
                   onSelected: (newValue) {
                     BlocProvider.of<PostBloc>(context).add(PostDepartmentClickEvent(department,newValue,));
                   },
@@ -230,19 +229,18 @@ class PostDepartmentField extends StatelessWidget {
   }
 
   String _mapDepartmentToString(PostTag department) {
-    String result;
     switch (department) {
-      case PostTag.CHURCH:
-        result = 'Church';
-        break;
-      case PostTag.YOUTH:
-        result = 'Youth';
-        break;
-      case PostTag.WOMEN:
-        result = 'Women';
-        break;
+      case PostTag.YOUTH:return 'Youth';
+      case PostTag.WOMEN:return 'Women';
+      case PostTag.MEN:return 'Men';
+      case PostTag.KIDS:return 'Kids';
+      case PostTag.BELFAST:return 'Belfast';
+      case PostTag.NORTHCOAST:return 'Northcoast';
+      case PostTag.PORTADOWN:return 'Portadown';
+      case PostTag.TESTIMONIES:return 'Testimonies';
+      case PostTag.EVENTS:return 'Events';
     }
-    return result;
+    return '';
   }
 }
 
@@ -341,64 +339,58 @@ class DetailTable extends StatelessWidget {
 
   void _addNewListItem() {
     BlocProvider.of<PostBloc>(_context).prepareNewDetailListItem();
+
     showDialog(
         context: _context,
         builder: (_) {
+          int itemNumber = (BlocProvider.of<PostBloc>(_context).detailTable.length +1);
+          
           return Dialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Container(
               padding: EdgeInsets.all(8),
               height: MediaQuery.of(_context).size.height * 0.5,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Item ' +
-                      (BlocProvider.of<PostBloc>(_context).detailTable.length +
-                              1)
-                          .toString()),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  MyTextField(
-                    label: 'Leading',
-                    controller: null,
-                    onTextChange: (newLeading) =>
-                        BlocProvider.of<PostBloc>(_context).add(
-                            PostDetailListTextChangeEvent(leading: newLeading)),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  MyTextField(
-                    label: 'Trailing',
-                    controller: null,
-                    onTextChange: (newTrailing) =>
-                        BlocProvider.of<PostBloc>(_context).add(
-                            PostDetailListTextChangeEvent(
-                                trailing: newTrailing)),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  BlocBuilder(
-                    bloc: BlocProvider.of<PostBloc>(_context),
-                    condition: (_, state) {
-                      if (state is PostDetailListState) return true;
-                      return false;
-                    },
-                    builder: (_, state) => RaisedButton(
-                      child: Text('Add Item'),
-                      onPressed: (state is PostDetailListSaveEnabledState)
-                          ? () {
-                              BlocProvider.of<PostBloc>(_context)
-                                  .add(PostDetailListAddItemEvent());
-                              Navigator.of(_context).pop();
-                            }
-                          : null,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Item ' +itemNumber.toString()),
+                    SizedBox(height: 8,),
+                    MyTextField(
+                      label: 'Leading',
+                      controller:TextEditingController(text: '$itemNumber.'),
+                      onTextChange: (newLeading) =>
+                          BlocProvider.of<PostBloc>(_context).add(
+                              PostDetailListTextChangeEvent(leading: newLeading)),
                     ),
-                  )
-                ],
+                    SizedBox(height: 8,),
+                    MyTextField(
+                      label: 'Trailing',
+                      controller: null,
+                      onTextChange: (newTrailing) =>
+                          BlocProvider.of<PostBloc>(_context).add(
+                              PostDetailListTextChangeEvent(
+                                  trailing: newTrailing)),
+                    ),
+                    SizedBox(height: 8,),
+                    BlocBuilder(
+                      bloc: BlocProvider.of<PostBloc>(_context),
+                      condition: (_, state) {
+                        if (state is PostDetailListState) return true;
+                        return false;
+                      },
+                      builder: (_, state) => RaisedButton(
+                        child: Text('Add Item'),
+                        onPressed: (state is PostDetailListSaveEnabledState)
+                            ? () {
+                                BlocProvider.of<PostBloc>(_context).add(PostDetailListAddItemEvent());
+                                Navigator.of(_context).pop();
+                              }
+                            : null,
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           );

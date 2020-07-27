@@ -115,7 +115,7 @@ class _LocationSearchBarState extends State<LocationSearchBar> {
             ): Row(
               children: [
                 Icon(FontAwesome5Solid.church,color: Colors.white,),
-                SizedBox(width: 16,),
+                SizedBox(width: 24,),
                 Text('Locations'),
               ],
             ),
