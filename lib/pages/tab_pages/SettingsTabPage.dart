@@ -6,12 +6,22 @@ import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:package_info/package_info.dart';
 
 class SettingsPage{
   
   BuildContext _context;
   void setContext(BuildContext context) => _context = context;
-  SettingsPage(this._context);
+  String appName='AppName', packageName='PackageName',version='Version',buildNo='BuildNo';
+
+  SettingsPage(this._context){
+    PackageInfo.fromPlatform().then((packageInfo){
+      appName=packageInfo.appName;
+      packageName = packageInfo.packageName;
+      version = packageInfo.version;
+      buildNo = packageInfo.buildNumber;
+    });
+  }
 
   AppBar buildAppbar(){
     bool isGuestUser = (BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0);
@@ -94,7 +104,6 @@ class SettingsPage{
         return false;
       },
         builder:(_,state){
-
           return ListView(
             children: [
               ListTile(
@@ -132,9 +141,9 @@ class SettingsPage{
                 onTap: (){
                   showAboutDialog(
                     context: _context,
-                    applicationVersion: 'Still developing',
+                    applicationVersion: version,
                     applicationLegalese: 'This will contain the application legalese',
-                    applicationName: 'CTRIM App',
+                    applicationName: appName + ' App',
                     applicationIcon: Icon(FontAwesome5Solid.church),
                   );
                 },

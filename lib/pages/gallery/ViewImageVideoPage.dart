@@ -3,6 +3,7 @@ import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image/network.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
 
@@ -91,7 +92,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
             String src = widget.imageSources.keys.elementAt(index);
             String type = widget.imageSources[src].type;
 
-              return NotificationListener(
+            return NotificationListener(
               onNotification: (t){
                 if(continueListening){
                   if(t is ScrollNotification){
@@ -181,30 +182,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
     );
   }
 
-  /* Widget _buildLandscapeVideo(String src){
-    if(_videoControllers[src]==null){
-      _videoControllers[src] = VideoPlayerController.network(src);
-      _videoControllers[src].initialize().then((_){
-        setState(() {
-          _chewieControllers[src] = ChewieController(
-            videoPlayerController: _videoControllers[src],
-            aspectRatio: _videoControllers[src].value.aspectRatio,
-            autoPlay: true
-          );
-        });
-      });
-     return Center(child: CircularProgressIndicator());
-    }
-    
-    return Container(
-      color: Colors.grey,
-      child: AspectRatio(
-        aspectRatio: 16/9,
-        child: Chewie(controller: _chewieControllers[src],)
-      ),
-    );
-  } */
-
   Widget _buildAppBar(Orientation orientation){
     return PreferredSize(
       preferredSize: AppBar().preferredSize,
@@ -239,7 +216,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       },
       initialScale: PhotoViewComputedScale.contained,
       minScale: PhotoViewComputedScale.contained,
-      imageProvider: NetworkImage(src),
+      imageProvider: NetworkImageWithRetry(src),
       tightMode: true,
     );
   }

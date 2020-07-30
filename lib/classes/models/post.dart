@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,12 +12,12 @@ class Post {
   bool isDateNotApplicable, allDayEvent, deleted;
   int noOfGalleryItems;
 
-  //List<List<String>> detailTable;
   List<Map<String, String>> detailTable;
 
   List<PostTag> selectedTags;
   Map<String, String> gallerySources, thumbnails;
-  Map<File, String> temporaryFiles;
+
+  Map<String, String> temporaryFiles;// ! Change 'File' to 'File Path'
 
   Post({
     this.id,
@@ -171,7 +170,7 @@ class Post {
     return null;
   }
 
-  File get firstFileImage{
+  String get firstFileImage{
     if(temporaryFiles.length != 0){
       for (var i = 0; i < temporaryFiles.length; i++) {
         if(temporaryFiles.values.elementAt(i) == 'img'){

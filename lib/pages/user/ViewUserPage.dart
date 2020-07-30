@@ -31,8 +31,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
   void dispose() { 
     super.dispose();
   }
-
-  // TODO work on perfecting the appbar 
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(

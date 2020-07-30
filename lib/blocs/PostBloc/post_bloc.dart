@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:equatable/equatable.dart';
@@ -90,7 +89,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   // ! Post Fields - Gallery Tab
-  Map<File, String> get files => _post.temporaryFiles;
+  Map<String, String> get files => _post.temporaryFiles;// TODO needs to change
+
   Map<String, String> get gallerySrc => _post.gallerySources;
 
   bool get hasAlbumChanged {
@@ -187,7 +187,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         if (_post.gallerySources.keys.contains(src)) {
           _post.gallerySources.remove(src);
         } else {
-          _post.temporaryFiles.removeWhere((key, value) => key.path.compareTo(src) == 0);
+          _post.temporaryFiles.removeWhere((key, value) => key.compareTo(src) == 0);
         }
       });
       yield PostFilesReceivedState();

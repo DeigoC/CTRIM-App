@@ -4,6 +4,7 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image/network.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryItem extends StatefulWidget {
@@ -11,7 +12,7 @@ class GalleryItem extends StatefulWidget {
   final Function onTap;
   final String heroTag, src, type;
   final bool isItemAFile;
-  final File file;
+  final String filePath;
   final Widget child;
   final Map<String,String> thumbnails;
 
@@ -22,11 +23,11 @@ class GalleryItem extends StatefulWidget {
     @required this.type,
     @required this.thumbnails,
     this.child
-  }):isItemAFile = false, file = null;
+  }):isItemAFile = false, filePath = null;
 
   GalleryItem.file({
     @required this.type,
-    @required this.file,
+    @required this.filePath,
     @required this.thumbnails,
     this.child,
     this.onTap,
@@ -45,7 +46,7 @@ class _GalleryItemState extends State<GalleryItem> {
   void initState() {
     if(widget.type=='vid'){
       if(widget.isItemAFile){
-        _videoPlayerController = VideoPlayerController.file(widget.file);
+        _videoPlayerController = VideoPlayerController.file(File(widget.filePath));
         _videoPlayerController.initialize().then((_){ setState(() {});});
       }
     }
@@ -85,7 +86,7 @@ class _GalleryItemState extends State<GalleryItem> {
             width: _pictureSize,
             height: _pictureSize,
             decoration: BoxDecoration(
-              image: DecorationImage(image: NetworkImage(widget.src),fit: BoxFit.cover)
+              image: DecorationImage(image: NetworkImageWithRetry(widget.src),fit: BoxFit.cover)
             ),
             child: widget.child??Container(),
           ),
@@ -106,7 +107,7 @@ class _GalleryItemState extends State<GalleryItem> {
           width: _pictureSize,
           height: _pictureSize,
           decoration: BoxDecoration(
-            image: DecorationImage(image: NetworkImage(thumbSrc),fit: BoxFit.cover)
+            image: DecorationImage(image: NetworkImageWithRetry(thumbSrc),fit: BoxFit.cover)
           ),
           child: Stack(
             alignment: Alignment.center,
@@ -129,7 +130,7 @@ class _GalleryItemState extends State<GalleryItem> {
         width: _pictureSize,
         height: _pictureSize,
         decoration: BoxDecoration(
-          image: DecorationImage(image: FileImage(widget.file),fit: BoxFit.cover),
+          image: DecorationImage(image: FileImage(File(widget.filePath)),fit: BoxFit.cover),
         ),
         child: widget.child??Container(),
       ),
@@ -156,7 +157,7 @@ class _GalleryItemState extends State<GalleryItem> {
   }
 }
 
-class AlbumCoverItem extends StatefulWidget {
+class AlbumCoverItem extends StatelessWidget {
   final String src, type, title, itemCount;
   final Function onTap;
   AlbumCoverItem({
@@ -168,28 +169,16 @@ class AlbumCoverItem extends StatefulWidget {
   });
 
   @override
-  _AlbumCoverItemState createState() => _AlbumCoverItemState();
-}
-
-class _AlbumCoverItemState extends State<AlbumCoverItem> {
-
-  @override
-  void initState() { 
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return widget.type=='vid' ? _buildVideoItem() : _buildImageItem();
+    return type=='vid' ? _buildVideoItem(context) : _buildImageItem(context);
   }
 
-  Widget _buildVideoItem(){
+  Widget _buildVideoItem(BuildContext context){
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
-          child: GestureDetector(onTap: widget.onTap, child: Hero(
-            tag: ImageTag(src: widget.src, type: widget.type)..heroTag,
+          child: GestureDetector(onTap: onTap, child: Hero(
+            tag: ImageTag(src: src, type: type)..heroTag,
             child: Padding(
               padding: EdgeInsets.all(4),
               child: ClipRRect(
@@ -198,25 +187,26 @@ class _AlbumCoverItemState extends State<AlbumCoverItem> {
                   alignment: Alignment.center,
                   child: Icon(Icons.play_circle_outline,color: Colors.white,),
                   decoration: BoxDecoration(
-                    image: DecorationImage(image: NetworkImage(widget.src),fit: BoxFit.cover)
+                    image: DecorationImage(image: NetworkImageWithRetry(src),fit: BoxFit.cover)
                   ),
                 )
               ),
             ),
           ),),
         ),
-        Text(widget.title,textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,),
-        Text('(${widget.itemCount})',textAlign: TextAlign.center),
+        Text(title,textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,),
+        Text(itemCount,style: TextStyle(color:  BlocProvider.of<AppBloc>(context).onDarkTheme 
+          ? Colors.white60 : Colors.black.withOpacity(0.6)),),
       ],
     );
   }
 
-  Widget _buildImageItem(){
-    ImageTag imageTag = ImageTag(src: widget.src, type: widget.type);
+  Widget _buildImageItem(BuildContext context){
+    ImageTag imageTag = ImageTag(src: src, type: type);
     return Column(
       children: [
         Expanded(
-          child: GestureDetector(onTap: widget.onTap, child: Hero(
+          child: GestureDetector(onTap: onTap, child: Hero(
             tag: imageTag.heroTag,
             child: Padding(
               padding: EdgeInsets.all(4),
@@ -224,16 +214,16 @@ class _AlbumCoverItemState extends State<AlbumCoverItem> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(16.0)),
                    image: DecorationImage(
-                    image: NetworkImage(widget.src),
+                    image: NetworkImageWithRetry(src),
                     fit: BoxFit.cover),
                 ),
               ),
             ),
           ),),
         ),
-        Text(widget.title,textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,),
-        Text('${widget.itemCount}',style: TextStyle(color:  BlocProvider.of<AppBloc>(context).onDarkTheme 
-          ? Colors.white60 : Colors.black.withOpacity(0.6)),)
+        Text(title,textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,),
+        Text(itemCount,style: TextStyle(color:  BlocProvider.of<AppBloc>(context).onDarkTheme 
+          ? Colors.white60 : Colors.black.withOpacity(0.6)),),
       ],
     );
   }

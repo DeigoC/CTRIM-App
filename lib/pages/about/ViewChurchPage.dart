@@ -11,6 +11,7 @@ import 'package:ctrim_app_v1/widgets/my_outputs/gallerySlideShow.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image/network.dart';
 
 class ViewChurchPage extends StatefulWidget {
   final AboutArticle _aboutArticle;
@@ -20,27 +21,11 @@ class ViewChurchPage extends StatefulWidget {
 }
 
 class _ViewChurchPageState extends State<ViewChurchPage> {
-  
-  final PageController _pageController = PageController();
 
   @override
   void initState() {
-    _animateSlideShow();
     super.initState();
   }
-
-  Future<Null> _animateSlideShow() async{
-    await Future.delayed(Duration(seconds: 6,),(){
-      try{
-        if(mounted){
-          if(_pageController.page < 4){
-            _pageController.animateToPage(_pageController.page.round() + 1, duration: Duration(seconds: 1), curve: Curves.easeInOut);
-            _animateSlideShow();
-          }
-        }
-      }catch(e){print('-------------SLIDE SHOW ERROR: ' + e.toString());}
-    });
-   }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +45,6 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
 
     return ListView(
       children: [
-        //_buildGallerySlideShow(),
         GallerySlideShow(galleryItems: widget._aboutArticle.slideShowItems,),
         SizedBox(height: 16,),
 
@@ -98,7 +82,7 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
             },
             child: Hero(
               tag: '0/'+widget._aboutArticle.secondImage,
-              child: Image.network(widget._aboutArticle.secondImage,)
+              child: Image(image:NetworkImageWithRetry(widget._aboutArticle.secondImage),)
             ),
           ),
         ),
@@ -120,34 +104,4 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
       ],
     );
   }
-
- /*  Widget _buildGallerySlideShow(){
-    Map<String,ImageTag> gallery = {};
-    widget._aboutArticle.slideShowItems.forEach((src) {
-      gallery[src] = ImageTag(
-        src: src,
-        type: 'img'
-      );
-    });
-
-    return AspectRatio(
-      aspectRatio: 16/9,
-      child:PageView.builder(
-        controller: _pageController,
-        itemCount: widget._aboutArticle.slideShowItems.length,
-        itemBuilder: (_,index){
-          return GestureDetector(
-            onTap: (){
-              BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(gallery, index));
-            },
-            child: Hero(
-              tag: gallery[widget._aboutArticle.slideShowItems[index]].heroTag,
-              child: Image.network(widget._aboutArticle.slideShowItems[index], fit: BoxFit.cover,)
-            )
-          );
-        }
-      ),
-    );
-  } */
- 
 }

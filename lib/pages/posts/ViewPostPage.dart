@@ -158,7 +158,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
            child: Column(
              crossAxisAlignment: CrossAxisAlignment.stretch,
              children: [
-               //Text('Tags',style: TextStyle(fontSize: 18),textAlign: TextAlign.start,),
                Row(
                  crossAxisAlignment: CrossAxisAlignment.center,
                  children: [
@@ -186,7 +185,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                child: ZefyrEditor(
                  focusNode: _fn,
                  autofocus: false,
-                 mode: ZefyrMode.select,
+                 mode: ZefyrMode.view,
                  controller: _zefyrController,
                ),
              ),
@@ -217,9 +216,9 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
   Widget _buildLocationWidget(){
     Location l = BlocProvider.of<TimelineBloc>(context).allLocations
-      .firstWhere((element) => element.id == widget._post.locationID);
+    .firstWhere((element) => element.id == widget._post.locationID);
       
-    if(l.id.compareTo('0')==0) return Text('N/A');
+    if(l.id.compareTo('0')==0) return Text('N/A',style: TextStyle(fontSize: 18),);
     return MyFlatButton(
       fontSize: 18,
       label: l.getAddressLine(),

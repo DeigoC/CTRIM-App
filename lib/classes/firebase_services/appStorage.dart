@@ -21,18 +21,18 @@ class AppStorage{
     StorageUploadTask task;
     int index =0;
     if(post.temporaryFiles.length != 0){
-      await Future.forEach(post.temporaryFiles.keys, (file) async{
+      await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
         String filePath = 'posts/${post.id}/item_$index';
-        task = _ref.child(filePath).putFile(file);
+        task = _ref.child(filePath).putFile(File(fileSrc));
         
         //TODO apply this to all upload tasks
         _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: index + 1,totalLength: post.temporaryFiles.length));
         
         await  task.onComplete.then((_) async{
          await _ref.child(filePath).getDownloadURL().then((url) async{
-          post.gallerySources[url] = post.temporaryFiles[file];
-          if(post.temporaryFiles[file] == 'vid'){
-            post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(file, filePath);
+          post.gallerySources[url] = post.temporaryFiles[fileSrc];
+          if(post.temporaryFiles[fileSrc] == 'vid'){
+            post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(fileSrc, filePath);
           }
          });
          index++;
@@ -42,8 +42,8 @@ class AppStorage{
     post.noOfGalleryItems = index;
   }
 
-  Future<String> _uploadAndGetVideoThumbnailSrc(File file, String filePath) async{
-    Uint8List data = await VideoThumbnail.thumbnailData(video: file.path);
+  Future<String> _uploadAndGetVideoThumbnailSrc(String fileSrc, String filePath) async{
+    Uint8List data = await VideoThumbnail.thumbnailData(video: fileSrc);
     String newFilePath = filePath +'_thumbnail';
 
     StorageUploadTask task;

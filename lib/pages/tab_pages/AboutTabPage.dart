@@ -8,6 +8,7 @@ import 'package:ctrim_app_v1/widgets/my_outputs/gallerySlideShow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_image/network.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutTabPage{
@@ -142,7 +143,7 @@ class AboutTabPage{
               splashColor: Colors.blue.withAlpha(30),
               child: Container(
                 decoration: BoxDecoration(image: DecorationImage(
-                  image: NetworkImage(thisArticle.firstImage),
+                  image: NetworkImageWithRetry(thisArticle.firstImage),
                   fit: BoxFit.cover
                 )),
                 width: double.infinity,

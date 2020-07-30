@@ -90,7 +90,7 @@ class PostGalleryEvent extends PostEvent {}
 class PostFilesReceivedEvent extends PostGalleryEvent {}
 
 class PostFilesRemoveSelectedEvent extends PostGalleryEvent {
-  final List<File> selectedFiles;
+  final List<String> selectedFiles;
   PostFilesRemoveSelectedEvent(this.selectedFiles);
 }
 

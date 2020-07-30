@@ -2,6 +2,7 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image/network.dart';
 
 class GallerySlideShow extends StatefulWidget {
   final Map<String,String> galleryItems, thumbnails;
@@ -56,7 +57,7 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
         type: widget.galleryItems[src],
       );
     });
-
+    
     return AspectRatio(
       aspectRatio: 16/9,
       child: PageView.builder(
@@ -69,7 +70,7 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
             },
             child: Hero(
               tag: gallery[widget.galleryItems.keys.toList()[index]].heroTag,
-              child: Image.network(widget.galleryItems.keys.toList()[index], fit: BoxFit.cover,)
+              child: Image(image: NetworkImageWithRetry(widget.galleryItems.keys.toList()[index]), fit: BoxFit.cover,)
             )
           );
         }

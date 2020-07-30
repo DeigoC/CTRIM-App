@@ -123,7 +123,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         builder:(_,state) => BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: selectedIndex,
-        selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: Colors.black87,
+        unselectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white38 :null,
+        selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
         backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
         onTap: (newIndex){
           _scrollToTop(newIndex);

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
@@ -15,7 +14,7 @@ class EditAlbum extends StatefulWidget {
 
 class _EditAlbumState extends State<EditAlbum> {
   
-  List<File> _selectedFiles = [];
+  List<String> _selectedFilePaths = [];
   bool _onDeleteMode = false;
 
   @override
@@ -57,7 +56,7 @@ class _EditAlbumState extends State<EditAlbum> {
         onPressed: () {
           setState(() {
             _onDeleteMode = false;
-            _selectedFiles = [];
+            _selectedFilePaths = [];
           });
         },
       ),
@@ -68,10 +67,10 @@ class _EditAlbumState extends State<EditAlbum> {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.8,
       child: MyRaisedButton(
-        label: 'Delete ${_selectedFiles.length} items',
+        label: 'Delete ${_selectedFilePaths.length} items',
         isDestructive: true,
         onPressed: (){
-          widget._postBloc.add(PostFilesRemoveSelectedEvent(_selectedFiles));
+          widget._postBloc.add(PostFilesRemoveSelectedEvent(_selectedFilePaths));
           setState(() {
             _onDeleteMode = false;
           });
@@ -88,7 +87,7 @@ class _EditAlbumState extends State<EditAlbum> {
         return false;
       },
       builder:(_,state){
-        Map<File, String> files = widget._postBloc.files;
+        Map<String, String> files = widget._postBloc.files;
         List<Widget> newChildren = files.keys.map((file){
           String type = files[file];
           if(type == 'vid') return _buildVideoContainer(file);
@@ -109,17 +108,18 @@ class _EditAlbumState extends State<EditAlbum> {
    
   }
 
-  GalleryItem _buildVideoContainer(File file){
-    bool selected = _selectedFiles.contains(file);
+  GalleryItem _buildVideoContainer(String filePath){
+    bool selected = _selectedFilePaths.contains(filePath);
     return GalleryItem.file(
       thumbnails: widget._postBloc.newPost.thumbnails,
-      type: 'vid', file: file,
+      type: 'vid', 
+      filePath: filePath,
       child: InkWell(
         onTap: (){
           if(_onDeleteMode){
             setState(() {
-            if(selected)_selectedFiles.remove(file);
-            else _selectedFiles.add(file);
+            if(selected)_selectedFilePaths.remove(filePath);
+            else _selectedFilePaths.add(filePath);
           }); 
           }
         },
@@ -139,22 +139,18 @@ class _EditAlbumState extends State<EditAlbum> {
     );
   }
 
-  Widget _buildPictureContainer(File file){
-    /* return GalleryItem.file(
-      type: 'img',
-      file: file,
-    ); */
-    bool selected = _selectedFiles.contains(file);
+  Widget _buildPictureContainer(String filePath){
+    bool selected = _selectedFilePaths.contains(filePath);
     return GalleryItem.file(
       thumbnails: widget._postBloc.newPost.thumbnails,
       type: 'img',
-      file: file,
+      filePath: filePath,
       child: InkWell(
         onTap: (){
           if(_onDeleteMode){
             setState(() {
-            if(selected)_selectedFiles.remove(file);
-            else _selectedFiles.add(file);
+            if(selected)_selectedFilePaths.remove(filePath);
+            else _selectedFilePaths.add(filePath);
           }); 
           }
         },

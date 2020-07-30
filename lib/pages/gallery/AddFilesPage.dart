@@ -32,9 +32,10 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
           String type = (_videoTypes.contains(fileType)) ? 'vid' : 'img';
 
           if(_isFileValid(file, type)){
-             widget._postBloc.files[file] = type;
+             widget._postBloc.files[file.path] = type;
           }
         });
+        
         widget._postBloc.add(PostFilesReceivedEvent());
         return true;
       },

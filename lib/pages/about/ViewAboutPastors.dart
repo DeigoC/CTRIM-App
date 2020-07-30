@@ -66,7 +66,7 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
           ),
           Expanded(
             child: ZefyrEditor(
-              mode: ZefyrMode.select,
+              mode: ZefyrMode.view,
               autofocus: false,
               focusNode: _fnEditor,
               controller: _zefyrController,

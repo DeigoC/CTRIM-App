@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
@@ -51,14 +53,13 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
         create: (_) => _postBloc,
         child: Scaffold(
           // ? Maybe this could be removed?
-          resizeToAvoidBottomPadding: false,
           body: NestedScrollView(
             headerSliverBuilder: (_, __) {
               bool hasImage = _postBloc.newPost.firstImageSrc != null;
               Image postImage = hasImage ? Image.network(_postBloc.newPost.firstImageSrc, fit: BoxFit.cover,):null;
               if(!hasImage){
                 hasImage = _postBloc.newPost.firstFileImage != null;
-                postImage = hasImage ? Image.file(_postBloc.newPost.firstFileImage,fit: BoxFit.cover,):null;
+                postImage = hasImage ? Image.file( File( _postBloc.newPost.firstFileImage),fit: BoxFit.cover,):null;
               }
               
               return [

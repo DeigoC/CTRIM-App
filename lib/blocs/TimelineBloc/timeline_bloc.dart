@@ -11,6 +11,7 @@ import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:equatable/equatable.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 part 'timeline_event.dart';
 part 'timeline_state.dart';
@@ -144,13 +145,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return result;
   }
 
-  List<Location> get locationsForTab {
-    List<Location> result = List.from(LocationDBManager.allLocations);
-    result.removeAt(0);
-    result.removeWhere((e) => e.deleted);
-    return result;
-  }
-
   String getLocationAddressLine(String locationID) {
     if (locationID.trim().isNotEmpty) 
       return LocationDBManager.allLocations.firstWhere((location) => location.id.compareTo(locationID) == 0).addressLine;
@@ -264,13 +258,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   Stream<TimelineState> _mapNewPostEventToState(TimelineAddNewPostEvent event) async*{
-    _insertPostID(event.post);
-    TimelinePost timelinePost = _generateTimelinePost(event);
-     
     yield TimelineAttemptingToUploadNewPostState();
-    await _postDBManager.addPost(event.post).then((_){
-      _allPosts.add(_postDBManager.getPostByID(event.post.id));
-    });
+    await _postDBManager.addPost(event.post);
+     TimelinePost timelinePost = _generateTimelinePost(event);
     await _timelinePostDBManager.addTimelinePost(timelinePost);
     yield TimelineNewPostUploadedState();
     yield* _displayFeedStream();
@@ -291,13 +281,11 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
         if (value) selectedTags.add(key);
       });
 
-      // * Add all posts that contains selected tags
-      selectedTags.forEach((selectedTag) {
-        _allPosts.forEach((post) {
-          if (post.selectedTags.contains(selectedTag) && !posts.contains(post)) {
-            posts.add(post);
-          }
-        });
+      // * Add all posts that contains exactly selected tags
+      _allPosts.forEach((post) {
+        if(DeepCollectionEquality.unordered().equals(post.selectedTags, selectedTags)){
+          posts.add(post);
+        }
       });
 
       // * Add all timeline posts that contains the post
@@ -310,10 +298,12 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       });
 
     } else {
+      // * Otherwise add all posts
       posts = List.from(_allPosts);
       tPosts = List.from(_allTimelinePosts);
     }
    
+   // * Remove all deleted then sort by post date
     posts.removeWhere((element) => element.deleted);
     tPosts.removeWhere((tPost) => posts.firstWhere((post) => post.id == tPost.postID, orElse: ()=> null) ==null);
     tPosts.sort((x, y) => y.postDate.compareTo(x.postDate));
@@ -326,7 +316,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   Stream<TimelineState> _mapPostUpdateToState(TimelineUpdatePostEvent event) async*{
-
     yield TimelineAttemptingToUploadNewPostState();
     await _postDBManager.updatePost(event.post);
     _createUpdateTPost(event);
@@ -437,14 +426,10 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return null;
   }
 
-  void _insertPostID(Post post) {
-    post.id = (int.parse(_allPosts.last.id) + 1).toString();
-  }
-
   void _createUpdateTPost(TimelinePostUpdateEvent event) {
     String authorID = _allTimelinePosts.firstWhere((tPost) => tPost.postID.compareTo(event.post.id) == 0).authorID;
     TimelinePost thisTPost = TimelinePost(
-        id: (int.parse(_allTimelinePosts.last.id) + 1).toString(),
+        id: (int.parse(_allTimelinePosts.last.id) + 1).toString(),//this is changed don't worry
         authorID: authorID,
         postDate: DateTime.now(),
         postID: event.post.id,

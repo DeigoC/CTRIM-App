@@ -59,14 +59,15 @@ class GalleryTabBody extends StatelessWidget {
         MyRaisedButton(
           label:'ADD/EDIT',
           externalPadding: EdgeInsets.symmetric(horizontal: 8),
-          onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToCreateAlbumEvent(BlocProvider.of<PostBloc>(_context))),
+          onPressed: () => BlocProvider.of<AppBloc>(_context).add(AppToCreateAlbumEvent(
+            BlocProvider.of<PostBloc>(_context))),
         ),
         SizedBox(height: 20,),
         Wrap(
           children: BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
             String type = BlocProvider.of<PostBloc>(_context).files[file];
-            return type == 'vid'? GalleryItem.file(type: 'vid', file: file,thumbnails: thumbnails,)
-                : GalleryItem.file(type: 'img', file: file,thumbnails: thumbnails,);
+            return type == 'vid'? GalleryItem.file(type: 'vid', filePath: file,thumbnails: thumbnails,)
+                : GalleryItem.file(type: 'img', filePath: file,thumbnails: thumbnails,);
           }).toList(),
         )
       ],
@@ -97,8 +98,8 @@ class GalleryTabBody extends StatelessWidget {
 
     wrapChildren.addAll(BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
       String type = BlocProvider.of<PostBloc>(_context).files[file];
-      return type == 'vid'? GalleryItem.file(type: 'vid', file: file,thumbnails: thumbnails,)
-      : GalleryItem.file(type: 'img', file: file,thumbnails: thumbnails,);
+      return type == 'vid'? GalleryItem.file(type: 'vid', filePath: file,thumbnails: thumbnails,)
+      : GalleryItem.file(type: 'img', filePath: file,thumbnails: thumbnails,);
     }).toList());
 
     return ListView(

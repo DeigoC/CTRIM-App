@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
@@ -49,7 +51,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                 expandedHeight: MediaQuery.of(context).size.height * 0.33,
                 flexibleSpace: FlexibleSpaceBar(
                   titlePadding: EdgeInsets.zero,
-                  background: hasImage ? Image.file( _postBloc.newPost.firstFileImage, fit: BoxFit.cover,):null,
+                  background: hasImage ? Image.file(File(_postBloc.newPost.firstFileImage), fit: BoxFit.cover,):null,
                 ),
                 actions: [_buildAppBarActions(),],
               ),

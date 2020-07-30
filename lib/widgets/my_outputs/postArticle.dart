@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image/network.dart';
 
 // ignore: must_be_immutable
 class PostArticle extends StatelessWidget {
@@ -295,7 +296,7 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
       child: Container(
         child: Icon(Icons.play_circle_outline,color: Colors.white,),
         decoration: BoxDecoration(
-          image: DecorationImage(image: NetworkImage(thumbnailSrc),fit: BoxFit.cover)
+          image: DecorationImage(image: NetworkImageWithRetry(thumbnailSrc),fit: BoxFit.cover)
         ),
       ),
     );
@@ -307,7 +308,7 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
       child: Container(
         child: GestureDetector(onTap: ()=>_moveToViewImageVideo(index),),
         decoration: BoxDecoration(
-          image: DecorationImage(image: NetworkImage(_gallerySrc.keys.elementAt(index),),fit: BoxFit.cover)
+          image: DecorationImage(image: NetworkImageWithRetry(_gallerySrc.keys.elementAt(index),),fit: BoxFit.cover)
         ),
       ),
     );

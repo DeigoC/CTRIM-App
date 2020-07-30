@@ -21,11 +21,14 @@ class ViewPostAlbumPage extends StatelessWidget {
                 height: MediaQuery.of(context).size.height * 0.252,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      _post.title,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        _post.title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
                     ),
                     Text(
                       _getAlbumStatsString(),

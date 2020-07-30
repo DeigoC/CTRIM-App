@@ -92,10 +92,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     yield AdminUserImageUploadingState();
     _selectedUser.imgSrc = event.hasDeletedSrc ? '':_selectedUser.imgSrc;
     _selectedUser.role = event.role;
-    if(event.file != null){
-      _selectedUser.imgSrc = await _appStorage.uploadAndGetUserImageSrc(_selectedUser, event.file);
-    }
-    //_selectedUser.body = jsonEncode(event.document);
+    if(event.file != null) _selectedUser.imgSrc = await _appStorage.uploadAndGetUserImageSrc(_selectedUser, event.file);
 
     await _userDBManager.updateUser(_selectedUser);
     yield AdminUserModUpdateUserState(_selectedUser);
@@ -138,18 +135,12 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     } else if (event is AdminUserModTextChangeEvent) {
       _selectedUser.forename = event.forename ?? _selectedUser.forename;
       _selectedUser.surname = event.surname ?? _selectedUser.surname;
-
-     // _selectedUser.body = event.contactNo ?? _selectedUser.body;
-
       _selectedUser.email = event.email ?? _selectedUser.email;
       _creationPassword = event.password ?? _creationPassword;
       yield _canEnableAddUserButton();
     } else if (event is AdminUserModEditTextChangeEvent) {
       _selectedUser.forename = event.forename ?? _selectedUser.forename;
       _selectedUser.surname = event.surname ?? _selectedUser.surname;
-
-     // _selectedUser.body = event.contactNo ?? _selectedUser.body;
-
       yield _canEnableUpdateUserButton();
     } else if (event is AdminUserModAddNewUserClickEvent) {
       if (_emailAlreadyExists()) yield AdminUserModEmailAlreadyExistsState();
@@ -170,18 +161,13 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   }
 
   bool _emailAlreadyExists() {
-    if (_users.firstWhere((u) => u.email.compareTo(_selectedUser.email) == 0,
-            orElse: () => null) !=
-        null) return true;
+    if (_users.firstWhere((u) => u.email.compareTo(_selectedUser.email) == 0,orElse: () => null) !=null) return true;
     return false;
   }
 
   AdminState _canEnableUpdateUserButton() {
     if ((_selectedUser.forename.compareTo(_originalUser.forename) != 0 ||
             _selectedUser.surname.compareTo(_originalUser.surname) != 0 ||
-
-           // _selectedUser.body.compareTo(_originalUser.body) != 0 ||
-
             _selectedUser.adminLevel != _originalUser.adminLevel) &&
         (_selectedUser.forename.trim().isNotEmpty &&
             _selectedUser.surname.trim().isNotEmpty)) {
@@ -201,26 +187,18 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   }
 
   AdminState _canContinueToPasswordState(AdminContinueClickEvent event) {
-    User u = _users.firstWhere((user) => user.email.compareTo(_loginEmail) == 0,
-        orElse: () => null);
-    if (u != null) {
-      return AdminLoginContinueToPasswordState();
-    }
+    User u = _users.firstWhere((user) => user.email.compareTo(_loginEmail) == 0, orElse: () => null);
+    if (u != null) return AdminLoginContinueToPasswordState();
     return AdminLoginEmailNotRecognisedState();
   }
 
   Stream<AdminLoginState> _mapLoginTextChangeEventToState(AdminLoginTextChangeEvent event) async* {
     _loginEmail = event.email ?? _loginEmail;
     _loginPassword = event.password ?? _loginPassword;
-    if (_loginEmail.isEmpty) {
-      yield AdminLoginDisableContinueState();
-    } else {
-      yield AdminLoginEnableContinueState();
-    }
-    if (_loginPassword.isEmpty) {
-      yield AdminLoginDisableLoginState();
-    } else {
-      yield AdminLoginEnableLoginState();
-    }
+    if (_loginEmail.isEmpty) yield AdminLoginDisableContinueState();
+    else  yield AdminLoginEnableContinueState();
+    if (_loginPassword.isEmpty) yield AdminLoginDisableLoginState();
+    else yield AdminLoginEnableLoginState();
+    
   }
 }

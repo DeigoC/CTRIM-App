@@ -7,6 +7,7 @@ import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image/network.dart';
 
 class LocationCard extends StatelessWidget {
   final Location location;
@@ -109,7 +110,7 @@ class LocationCard extends StatelessWidget {
             color: Colors.pink,
             borderRadius: BorderRadius.circular(8),
             image:DecorationImage(
-            image: NetworkImage(location.imgSrc),
+            image: NetworkImageWithRetry(location.imgSrc),
             fit: BoxFit.cover
           )
         ),

@@ -12,7 +12,7 @@ class ViewAllLocationsPage {
   ViewAllLocationsPage(this._context);
 
   Widget buildBody() {
-    List<Location> allLocations = BlocProvider.of<TimelineBloc>(_context).locationsForTab;
+    List<Location> allLocations = BlocProvider.of<TimelineBloc>(_context).selectableLocations;
 
     return CustomScrollView(
       key: PageStorageKey('viewAllLocationsKey'),

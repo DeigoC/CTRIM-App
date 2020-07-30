@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
@@ -117,7 +116,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
         return false;
       },
       builder:(_,state){
-        Map<File, String> files = widget._postBloc.files;
+        Map<String, String> files = widget._postBloc.files;
         Map<String, String> sources = widget._postBloc.gallerySrc;
         List<String> sourcesOrdered = sources.keys.toList();
         sourcesOrdered.sort();
@@ -174,18 +173,18 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
     );
   }
 
-  GalleryItem _buildVideoFileContainer(File file){
-    bool selected = _selectedFiles.contains(file.path);
+  GalleryItem _buildVideoFileContainer(String filePath){
+    bool selected = _selectedFiles.contains(filePath);
     return GalleryItem.file(
       thumbnails: widget._postBloc.newPost.thumbnails,
-      file: file,
+      filePath: filePath,
       type: 'vid',
       child: InkWell(
         onTap: (){
            if(_onDeleteMode){
           setState(() {
-             if(selected)_selectedFiles.remove(file.path);
-              else _selectedFiles.add(file.path);
+             if(selected)_selectedFiles.remove(filePath);
+              else _selectedFiles.add(filePath);
           });
         }
         },
@@ -205,18 +204,18 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
     );
   }
 
-  GalleryItem _buildPictureFileContainer(File file){
-    bool selected = _selectedFiles.contains(file.path);
+  GalleryItem _buildPictureFileContainer(String filePath){
+    bool selected = _selectedFiles.contains(filePath);
     return GalleryItem.file(
       thumbnails: widget._postBloc.newPost.thumbnails,
       type: 'img', 
-      file: file,
+      filePath: filePath,
       child: InkWell(
         onTap: (){
           if(_onDeleteMode){
             setState(() {
-            if(selected)_selectedFiles.remove(file.path);
-            else _selectedFiles.add(file.path);
+            if(selected)_selectedFiles.remove(filePath);
+            else _selectedFiles.add(filePath);
           }); 
           }
         },
