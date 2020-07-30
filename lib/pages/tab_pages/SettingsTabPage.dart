@@ -41,7 +41,6 @@ class SettingsPage{
   Widget buildDrawer(){
     if(BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0)return null;
     User u = BlocProvider.of<AppBloc>(_context).currentUser;
-
     return Drawer(
       child: ListView(
         children: [
@@ -66,7 +65,7 @@ class SettingsPage{
             enabled: u.adminLevel > 1,
             title: Text('Register User'),
             leading: Icon(Icons.person_add),
-            onTap: AdminCheck.isCurrentUserAboveLvl1(_context) ? 
+            onTap: AdminCheck().isCurrentUserAboveLvl1(_context) ? 
               ()=> BlocProvider.of<AppBloc>(_context).add(AppToRegisterUserEvent()): null,
           ),
           ListTile(

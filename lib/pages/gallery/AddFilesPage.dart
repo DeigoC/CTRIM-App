@@ -24,6 +24,11 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
   bool _selectingFiles = false;
 
   @override
+  void dispose() { 
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {

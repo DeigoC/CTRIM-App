@@ -1,6 +1,8 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
+import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,18 +69,10 @@ class _RegisterUserState extends State<RegisterUser> {
           onTextChange: (newString) =>
               _adminBloc.add(AdminUserModTextChangeEvent(surname: newString)),
         ),
-        /* padding,
-        MyTextField(
-          label: 'Contact No',
-          controller: null,
-          hint: 'Optional',
-          onTextChange: (newString) =>
-              _adminBloc.add(AdminUserModTextChangeEvent(contactNo: newString)),
-        ), */
         padding,
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: AdminDropdownList(),
+          child: _buildAdminLevelSelector(),
         ),
         SizedBox(height: 32,),
         MyTextField(
@@ -97,39 +91,60 @@ class _RegisterUserState extends State<RegisterUser> {
               _adminBloc.add(AdminUserModTextChangeEvent(password: newString)),
         ),
         padding,
+        MyTextField(
+          label: 'Confirm Password',
+          controller: null,
+          hint: 'Required',
+          onTextChange: (newString) =>
+              _adminBloc.add(AdminUserModTextChangeEvent(confirmPassword: newString)),
+        ),
+        padding,
         Container(
             padding: EdgeInsets.all(8),
             child: BlocConsumer(
-                bloc: _adminBloc,
-                listener: (_, state) {
-                  if (state is AdminUserModAddNewUserState) {
-                    BlocProvider.of<TimelineBloc>(context).allUsers.add(state.newUser);
-                    Navigator.of(context).pop();
-                  } else if (state is AdminUserModPasswordTooSmallState) {
-                    Scaffold.of(_context).showSnackBar(SnackBar(
-                      content:Text('Password too small (at least 6 characters)!'),
-                    ));
-                  } else if (state is AdminUserModEmailAlreadyExistsState) {
-                    Scaffold.of(_context).showSnackBar(SnackBar(
-                      content: Text('User with this email already exists!'),
-                    ));
-                  }
-                },
-                buildWhen: (_, state) {
-                  if (state is AdminUserModEnableSaveButtonState)
-                    return true;
-                  else if (state is AdminUserModDisableButtonState) return true;
-                  return false;
-                },
-                builder: (_, state) {
-                  return RaisedButton(
-                    child: Text('Register User'),
-                    onPressed: (state is AdminUserModEnableSaveButtonState)
-                        ? () =>_adminBloc.add(AdminUserModAddNewUserClickEvent())
-                        : null,
-                  );
-                }))
+              bloc: _adminBloc,
+              listener: (_, state) {
+                if (state is AdminUserModAddNewUserState) {
+                  //BlocProvider.of<TimelineBloc>(context).allUsers.add(state.newUser);
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                } else if (state is AdminUserModPasswordTooSmallState) {
+                  Scaffold.of(_context).showSnackBar(SnackBar(
+                    content:Text('Password too small (at least 6 characters)!'),
+                  ));
+                } else if (state is AdminLoginConfirmationPasswordWrongState){
+                  Scaffold.of(_context).showSnackBar(SnackBar(
+                    content: Text('Confirmation Password is not correct!'),
+                  ));
+                } else if (state is AdminUserModEmailAlreadyExistsState) {
+                  Scaffold.of(_context).showSnackBar(SnackBar(
+                    content: Text('User with this email already exists!'),
+                  ));
+                }else if(state is AdminLoginAttempToRegisterUserState){
+                  ConfirmationDialogue.uploadTaskStarted(context: context);
+                }
+              },
+              buildWhen: (_, state) {
+                if (state is AdminUserModEnableSaveButtonState) return true;
+                else if (state is AdminUserModDisableButtonState) return true;
+                return false;
+              },
+              builder: (_, state) {
+                return RaisedButton(
+                  child: Text('Register User'),
+                  onPressed: (state is AdminUserModEnableSaveButtonState)
+                      ? () =>_adminBloc.add(AdminUserModAddNewUserClickEvent())
+                      : null,
+                );
+              }))
       ],
     );
+  }
+
+  Widget _buildAdminLevelSelector(){
+    if(AdminCheck().isCurrentUserAboveLvl2(context)){
+      return AdminDropdownList();
+    }
+    return Container();
   }
 }

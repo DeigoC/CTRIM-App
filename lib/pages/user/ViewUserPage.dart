@@ -9,6 +9,7 @@ import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image/network.dart';
 
 class ViewUserPage extends StatefulWidget {
   final User user;
@@ -34,6 +35,8 @@ class _ViewUserPageState extends State<ViewUserPage> {
  
   @override
   Widget build(BuildContext context) {
+    bool hasImage = widget.user.imgSrc != '';
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -57,12 +60,19 @@ class _ViewUserPageState extends State<ViewUserPage> {
                       child: Container(
                         height:100,
                         width: 100,
-                        child: GestureDetector(onTap: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(
-                          {widget.user.imgSrc : ImageTag(src: widget.user.imgSrc, type: 'img')},0
-                        )),),
+                        child: GestureDetector(
+                          child: hasImage ? Container():widget.user.buildAvatar(context),
+                          onTap: (){
+                            if(hasImage){
+                              BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(
+                              {widget.user.imgSrc : ImageTag(src: widget.user.imgSrc, type: 'img')},0
+                           ));
+                            }
+                      }),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          image: DecorationImage(image: NetworkImage(widget.user.imgSrc),fit: BoxFit.cover )),
+                          image: hasImage? DecorationImage(
+                            image: NetworkImageWithRetry(widget.user.imgSrc),fit: BoxFit.cover ):null),
                       ),
                     ),
                   ),

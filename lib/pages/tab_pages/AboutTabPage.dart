@@ -150,7 +150,7 @@ class AboutTabPage{
                 height: MediaQuery.of(_context).size.height * 0.40,
                 child: Stack(
                   children:[ 
-                    AdminCheck.isCurrentUserAboveLvl2(_context)?
+                    AdminCheck().isCurrentUserAboveLvl2(_context)?
                     Align(
                       alignment: Alignment.topRight,
                       child: IconButton(

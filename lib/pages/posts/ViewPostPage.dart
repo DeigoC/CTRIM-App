@@ -46,6 +46,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: _buildFAB(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: NestedScrollView(
         headerSliverBuilder: (_, __) {
           bool hasImage = widget._post.firstImageSrc != null;
@@ -142,7 +143,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           );
           Add2Calendar.addEvent2Cal(event);
         }, 
-        label: Text('Set Calender Reminder',style: TextStyle(color: Colors.white),),
+        label: Text('Set Reminder',style: TextStyle(color: Colors.white),),
         icon: Icon(Icons.calendar_today,color: Colors.white,),
       );
     }

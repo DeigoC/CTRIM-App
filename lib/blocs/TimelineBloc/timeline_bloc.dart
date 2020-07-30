@@ -180,7 +180,10 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     else if (event is TimelineLocationSearchTextChangeEvent) yield* _mapLocationSearchEventToState(event);
     else if (event is TimelineAlbumSearchEvent)yield* _mapAlbumSearchEventToState(event);
     else if (event is TimelineUserUpdatedEvent)yield* _mapUserUpdatedEventToState(event);
-    else if (event is TimelineDisplayCurrentUserLikedPosts)yield _getCurrentUserLikedPosts(event.likedPosts);
+    else if (event is TimelineDisplayCurrentUserLikedPosts){
+      yield TimelineEmptyState();
+      yield _getCurrentUserLikedPosts(event.likedPosts);
+    }
     else if (event is TimelineUserDisabledEvent) yield* _mapUserDisabledToState(event);
     else if (event is TimelineUserEnabledEvent) yield* _mapUserEnabledToState(event);
     else if (event is TimelineAboutTabEvent) yield* _mapAboutTabEventToState(event);

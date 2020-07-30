@@ -22,6 +22,11 @@ class AdminReturnToLoginEmailEvent extends AdminLoginEvent {}
 
 class AdminLoginButtonClickedEvent extends AdminLoginEvent{}
 
+class AdminSendRecoveryEmailEvent extends AdminEvent{
+  final String email;
+  AdminSendRecoveryEmailEvent(this.email);
+}
+
 // ! Adding/Editing user
 class AdminSaveMyDetailsEvent extends AdminEvent{
   final File file;
@@ -40,9 +45,9 @@ class AdminUserAdminLevelChangeEvent extends AdminModifyingUserEvent {
 }
 
 class AdminUserModTextChangeEvent extends AdminModifyingUserEvent {
-  final String forename, surname, email, password, contactNo;
+  final String forename, surname, email, password, confirmPassword;
   AdminUserModTextChangeEvent(
-      {this.forename, this.surname, this.email, this.password, this.contactNo});
+      {this.forename, this.surname, this.email, this.password, this.confirmPassword});
 }
 
 class AdminUserModEditTextChangeEvent extends AdminModifyingUserEvent {

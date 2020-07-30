@@ -26,4 +26,8 @@ class AuthService{
     AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
     return result.user;
   }
+
+  Future sendPasswordRecovery(String email) async{
+    await _auth.sendPasswordResetEmail(email: email);
+  }
 }

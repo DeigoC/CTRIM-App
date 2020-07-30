@@ -49,6 +49,10 @@ class _UserLoginPageState extends State<UserLoginPage> {
               }
               else if(state is AdminLoginLoadingState){
                 _showLoadingDialog();
+              }else if(state is AdminLoginRecoveryEmailSentState){
+                Scaffold.of(_context).showSnackBar(SnackBar(
+                  content: Text('Password Recovery Email Sent!'),
+                ));
               }
             },
             buildWhen: (previousState, currentState) {
@@ -103,7 +107,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
           alignment: Alignment.centerRight,
           child: MyFlatButton(
             label: 'Forgot Password',
-            onPressed: ()=>null,
+            onPressed: ()=>_showSendRecoveryEmailDialog(),
           )
         ),
         BlocBuilder(
@@ -188,10 +192,35 @@ class _UserLoginPageState extends State<UserLoginPage> {
     );
   }
 
+  void _showSendRecoveryEmailDialog(){
+    showDialog(
+      context: context,
+      builder: (_){
+        return AlertDialog(
+          title: Text('Password Recovery'),
+          content: Text('Send password recovery email to: ' + _tecEmail.text.trim() + '?'),
+          actions: [
+            MyFlatButton(
+              label: 'Cancel',
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            ),
+            MyFlatButton(
+              label: 'Send Email',
+              onPressed: (){
+                _adminBloc.add(AdminSendRecoveryEmailEvent(_tecEmail.text.trim()));
+              },
+            ),
+          ],
+        );
+      }
+    );
+  }
+
   void _showErrorSnackbar(String content) {
     Scaffold.of(_context).showSnackBar(SnackBar(
       content: Text('ERROR: '+content),
-      //action: SnackBarAction(label: 'OK', textColor: Colors.black, onPressed: () => null),
     ));
   }
 }

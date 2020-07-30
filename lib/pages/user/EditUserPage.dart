@@ -123,7 +123,7 @@ class _EditUserPageState extends State<EditUserPage> {
   }
 
   Widget _buildAdminLvlSelector(){
-    if(AdminCheck.isCurrentUserAboveLvl2(context)){
+    if(AdminCheck().isCurrentUserAboveLvl2(context)){
       return Padding(
         padding: EdgeInsets.only(top: 8, left: 8),
         child: AdminDropdownList(),
@@ -134,7 +134,7 @@ class _EditUserPageState extends State<EditUserPage> {
 
   Widget _buildDisableButton() {
     bool disabled = widget.user.disabled;
-    if(AdminCheck.isCurrentUserAboveLvl2(context)){
+    if(AdminCheck().isCurrentUserAboveLvl2(context)){
       return RaisedButton(
         child: Text(disabled ? 'Enable User' : 'Disable User'),
         onPressed: (){

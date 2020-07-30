@@ -49,6 +49,10 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    SystemChrome.setEnabledSystemUIOverlays([
+        SystemUiOverlay.top,
+        SystemUiOverlay.bottom,
+    ]);
 
     _chewieControllers.keys.forEach((src) {
       _chewieControllers[src].dispose();
@@ -60,6 +64,16 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
 
   @override
   Widget build(BuildContext context) {
+    if(_hideAppBar){
+      SystemChrome.setEnabledSystemUIOverlays([
+      ]);
+    }else{
+      SystemChrome.setEnabledSystemUIOverlays([
+        SystemUiOverlay.top,
+        SystemUiOverlay.bottom,
+      ]);
+    }
+    
     return OrientationBuilder(builder: (_, orientation) {
       bool continueListening = true;
       if(_orientation != null){
@@ -77,7 +91,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         }
       }
       _orientation = orientation;
-
 
       return Scaffold(
         backgroundColor: Colors.black,
@@ -133,9 +146,13 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       splashColor: Colors.transparent,
       onTap: (){setState(() {_hideAppBar= !_hideAppBar;});},
       child: Container(
+        color: Colors.red,
         height:  MediaQuery.of(context).size.height + 200,
         alignment: Alignment.center,
-        child: (type.compareTo('vid') == 0) ? _buildVideoContainer(src) : _createImagePage(src),
+        child: (type.compareTo('vid') == 0) ? _buildVideoContainer(src) : AspectRatio(
+          aspectRatio: 9/16,
+          child: _createImagePage(src),
+        ),
       ),
     );
   }
@@ -188,7 +205,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       child: AnimatedOpacity(
         duration: Duration(milliseconds: 100),
         opacity: _hideAppBar ? 0:1,
-        child: AppBar(backgroundColor: Colors.transparent,elevation: 0,),
+        child: AppBar(backgroundColor: Colors.black.withOpacity(0.5),elevation: 0,),
       ),
     );
   }

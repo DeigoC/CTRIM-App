@@ -57,7 +57,7 @@ class LocationCard extends StatelessWidget {
                   ),
                   ButtonBar(
                     alignment: MainAxisAlignment.end,
-                    children: (AdminCheck.isCurrentUserAboveLvl1(context) && onTap==null) ? [
+                    children: (AdminCheck().isCurrentUserAboveLvl1(context) && onTap==null) ? [
                       IconButton(
                         onPressed:() => BlocProvider.of<AppBloc>(context).add(AppToEditLocationEvent(location)),
                         icon: Icon(Icons.edit),

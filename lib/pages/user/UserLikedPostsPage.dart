@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,16 @@ class UserLikedPostsPage extends StatefulWidget {
 }
 
 class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
+  
+  User currentU;
+
+  @override
+  void initState() {
+    currentU = BlocProvider.of<AppBloc>(context).currentUser;
+    BlocProvider.of<TimelineBloc>(context).add(TimelineDisplayCurrentUserLikedPosts(currentU.likedPosts));
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,15 +33,13 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
         if (state is TimelineDisplaySearchFeedState) return true;
         return false;
       }, builder: (_, state) {
-        User currentU = BlocProvider.of<AppBloc>(context).currentUser;
-
         if (state is TimelineDisplaySearchFeedState) {
           if (state.posts.length == 0) {
-            return Center(
-              child: Text('No liked Posts'),
-            );
+            return Center(child: Text('No liked Posts'),);
           }
-          return ListView.builder(
+
+          if(_confirmSameResults(state.timelines)){
+            return ListView.builder(
               itemCount: BlocProvider.of<AppBloc>(context)
                   .currentUser
                   .likedPosts
@@ -39,20 +48,22 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
                 return PostArticle(
                   mode: 'view',
                   allUsers: state.users,
-                  post: _getPostFromID(
-                      state.timelines[index].postID, state.posts),
+                  post: _getPostFromID(state.timelines[index].postID, state.posts),
                   timelinePost: state.timelines[index],
                 );
               });
+          }
         }
-    
-        BlocProvider.of<TimelineBloc>(context)
-            .add(TimelineDisplayCurrentUserLikedPosts(currentU.likedPosts));
-        return Center(
-          child: CircularProgressIndicator(),
-        );
+        return Center( child: CircularProgressIndicator(),);
       }),
     );
+  }
+
+  bool _confirmSameResults(List<TimelinePost> tPosts){
+    for (var i = 0; i < tPosts.length; i++) {
+      if(!currentU.likedPosts.contains(tPosts[i].postID) ) return false;
+    }
+    return true;
   }
 
   Post _getPostFromID(String id, List<Post> allPosts) {

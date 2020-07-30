@@ -219,7 +219,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       _post.detailTable[event.itemIndex] = {
         'Leading':_leadingDetailItem,
         'Trailing':_trailingDetailItem
-    };
+      };
+      yield PostDetailListReorderState();
     }
     yield* _canEnableSaveButton();
   }

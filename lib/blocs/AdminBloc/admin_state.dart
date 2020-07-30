@@ -22,10 +22,16 @@ class AdminLoginDisableLoginState extends AdminLoginButtonState {}
 
 class AdminLoginEnableLoginState extends AdminLoginButtonState {}
 
+class AdminLoginRecoveryEmailSentState extends AdminLoginState{}
+
+class AdminLoginAttempToRegisterUserState extends AdminLoginState{}
+
 // ! Login - Errors
 class AdminLoginErrorState extends AdminLoginState{}
 
 class AdminLoginPopLoginDialogState extends AdminLoginState{}
+
+class AdminLoginConfirmationPasswordWrongState extends AdminLoginErrorState{}
 
 class AdminLoginEmailNotRecognisedState extends AdminLoginErrorState {}
 
