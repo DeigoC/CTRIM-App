@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
+import 'package:ctrim_app_v1/widgets/location_query.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -157,9 +158,10 @@ class _EditLocationState extends State<EditLocation> {
             }),
         SizedBox(height: 32,),
         MyTextField(
-          label: 'Description',
+          label: 'Short Description',
           controller: _tecDescription,
           hint: '(Optional)',
+          maxLength: 60,
           onTextChange: (newDec) {
             _locationBloc.add(LocationDescriptionTextChangeEvent(newDec));
           },
@@ -295,82 +297,11 @@ class _EditLocationState extends State<EditLocation> {
 
   void _displayLocationQueryResults(List<String> results) {
     showModalBottomSheet(
-        context: context,
-        isDismissible: false,
-        enableDrag: false,
-        builder: (_) {
-          return BlocBuilder(
-              bloc: _locationBloc,
-              condition: (previousState, currentState) {
-                if (currentState is LocationQueryState) return true;
-                return false;
-              },
-              builder: (_, state) {
-                return Scaffold(
-                  appBar: _buildQueryAppbar(state),
-                  body: _buildQueryBody(state, results),
-                  floatingActionButtonLocation:
-                      FloatingActionButtonLocation.centerFloat,
-                  floatingActionButton:
-                      (state is LocationDisplaySelectedLocationMapState)
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                RaisedButton(
-                                  child: Text('No'),
-                                  onPressed: () => _locationBloc
-                                      .add(LocationWrongQueryAddressEvent()),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                RaisedButton(
-                                  child: Text('Yes'),
-                                  onPressed: () => _locationBloc.add(
-                                      LocationEditConfirmedQueryAddressEvent()),
-                                ),
-                              ],
-                            )
-                          : null,
-                );
-              });
-        });
-  }
-
-  AppBar _buildQueryAppbar(LocationQueryState state) {
-    if (state is LocationDisplayQueryResultsState ||
-        state is LocationRebuildQueryResultsState) {
-      return AppBar(
-          title: Text(
-            'Select Address',
-          ),
-          leading: IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () => _locationBloc.add(LocationCancelQueryEvent()),
-          ));
-    }
-    return AppBar(
-      title: Text('Is this it?'),
-      leading: Container(),
-      centerTitle: true,
-    );
-  }
-
-  Widget _buildQueryBody(LocationQueryState state, List<String> results) {
-    if (state is LocationDisplaySelectedLocationMapState) {
-      return Center(
-        child: Text('Map here for: ' + state.selectedAddress),
-      );
-    }
-    return ListView(
-      children: results.map((address) {
-        return ListTile(
-          title: Text(address),
-          leading: Icon(Icons.location_searching),
-          onTap: () =>
-              _locationBloc.add(LocationSelectedQueryAddressEvent(address)),
-        );
-      }).toList(),
-    );
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (_) {
+        return LocationQuery(results,_locationBloc);
+      });
   }
 }

@@ -7,10 +7,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ViewAllUsers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    List<User> allUsers = BlocProvider.of<TimelineBloc>(context).allUsers;
+    allUsers.sort((a,b) => a.surname.compareTo(b.surname));
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('View All Users'),
-      ),
+      appBar: AppBar(title: Text('View All Users'),),
       body: BlocBuilder<TimelineBloc, TimelineState>(
         condition: (_,state){
           if(state is TimelineRebuildUserListState) return true;
@@ -18,14 +19,13 @@ class ViewAllUsers extends StatelessWidget {
         },
         builder: (_, state) {
         return ListView.builder(
-            itemCount: BlocProvider.of<TimelineBloc>(context).allUsers.length,
+            itemCount: allUsers.length,
             itemBuilder: (_, index) {
-              User user = BlocProvider.of<TimelineBloc>(context).allUsers[index];
               return ListTile(
-                title: Text(user.forename + ' ' + user.surname),
-                subtitle: Text('Admin Lvl: ' + user.adminLevel.toString()),
-                trailing: Text(user.disabled ? 'Disabled':''),
-                onTap: () => BlocProvider.of<AppBloc>(context).add(AppToEditUserEvent(user)),
+                title: Text(allUsers[index].forename + ' ' + allUsers[index].surname),
+                subtitle: Text('Admin Lvl: ' + allUsers[index].adminLevel.toString()),
+                trailing: Text(allUsers[index].disabled ? 'Disabled':''),
+                onTap: () => BlocProvider.of<AppBloc>(context).add(AppToEditUserEvent(allUsers[index])),
               );
             });
       }),

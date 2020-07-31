@@ -61,12 +61,13 @@ class _ViewUserPageState extends State<ViewUserPage> {
                         height:100,
                         width: 100,
                         child: GestureDetector(
-                          child: hasImage ? Container():widget.user.buildAvatar(context),
+                          child: hasImage ? Container(height: 100,width: 100,color: Colors.transparent,) :
+                          widget.user.buildAvatar(context),
                           onTap: (){
                             if(hasImage){
                               BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(
                               {widget.user.imgSrc : ImageTag(src: widget.user.imgSrc, type: 'img')},0
-                           ));
+                              ));
                             }
                       }),
                         decoration: BoxDecoration(
@@ -104,18 +105,26 @@ class _ViewUserPageState extends State<ViewUserPage> {
               ]),
             ),
           ),
-          SliverList(delegate: SliverChildBuilderDelegate((_,index){
-            return PostArticle(
-              allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
-              mode: 'view',
-              post: _userPosts.keys.elementAt(index),
-              timelinePost: _userPosts.values.elementAt(index),
-            );
-          },
-          childCount: _userPosts.length
-          ),),
+          _buildPostsList(context),
         ],
       ),
     );
   }
+
+SliverList _buildPostsList(BuildContext context) {
+  List<TimelinePost> tPosts = List.from(_userPosts.values);
+  tPosts.sort((x, y) => y.postDate.compareTo(x.postDate));
+
+  return SliverList(delegate: SliverChildBuilderDelegate((_,index){
+    Post p = _userPosts.keys.firstWhere((e) => e.id.compareTo(tPosts[index].postID)==0);
+    return PostArticle(
+      allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
+      mode: 'view',
+      post:p,
+      timelinePost: tPosts[index],
+    );
+  },
+  childCount: _userPosts.length
+  ),);
+}
 }

@@ -175,9 +175,13 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
   }
 
   void _initialiseData(){
+    List<String> srcs = widget.post.gallerySources.keys.toList();
+    srcs.sort();
+
     if(widget.post.gallerySources.length !=0 && !_initialisedData){
-      String type = widget.post.gallerySources.values.elementAt(0);
-      String src = widget.post.gallerySources.keys.elementAt(0);
+      String src = srcs.first;
+      String type = widget.post.gallerySources[src];
+      
       if(type =='vid'){
         _gallerySrc[src] = ImageTag(
           src: src,
@@ -186,8 +190,6 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
         );
       }else{
         int imageNo = 0;
-        List<String> srcs = widget.post.gallerySources.keys.toList();
-        srcs.sort();
 
         srcs.forEach((key) {
           if(imageNo != 4 &&  widget.post.gallerySources[key]=='img'){

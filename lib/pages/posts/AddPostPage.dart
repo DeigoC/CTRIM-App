@@ -62,6 +62,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                     MyTextField(
                       label: 'Title',
                       hint: 'Required',
+                      maxLength: 60,
                       controller: _tecTitle,
                       onTextChange: (newTitle) =>
                           _postBloc.add(PostTextChangeEvent(title: newTitle)),

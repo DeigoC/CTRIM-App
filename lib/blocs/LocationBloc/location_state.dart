@@ -34,8 +34,10 @@ class LocationDisplayQueryResultsState extends LocationQueryState {
 }
 
 class LocationDisplaySelectedLocationMapState extends LocationQueryState {
-  final String selectedAddress;
-  LocationDisplaySelectedLocationMapState(this.selectedAddress);
+  final Address selectedAddress;
+  LocationDisplaySelectedLocationMapState({
+    @required this.selectedAddress
+  });
 }
 
 class LocationCancelQueryState extends LocationQueryState {}

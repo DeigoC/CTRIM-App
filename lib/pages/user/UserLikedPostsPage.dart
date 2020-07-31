@@ -26,9 +26,7 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Liked Posts'),
-      ),
+      appBar: AppBar(title: Text('Liked Posts'),),
       body: BlocBuilder<TimelineBloc, TimelineState>(condition: (_, state) {
         if (state is TimelineDisplaySearchFeedState) return true;
         return false;

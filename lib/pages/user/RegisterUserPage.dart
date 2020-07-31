@@ -79,6 +79,7 @@ class _RegisterUserState extends State<RegisterUser> {
           label: 'Email',
           controller: null,
           hint: 'Required',
+          textInputType: TextInputType.emailAddress,
           onTextChange: (newString) =>
               _adminBloc.add(AdminUserModTextChangeEvent(email: newString)),
         ),
@@ -87,6 +88,7 @@ class _RegisterUserState extends State<RegisterUser> {
           label: 'Password',
           controller: null,
           hint: 'At least 6 chars.',
+          obsucureText: true,
           onTextChange: (newString) =>
               _adminBloc.add(AdminUserModTextChangeEvent(password: newString)),
         ),
@@ -95,6 +97,7 @@ class _RegisterUserState extends State<RegisterUser> {
           label: 'Confirm Password',
           controller: null,
           hint: 'Required',
+          obsucureText: true,
           onTextChange: (newString) =>
               _adminBloc.add(AdminUserModTextChangeEvent(confirmPassword: newString)),
         ),

@@ -57,20 +57,20 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
           _myPosts = BlocProvider.of<TimelineBloc>(context).getUserPosts(userID);
           _myDeletedPosts = BlocProvider.of<TimelineBloc>(context).getUserDeletedPosts(userID);
         }
-
         Map<Post,TimelinePost> myPosts = _showDeleted ? _myDeletedPosts : _myPosts;
+        List<TimelinePost> tPosts = List.from(myPosts.values);
+        tPosts.sort((a,b) => b.postDate.compareTo(a.postDate));
 
         return ListView.builder(
-            itemCount: myPosts.length,
-            itemBuilder: (_, index) {
-
-              return PostArticle(
-                mode: 'edit',
-                allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
-                timelinePost: myPosts.values.elementAt(index),
-                post: myPosts.keys.elementAt(index),
-              );
-            });
+          itemCount: myPosts.length,
+          itemBuilder: (_, index) {
+            return PostArticle(
+              mode: 'edit',
+              allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
+              timelinePost: tPosts[index],
+              post: myPosts.keys.firstWhere((e) => e.id.compareTo(tPosts[index].postID)==0),
+            );
+          });
       }),
     );
   }

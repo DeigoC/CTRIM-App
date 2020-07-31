@@ -45,9 +45,10 @@ class MyTextField extends StatelessWidget {
   final String label, hint;
   final TextEditingController controller;
   final Function(String) onTextChange;
-  final bool readOnly,autoFocus;
+  final bool readOnly,autoFocus, obsucureText;
   final int maxLength, maxLines;
   final TextInputAction textInputAction;
+  final TextInputType textInputType;
 
   MyTextField({
     @required this.label,
@@ -56,9 +57,11 @@ class MyTextField extends StatelessWidget {
     this.hint,
     this.readOnly = false,
     this.autoFocus = false,
+    this.obsucureText = false,
     this.maxLength,
     this.maxLines,
     this.textInputAction = TextInputAction.done,
+    this.textInputType,
   });
 
   @override
@@ -75,8 +78,10 @@ class MyTextField extends StatelessWidget {
             readOnly: readOnly,
             maxLength: maxLength,
             autofocus: autoFocus,
-            maxLines: maxLines,
+            maxLines: obsucureText?1:maxLines,
+            obscureText: obsucureText,
             textInputAction: textInputAction,
+            keyboardType: textInputType,
             decoration: InputDecoration(hintText: hint ?? ''),
           ),
         ],
@@ -231,30 +236,6 @@ class MyFlatButton extends StatelessWidget {
   }
 }
 
-/* class MyFAB extends StatelessWidget {
-  final String label;
-  final Function onPressed;
-  final bool isDestrucive;
-  final IconData icon;
-  
-  MyFAB({
-    @required this.label,
-    @required this.onPressed,
-    this.isDestrucive = false,
-    this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton.extended(
-      label: Text(label),
-      onPressed:onPressed,
-      backgroundColor: isDestrucive ? Color(0xffd11a2a):null,
-      icon: icon == null ? null:Icon(icon),
-    );
-  }
-}
- */
 class MyFilterChip extends StatelessWidget {
   final String label;
   final bool selected, filteringPosts;
@@ -300,7 +281,7 @@ class MyDropdownList extends StatelessWidget {
       absorbing: disable,
       child: Row(
         children: <Widget>[
-          Text(label),
+          Text(label,style: TextStyle(fontSize: 18),),
           SizedBox(width: 8,),
           DropdownButton<String>(
             value: value,

@@ -78,10 +78,10 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       yield _canUpdateLocation();
     } else if (event is LocationEditConfirmedQueryAddressEvent) {
       _location.addressLine = _selectedAddressLine;
+      Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
+      _location.coordinates = {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude};
       yield LocationDisplayConfirmedQueryAddressState(_selectedAddressLine);
       yield _canUpdateLocation();
-     
-     
     } else if (event is LocationEditUpdateLocationEvent) {
       yield LocationEditAttemptToUpdateState();
       await _locationDBManager.updateLocation(_location, _imageFile);
@@ -101,7 +101,10 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       yield LocationCancelQueryState();
     } else if (event is LocationSelectedQueryAddressEvent) {
       _selectedAddressLine = event.selectedAddress;
-      yield LocationDisplaySelectedLocationMapState(event.selectedAddress);
+      Address selectedAddress = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
+
+      yield LocationDisplaySelectedLocationMapState(selectedAddress: selectedAddress);
+      
     } else if (event is LocationWrongQueryAddressEvent) {
       yield LocationRebuildQueryResultsState();
     } else if (event is LocationConfirmedQueryAddressEvent) {

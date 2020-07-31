@@ -36,6 +36,8 @@ class AppUploadTaskStartedEvent extends AppEvent{
   AppUploadTaskStartedEvent({@required this.task,  @required this.itemNo,@required this.totalLength});
 }
 
+class AppUploadCompressingImageEvent extends AppEvent{}
+
 // ! Navigation Events
 class AppNavigateToPageEvent extends AppEvent {}
 

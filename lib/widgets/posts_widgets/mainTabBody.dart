@@ -41,7 +41,7 @@ class _MainTabBodyState extends State<MainTabBody> {
           controller: _tecSubtitle,
           label: 'Description',
           hint: 'Required (Brief summary of the post)',
-          maxLength: 200,
+          maxLength: 140,
           maxLines: 5,
           onTextChange: (newSubtitle) => BlocProvider.of<PostBloc>(context)
               .add(PostTextChangeEvent(description: newSubtitle)),

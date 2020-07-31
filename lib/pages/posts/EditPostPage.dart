@@ -76,6 +76,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       MyTextField(
+                        maxLength: 60,
                         label: 'Title',
                         hint: 'e.g. Youth Day Out!',
                         controller: _tecTitle,

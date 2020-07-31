@@ -269,6 +269,7 @@ class DetailTable extends StatelessWidget {
                   Expanded(
                     child: MyTextField(
                       label: 'Table Header',
+                      maxLength: 60,
                       controller: TextEditingController(
                           text: BlocProvider.of<PostBloc>(context)
                               .newPost
@@ -354,7 +355,7 @@ class DetailTable extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Item ' +itemNumber.toString()),
+                    Text('Item ' +itemNumber.toString(),style: TextStyle(fontSize: 18),),
                     SizedBox(height: 8,),
                     MyTextField(
                       label: 'Leading',
@@ -405,22 +406,20 @@ class DetailTable extends StatelessWidget {
         context: _context,
         builder: (_) {
           return Dialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Container(
               padding: EdgeInsets.all(8),
               height: MediaQuery.of(_context).size.height * 0.5,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Item ' + (itemIndex + 1).toString()),
+                  Text('Item ' + (itemIndex + 1).toString(),style: TextStyle(fontSize: 18),),
                   SizedBox(height: 8,),
                   MyTextField(
                     label: 'Leading',
                     controller: TextEditingController(text: item['Leading']),
                     onTextChange: (newLeading) =>
-                        BlocProvider.of<PostBloc>(_context).add(
-                            PostDetailListTextChangeEvent(leading: newLeading)),
+                        BlocProvider.of<PostBloc>(_context).add(PostDetailListTextChangeEvent(leading: newLeading)),
                   ),
                   SizedBox( height: 8,),
                   MyTextField(

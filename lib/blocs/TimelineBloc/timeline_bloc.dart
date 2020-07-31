@@ -390,6 +390,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       });
     });
 
+    tPosts.sort((x, y) => y.postDate.compareTo(x.postDate));
+
     return TimelineDisplaySearchFeedState(
       users: allUsers,
       posts: posts,

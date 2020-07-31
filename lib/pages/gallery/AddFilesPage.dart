@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path/path.dart';
 import 'package:video_player/video_player.dart';
 
@@ -123,7 +124,7 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
     if(type == 'vid'){
       if((file.lengthSync() / (1026*1000)) >75.0) return false;
     }else{
-      if((file.lengthSync() / (1026*1000)) >2.0) return false;
+      if((file.lengthSync() / (1026*1000)) >5.0) return false;
     }
     return true;
   }
@@ -192,6 +193,7 @@ class _AddingFileItemState extends State<AddingFileItem> {
   }
 
   Widget _buildImageFileContainer(){
+   // _imageCompressionTest(widget.file);
     return Container(
       width: _containerSize,
       height: _containerSize,
@@ -226,10 +228,22 @@ class _AddingFileItemState extends State<AddingFileItem> {
     if(isVideo){
       isSizeValid = sizeMB <= 75.0;
     }else{
-      isSizeValid = sizeMB <= 2.0;
+      isSizeValid = sizeMB <= 5.0;
     }
 
     return Text(sizeMB.toStringAsFixed(2) + ' MB', style: isSizeValid ? 
     null:TextStyle(color: Colors.red, fontWeight: FontWeight.bold),);
+  }
+
+  Future _imageCompressionTest(File file) async{
+    String targetPath = file.absolute.parent.path;
+    targetPath +='/testImage2.jpg';
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path, 
+      targetPath,
+    );
+
+    print('-----------------------NORMAL FILE LENGTH: ' + (file.lengthSync()/1024).toString() + ' KB');
+    print('-----------------------COMPRESSED FILE LENGTH: ' + (result.lengthSync()/1024).toString() + ' KB');
   }
 }

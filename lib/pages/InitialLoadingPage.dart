@@ -28,21 +28,27 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
     return Scaffold(
       backgroundColor: LightPrimaryColor,
       body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Hero(
-              tag: 'openningIcon',
-              child: Icon(FontAwesome5Solid.church, color: Colors.white,size: MediaQuery.of(context).size.width * 0.4,)),
-            SizedBox(height: 40,),
-            Row(
+        child: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            alignment: Alignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(),
+                Hero(
+                  tag: 'openningIcon',
+                  child: Icon(FontAwesome5Solid.church, color: Colors.white,size: MediaQuery.of(context).size.width * 0.4,)),
+                SizedBox(height: 40,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

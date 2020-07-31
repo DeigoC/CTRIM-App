@@ -99,8 +99,10 @@ class _UserLoginPageState extends State<UserLoginPage> {
         SizedBox(height: 8),
         MyTextField(
           label: 'Password',
+          textInputType: TextInputType.visiblePassword,
           autoFocus: true,
           controller: null,
+          obsucureText: true,
           onTextChange: (newPassword) =>_adminBloc.add(AdminLoginTextChangeEvent(password: newPassword)),
         ),
         Align(
@@ -133,6 +135,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
         label: 'Email',
         controller: _tecEmail,
         autoFocus: true,
+        textInputType: TextInputType.emailAddress,
         onTextChange: (newEmail) =>
             _adminBloc.add(AdminLoginTextChangeEvent(email: newEmail)),
       ),

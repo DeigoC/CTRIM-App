@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -22,10 +23,17 @@ class AppStorage{
     int index =0;
     if(post.temporaryFiles.length != 0){
       await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
+        File itemToSend = File(fileSrc);
+
+        if(post.temporaryFiles[fileSrc]=='img'){
+          _appBloc.add(AppUploadCompressingImageEvent());//TODO finish this up!
+          itemToSend = await _compressImage(fileSrc);
+        }
+
         String filePath = 'posts/${post.id}/item_$index';
-        task = _ref.child(filePath).putFile(File(fileSrc));
+        task = _ref.child(filePath).putFile(itemToSend);
+
         
-        //TODO apply this to all upload tasks
         _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: index + 1,totalLength: post.temporaryFiles.length));
         
         await  task.onComplete.then((_) async{
@@ -42,6 +50,18 @@ class AppStorage{
     post.noOfGalleryItems = index;
   }
 
+  Future<File> _compressImage(String originalFilePath) async{
+    String directory;//TODO  make this a private class variable
+    await getApplicationDocumentsDirectory().then((d) => directory = d.path);
+    String targetPath = directory+'/compressionImage.jpg';
+
+    var result = await FlutterImageCompress.compressAndGetFile(
+      originalFilePath, 
+      targetPath,
+    );
+    return result;
+  } 
+
   Future<String> _uploadAndGetVideoThumbnailSrc(String fileSrc, String filePath) async{
     Uint8List data = await VideoThumbnail.thumbnailData(video: fileSrc);
     String newFilePath = filePath +'_thumbnail';
@@ -50,6 +70,7 @@ class AppStorage{
 
     String directory;
     await getApplicationDocumentsDirectory().then((d) => directory = d.path);
+
     await File('$directory/thing.png').create(recursive: true)
     .then((thumbnail) async{
       final buffer = data.buffer;

@@ -177,6 +177,7 @@ class ConfirmationDialogue{
                     bloc: appBloc,
                     condition: (_,state){
                       if(state is AppMapUploadTaskToDialogueState) return true;
+                      else if(state is AppCompressingImageTaskState) return true;
                       return false;
                     },
                     builder: (_,state){
@@ -199,6 +200,14 @@ class ConfirmationDialogue{
                               trailing: Text(percentage),
                             );
                           },
+                        );
+                      }
+
+                      else if(state is AppCompressingImageTaskState){
+                        return ListTile(
+                          title: Text('Insert Item Index'),
+                          subtitle: Text('Compressing...'),
+                          trailing: Text('...'),
                         );
                       }
                       return Text('Initiating upload task...');

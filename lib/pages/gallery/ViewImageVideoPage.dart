@@ -78,7 +78,7 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       bool continueListening = true;
       if(_orientation != null){
         if(_orientation != orientation){
-          // TODO sizes have changed, need to reset the midsize and initial position, need to disable the listeners
+          // ! sizes have changed, need to reset the midsize and initial position, need to disable the listeners
           continueListening = false;
               WidgetsBinding.instance.addPostFrameCallback((_) {
               setState(() {
@@ -146,7 +146,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       splashColor: Colors.transparent,
       onTap: (){setState(() {_hideAppBar= !_hideAppBar;});},
       child: Container(
-        color: Colors.red,
         height:  MediaQuery.of(context).size.height + 200,
         alignment: Alignment.center,
         child: (type.compareTo('vid') == 0) ? _buildVideoContainer(src) : AspectRatio(

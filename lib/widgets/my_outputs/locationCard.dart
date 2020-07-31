@@ -53,12 +53,14 @@ class LocationCard extends StatelessWidget {
                       onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location)),
                       internalPadding: EdgeInsets.zero,
                     ),
-                    subtitle: Text(location.description),
+                    subtitle: Text(location.description,),
+                    isThreeLine: true,
                   ),
                   ButtonBar(
                     alignment: MainAxisAlignment.end,
                     children: (AdminCheck().isCurrentUserAboveLvl1(context) && onTap==null) ? [
                       IconButton(
+                        tooltip: 'Edit Location',
                         onPressed:() => BlocProvider.of<AppBloc>(context).add(AppToEditLocationEvent(location)),
                         icon: Icon(Icons.edit),
                       ),
