@@ -109,7 +109,7 @@ class LocationCard extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.30,
         height: MediaQuery.of(context).size.width * 0.30,
         decoration: BoxDecoration(
-            color: Colors.pink,
+            color: LightPrimaryColor,
             borderRadius: BorderRadius.circular(8),
             image:DecorationImage(
             image: NetworkImageWithRetry(location.imgSrc),

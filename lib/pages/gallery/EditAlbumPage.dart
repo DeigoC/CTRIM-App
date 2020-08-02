@@ -101,6 +101,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
         onPressed: (){
           widget._postBloc.add(PostRemoveSelectedFilesAndSrcEvent(_selectedFiles));
           setState(() {
+            _selectedFiles.clear();
             _onDeleteMode = false;
           });
         },

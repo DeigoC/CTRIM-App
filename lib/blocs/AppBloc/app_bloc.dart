@@ -62,7 +62,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppStartupLoadUserEvent) yield* _appStartupLoad();
     else if(event is AppCurrentUserLogsOutEvent) yield* _currentUserLogsOut();
     else if(event is AppUploadCompressingImageEvent){
-      yield AppCompressingImageTaskState();
+      yield AppCompressingImageTaskState(itemNo: event.itemNo, totalLength: event.totalLength);
       yield SettingsState();
     }
     else if(event is AppUploadTaskStartedEvent){

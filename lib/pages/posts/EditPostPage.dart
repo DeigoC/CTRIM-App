@@ -64,7 +64,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
               
               return [
                 SliverAppBar(
-                  expandedHeight: 200,
+                  expandedHeight: MediaQuery.of(context).size.height*0.33,
                   flexibleSpace: FlexibleSpaceBar(background: postImage,),
                   actions: [
                     _buildUpdateButton(),

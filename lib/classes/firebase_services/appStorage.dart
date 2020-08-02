@@ -13,28 +13,29 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 class AppStorage{
   
   StorageReference _ref =  FirebaseStorage(storageBucket: 'gs://ctrim-app.appspot.com/').ref();
+  String directory ='';
 
   final AppBloc _appBloc;
-  AppStorage(this._appBloc);
-
+  AppStorage(this._appBloc){
+    getApplicationDocumentsDirectory().then((d) => directory =d.path);
+  }
 
   Future<Null> uploadNewPostFiles(Post post) async{
     StorageUploadTask task;
-    int index =0;
+    int index =0, itemNo=1, totalLength=post.temporaryFiles.length;
     if(post.temporaryFiles.length != 0){
       await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
         File itemToSend = File(fileSrc);
+        itemNo = index + 1;
+        String filePath = 'posts/${post.id}/item_$index';
 
         if(post.temporaryFiles[fileSrc]=='img'){
-          _appBloc.add(AppUploadCompressingImageEvent());//TODO finish this up!
+          _appBloc.add(AppUploadCompressingImageEvent(itemNo: itemNo, totalLength: totalLength));//TODO finish this up!
           itemToSend = await _compressImage(fileSrc);
         }
-
-        String filePath = 'posts/${post.id}/item_$index';
-        task = _ref.child(filePath).putFile(itemToSend);
-
         
-        _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: index + 1,totalLength: post.temporaryFiles.length));
+        task = _ref.child(filePath).putFile(itemToSend);
+        _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: itemNo,totalLength: totalLength));
         
         await  task.onComplete.then((_) async{
          await _ref.child(filePath).getDownloadURL().then((url) async{
@@ -51,8 +52,6 @@ class AppStorage{
   }
 
   Future<File> _compressImage(String originalFilePath) async{
-    String directory;//TODO  make this a private class variable
-    await getApplicationDocumentsDirectory().then((d) => directory = d.path);
     String targetPath = directory+'/compressionImage.jpg';
 
     var result = await FlutterImageCompress.compressAndGetFile(
@@ -68,9 +67,6 @@ class AppStorage{
 
     StorageUploadTask task;
 
-    String directory;
-    await getApplicationDocumentsDirectory().then((d) => directory = d.path);
-
     await File('$directory/thing.png').create(recursive: true)
     .then((thumbnail) async{
       final buffer = data.buffer;
@@ -84,17 +80,24 @@ class AppStorage{
 
   Future<Null> uploadEditPostNewFiles(Post post,) async{
     StorageUploadTask task;
-    int index = post.noOfGalleryItems;
+    int index = post.noOfGalleryItems, itemNo=1, totalLength=post.temporaryFiles.length;
     if(post.temporaryFiles.length != 0){
-      await Future.forEach(post.temporaryFiles.keys, (file) async{
+      await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
+        File itemToSend = File(fileSrc);
         String filePath = 'posts/${post.id}/item_$index';
-        task = _ref.child(filePath).putFile(file);
-        
-         _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: index + 1,totalLength: post.temporaryFiles.length));
+        itemNo = index + 1;
+
+        if(post.temporaryFiles[fileSrc]=='img'){
+          _appBloc.add(AppUploadCompressingImageEvent(itemNo: itemNo, totalLength: totalLength));
+          itemToSend = await _compressImage(fileSrc);
+        }
+
+        task = _ref.child(filePath).putFile(itemToSend);
+        _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: itemNo,totalLength: totalLength));
 
         await task.onComplete.then((_) async{
           await _ref.child(filePath).getDownloadURL().then((url){
-            post.gallerySources[url] = post.temporaryFiles[file];
+            post.gallerySources[url] = post.temporaryFiles[fileSrc];
           });
           index++;
         });

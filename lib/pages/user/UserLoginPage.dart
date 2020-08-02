@@ -50,6 +50,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
               else if(state is AdminLoginLoadingState){
                 _showLoadingDialog();
               }else if(state is AdminLoginRecoveryEmailSentState){
+                Navigator.of(context).pop();
                 Scaffold.of(_context).showSnackBar(SnackBar(
                   content: Text('Password Recovery Email Sent!'),
                 ));

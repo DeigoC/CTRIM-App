@@ -52,7 +52,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           bool hasImage = widget._post.firstImageSrc != null;
           return [
             SliverAppBar(
-              expandedHeight: MediaQuery.of(context).size.height * 0.27,
+              expandedHeight: MediaQuery.of(context).size.height * 0.33,
               actions: [
                 BlocBuilder<AppBloc, AppState>(
                   condition: (_, state) {
@@ -64,10 +64,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                     return IconButton(
                       tooltip: 'Save/unsave post',
                       icon: liked
-                          ? Icon(
-                              Icons.favorite,
-                              color: Colors.red,
-                            )
+                          ? Icon(Icons.favorite,color: Colors.red,)
                           : Icon(Icons.favorite_border),
                       onPressed: () => BlocProvider.of<AppBloc>(context)
                           .add(AppPostLikeClickedEvent(widget._post)),
@@ -111,17 +108,19 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
             )
           ];
         },
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildAboutTab(),
-            _buildDetailsTab(),
-            GalleryTabBody.view(
-              thumbnails: widget._post.thumbnails,
-              gallerySrc: widget._post.gallerySources),
-            PostUpdatesTab(widget._post),
-          ],
-          //child: _buildTabBody(_selectedTabIndex)
+        body: SafeArea(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildAboutTab(),
+              _buildDetailsTab(),
+              GalleryTabBody.view(
+                thumbnails: widget._post.thumbnails,
+                gallerySrc: widget._post.gallerySources),
+              PostUpdatesTab(widget._post),
+            ],
+            //child: _buildTabBody(_selectedTabIndex)
+          ),
         ),
       ),
     );
@@ -209,9 +208,14 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
       children.addAll(_buildDetailListItems());
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: children,
+    return SingleChildScrollView(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        ),
+      ),
     );
   }
 
@@ -233,7 +237,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     return [
       SizedBox(height: 32,),
       Text(widget._post.detailTableHeader,style: TextStyle(fontSize: 24),),
-      SizedBox(height: 8,),
+      Divider(),
       Expanded(
         child: ListView.separated(
           itemCount: widget._post.detailTable.length,

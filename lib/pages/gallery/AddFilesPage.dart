@@ -106,8 +106,9 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
   }
 
   void _removeDuplicateFiles(List<File> files) {
-    List<File> filesToRemove = [];
-    files.forEach((file) {
+    if(files !=null){
+      List<File> filesToRemove = [];
+      files.forEach((file) {
       _selectedFiles.forEach((selectedFile) {
         if (basename(selectedFile.path).compareTo(basename(file.path)) == 0) {
           print('----------------------REMOVING THIS ONE!');
@@ -118,6 +119,7 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
     filesToRemove.forEach((toBeRemoved) {
       files.remove(toBeRemoved);
     });
+    }
   }
 
   bool _isFileValid(File file, String type){

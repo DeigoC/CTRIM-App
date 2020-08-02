@@ -24,7 +24,10 @@ class AppMapUploadTaskToDialogueState extends AppState{
   AppMapUploadTaskToDialogueState({@required this.task, @required this.itemNo, @required this.totalLength});
 }
 
-class AppCompressingImageTaskState extends AppState{}
+class AppCompressingImageTaskState extends AppState{
+  final int itemNo,totalLength;
+  AppCompressingImageTaskState({@required this.itemNo, @required this.totalLength});
+}
 
 // ! Tabs Being clicked
 class AppTabClickedState extends AppState {}

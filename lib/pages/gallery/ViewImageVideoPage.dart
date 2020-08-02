@@ -83,7 +83,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
               setState(() {
                   _midScroll = _scrollController.position.maxScrollExtent / 2;
-                  //_midScroll -= 20;
                   _scrollController.jumpTo(_midScroll);
                   _scrollController = ScrollController(initialScrollOffset: _midScroll);
               });

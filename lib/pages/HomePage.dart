@@ -7,6 +7,7 @@ import 'package:ctrim_app_v1/pages/tab_pages/ViewGalleryTabPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,6 +34,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   @override
   void initState() { 
     super.initState();
+    
+    // ! Device Orientation
+    SystemChrome.setPreferredOrientations([]);
+
     // ! Controllers
     _postsScrollController = ScrollController();
     _timelineController = ScrollController();

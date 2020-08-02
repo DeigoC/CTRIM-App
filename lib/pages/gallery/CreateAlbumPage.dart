@@ -56,7 +56,7 @@ class _EditAlbumState extends State<EditAlbum> {
         onPressed: () {
           setState(() {
             _onDeleteMode = false;
-            _selectedFilePaths = [];
+            _selectedFilePaths.clear();
           });
         },
       ),

@@ -181,6 +181,9 @@ class ConfirmationDialogue{
                       return false;
                     },
                     builder: (_,state){
+                      String title = 'Loading Item...',subtitle='Awaiting Task...';
+                      Widget trailing = Text('...');
+
                       if(state is AppMapUploadTaskToDialogueState){
                         return StreamBuilder<StorageTaskEvent>(
                           stream: state.task.events,
@@ -190,27 +193,31 @@ class ConfirmationDialogue{
                               int totalByteCount = snap.data.snapshot.totalByteCount;
                               int amountTransfered = snap.data.snapshot.bytesTransferred;
                               percentage = ((amountTransfered/totalByteCount) * 100).round().toString() + '%';
+                              title = 'Item ${state.itemNo} / ${state.totalLength}';
+                              subtitle = 'Uploading...';
                             }else{
                               percentage = '0%';
                             }
-
-                            return ListTile(
-                              title: Text('Item ${state.itemNo} / ${state.totalLength}'),
-                              subtitle: Text('Uploading...'),
-                              trailing: Text(percentage),
+                            trailing = Text(percentage);
+                             return ListTile(
+                              title: Text(title),
+                              subtitle: Text(subtitle),
+                              trailing: trailing,
                             );
                           },
                         );
                       }
 
                       else if(state is AppCompressingImageTaskState){
-                        return ListTile(
-                          title: Text('Insert Item Index'),
-                          subtitle: Text('Compressing...'),
-                          trailing: Text('...'),
-                        );
+                        title = 'Item ${state.itemNo} / ${state.totalLength}';
+                        subtitle = 'Compressing...';
+                        trailing = Text('...');
                       }
-                      return Text('Initiating upload task...');
+                      return ListTile(
+                        title: Text(title),
+                        subtitle: Text(subtitle),
+                        trailing: trailing,
+                      );
                     },
                   ),
                 ],
