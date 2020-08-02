@@ -30,6 +30,49 @@
             {
               "client_id": "547781919976-h5a8jp8vjkl9l42h0nsbl6qvjfua4k8k.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "547781919976-3vd522htk7f5rupprlnick2tgh2ge4gs.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ctrimAppV1"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:547781919976:android:f6e38c77501c1a3cd3755d",
+        "android_client_info": {
+          "package_name": "djc.ctrim_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "547781919976-h5a8jp8vjkl9l42h0nsbl6qvjfua4k8k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnaldYymO2yERSO8kupZwPsPI_eW96ORQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "547781919976-h5a8jp8vjkl9l42h0nsbl6qvjfua4k8k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "547781919976-3vd522htk7f5rupprlnick2tgh2ge4gs.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ctrimAppV1"
+              }
             }
           ]
         }
