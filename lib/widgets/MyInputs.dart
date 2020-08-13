@@ -138,6 +138,7 @@ class MyRaisedButton extends StatelessWidget {
   final EdgeInsets externalPadding;
   final IconData icon;
   final bool isDestructive;
+  final double fontsize;
 
   const MyRaisedButton({
     @required this.label,
@@ -145,6 +146,7 @@ class MyRaisedButton extends StatelessWidget {
     this.externalPadding,
     this.icon,
     this.isDestructive = false,
+    this.fontsize,
     Key key
   }) : super(key: key);
 
@@ -159,7 +161,7 @@ class MyRaisedButton extends StatelessWidget {
   RaisedButton _buildNormalButton(){
     return RaisedButton(
       color: isDestructive ? Color(0xffd11a2a):null,
-      child: Text(label),
+      child: Text(label,style: TextStyle(fontSize: fontsize),),
       onPressed: onPressed,
     );
   }
@@ -168,7 +170,7 @@ class MyRaisedButton extends StatelessWidget {
     return RaisedButton.icon(
       onPressed: onPressed, 
       icon: Icon(icon,color: Colors.white,), 
-      label: Text(label,)
+      label: Text(label,style: TextStyle(fontSize: fontsize),)
     );
   }
 }

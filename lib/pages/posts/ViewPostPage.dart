@@ -8,7 +8,7 @@ import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/updatesTabBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zefyr/zefyr.dart';
+//import 'package:zefyr/zefyr.dart';
 
 class ViewPostPage extends StatefulWidget {
   final Post _post;
@@ -19,25 +19,25 @@ class ViewPostPage extends StatefulWidget {
 
 class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderStateMixin {
   TabController _tabController;
-  ZefyrController _zefyrController;
+  //ZefyrController _zefyrController;
   FocusNode _fn;
 
   @override
   void initState() {
     _tabController = TabController(vsync: this, length: 4);
-    _zefyrController = ZefyrController(widget._post.getBodyDoc())..addListener(() {
+    /* _zefyrController = ZefyrController(widget._post.getBodyDoc())..addListener(() {
       NotusStyle style =  _zefyrController.getSelectionStyle();
       if(style.contains(NotusAttribute.link)){
         AppBloc.openURL(style.values.first.value, context);
       }
-    });
+    }); */
     _fn = FocusNode();
     super.initState();
   }
 
   @override
   void dispose() { 
-    _zefyrController.dispose();
+    //_zefyrController.dispose();
     _fn.dispose();
     super.dispose();
   }
@@ -179,7 +179,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
          ),
          Divider(),
          Expanded(
-            child: ZefyrTheme(
+            child: Text('To be fixed')/* ZefyrTheme(
              data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
              child: ZefyrScaffold(
                child: ZefyrEditor(
@@ -189,7 +189,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                  controller: _zefyrController,
                ),
              ),
-           ),
+           ), */
          ),
       ],
     );

@@ -29,7 +29,7 @@ class _ViewLocationOnMapState extends State<ViewLocationOnMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Static Map'),centerTitle: true,),
+      appBar: AppBar(title: Text('Location on Map'),centerTitle: true,),
       body: Builder(builder:(_){
         _context = _;
          return _buildBody();

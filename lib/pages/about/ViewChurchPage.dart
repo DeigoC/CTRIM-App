@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
@@ -7,6 +5,7 @@ import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/gallerySlideShow.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:flutter/material.dart';
@@ -49,8 +48,9 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
         SizedBox(height: 16,),
 
         Text('Location',style: headerStyle, textAlign: TextAlign.center,),
-        FlatButton(
-          child: Text(location.addressLine,textAlign: TextAlign.center,style: bodyStyle,),
+        MyFlatButton(
+          label: location.addressLine,
+          fontSize: 18,
           onPressed: (){
             BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location));
           },
@@ -62,12 +62,13 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
         SizedBox(height: 32,),
 
        Text('Location Pastor',style: headerStyle,textAlign: TextAlign.center,),
-        FlatButton(
-          child: Text(pastorUser.forename + ' ' + pastorUser.surname,style: bodyStyle,),
-          onPressed: (){
-            BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(pastorUser));
-          },
-        ),
+       MyFlatButton(
+        label: pastorUser.forename + ' ' + pastorUser.surname,
+        fontSize: 18,
+        onPressed: (){
+          BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(pastorUser));
+        },
+      ),
 
         AspectRatio(
           aspectRatio: 16/9,
@@ -89,14 +90,14 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              child: Text('Get To Know Them',style: TextStyle(fontSize: 20),),
+            MyRaisedButton(
+              label: 'Get To Know Them',
+              fontsize: 20,
               onPressed: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewPastorEvent(widget._aboutArticle)),
             ),
           ],
         ),
         SizedBox(height: 16,),
-
 
         Text("We're on social. Follow us",style: headerStyle,textAlign: TextAlign.center,),
         SocialLinksDisplay(widget._aboutArticle.socialLinks),

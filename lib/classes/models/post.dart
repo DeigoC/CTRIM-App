@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:zefyr/zefyr.dart';
+//import 'package:zefyr/zefyr.dart';
 
 enum PostTag { MEN, YOUTH, WOMEN, KIDS, BELFAST, NORTHCOAST, PORTADOWN, EVENTS, TESTIMONIES }
 
@@ -145,9 +145,10 @@ class Post {
     }
   }
 
-  NotusDocument getBodyDoc() {
+//TODO changed: was NotusDocument
+  getBodyDoc() {
     var jsonDecoded = jsonDecode(body);
-    return NotusDocument.fromJson(jsonDecoded);
+    //return NotusDocument.fromJson(jsonDecoded);
   }
 
   String getTagsString() {

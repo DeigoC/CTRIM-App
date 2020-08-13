@@ -5,7 +5,7 @@ import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:zefyr/zefyr.dart';
+//import 'package:zefyr/zefyr.dart';
 import 'package:collection/collection.dart';
 part 'post_event.dart';
 part 'post_state.dart';
@@ -30,15 +30,17 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   String get postDescription => _post.description;
   String _addressLine = 'PENDING';
   String get addressLine => _addressLine;
-  NotusDocument getEditorDoc() {
+
+  //TODO changed: was NotusDocument
+  getEditorDoc() {
     if (_post.body == '') {
       List<dynamic> initialWords = [
         {"insert": "Body Starts Here\n"}
       ];
-      return NotusDocument.fromJson(initialWords);
+      //return NotusDocument.fromJson(initialWords);
     }
     var jsonDecoded = jsonDecode(_post.body);
-    return NotusDocument.fromJson(jsonDecoded);
+    //return NotusDocument.fromJson(jsonDecoded);
   }
 
   Map<PostTag, bool> selectedTags = {

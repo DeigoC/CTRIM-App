@@ -5,7 +5,7 @@ import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zefyr/zefyr.dart';
+//import 'package:zefyr/zefyr.dart';
 
 class ViewAboutPastorPage extends StatefulWidget {
   final AboutArticle _aboutArticle;
@@ -16,12 +16,12 @@ class ViewAboutPastorPage extends StatefulWidget {
 
 class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
   
-  ZefyrController _zefyrController;
+  //ZefyrController _zefyrController;
   FocusNode _fnEditor;
 
   @override
   void initState() {
-    _zefyrController = ZefyrController(widget._aboutArticle.getBodyDocument());
+    //_zefyrController = ZefyrController(widget._aboutArticle.getBodyDocument());
     _fnEditor = FocusNode();
     super.initState();
   }
@@ -29,7 +29,7 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
   @override
   void dispose() { 
     _fnEditor.dispose();
-    _zefyrController.dispose();
+    //_zefyrController.dispose();
     super.dispose();
   }
 
@@ -39,11 +39,11 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
     .firstWhere((e) => widget._aboutArticle.locationPastorUID.compareTo(e.id)==0);
     return Scaffold(
       appBar: AppBar(title: Text(u.surname + ' Family',),centerTitle: true,),
-      body: _buildBody(),
+      body: _placeHolder(),
     );
   }
 
-  Widget _buildBody(){
+ /*  Widget _buildBody(){
     return ZefyrScaffold(
       child: Column(
         children: <Widget>[
@@ -76,5 +76,9 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
         ],
       ),
     );
+  } */
+
+  Widget _placeHolder(){
+    return Center(child: Text('To be Fixed'),);
   }
 }

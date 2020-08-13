@@ -11,7 +11,7 @@ class ViewAllUsers extends StatelessWidget {
     allUsers.sort((a,b) => a.surname.compareTo(b.surname));
 
     return Scaffold(
-      appBar: AppBar(title: Text('View All Users'),),
+      appBar: AppBar(title: Text('All Users'),),
       body: BlocBuilder<TimelineBloc, TimelineState>(
         condition: (_,state){
           if(state is TimelineRebuildUserListState) return true;

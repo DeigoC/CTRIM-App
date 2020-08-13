@@ -121,6 +121,13 @@ final appDarkTheme = ThemeData(
     buttonColor: LightSecondaryColor,
     textTheme: ButtonTextTheme.primary
   ),
+  
+  snackBarTheme: SnackBarThemeData(
+    backgroundColor: DarkPrimaryColor,
+    behavior: SnackBarBehavior.floating,
+    actionTextColor: LightSecondaryColor,
+    contentTextStyle: TextStyle(color: Colors.white)
+  ),
 
   appBarTheme: AppBarTheme(color: DarkPrimaryColor,brightness: Brightness.dark),
   textTheme: TextTheme(

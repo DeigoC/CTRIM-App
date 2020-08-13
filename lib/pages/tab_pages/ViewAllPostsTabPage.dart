@@ -68,92 +68,110 @@ class ViewAllEventsPage {
         onNotification: (t){
           if(t is ScrollEndNotification){
             if(!_animating){
+
               _endScrollPixels = t.metrics.pixels;
               double difference = _startScrollPixels - _endScrollPixels,
               tagListSize = 40;
+
               if(difference < -40) _tagListVisible = false;
               else if(difference >=40 )_tagListVisible = true;
-              if(difference <= tagListSize-10&&!_tagListVisible&&difference >0){
+
+              // * To hide the tag list
+              if(difference <= tagListSize-10 && !_tagListVisible && difference >0){
                 double position = t.metrics.pixels + difference;
                 _animateScroll(position);
               }
+
+               /* print('---------diff is ' + difference.toString());
+              if(difference < 0 && difference > -40){
+                print('--------------ANIMATE TO Hide?');
+                double position = t.metrics.pixels - difference;
+                _animateScroll(position);
+              } */
+             
+
             }else _animating = false;
+
+
+
+
           }else if(t is ScrollStartNotification){
             _startScrollPixels = t.metrics.pixels;
           }
           return null;
         },
-        child: SafeArea(
-          child: CustomScrollView(
-            controller: _scrollController,
-            key: PageStorageKey<String>('ViewAllPostsTab'),
-            slivers: [
-              SliverAppBar(
-                automaticallyImplyLeading: false,
-                titleSpacing: 8,
-                title: Row(
-                  children: [
-                    Hero(tag:'openningIcon',child: Icon(FontAwesome5Solid.church,color: Colors.white,)),
-                    SizedBox(width: 24,),
-                    Text('Posts'),
-                  ],
-                ),
-                centerTitle: true,
-                actions: [
-                  IconButton(
-                    icon: Icon(Icons.search),
-                    tooltip: 'Search by title',
-                    onPressed: ()=>BlocProvider.of<AppBloc>(_context).add(AppToSearchPostsPageEvent()),
-                  )
+        child: CustomScrollView(
+          controller: _scrollController,
+          key: PageStorageKey<String>('ViewAllPostsTab'),
+          slivers: [
+            SliverAppBar(
+              automaticallyImplyLeading: false,
+              floating: true,
+              snap: false,
+              pinned: false,
+              titleSpacing: 8,
+              title: Row(
+                children: [
+                  Hero(tag:'openningIcon',child: Icon(FontAwesome5Solid.church,color: Colors.white,)),
+                  SizedBox(width: 24,),
+                  Text('Posts'),
                 ],
-                floating: true,
-                bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(35),
-                  child: Container(
-                    padding: EdgeInsets.only(bottom: 5),
-                    height: 35,
-                    child: BlocBuilder<TimelineBloc, TimelineState>(
-                        condition: (_, state) {
-                      if (state is TimelineTagChangedState) return true;
-                      return false;
-                    }, builder: (_, state) {
-                      return ListView.builder(
-                        key: PageStorageKey<String>('PostsTagList'),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: BlocProvider.of<TimelineBloc>(_context).getSelectedTags().length,
-                        itemBuilder:(_,index){
-                          String tag = BlocProvider.of<TimelineBloc>(_context).getSelectedTags().keys.elementAt(index);
-                          return Padding(
-                            padding: EdgeInsets.only(left: 8.0),
-                            child: FilterChip(
-                              label: Text(tag),
-                              onSelected: (newState) =>
-                                  BlocProvider.of<TimelineBloc>(_context).add(TimelineTagClickedEvent(tag)),
-                              selected: BlocProvider.of<TimelineBloc>(_context).getSelectedTags()[tag],
-                            ),
-                          );
-                        } 
-                      );
-                    }),
-                  ),
-                ),
               ),
-              SliverList(
-                key: PageStorageKey<String>('AllPostsView'),
-                delegate: SliverChildBuilderDelegate(
-                  (_, index) {
-                    return PostArticle(
-                      mode: 'view',
-                      allUsers: state.users,
-                      post: _getPostFromID(state.timelines[index].postID, state.posts),
-                      timelinePost: state.timelines[index],
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.search),
+                  tooltip: 'Search by title',
+                  onPressed: ()=>BlocProvider.of<AppBloc>(_context).add(AppToSearchPostsPageEvent()),
+                )
+              ],
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(35),
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 5),
+                  height: 35,
+                  child: BlocBuilder<TimelineBloc, TimelineState>(
+                      condition: (_, state) {
+                    if (state is TimelineTagChangedState) return true;
+                    return false;
+                  }, builder: (_, state) {
+                    return ListView.builder(
+                      key: PageStorageKey<String>('PostsTagList'),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: BlocProvider.of<TimelineBloc>(_context).getSelectedTags().length,
+                      itemBuilder:(_,index){
+                        String tag = BlocProvider.of<TimelineBloc>(_context).getSelectedTags().keys.elementAt(index);
+                        return Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: FilterChip(
+                            label: Text(tag),
+                            onSelected: (newState) =>
+                                BlocProvider.of<TimelineBloc>(_context).add(TimelineTagClickedEvent(tag)),
+                            selected: BlocProvider.of<TimelineBloc>(_context).getSelectedTags()[tag],
+                          ),
+                        );
+                      } 
                     );
-                  },
-                  childCount: state.timelines.length,
+                  }),
                 ),
               ),
-            ],
-          ),
+            ),
+         
+            SliverList(
+              key: PageStorageKey<String>('AllPostsView'),
+              delegate: SliverChildBuilderDelegate(
+                (_, index) {
+                  return PostArticle(
+                    mode: 'view',
+                    allUsers: state.users,
+                    post: _getPostFromID(state.timelines[index].postID, state.posts),
+                    timelinePost: state.timelines[index],
+                  );
+                },
+                childCount: state.timelines.length,
+              ),
+            ),
+          ],
         ),
       ),
     );

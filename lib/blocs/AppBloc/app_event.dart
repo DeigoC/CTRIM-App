@@ -29,6 +29,8 @@ class AppStartupLoadUserEvent extends AppEvent{}
 
 class AppCurrentUserLogsOutEvent extends AppEvent{}
 
+class AppRebuildSliverAppBarEvent extends AppEvent{}
+
 // ! Uploading?
 class AppUploadTaskStartedEvent extends AppEvent{
   final StorageUploadTask task;
@@ -103,10 +105,6 @@ class AppToCreateAlbumEvent extends AppNavigateToPageEvent {
   final PostBloc postBloc;
   AppToCreateAlbumEvent(this.postBloc);
 }
-class AppToViewPostAlbumEvent extends AppNavigateToPageEvent {
-  final Post post;
-  AppToViewPostAlbumEvent(this.post);
-}
 class AppToEditAlbumEvent extends AppNavigateToPageEvent {
   final PostBloc postBloc;
   AppToEditAlbumEvent(this.postBloc);
@@ -120,7 +118,6 @@ class AppToViewImageVideoPageEvent extends AppNavigateToPageEvent {
   final int initialPage;
   AppToViewImageVideoPageEvent(this.imageSorces, this.initialPage);
 }
-class AppToSearchAlbumPageEvent extends AppNavigateToPageEvent {}
 
 // ! About Pages
 class AppToViewChurchEvent extends AppNavigateToPageEvent{

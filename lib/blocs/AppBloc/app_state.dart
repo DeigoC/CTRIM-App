@@ -17,6 +17,8 @@ class AppRebuildSettingsDrawerState extends AppState{}
 
 class AppAttemptingToLogoutUserState extends AppState{}
 
+class AppRebuildSliverAppBarState extends AppState{}
+
 // ! Uploading Task
 class AppMapUploadTaskToDialogueState extends AppState{
   final StorageUploadTask task;

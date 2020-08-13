@@ -7,14 +7,18 @@ import 'package:flutter_icons/flutter_icons.dart';
 
 class ViewAllLocationsPage {
   BuildContext _context;
+  final ScrollController _controller;
+
+
   void setContext(BuildContext context) => _context = context;
 
-  ViewAllLocationsPage(this._context);
+  ViewAllLocationsPage(this._context,this._controller);
 
   Widget buildBody() {
     List<Location> allLocations = BlocProvider.of<TimelineBloc>(_context).selectableLocations;
 
     return CustomScrollView(
+      controller: _controller,
       key: PageStorageKey('viewAllLocationsKey'),
       slivers: [
         LocationSearchBar(),

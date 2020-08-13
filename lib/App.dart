@@ -7,8 +7,6 @@ import 'package:ctrim_app_v1/pages/about/ViewAboutPastors.dart';
 import 'package:ctrim_app_v1/pages/about/ViewChurchPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/CreateAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
-import 'package:ctrim_app_v1/pages/gallery/SearchAlbumsPage.dart';
-import 'package:ctrim_app_v1/pages/gallery/ViewPostAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/posts/EditPostPage.dart';
 import 'package:ctrim_app_v1/pages/posts/PostBodyEditorPage.dart';
 import 'package:ctrim_app_v1/pages/posts/ViewMyPostsPage.dart';
@@ -32,6 +30,7 @@ import 'package:ctrim_app_v1/pages/InitialLoadingPage.dart';
 import 'package:ctrim_app_v1/pages/user/ViewUserPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'blocs/AppBloc/app_bloc.dart';
 
@@ -49,8 +48,6 @@ const ViewImageVideoRoute = '/ViewImageVideo';
 const CreateAlbumRoute = '/CreateAlbum';
 const AddGalleryFilesRoute = '/AddFiles';
 const EditAlbumRoute = '/EditAlbum';
-const ViewPostAlbumRoute = '/ViewPostAlbumPage';
-const SearchAlbumRoute ='/SearchAlbumPage';
 
 const ViewLocationOnMapRoute = '/ViewLocationOnMap';
 const ViewAllEventsForLocationRoute = '/ViewAllEventsForLocation';
@@ -83,6 +80,9 @@ class _AppState extends State<App> {
 
   @override
   void initState() { 
+  /* SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.red
+  )); */
     super.initState();
     _appBloc = AppBloc(_navigatorKey);
   }
@@ -95,7 +95,6 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-  
     return MultiBlocProvider(
       providers: [
       BlocProvider<AppBloc>(
@@ -117,11 +116,16 @@ class _AppState extends State<App> {
         builder:(_,state){
           bool onDark = false;
           if(state is AppThemeToDarkState) onDark = true;
+
+          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+            statusBarColor: onDark ? Color(0xff2c2c2c):Color(0xff996718)
+          ));
+
           return MaterialApp(
-          navigatorKey: _navigatorKey,
-          theme: onDark ? appDarkTheme : appLightTheme,
-          onGenerateRoute: _routes(),
-        );
+            navigatorKey: _navigatorKey,
+            theme: onDark ? appDarkTheme : appLightTheme,
+            onGenerateRoute: _routes(),
+          );
         }
       ),
     );
@@ -194,13 +198,7 @@ class _AppState extends State<App> {
         case EditAlbumRoute: screen = EditAlbumPage(arguments['postBloc']);
         break;
 
-        case ViewPostAlbumRoute: screen = ViewPostAlbumPage(arguments['post']);
-        break;
-
         case SearchPostsRoute: screen = SearchPostsPage();
-        break;
-
-        case SearchAlbumRoute: screen = SearchAlbumsPage();
         break;
 
         case MyDetailsRoute: screen = EditMyDetailsPage();

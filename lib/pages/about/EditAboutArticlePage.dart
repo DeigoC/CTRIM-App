@@ -8,7 +8,7 @@ import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zefyr/zefyr.dart';
+//import 'package:zefyr/zefyr.dart';
 
 class EditAboutArticlePage extends StatefulWidget {
   @override
@@ -184,7 +184,8 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
       builder: (_,state){
         return Container(
           padding: EdgeInsets.all(8),
-          child: ZefyrView(document: _aboutBloc.getAboutBody(),),
+          child: Text('To be Fixed')
+          //ZefyrView(document: _aboutBloc.getAboutBody(),),
         );
       },
     );

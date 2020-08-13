@@ -69,6 +69,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       yield AppMapUploadTaskToDialogueState(task: event.task, itemNo: event.itemNo, totalLength: event.totalLength);
       yield SettingsState();
     } 
+    else if(event is AppRebuildSliverAppBarEvent) yield AppRebuildSliverAppBarState();
   }
  
   Stream<AppState> _mapCurrentUserEventToState(AppCurrentUserEvent event) async* {
@@ -115,9 +116,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if (event is AppToViewMyPostsPageEvent)state.pushNamed(ViewMyPostsRoute);
     else if (event is AppToEditPostPageEvent)state.pushNamed(EditPostRoute, arguments: {'post': event.post});
     else if (event is AppToEditAlbumEvent)state.pushNamed(EditAlbumRoute, arguments: {'postBloc': event.postBloc});
-    else if (event is AppToViewPostAlbumEvent)state.pushNamed(ViewPostAlbumRoute, arguments: {'post': event.post});
     else if (event is AppToSearchPostsPageEvent)state.pushNamed(SearchPostsRoute);
-    else if (event is AppToSearchAlbumPageEvent)state.pushNamed(SearchAlbumRoute);
     else if (event is AppToMyDetailsEvent)state.pushNamed(MyDetailsRoute);
     else if (event is AppToLikedPostsPageEvent)state.pushNamed(MyLikedPostsRoute);
     else if(event is AppToViewChurchEvent) state.pushNamed(ViewChurchPageRoute, arguments: 
@@ -152,16 +151,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       case 0:
         yield AppPostsTabClickedState();
         break;
-      case 1:
+      /* case 1:
         yield AppGalleryTabClickedState();
-        break;
-      case 2:
+        break; */
+      case 1:
         yield AppLocationsTabClickedState();
         break;
-      case 3:
+      case 2:
         yield AppAboutTabClickedState();
         break;
-      case 4:
+      case 3:
         yield AppSettingsTabClickedState();
         break;
     }

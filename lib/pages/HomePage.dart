@@ -3,7 +3,6 @@ import 'package:ctrim_app_v1/pages/tab_pages/AboutTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllLocationsTabPage.dart';
-import 'package:ctrim_app_v1/pages/tab_pages/ViewGalleryTabPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +18,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   // ! Tab pages
   ViewAllEventsPage _eventPage;
-  ViewGalleryPage _galleryPage;
   ViewAllLocationsPage _locationsPage;
   SettingsPage _settingsPage;
   AboutTabPage _aboutTabPage;
   int _selectedIndex =0;
 
   // ! Tab page scroll controllers
-  ScrollController _postsScrollController,_timelineController,_albumController;
+  ScrollController _postsScrollController, _locationScrollController;
 
   // ! Firebase messaging
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -40,18 +38,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
     // ! Controllers
     _postsScrollController = ScrollController();
-    _timelineController = ScrollController();
-    _albumController= ScrollController();
+    _locationScrollController = ScrollController();
 
     // ! Tab Pages
     _eventPage = ViewAllEventsPage(context,_postsScrollController);
-    _galleryPage = ViewGalleryPage(
-      context: context,
-      tabController: TabController(length: 2, vsync: this),
-      timelineController: _timelineController,
-      albumController: _albumController,
-    );
-    _locationsPage = ViewAllLocationsPage(context);
+    _locationsPage = ViewAllLocationsPage(context, _locationScrollController);
     _settingsPage = SettingsPage(context);
     _aboutTabPage = AboutTabPage(context, TabController(length: 3, vsync: this));
       
@@ -73,8 +64,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   @override
   void dispose() { 
     _postsScrollController.dispose();
-    _timelineController.dispose();
-    _albumController.dispose();
+    _locationScrollController.dispose();
     super.dispose();
   }
 
@@ -104,62 +94,63 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   int _getTabIndexFromAppState(AppTabClickedState state){
     if(state is AppPostsTabClickedState)return 0;
-    else if(state is AppGalleryTabClickedState) return 1;
-    else if(state is AppLocationsTabClickedState) return 2;
-    else if(state is AppAboutTabClickedState) return 3;
-    return 4;
+    else if(state is AppLocationsTabClickedState) return 1;
+    else if(state is AppAboutTabClickedState) return 2;
+    return 3;
   }
 
-  Scaffold _buildMainScaffold(int selectedIndex) {
-    return Scaffold(
-    appBar: _getAppBar(selectedIndex),
-    body: Builder(
-      builder: (_){
-        _setNewContext(_);
-        return _getBody(selectedIndex);
-      }),
-    floatingActionButton: _getFAB(selectedIndex),
-    drawer: _getDrawer(selectedIndex),
-    bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-      condition: (_,state){
-        if(state is SettingsState) return true;
-        return false;
-      },
-        builder:(_,state) => BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: selectedIndex,
-        unselectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white38 :null,
-        selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
-        backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
-        onTap: (newIndex){
-          _scrollToTop(newIndex);
-          BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
+  Widget _buildMainScaffold(int selectedIndex) {
+    return SafeArea(
+      child: Scaffold(
+      appBar: _getAppBar(selectedIndex),
+      body: Builder(
+        builder: (_){
+          _setNewContext(_);
+          return _getBody(selectedIndex);
+        }),
+      floatingActionButton: _getFAB(selectedIndex),
+      drawer: _getDrawer(selectedIndex),
+      bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+        condition: (_,state){
+          if(state is SettingsState) return true;
+          return false;
         },
-        items: [
-           BottomNavigationBarItem(
-            title: Container(),
-            icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
-          ),
-          BottomNavigationBarItem(
-            title: Container(),
-            icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
-          ),
-          BottomNavigationBarItem(
-            title: Container(),
-            icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
-          ),
-           BottomNavigationBarItem(
-             title: Container(),
-            icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
-          ),
-          BottomNavigationBarItem(
-            title: Container(),
-            icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
-          ),
-        ],
+          builder:(_,state) => BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: selectedIndex,
+          unselectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white38 :null,
+          selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
+          backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
+          onTap: (newIndex){
+            _scrollToTop(newIndex);
+            BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
+          },
+          items: [
+             BottomNavigationBarItem(
+              title: Container(),
+              icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
+            ),
+            /* BottomNavigationBarItem(
+              title: Container(),
+              icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
+            ), */
+            BottomNavigationBarItem(
+              title: Container(),
+              icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
+            ),
+             BottomNavigationBarItem(
+               title: Container(),
+              icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
+            ),
+            BottomNavigationBarItem(
+              title: Container(),
+              icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+  ),
+    );
   }
 
   void _scrollToTop(int newIndex){
@@ -171,23 +162,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       if(_selectedIndex == 0){
         _postsScrollController.animateTo(_postsScrollController.position.minScrollExtent,
       duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
-      }else if(_selectedIndex == 1){
-        if(_timelineController.hasClients){
-          _timelineController.animateTo(_timelineController.position.minScrollExtent, 
-          duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
-        }else{
-          _albumController.animateTo(_albumController.position.minScrollExtent, 
-          duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
-        }
-      }else if(_selectedIndex == 2){
-        
+      }else if(_selectedIndex==1){
+        _locationScrollController.animateTo(_locationScrollController.position.minScrollExtent,
+      duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
       }
     }
   }
 
   void _setNewContext(BuildContext context){
     _eventPage.setContext(context);
-    _galleryPage.setContext(context);
     _locationsPage.setContext(context);
     _settingsPage.setContext(context);
   }
@@ -199,8 +182,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   AppBar _getAppBar(int selectedIndex){
     switch(selectedIndex){
-      case 1: return _galleryPage.buildAppBar();
-      case 4: return _settingsPage.buildAppbar();
+      //case 1: return _galleryPage.buildAppBar();
+      case 3: return _settingsPage.buildAppbar();
       break;
     }
     return null;
@@ -208,15 +191,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   Widget _getBody(int selectedIndex){
     switch(selectedIndex){
-      case 0:return _eventPage.buildBody();
+      case 0:return BlocBuilder<AppBloc, AppState>(
+        condition: (_,state){
+          if(state is AppRebuildSliverAppBarState) return true;
+          return false;
+        },
+        builder:(_,state){
+          return _eventPage.buildBody();
+        }
+      );
       break;
-      case 1: return _galleryPage.buildBody();
+      /* case 1: return _galleryPage.buildBody();
+      break; */
+      case 1: return _locationsPage.buildBody();
       break;
-      case 2: return _locationsPage.buildBody();
+      case 2: return _aboutTabPage.buildBody();
       break;
-      case 3: return _aboutTabPage.buildBody();
-      break;
-      case 4: return _settingsPage.buildBody();
+      case 3: return _settingsPage.buildBody();
       break;
     }
     return Container();

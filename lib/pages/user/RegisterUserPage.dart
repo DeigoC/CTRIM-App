@@ -34,9 +34,7 @@ class _RegisterUserState extends State<RegisterUser> {
     return BlocProvider<AdminBloc>(
       create: (_) => _adminBloc,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Register User'),
-        ),
+        appBar: AppBar(title: Text('Register User'),),
         body: Builder(builder: (_) {
           _context = _;
           return _buildBody();

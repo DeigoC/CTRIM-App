@@ -73,7 +73,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
         return result;
       },
       child: Scaffold(
-        appBar: AppBar(title: Text('Edit my data'),),
+        appBar: AppBar(title: Text('Edit my Data'),),
         body: BlocListener(
           bloc: _adminBloc,
           listener: (_,state){
