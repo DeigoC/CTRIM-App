@@ -12,17 +12,7 @@ class ViewMyPostsPage extends StatefulWidget {
 }
 
 class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
-  Map<Post, TimelinePost> _myPosts, _myDeletedPosts;
-
   bool _showDeleted = false;
-
-  @override
-  void initState() {
-    String userID = BlocProvider.of<AppBloc>(context).currentUser.id;
-    _myPosts = BlocProvider.of<TimelineBloc>(context).getUserPosts(userID);
-    _myDeletedPosts = BlocProvider.of<TimelineBloc>(context).getUserDeletedPosts(userID);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,26 +42,45 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
         if (state is TimelineRebuildMyPostsPageState) return true;
         return false;
       }, builder: (_, state) {
-        if (state is TimelineRebuildMyPostsPageState) {
-           String userID = BlocProvider.of<AppBloc>(context).currentUser.id;
-          _myPosts = BlocProvider.of<TimelineBloc>(context).getUserPosts(userID);
-          _myDeletedPosts = BlocProvider.of<TimelineBloc>(context).getUserDeletedPosts(userID);
-        }
-        Map<Post,TimelinePost> myPosts = _showDeleted ? _myDeletedPosts : _myPosts;
-        List<TimelinePost> tPosts = List.from(myPosts.values);
-        tPosts.sort((a,b) => b.postDate.compareTo(a.postDate));
-
-        return ListView.builder(
-          itemCount: myPosts.length,
-          itemBuilder: (_, index) {
-            return PostArticle(
-              mode: 'edit',
-              allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
-              timelinePost: tPosts[index],
-              post: myPosts.keys.firstWhere((e) => e.id.compareTo(tPosts[index].postID)==0),
-            );
-          });
+        return _newBody();
       }),
+    );
+  }
+
+  Widget _newBody(){
+    return FutureBuilder<Map<TimelinePost, Post>>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchAllUserPosts(BlocProvider.of<AppBloc>(context).currentUser.id),
+      builder: (_,snap){
+        Widget result;
+
+        if(snap.hasData){
+          result = _buildBodyWithData(snap.data);
+        }else if(snap.hasError){
+          result = Center(child: Text('Something went wrong!'),);
+        }else{
+          result = Center(child: CircularProgressIndicator(),);
+        }
+        return result;
+      },
+    );
+  }
+
+  Widget _buildBodyWithData(Map<TimelinePost, Post> data){
+    Map<TimelinePost, Post> deleted = Map.from(data), notDeleted = Map.from(data);
+    deleted.removeWhere((key, value) => !value.deleted);
+    notDeleted.removeWhere((key, value) => value.deleted);
+    Map<TimelinePost, Post> listToDisplay = _showDeleted ? deleted : notDeleted;
+
+    return ListView.builder(
+      itemCount: listToDisplay.length,
+      itemBuilder: (_,index){
+        return PostArticle(
+          mode: 'edit',
+          allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
+          timelinePost: listToDisplay.keys.elementAt(index),
+          post: data[listToDisplay.keys.elementAt(index)],
+        );
+      }
     );
   }
 }

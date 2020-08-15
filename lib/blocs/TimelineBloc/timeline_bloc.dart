@@ -32,9 +32,12 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   List<User> get allUsers => UserDBManager.allUsers;
 
+  //TODO these 2 will have to be deleted or at least changed
   List<Post> get _allPosts => PostDBManager.allPosts;
-
   List<TimelinePost> get _allTimelinePosts => TimelinePostDBManager.allTimelinePosts;
+
+  List<Post> feedPosts =[];
+  Map<TimelinePost,Post> feedData ={};
 
   Map<PostTag, bool> _selectedTags = {
     PostTag.BELFAST: false,
@@ -49,12 +52,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   };
 
   // ! Bloc Functions
-  Future<Null> reloadAllRecords() async{
-    await _locationDBManager.fetchAllLocations();
-    await _postDBManager.fetchAllPosts();
-    await _timelinePostDBManager.fetchAllTimelinePosts();
-    await _userDBManager.fetchAllUsers();
-  }
+  
 
   bool doesLocationHaveEvents(String locationId){ 
     for (var i = 0; i < _allPosts.length; i++) {
@@ -71,6 +69,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return result;
   }
 
+  //TODO delete this?
   Map<Post, TimelinePost> getUserPosts(String userID) {
     Map<Post, TimelinePost> results = {};
     _allTimelinePosts.forEach((timelinePost) {
@@ -163,6 +162,60 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   TimelineDisplayFeedState get initialPostsData => _buildFeedData();
+
+  // ! Future Functions
+  //TODO needs to be reworked
+  Future<Null> reloadAllRecords() async{
+    await _locationDBManager.fetchAllLocations();
+    //await _postDBManager.fetchAllPosts();
+    //await _timelinePostDBManager.fetchAllTimelinePosts();
+    await _userDBManager.fetchAllUsers();
+    await fetchMainPostFeed();
+  }
+   
+   // * ----------------------------NEW STUFF
+  Future<Map<TimelinePost, Post>> fetchLikedPostsFeed(List<String> likedPostsIDs) async{
+    List<Post> likedPosts = await _postDBManager.fetchPostsByIDs(likedPostsIDs);
+    List<TimelinePost> timelinePosts = await _timelinePostDBManager.fetchOriginalLikedPosts(likedPostsIDs);
+    Map<TimelinePost,Post> results = {};
+    timelinePosts.sort((a,b) => b.postDate.compareTo(a.postDate));
+    timelinePosts.forEach((tp) {
+      results[tp] = likedPosts.firstWhere((p) => p.id.compareTo(tp.postID)==0);
+    });
+    return results;
+  }
+
+  Future<Map<TimelinePost, Post>> fetchAllUserPosts(String userID) async{
+    List<TimelinePost> timelinePosts = await _timelinePostDBManager.fetchUserPosts(userID);
+    List<Post> likedPosts = await _postDBManager.fetchPostsByIDs(timelinePosts.map((tp) => tp.postID).toList());
+    
+    Map<TimelinePost,Post> results = {};
+    timelinePosts.sort((a,b) => b.postDate.compareTo(a.postDate));
+    timelinePosts.forEach((tp) {
+      results[tp] = likedPosts.firstWhere((p) => p.id.compareTo(tp.postID)==0);
+    });
+    return results;
+  }
+
+  Future<Map<TimelinePost, Post>> fetchMainPostFeed() async{
+    await _timelinePostDBManager.fetchHomeFeedTPs();
+    print('-----------------LENGTH FOR TPs is: ' + TimelinePostDBManager.feedTimelinePosts.length.toString());
+
+    List<String> feedIDs = [];
+    TimelinePostDBManager.feedTimelinePosts.forEach((tp) {
+      if(!feedIDs.contains(tp.postID)) feedIDs.add(tp.postID);
+    });
+    feedPosts = await _postDBManager.fetchPostsByIDs(feedIDs);
+
+    print('-----------------LENGTH FOR Posts is: ' + feedPosts.length.toString());
+    
+    TimelinePostDBManager.feedTimelinePosts.forEach((tp) {
+      feedData[tp] = feedPosts.firstWhere((e) => e.id.compareTo(tp.postID)==0);
+    });
+    return feedData;
+  }
+
+  // * ---------------------------- END OF NEW STUFF
 
   // ! Mapping events to state
   @override

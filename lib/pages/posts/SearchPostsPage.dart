@@ -36,8 +36,11 @@ class _SearchPostsPageState extends State<SearchPostsPage> {
           controller: _tecSearch,
           focusNode: _fnSearch,
           autofocus: true,
-          onChanged: (newString) => BlocProvider.of<TimelineBloc>(context)
-              .add(TimelineSearchTextChangeEvent(newString)),
+          /* onChanged: (newString) => BlocProvider.of<TimelineBloc>(context)
+              .add(TimelineSearchTextChangeEvent(newString)), */
+          onSubmitted:(fullString){
+            print('---------Submitted string is ' + fullString);
+          },
           decoration: InputDecoration(
             contentPadding: EdgeInsets.all(8),
             hintText: 'Search Posts by Title',

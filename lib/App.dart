@@ -30,7 +30,6 @@ import 'package:ctrim_app_v1/pages/InitialLoadingPage.dart';
 import 'package:ctrim_app_v1/pages/user/ViewUserPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'blocs/AppBloc/app_bloc.dart';
 
@@ -80,9 +79,6 @@ class _AppState extends State<App> {
 
   @override
   void initState() { 
-  /* SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.red
-  )); */
     super.initState();
     _appBloc = AppBloc(_navigatorKey);
   }
@@ -116,10 +112,6 @@ class _AppState extends State<App> {
         builder:(_,state){
           bool onDark = false;
           if(state is AppThemeToDarkState) onDark = true;
-
-          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-            statusBarColor: onDark ? Color(0xff2c2c2c):Color(0xff996718)
-          ));
 
           return MaterialApp(
             navigatorKey: _navigatorKey,

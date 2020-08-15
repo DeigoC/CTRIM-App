@@ -19,7 +19,7 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
   @override
   void initState() {
     currentU = BlocProvider.of<AppBloc>(context).currentUser;
-    BlocProvider.of<TimelineBloc>(context).add(TimelineDisplayCurrentUserLikedPosts(currentU.likedPosts));
+    //BlocProvider.of<TimelineBloc>(context).add(TimelineDisplayCurrentUserLikedPosts(currentU.likedPosts));
     super.initState();
   }
   
@@ -27,7 +27,9 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Liked Posts'),),
-      body: BlocBuilder<TimelineBloc, TimelineState>(condition: (_, state) {
+      body: _newBody(),
+      
+      /* BlocBuilder<TimelineBloc, TimelineState>(condition: (_, state) {
         if (state is TimelineDisplaySearchFeedState) return true;
         return false;
       }, builder: (_, state) {
@@ -53,7 +55,44 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
           }
         }
         return Center( child: CircularProgressIndicator(),);
-      }),
+      }), */
+    );
+  }
+
+  Widget _newBody(){
+    List<String> likedPostsIDs = BlocProvider.of<AppBloc>(context).currentUser.likedPosts;
+    
+    return FutureBuilder<Map<TimelinePost,Post>>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchLikedPostsFeed(likedPostsIDs),
+      builder: (_,snap){
+        Widget result;
+
+        if(snap.hasData){
+          result = _buildBodyWithData(snap.data);
+        }else if(snap.hasError){
+          result = Center(child: Text('Something went wrong'),);
+        }else{
+          result = Center(child: CircularProgressIndicator(),);
+        }
+        return result;
+      },
+    );
+  }
+
+  Widget _buildBodyWithData(Map<TimelinePost,Post> data){
+    if(data.length == 0){
+      return Center(child: Text('No Liked Posts'),);
+    }
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (_,index){
+        return PostArticle(
+          mode: 'view',
+          allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
+          timelinePost: data.keys.elementAt(index),
+          post: data[data.keys.elementAt(index)],
+        );
+      }
     );
   }
 

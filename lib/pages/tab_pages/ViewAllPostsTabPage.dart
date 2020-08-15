@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -48,12 +49,15 @@ class ViewAllEventsPage {
         return false;
       },
       builder: (_, state) {
-        if (state is TimelineDisplayFeedState) {
+
+        return _buildBodyWithData(null);
+
+       /*  if (state is TimelineDisplayFeedState) {
           return _buildBodyWithData(state);
         }else{
           var allData = BlocProvider.of<TimelineBloc>(_context).initialPostsData;
           return _buildBodyWithData(allData);
-        }
+        } */
     });
   }
 
@@ -93,8 +97,6 @@ class ViewAllEventsPage {
             }else _animating = false;
 
 
-
-
           }else if(t is ScrollStartNotification){
             _startScrollPixels = t.metrics.pixels;
           }
@@ -119,11 +121,11 @@ class ViewAllEventsPage {
               ),
               centerTitle: true,
               actions: [
-                IconButton(
+                /* IconButton(
                   icon: Icon(Icons.search),
                   tooltip: 'Search by title',
                   onPressed: ()=>BlocProvider.of<AppBloc>(_context).add(AppToSearchPostsPageEvent()),
-                )
+                ) */
               ],
               bottom: PreferredSize(
                 preferredSize: Size.fromHeight(35),
@@ -156,8 +158,8 @@ class ViewAllEventsPage {
                 ),
               ),
             ),
-         
-            SliverList(
+            _buildFeedList(),
+            /* SliverList(
               key: PageStorageKey<String>('AllPostsView'),
               delegate: SliverChildBuilderDelegate(
                 (_, index) {
@@ -170,9 +172,29 @@ class ViewAllEventsPage {
                 },
                 childCount: state.timelines.length,
               ),
-            ),
+            ), */
           ],
         ),
+      ),
+    );
+  }
+
+  SliverList _buildFeedList(){
+    Map<TimelinePost,Post> feedData = BlocProvider.of<TimelineBloc>(_context).feedData;
+    print('------------------FEED LENGTH IS ' + feedData.length.toString());
+    
+    return SliverList(
+      key: PageStorageKey<String>('AllPostsView'),
+      delegate: SliverChildBuilderDelegate(
+        (_, index) {
+          return PostArticle(
+            mode: 'view',
+            allUsers: BlocProvider.of<TimelineBloc>(_context).allUsers,
+            timelinePost: feedData.keys.elementAt(index),
+            post: feedData[feedData.keys.elementAt(index)],
+          );
+        },
+        childCount: feedData.length,
       ),
     );
   }
@@ -182,15 +204,5 @@ class ViewAllEventsPage {
       _animating = true;
       _scrollController.animateTo(position, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
     });
-  }
-
-  Post _getPostFromID(String id, List<Post> allPosts) {
-    Post result;
-    allPosts.forEach((post) {
-      if (post.id.compareTo(id) == 0) {
-        result = post;
-      }
-    });
-    return result;
   }
 }

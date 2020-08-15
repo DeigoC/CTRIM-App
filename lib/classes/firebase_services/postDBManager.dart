@@ -19,6 +19,20 @@ class PostDBManager{
     return _allPosts;
   }
 
+  Future<List<Post>> fetchPostsByIDs(List<String> postIDs) async{
+    var collection = await _ref.getDocuments();
+    List<Post> results = [];
+    collection.documents.forEach((doc) {
+      if(postIDs.contains(doc.documentID)) results.add(Post.fromMap(doc.documentID, doc.data));
+    });
+    return results;
+  }
+
+  /* Future<List<Post>> fetchPostsBySearch(String searchString) async{
+    var collection = await _ref.where('Title', isEqualTo: searchString);
+  } */
+
+
   Post getPostByID(String id){
     return _allPosts.firstWhere((p) => p.id.compareTo(id)==0,orElse: ()=>null);
   }

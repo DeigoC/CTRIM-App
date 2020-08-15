@@ -105,9 +105,51 @@ class _ViewUserPageState extends State<ViewUserPage> {
               ]),
             ),
           ),
-          _buildPostsList(context),
+          SliverFillRemaining(
+            child: _buildNewListBody(),
+            hasScrollBody: true,
+          ),
+          //_buildPostsList(context),
         ],
       ),
+    );
+  }
+
+  Widget _buildNewListBody(){
+    return FutureBuilder<Map<TimelinePost, Post>>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchAllUserPosts(widget.user.id),
+      builder: (_,snap){
+        Widget result;
+
+        if(snap.hasData){
+          result = _buildBodyWithData(snap.data);
+        }else if(snap.hasError){
+          result = Center(child: Text('Something went wrong!'),);
+        }else{
+          result = Center(child: CircularProgressIndicator(),);
+        }
+
+        return result;
+      },
+    );
+  }
+
+  Widget _buildBodyWithData(Map<TimelinePost, Post> data){
+    data.removeWhere((key, value) => value.deleted);
+    if(data.length==0){
+      return Center(child: Text('No Posts made yet'),);
+    }
+    
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (_,index){
+        return PostArticle(
+          allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
+          mode: 'view',
+          timelinePost: data.keys.elementAt(index),
+          post: data[data.keys.elementAt(index)],
+        );
+      }
     );
   }
 

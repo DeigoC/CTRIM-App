@@ -140,7 +140,7 @@ class AboutTabPage{
             AboutArticle thisArticle = articles[index];
             return InkWell(
               onTap: ()=> BlocProvider.of<AppBloc>(_context).add(AppToViewChurchEvent(articles[index])),
-              splashColor: Colors.blue.withAlpha(30),
+              splashColor: Colors.black,//Colors.black.withAlpha(30),
               child: Container(
                 decoration: BoxDecoration(image: DecorationImage(
                   image: NetworkImageWithRetry(thisArticle.firstImage),
@@ -154,6 +154,7 @@ class AboutTabPage{
                     Align(
                       alignment: Alignment.topRight,
                       child: IconButton(
+                        tooltip: 'Edit Details',
                         icon: Icon(Icons.edit, color: Colors.white),
                         onPressed: (){
                           BlocProvider.of<AboutBloc>(_context).setArticleToEdit(thisArticle);

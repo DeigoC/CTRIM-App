@@ -7,6 +7,7 @@ import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/updatesTabBody.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 //import 'package:zefyr/zefyr.dart';
 
@@ -21,6 +22,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   TabController _tabController;
   //ZefyrController _zefyrController;
   FocusNode _fn;
+  var _systemStyle;
+
 
   @override
   void initState() {
@@ -31,6 +34,12 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         AppBloc.openURL(style.values.first.value, context);
       }
     }); */
+
+    /* _systemStyle = SystemChrome.latestStyle;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.red
+    )); */
+  
     _fn = FocusNode();
     super.initState();
   }
@@ -38,6 +47,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   @override
   void dispose() { 
     //_zefyrController.dispose();
+   // SystemChrome.setSystemUIOverlayStyle(_systemStyle);
     _fn.dispose();
     super.dispose();
   }

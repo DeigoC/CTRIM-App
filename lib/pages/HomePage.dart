@@ -6,7 +6,6 @@ import 'package:ctrim_app_v1/pages/tab_pages/ViewAllLocationsTabPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
@@ -34,7 +33,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     super.initState();
     
     // ! Device Orientation
-    SystemChrome.setPreferredOrientations([]);
+    //SystemChrome.setPreferredOrientations([]);
 
     // ! Controllers
     _postsScrollController = ScrollController();
@@ -100,56 +99,68 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   }
 
   Widget _buildMainScaffold(int selectedIndex) {
-    return SafeArea(
-      child: Scaffold(
-      appBar: _getAppBar(selectedIndex),
-      body: Builder(
-        builder: (_){
-          _setNewContext(_);
-          return _getBody(selectedIndex);
-        }),
-      floatingActionButton: _getFAB(selectedIndex),
-      drawer: _getDrawer(selectedIndex),
-      bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-        condition: (_,state){
-          if(state is SettingsState) return true;
-          return false;
-        },
-          builder:(_,state) => BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: selectedIndex,
-          unselectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white38 :null,
-          selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
-          backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
-          onTap: (newIndex){
-            _scrollToTop(newIndex);
-            BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
-          },
-          items: [
-             BottomNavigationBarItem(
-              title: Container(),
-              icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
+    return BlocBuilder<AppBloc, AppState>(
+      condition: (_,state){
+        if(state is SettingsState) return true;
+        return false;
+      },
+      builder: (context, state) {
+        bool onDark = BlocProvider.of<AppBloc>(context).onDarkTheme;
+        return Container(
+          color: onDark ? Color(0xff525252):Color(0xffdb9423),
+          child: SafeArea(
+            child: Scaffold(
+            appBar: _getAppBar(selectedIndex),
+            body: Builder(
+              builder: (_){
+                _setNewContext(_);
+                return _getBody(selectedIndex);
+              }),
+            floatingActionButton: _getFAB(selectedIndex),
+            drawer: _getDrawer(selectedIndex),
+            bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+              condition: (_,state){
+                if(state is SettingsState) return true;
+                return false;
+              },
+                builder:(_,state) => BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                currentIndex: selectedIndex,
+                unselectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white38 :null,
+                selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
+                backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
+                onTap: (newIndex){
+                  _scrollToTop(newIndex);
+                  BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
+                },
+                items: [
+                   BottomNavigationBarItem(
+                    title: Container(),
+                    icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
+                  ),
+                  /* BottomNavigationBarItem(
+                    title: Container(),
+                    icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
+                  ), */
+                  BottomNavigationBarItem(
+                    title: Container(),
+                    icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
+                  ),
+                   BottomNavigationBarItem(
+                     title: Container(),
+                    icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
+                  ),
+                  BottomNavigationBarItem(
+                    title: Container(),
+                    icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
+                  ),
+                ],
+              ),
             ),
-            /* BottomNavigationBarItem(
-              title: Container(),
-              icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
-            ), */
-            BottomNavigationBarItem(
-              title: Container(),
-              icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
-            ),
-             BottomNavigationBarItem(
-               title: Container(),
-              icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
-            ),
-            BottomNavigationBarItem(
-              title: Container(),
-              icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
-            ),
-          ],
-        ),
       ),
-  ),
+          ),
+        );
+      },
     );
   }
 
@@ -214,7 +225,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   }
 
   Widget _getDrawer(int selectedIndex){
-    if(selectedIndex == 4) return _settingsPage.buildDrawer();
+    if(selectedIndex == 3) return _settingsPage.buildDrawer();
     return null;
   }
 }
