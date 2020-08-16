@@ -37,7 +37,7 @@ class _PostBodyEditorState extends State<PostBodyEditor> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: (){
-             String contents = '';//jsonEncode(_textController.document);
+             String contents = 'This is content';//jsonEncode(_textController.document);
               widget._postBloc.add(PostSaveBodyDocumentEvent(contents));
               Navigator.pop(context);
           },

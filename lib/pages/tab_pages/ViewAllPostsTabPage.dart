@@ -29,39 +29,6 @@ class ViewAllEventsPage {
   }
 
   Widget buildBody() {
-    return BlocConsumer<TimelineBloc, TimelineState>(
-      listenWhen: (_,state){
-        if(state is TimelineNewPostUploadedState) return true;
-        else if(state is TimelineTagChangedState) return true;
-        return false; 
-      },
-      listener: (_,state){
-        if(state is TimelineNewPostUploadedState){
-          _scrollController.jumpTo(_scrollController.position.minScrollExtent);
-        }else if(state is TimelineTagChangedState){
-          //_scrollController.jumpTo(_scrollController.position.minScrollExtent);
-          _scrollController.animateTo(_scrollController.position.minScrollExtent, 
-          duration: Duration(milliseconds: 500), curve: Curves.easeIn);
-        }
-      },
-      buildWhen: (_, state) {
-        if (state is TimelineDisplayFeedState) return true;
-        return false;
-      },
-      builder: (_, state) {
-
-        return _buildBodyWithData(null);
-
-       /*  if (state is TimelineDisplayFeedState) {
-          return _buildBodyWithData(state);
-        }else{
-          var allData = BlocProvider.of<TimelineBloc>(_context).initialPostsData;
-          return _buildBodyWithData(allData);
-        } */
-    });
-  }
-
-  Widget _buildBodyWithData(TimelineDisplayFeedState state) {
     return RefreshIndicator(
       onRefresh: () async {
         await BlocProvider.of<TimelineBloc>(_context).reloadAllRecords().then((_){
@@ -158,31 +125,65 @@ class ViewAllEventsPage {
                 ),
               ),
             ),
-            _buildFeedList(),
-            /* SliverList(
-              key: PageStorageKey<String>('AllPostsView'),
-              delegate: SliverChildBuilderDelegate(
-                (_, index) {
-                  return PostArticle(
-                    mode: 'view',
-                    allUsers: state.users,
-                    post: _getPostFromID(state.timelines[index].postID, state.posts),
-                    timelinePost: state.timelines[index],
+           
+            BlocConsumer<TimelineBloc,TimelineState>(
+              listenWhen: (_,state){
+                if(state is TimelineNewPostUploadedState) return true;
+                else if(state is TimelineTagChangedState) return true;
+                return false; 
+              },
+              listener: (_,state){
+                if(state is TimelineNewPostUploadedState){
+                  _scrollController.animateTo(_scrollController.position.minScrollExtent, 
+                  duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+                }else if(state is TimelineTagChangedState){
+                  //_scrollController.jumpTo(_scrollController.position.minScrollExtent);
+                  _scrollController.animateTo(_scrollController.position.minScrollExtent, 
+                  duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+                }
+              },
+              buildWhen: (_, state) {
+                if (state is TimelineFeedState) return true;
+                else if(state is TimelineNewPostUploadedState) return true;
+                else if(state is TimelineLoadingFeedState) return true;
+                else if(state is TimelineRebuildFeedState) return true;
+                return false;
+              },
+              builder: (_,state){
+                if(state is TimelineLoadingFeedState){
+                  return SliverList(
+                    delegate: SliverChildListDelegate([
+                      Center(child: Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: CircularProgressIndicator(),
+                      ),),
+                    ]),
                   );
-                },
-                childCount: state.timelines.length,
-              ),
-            ), */
+                }
+                else if(state is TimelineFeedState){
+                  return _buildFeedList(state.feedData);
+                }
+                else if(state is TimelineRebuildFeedState){
+                  return SliverList(
+                    delegate: SliverChildListDelegate([
+                      Center(child: Text('To be completed!'),),
+                    ]),
+                  );
+                }
+                return _buildFeedList(BlocProvider.of<TimelineBloc>(_context).feedData);
+              },
+            ),
+            //_buildFeedList(feedData),
           ],
         ),
       ),
     );
   }
 
-  SliverList _buildFeedList(){
-    Map<TimelinePost,Post> feedData = BlocProvider.of<TimelineBloc>(_context).feedData;
-    print('------------------FEED LENGTH IS ' + feedData.length.toString());
-    
+  SliverList _buildFeedList(Map<TimelinePost,Post> feedData){
+    List<TimelinePost> tpsSorted = feedData.keys.toList();
+    tpsSorted.sort((a,b)=>b.postDate.compareTo(a.postDate));
+
     return SliverList(
       key: PageStorageKey<String>('AllPostsView'),
       delegate: SliverChildBuilderDelegate(
@@ -190,8 +191,8 @@ class ViewAllEventsPage {
           return PostArticle(
             mode: 'view',
             allUsers: BlocProvider.of<TimelineBloc>(_context).allUsers,
-            timelinePost: feedData.keys.elementAt(index),
-            post: feedData[feedData.keys.elementAt(index)],
+            timelinePost: tpsSorted.elementAt(index),
+            post: feedData[tpsSorted.elementAt(index)],
           );
         },
         childCount: feedData.length,

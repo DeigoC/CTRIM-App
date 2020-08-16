@@ -19,12 +19,9 @@ class ViewUserPage extends StatefulWidget {
 }
 
 class _ViewUserPageState extends State<ViewUserPage> {
-  
-  Map<Post,TimelinePost> _userPosts = {};
 
   @override
   void initState() {
-    _userPosts = BlocProvider.of<TimelineBloc>(context).getUserPosts(widget.user.id);
     super.initState();
   }
 
@@ -105,10 +102,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
               ]),
             ),
           ),
-          SliverFillRemaining(
-            child: _buildNewListBody(),
-            hasScrollBody: true,
-          ),
+          _buildNewListBody(),
           //_buildPostsList(context),
         ],
       ),
@@ -119,28 +113,48 @@ class _ViewUserPageState extends State<ViewUserPage> {
     return FutureBuilder<Map<TimelinePost, Post>>(
       future: BlocProvider.of<TimelineBloc>(context).fetchAllUserPosts(widget.user.id),
       builder: (_,snap){
-        Widget result;
+        SliverChildDelegate result;
 
         if(snap.hasData){
           result = _buildBodyWithData(snap.data);
         }else if(snap.hasError){
-          result = Center(child: Text('Something went wrong!'),);
+          result = SliverChildListDelegate([
+            Center(child: Text('Something went wrong!'),),
+          ]);
+
         }else{
-          result = Center(child: CircularProgressIndicator(),);
+          result = SliverChildListDelegate([
+            Center(child: CircularProgressIndicator(),),
+          ]);
         }
 
-        return result;
+        return SliverList(delegate: result,);
       },
     );
   }
 
-  Widget _buildBodyWithData(Map<TimelinePost, Post> data){
+  SliverChildDelegate _buildBodyWithData(Map<TimelinePost, Post> data){
     data.removeWhere((key, value) => value.deleted);
     if(data.length==0){
-      return Center(child: Text('No Posts made yet'),);
+      return SliverChildListDelegate([
+        Center(child: Text('No Posts made yet!'),),
+      ]);
     }
     
-    return ListView.builder(
+    return SliverChildBuilderDelegate(
+      (_,index){
+        return PostArticle(
+          allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
+          mode: 'view',
+          timelinePost: data.keys.elementAt(index),
+          post: data[data.keys.elementAt(index)],
+        );
+      },
+      childCount: data.length
+    );
+    
+
+    /* return ListView.builder(
       itemCount: data.length,
       itemBuilder: (_,index){
         return PostArticle(
@@ -150,23 +164,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
           post: data[data.keys.elementAt(index)],
         );
       }
-    );
+    ); */
   }
 
-SliverList _buildPostsList(BuildContext context) {
-  List<TimelinePost> tPosts = List.from(_userPosts.values);
-  tPosts.sort((x, y) => y.postDate.compareTo(x.postDate));
-
-  return SliverList(delegate: SliverChildBuilderDelegate((_,index){
-    Post p = _userPosts.keys.firstWhere((e) => e.id.compareTo(tPosts[index].postID)==0);
-    return PostArticle(
-      allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
-      mode: 'view',
-      post:p,
-      timelinePost: tPosts[index],
-    );
-  },
-  childCount: _userPosts.length
-  ),);
-}
 }

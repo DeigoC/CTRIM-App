@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 class TimelinePost{
   String id, postID, authorID, postType, updateLog;
   DateTime postDate;
+  bool postDeleted;
 
-  TimelinePost({this.id, this.postID, this.postDate, this.postType, this.authorID, this.updateLog});
+  TimelinePost({this.id, this.postID, this.postDate, this.postType, this.authorID, this.updateLog, 
+  this.postDeleted = false});
 
   TimelinePost.fromMap(String id, Map<String, dynamic> data)
   : id = id,
@@ -13,6 +15,7 @@ class TimelinePost{
   authorID = data['AuthorID'],
   postType = data['PostType'],
   updateLog = data['UpdateLog'],
+  postDeleted = data['DeletedPost'],
   postDate = (data['PostDate'] as Timestamp).toDate();
 
   toJson(){
@@ -21,6 +24,7 @@ class TimelinePost{
       'AuthorID':authorID,
       'PostType':postType,
       'UpdateLog': updateLog,
+      'PostDeleted':postDeleted??false,
       'PostDate':Timestamp.fromDate(postDate),
     };
   }

@@ -31,13 +31,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   String _locationSearchString = '';
 
   List<User> get allUsers => UserDBManager.allUsers;
-
-  //TODO these 2 will have to be deleted or at least changed
-  List<Post> get _allPosts => PostDBManager.allPosts;
-  List<TimelinePost> get _allTimelinePosts => TimelinePostDBManager.allTimelinePosts;
-
-  List<Post> feedPosts =[];
-  Map<TimelinePost,Post> feedData ={};
+ 
+  Map<TimelinePost,Post> _feedData ={};
+  Map<TimelinePost,Post> get feedData =>_feedData;
 
   Map<PostTag, bool> _selectedTags = {
     PostTag.BELFAST: false,
@@ -52,12 +48,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   };
 
   // ! Bloc Functions
-  
-
   bool doesLocationHaveEvents(String locationId){ 
-    for (var i = 0; i < _allPosts.length; i++) {
-      if(_allPosts[i].locationID.compareTo(locationId)==0) return true;
-    }
+    //TODO needs to be a future
     return false;
   }
 
@@ -67,72 +59,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       result[Post.tagToString(key)] = value;
     });
     return result;
-  }
-
-  //TODO delete this?
-  Map<Post, TimelinePost> getUserPosts(String userID) {
-    Map<Post, TimelinePost> results = {};
-    _allTimelinePosts.forEach((timelinePost) {
-      if (timelinePost.authorID.compareTo(userID) == 0 && timelinePost.postType.compareTo('original') == 0) {
-        Post thisPost = _allPosts.firstWhere((post) => post.id.compareTo(timelinePost.postID) == 0);
-        if(!thisPost.deleted) results[thisPost] = timelinePost;
-      }
-    });
-    return results;
-  }
-
-  Map<Post, TimelinePost> getUserDeletedPosts(String userID) {
-    Map<Post, TimelinePost> results = {};
-    _allTimelinePosts.forEach((timelinePost) {
-      if (timelinePost.authorID.compareTo(userID) == 0 && timelinePost.postType.compareTo('original') == 0) {
-        Post thisPost = _allPosts.firstWhere((post) => post.id.compareTo(timelinePost.postID) == 0);
-        if(thisPost.deleted) results[thisPost] = timelinePost;
-      }
-    });
-    return results;
-  }
-
-  Map<Post, TimelinePost> getPostsFromLocation(String locationID){
-    Map<Post, TimelinePost> results = {};
-    _allPosts.forEach((post) {
-      if(post.locationID.compareTo(locationID)==0 && !post.deleted){
-        TimelinePost tPost = _allTimelinePosts.firstWhere((e){
-          return (e.postID.compareTo(post.id)==0 && e.postType.compareTo('original')==0);
-        });
-        results[post] = tPost;
-      }
-    });
-    return results;
-  }
-
-  Map<DateTime, List<Post>> getPostsForGalleryTab() {
-    Map<DateTime, List<Post>> unsortedResult = {};
-    Map<DateTime, List<Post>> sortedResult = {};
-
-    _allTimelinePosts.forEach((tPost) {
-      if (tPost.postType.compareTo('original') == 0) {
-        Post thisPost = _allPosts.firstWhere((post) => post.id.compareTo(tPost.postID) == 0);
-        if (thisPost.gallerySources.length != 0 && !thisPost.deleted) {
-          if (thisPost.isDateNotApplicable) {
-            DateTime thisDate = DateTime(tPost.postDate.year, tPost.postDate.month, tPost.postDate.day);
-            unsortedResult[thisDate] = _createList(unsortedResult[thisDate]);
-            unsortedResult[thisDate].add(thisPost);
-          } else {
-            DateTime thisDate = DateTime(thisPost.startDate.year, thisPost.startDate.month, thisPost.startDate.day);
-            unsortedResult[thisDate] =_createList(unsortedResult[thisDate]);
-            unsortedResult[thisDate].add(thisPost);
-          }
-        }
-      }
-    });
-
-    // * Sorts by date
-    List<DateTime> sortedDates =  unsortedResult.keys.toList();
-    sortedDates.sort((a, b) => a.compareTo(b));
-    sortedDates.forEach((date) {
-      sortedResult[date] = unsortedResult[date];
-    });
-    return sortedResult;
   }
 
   List<Location> get allLocations =>LocationDBManager.allLocations;
@@ -150,25 +76,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return 'Pending';
   }
 
-  List<TimelinePost> getAllUpdatePosts(String postID){
-    List<TimelinePost> result = [];
-    _allTimelinePosts.forEach((tPost) {
-      if(tPost.postID.compareTo(postID)==0){
-        result.add(tPost);
-      }
-    });
-    result.sort((a,b) => a.postDate.compareTo(b.postDate));
-    return result;
-  }
-
-  TimelineDisplayFeedState get initialPostsData => _buildFeedData();
-
   // ! Future Functions
-  //TODO needs to be reworked
   Future<Null> reloadAllRecords() async{
     await _locationDBManager.fetchAllLocations();
-    //await _postDBManager.fetchAllPosts();
-    //await _timelinePostDBManager.fetchAllTimelinePosts();
     await _userDBManager.fetchAllUsers();
     await fetchMainPostFeed();
   }
@@ -197,22 +107,43 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return results;
   }
 
+  // ! important
   Future<Map<TimelinePost, Post>> fetchMainPostFeed() async{
+    _feedData.clear();
     await _timelinePostDBManager.fetchHomeFeedTPs();
-    print('-----------------LENGTH FOR TPs is: ' + TimelinePostDBManager.feedTimelinePosts.length.toString());
 
     List<String> feedIDs = [];
     TimelinePostDBManager.feedTimelinePosts.forEach((tp) {
       if(!feedIDs.contains(tp.postID)) feedIDs.add(tp.postID);
     });
-    feedPosts = await _postDBManager.fetchPostsByIDs(feedIDs);
-
-    print('-----------------LENGTH FOR Posts is: ' + feedPosts.length.toString());
+    var feedPosts = await _postDBManager.fetchPostsByIDs(feedIDs);
     
     TimelinePostDBManager.feedTimelinePosts.forEach((tp) {
-      feedData[tp] = feedPosts.firstWhere((e) => e.id.compareTo(tp.postID)==0);
+      _feedData[tp] = feedPosts.firstWhere((e) => e.id.compareTo(tp.postID)==0);
     });
-    return feedData;
+    return _feedData;
+  }
+
+  // ! important
+  Future<Map<TimelinePost, Post>> fetchPostFeedWithTags() async{
+    List<String> tags = []; 
+    _feedData.clear();
+
+    _selectedTags.forEach((key, value) {
+      if(value){tags.add(Post.tagToString(key));}
+    });
+    List<Post> posts =  await _postDBManager.fetchPostsByTags(tags);
+    List<TimelinePost> tps = await _timelinePostDBManager.fetchFeedWithTags(posts.map((e) => e.id).toList());
+    tps.sort((a,b) => b.postDate.compareTo(a.postDate));
+  
+    tps.forEach((tp) { 
+      _feedData[tp] = posts.firstWhere((e) => e.id.compareTo(tp.postID)==0);
+    });
+    return _feedData;
+  }
+
+  Future<List<TimelinePost>> fetchPostUpdatesData(String postID) async{
+    return _timelinePostDBManager.fetchTimelinePostsFromPostID(postID);
   }
 
   // * ---------------------------- END OF NEW STUFF
@@ -223,20 +154,15 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   @override
   Stream<TimelineState> mapEventToState(TimelineEvent event,) async* {
-    if (event is TimelineFetchAllPostsEvent)yield* _displayFeedStream();
-    else if (event is TimelineAddNewPostEvent) yield* _mapNewPostEventToState(event);
+    if (event is TimelineAddNewPostEvent) yield* _mapNewPostEventToState(event);
+    else if(event is TimelineFetchAllPostsEvent) yield* _buildHomeFeed();
     else if (event is TimelinePostUpdateEvent){
       if(event is TimelineUpdatePostEvent) yield* _mapPostUpdateToState(event);
       else yield* _mapPostDeletedToState(event);
-    } else if (event is TimelineTagClickedEvent) yield* _mapTagChnageToState(event);
+    } else if (event is TimelineTagClickedEvent) yield* _mapTagChangeToState(event);
     else if (event is TimelineSearchPostEvent) yield* _mapSearchPageEventToState(event);
     else if (event is TimelineLocationSearchTextChangeEvent) yield* _mapLocationSearchEventToState(event);
-    else if (event is TimelineAlbumSearchEvent)yield* _mapAlbumSearchEventToState(event);
     else if (event is TimelineUserUpdatedEvent)yield* _mapUserUpdatedEventToState(event);
-    else if (event is TimelineDisplayCurrentUserLikedPosts){
-      yield TimelineEmptyState();
-      yield _getCurrentUserLikedPosts(event.likedPosts);
-    }
     else if (event is TimelineUserDisabledEvent) yield* _mapUserDisabledToState(event);
     else if (event is TimelineUserEnabledEvent) yield* _mapUserEnabledToState(event);
     else if (event is TimelineAboutTabEvent) yield* _mapAboutTabEventToState(event);
@@ -247,148 +173,66 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     if(state is TimelineRebuildAboutTabEvent) yield TimelineRebuildAboutTabState();
   }
 
-  Stream<TimelineState> _mapAlbumSearchEventToState(TimelineAlbumSearchEvent event) async* {
-    if (event is TimelineAlbumSearchTextChangeEvent) {
-      List<Post> results = [];
-      _allPosts.forEach((post) {
-        if (post.title.toLowerCase().contains(event.newSearch.toLowerCase()) &&
-            post.gallerySources.length != 0) {
-          results.add(post);
-        }
-      });
-      yield TimelineAlbumDisplaySearchResultsState(results);
-      yield TimelineEmptyState();
-    }
+  // ! Post Related
+
+  Stream<TimelineState> _buildHomeFeed() async*{
+    yield TimelineLoadingFeedState();
+    Map<TimelinePost, Post> data = await fetchMainPostFeed();
+    yield TimelineFetchedFeedState(data);
   }
 
-  // ! Post Related
-  Stream<TimelineState> _mapTagChnageToState(TimelineTagClickedEvent event) async* {
+  //TODO needs to be redone
+  Stream<TimelineState> _mapTagChangeToState(TimelineTagClickedEvent event) async* {
     PostTag selectedTag = _stringToTag(event.tag);
     _selectedTags[selectedTag] = !_selectedTags[selectedTag];
-    
-    yield* _displayFeedStream();
+
     yield TimelineTagChangedState();
+    if(_selectedTags.containsValue(true)){
+      yield TimelineLoadingFeedState();
+      await fetchPostFeedWithTags();
+      yield TimelineFetchedFeedWithTagsState(_feedData);
+    }else{
+      yield* _buildHomeFeed();
+    }
   }
 
   Stream<TimelineState> _mapSearchPageEventToState(TimelineSearchPostEvent event) async* {
-    if (event is TimelineSearchTextChangeEvent) {
-      if (event.searchString.isEmpty) {
-        yield TimelineDisplayEmptySearchState();
-      } else {
-        yield _displayFeedBySearch(event.searchString);
-        yield TimelineEmptyState();
-      }
-    }
-  }
-
-  TimelineState _displayFeedBySearch(String search) {
-    List<Post> posts = [];
-    List<TimelinePost> tPosts = [];
-
-    // * Get all Posts that contains the search string in their titles
-    _allPosts.forEach((post) {
-      if (post.title.toLowerCase().contains(search.toLowerCase()) &&
-          !posts.contains(post)) {
-        posts.add(post);
-      }
-    });
-
-    if (posts.length == 0) return TimelineDisplayEmptyFeedState();
-
-    // * Get all original tPosts that contains the posts
-    posts.forEach((post) {
-      _allTimelinePosts.forEach((tPost) {
-        if (tPost.postID.compareTo(post.id) == 0 &&
-            tPost.postType == 'original' &&
-            !tPosts.contains(tPost)) {
-          tPosts.add(tPost);
-        }
-      });
-    });
-
-    return TimelineDisplaySearchFeedState(
-      users: allUsers,
-      posts: posts,
-      timelines: tPosts,
-    );
+    
   }
 
   Stream<TimelineState> _mapNewPostEventToState(TimelineAddNewPostEvent event) async*{
     yield TimelineAttemptingToUploadNewPostState();
     await _postDBManager.addPost(event.post);
-     TimelinePost timelinePost = _generateTimelinePost(event);
+    TimelinePost timelinePost = _createOriginalTimelinePost(event);
     await _timelinePostDBManager.addTimelinePost(timelinePost);
+
+    _feedData[timelinePost] = event.post;//Needs to be tested
     yield TimelineNewPostUploadedState();
-    yield* _displayFeedStream();
-  }
-
-  Stream<TimelineState> _displayFeedStream() async*{
-    yield TimelineEmptyState();
-    yield _buildFeedData();
-  }
-
-  TimelineDisplayFeedState _buildFeedData(){
-    List<Post> posts = [];
-    List<TimelinePost> tPosts = [];
-    List<PostTag> selectedTags = [];
-
-    if (_selectedTags.values.contains(true)) {
-      _selectedTags.forEach((key, value) {
-        if (value) selectedTags.add(key);
-      });
-
-      // * Add all posts that contains exactly selected tags
-      _allPosts.forEach((post) {
-        if(DeepCollectionEquality.unordered().equals(post.selectedTags, selectedTags)){
-          posts.add(post);
-        }
-      });
-
-      // * Add all timeline posts that contains the post
-      posts.forEach((post) {
-        _allTimelinePosts.forEach((tPost) {
-          if (tPost.postID.compareTo(post.id) == 0 && !tPosts.contains(tPost)) {
-            tPosts.add(tPost);
-          }
-        });
-      });
-
-    } else {
-      // * Otherwise add all posts
-      posts = List.from(_allPosts);
-      tPosts = List.from(_allTimelinePosts);
-    }
-   
-   // * Remove all deleted then sort by post date
-    posts.removeWhere((element) => element.deleted);
-    tPosts.removeWhere((tPost) => posts.firstWhere((post) => post.id == tPost.postID, orElse: ()=> null) ==null);
-    tPosts.sort((x, y) => y.postDate.compareTo(x.postDate));
-    
-    return TimelineDisplayFeedState(
-      users: allUsers,
-      posts: posts,
-      timelines: tPosts,
-    );
   }
 
   Stream<TimelineState> _mapPostUpdateToState(TimelineUpdatePostEvent event) async*{
     yield TimelineAttemptingToUploadNewPostState();
     await _postDBManager.updatePost(event.post);
-    _createUpdateTPost(event);
+    await _createAndUploadUpdateTPost(event);
    
-    yield TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
+    yield TimelineRebuildMyPostsPageState(null);
+    yield TimelineRebuildFeedState();
     yield TimelineEmptyState();
   }
-
+  
   Stream<TimelineState> _mapPostDeletedToState(TimelinePostUpdateEvent event) async*{
     event.post.deleted = true;
     _postDBManager.updatePost(event.post);
-    _createUpdateTPost(event);
-    yield TimelineRebuildMyPostsPageState(getUserPosts(event.uid));
+    await _createAndUploadUpdateTPost(event);
+    await _timelinePostDBManager.updateDeletedPostTPs(event.post.id);
+
+    await reloadAllRecords();
+    yield TimelineRebuildMyPostsPageState(null);
+    yield TimelineRebuildFeedState();
     yield TimelineEmptyState();
   }
 
-  TimelinePost _generateTimelinePost(TimelineAddNewPostEvent event) {
+  TimelinePost _createOriginalTimelinePost(TimelineAddNewPostEvent event) {
     return TimelinePost(
       postID: event.post.id,
       postType: 'original',
@@ -423,35 +267,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     yield TimelineEmptyState();
   }
 
-  TimelineDisplaySearchFeedState _getCurrentUserLikedPosts(List<String> postIDs) {
-    List<Post> posts = [];
-    List<TimelinePost> tPosts = [];
-
-    _allPosts.forEach((post) {
-      if (postIDs.contains(post.id)) {
-        posts.add(post);
-      }
-    });
-
-    posts.forEach((post) {
-      _allTimelinePosts.forEach((tPost) {
-        if (tPost.postID.compareTo(post.id) == 0 &&
-            tPost.postType == 'original' &&
-            !tPosts.contains(tPost)) {
-          tPosts.add(tPost);
-        }
-      });
-    });
-
-    tPosts.sort((x, y) => y.postDate.compareTo(x.postDate));
-
-    return TimelineDisplaySearchFeedState(
-      users: allUsers,
-      posts: posts,
-      timelines: tPosts,
-    );
-  }
-
   // ! Location Related
   Stream<TimelineState> _mapLocationSearchEventToState(TimelineLocationSearchTextChangeEvent event) async* {
     List<Location> result = [];
@@ -484,21 +299,33 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return null;
   }
 
-  void _createUpdateTPost(TimelinePostUpdateEvent event) {
-    String authorID = _allTimelinePosts.firstWhere((tPost) => tPost.postID.compareTo(event.post.id) == 0).authorID;
+  Future _createAndUploadUpdateTPost(TimelinePostUpdateEvent event) async{
     TimelinePost thisTPost = TimelinePost(
-        id: (int.parse(_allTimelinePosts.last.id) + 1).toString(),//this is changed don't worry
-        authorID: authorID,
+        id: '',//this is changed don't worry
+        authorID: event.uid,//needs to test
         postDate: DateTime.now(),
         postID: event.post.id,
         updateLog: event.updateLog,
-        postType: 'update'
+        postType: 'update',
+        postDeleted: event.post.deleted
       );
-    _timelinePostDBManager.addTimelinePost(thisTPost);
+    await _timelinePostDBManager.addTimelinePost(thisTPost);
+
+    if(!event.post.deleted){
+       _updatePostInFeedData(event.post);
+      _feedData[thisTPost] = event.post;
+    }
   }
 
-  List<Post> _createList(List<Post> list) {
+  void _updatePostInFeedData(Post post){
+    List<TimelinePost> timelinePosts = _feedData.keys.where((e) => e.postID.compareTo(post.id)==0).toList();
+    timelinePosts.forEach((tp) {
+      _feedData[tp] = post;
+    });
+  }
+
+  /* List<Post> _createList(List<Post> list) {
     if (list == null) return [];
     return list;
-  }
+  } */
 }

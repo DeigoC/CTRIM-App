@@ -9,14 +9,28 @@ abstract class TimelineState extends Equatable {
 // ! Post Related
 class TimelineInitial extends TimelineState {}
 class TimelineEmptyState extends TimelineState {}
-class TimelineDisplayFeedState extends TimelineState {
-  final List<TimelinePost> timelines;
-  final List<Post> posts;
-  final List<User> users;
-  TimelineDisplayFeedState(
-      {@required this.timelines, @required this.posts, @required this.users});
+class TimelineLoadingFeedState extends TimelineState{}
+
+abstract class TimelineFeedState extends TimelineState{
+  final Map<TimelinePost,Post> feedData;
+  TimelineFeedState(this.feedData);
 }
+
+class TimelineFetchedFeedState extends TimelineFeedState {
+  final Map<TimelinePost,Post> feedData;
+  TimelineFetchedFeedState(this.feedData):super(feedData);
+}
+
+class TimelineFetchedFeedWithTagsState extends TimelineFeedState{
+  final Map<TimelinePost,Post> feedData;
+  TimelineFetchedFeedWithTagsState(this.feedData):super(feedData);
+}
+
+class TimelineRebuildFeedState extends TimelineState{}
+
 class TimelineTagChangedState extends TimelineState {}
+
+//TODO change this?
 class TimelineNewPostUploadedState extends TimelineState{}
 class TimelineAttemptingToUploadNewPostState extends TimelineState{}
 

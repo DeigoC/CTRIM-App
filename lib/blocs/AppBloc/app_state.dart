@@ -9,6 +9,8 @@ abstract class AppState extends Equatable {
 
 class AppInitial extends AppState {}
 
+class AppEmptyState extends AppState{}
+
 class AppClosePageState extends AppState {}
 
 class AppOpenViewEventPageState extends AppState {}

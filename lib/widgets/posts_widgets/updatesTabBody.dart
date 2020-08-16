@@ -1,5 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/timelinePostDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
@@ -9,24 +10,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class PostUpdatesTab extends StatelessWidget {
   
   final Post post;
-  PostUpdatesTab(this.post);
+  final List<TimelinePost> _allTimelinePosts;
+  
+  PostUpdatesTab(this.post, this._allTimelinePosts);
   
   @override
   Widget build(BuildContext context) {
-    List<TimelinePost> allUpdates = BlocProvider.of<TimelineBloc>(context).getAllUpdatePosts(post.id);
-    Map<DateTime, List<TimelinePost>> updatesSortedToLists = {};
-    allUpdates.forEach((u) {
-      DateTime thisDate = DateTime(u.postDate.year, u.postDate.month, u.postDate.day);
-      if(updatesSortedToLists[thisDate] == null){
-        updatesSortedToLists[thisDate] = [];
-      }
-      updatesSortedToLists[thisDate].add(u);
-    });
-
-    List<DateTime> sortedDates = updatesSortedToLists.keys.toList();
-    sortedDates.sort((a,b) => b.compareTo(a));
-    User user = BlocProvider.of<TimelineBloc>(context).allUsers.firstWhere(
-      (author) => author.id == allUpdates.last.authorID);
+    User user = BlocProvider.of<TimelineBloc>(context).allUsers
+    .firstWhere( (author) => author.id == _allTimelinePosts.last.authorID);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,35 +45,51 @@ class PostUpdatesTab extends StatelessWidget {
             ],
           ),
         ),
-        Expanded(child: ListView.separated(
-          itemCount: sortedDates.length,
-          separatorBuilder: (_,index)=>Divider(),
-          itemBuilder: (_,index){
-            List<TimelinePost> updates = updatesSortedToLists[sortedDates[index]];
-            updates.sort((a,b) => b.postDate.compareTo(a.postDate));
-            
-            return Container(
-              padding: EdgeInsets.only(bottom: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(updates.first.getPostDateString(), textAlign: TextAlign.center,),
-                    flex: 1,
-                  ),
-                  Expanded(
-                    child: _mapUpdatesLogsToWidgets(updates),
-                    flex: 2,
-                  )
-                ],
-              ),
-            );
-          }
-        ),)
+        _buildUpdatesList(),
       ],
     );
   }
-  
+
+  Expanded _buildUpdatesList(){
+    Map<DateTime, List<TimelinePost>> updatesSortedToLists = {};
+    _allTimelinePosts.forEach((u) {
+      DateTime thisDate = DateTime(u.postDate.year, u.postDate.month, u.postDate.day);
+      if(updatesSortedToLists[thisDate] == null){
+        updatesSortedToLists[thisDate] = [];
+      }
+      updatesSortedToLists[thisDate].add(u);
+    });
+
+    List<DateTime> sortedDates = updatesSortedToLists.keys.toList();
+    sortedDates.sort((a,b) => b.compareTo(a));
+
+    return Expanded(child: ListView.separated(
+      itemCount: sortedDates.length,
+      separatorBuilder: (_,index)=>Divider(),
+      itemBuilder: (_,index){
+        List<TimelinePost> updates = updatesSortedToLists[sortedDates[index]];
+        updates.sort((a,b) => b.postDate.compareTo(a.postDate));
+        
+        return Container(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(updates.first.getPostDateString(), textAlign: TextAlign.center,),
+                flex: 1,
+              ),
+              Expanded(
+                child: _mapUpdatesLogsToWidgets(updates),
+                flex: 2,
+              )
+            ],
+          ),
+        );
+      }
+    ),);
+  }
+
   Column _mapUpdatesLogsToWidgets(List<TimelinePost> updates){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,5 +109,4 @@ class PostUpdatesTab extends StatelessWidget {
       }).toList(),
     );
   }
-
 }

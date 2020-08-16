@@ -4,6 +4,7 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/classes/other/updateDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
@@ -26,6 +27,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
   PostBloc _postBloc;
   TabController _tabController;
   TextEditingController _tecTitle;
+  List<TimelinePost> _allTimelinePosts = [];
 
   @override
   void initState() {
@@ -136,7 +138,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
                     thumbnails: _postBloc.newPost.thumbnails,
                     gallerySrc: _postBloc.newPost.gallerySources,
                   ),
-                  AbsorbPointer(child: PostUpdatesTab(widget._post)),
+                  _buildUpdatesTab(),
                 ],
               )
             ),
@@ -180,11 +182,23 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
     );
   }
   
+  Widget _buildUpdatesTab(){
+    if(_allTimelinePosts.length==0){
+      BlocProvider.of<TimelineBloc>(context).fetchPostUpdatesData(widget._post.id).then((timelines){
+        setState(() {
+          _allTimelinePosts = timelines;
+        });
+      });
+      return Center(child: CircularProgressIndicator());
+    }
+    return AbsorbPointer(child: PostUpdatesTab(widget._post, _allTimelinePosts));
+  }
+
   void _confirmSave() async {
     await showDialog(
-        context: context,
-        builder: (_) {
-          return UpdateLogDialogue(_postBloc);
-        });
+      context: context,
+      builder: (_) {
+        return UpdateLogDialogue(_postBloc);
+      });
   }
 }

@@ -3,11 +3,11 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
+import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/updatesTabBody.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 //import 'package:zefyr/zefyr.dart';
 
@@ -22,8 +22,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   TabController _tabController;
   //ZefyrController _zefyrController;
   FocusNode _fn;
-  var _systemStyle;
 
+  List<TimelinePost> _allTimelinePosts = [];
 
   @override
   void initState() {
@@ -127,7 +127,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
               GalleryTabBody.view(
                 thumbnails: widget._post.thumbnails,
                 gallerySrc: widget._post.gallerySources),
-              PostUpdatesTab(widget._post),
+              _buildUpdatesTab(),
             ],
             //child: _buildTabBody(_selectedTabIndex)
           ),
@@ -241,6 +241,16 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(l));
       },
     );
+  }
+
+  Widget _buildUpdatesTab(){
+    if(_allTimelinePosts.length==0){
+      BlocProvider.of<TimelineBloc>(context).fetchPostUpdatesData(widget._post.id).then((timelines){
+        setState(() {_allTimelinePosts = timelines;});
+      });
+      return Center(child: CircularProgressIndicator(),);
+    }
+    return PostUpdatesTab(widget._post, _allTimelinePosts);
   }
 
   List<Widget> _buildDetailListItems() {

@@ -19,9 +19,8 @@ ViewAllEventsForLocation(this._locationID);
   }
 
   Widget _buildBody(BuildContext context){
-    Map<Post,TimelinePost> data = BlocProvider.of<TimelineBloc>(context).getPostsFromLocation(_locationID);
-    
-    if(data.length==0){
+     return Center(child: Text('UNDER CONSTRUCTION'),);
+    /* if(data.length==0){
       return Center(child: Text('No Posts Yet!'),);
     }
     return ListView.builder(
@@ -34,6 +33,6 @@ ViewAllEventsForLocation(this._locationID);
           allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
         );
       }
-    );
+    ); */
   }
 }
