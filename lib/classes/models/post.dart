@@ -195,7 +195,7 @@ class Post {
     return 'N/A';
   }
 
-  static String tagToString(PostTag dept) {
+  String tagToString(PostTag dept) {
     switch (dept) {
       case PostTag.MEN:return 'Men';
       case PostTag.YOUTH:return 'Youth';

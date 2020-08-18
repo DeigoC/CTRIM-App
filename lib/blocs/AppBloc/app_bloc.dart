@@ -62,12 +62,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppStartupLoadUserEvent) yield* _appStartupLoad();
     else if(event is AppCurrentUserLogsOutEvent) yield* _currentUserLogsOut();
     else if(event is AppUploadCompressingImageEvent){
-      yield AppCompressingImageTaskState(itemNo: event.itemNo, totalLength: event.totalLength);
       yield AppEmptyState();
+      yield AppCompressingImageTaskState(itemNo: event.itemNo, totalLength: event.totalLength);
     }
     else if(event is AppUploadTaskStartedEvent){
-      yield AppMapUploadTaskToDialogueState(task: event.task, itemNo: event.itemNo, totalLength: event.totalLength);
       yield AppEmptyState();
+      yield AppMapUploadTaskToDialogueState(task: event.task, itemNo: event.itemNo, totalLength: event.totalLength);
     } 
     else if(event is AppRebuildSliverAppBarEvent) yield AppRebuildSliverAppBarState();
   }
@@ -90,7 +90,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   void _openPageFromEvent(AppNavigateToPageEvent event) {
     NavigatorState state = navigatorKey.currentState;
-    if (event is AppToViewPostPageEvent) state.pushNamed(ViewEventRoute, arguments: {'post': event.post});
+    if (event is AppToViewPostPageEvent) state.pushNamed(ViewEventRoute, arguments: {'postID': event.postID});
     else if(event is AppToHomePageEvent) state.pushNamed(HomeRoute);
     else if (event is AppToAddPostPageEvent) state.pushNamed(AddEventRoute);
     else if (event is AppToViewAllPostsForLocationEvent) state.pushNamed(ViewAllEventsForLocationRoute,arguments: 
@@ -114,7 +114,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if (event is AppToViewImageVideoPageEvent)state.pushNamed(ViewImageVideoRoute, arguments: {
         'initialPage': event.initialPage,'imgSources': event.imageSorces});
     else if (event is AppToViewMyPostsPageEvent)state.pushNamed(ViewMyPostsRoute);
-    else if (event is AppToEditPostPageEvent)state.pushNamed(EditPostRoute, arguments: {'post': event.post});
+    else if (event is AppToEditPostPageEvent)state.pushNamed(EditPostRoute, arguments: {'postID': event.postID});
     else if (event is AppToEditAlbumEvent)state.pushNamed(EditAlbumRoute, arguments: {'postBloc': event.postBloc});
     else if (event is AppToSearchPostsPageEvent)state.pushNamed(SearchPostsRoute);
     else if (event is AppToMyDetailsEvent)state.pushNamed(MyDetailsRoute);

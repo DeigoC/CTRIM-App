@@ -63,7 +63,7 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
     List<String> likedPostsIDs = BlocProvider.of<AppBloc>(context).currentUser.likedPosts;
     
     return FutureBuilder<Map<TimelinePost,Post>>(
-      future: BlocProvider.of<TimelineBloc>(context).fetchLikedPostsFeed(likedPostsIDs),
+      future: null,//BlocProvider.of<TimelineBloc>(context).fetchLikedPostsFeed(likedPostsIDs),
       builder: (_,snap){
         Widget result;
 
@@ -90,7 +90,7 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
           mode: 'view',
           allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
           timelinePost: data.keys.elementAt(index),
-          post: data[data.keys.elementAt(index)],
+          //post: data[data.keys.elementAt(index)],
         );
       }
     );

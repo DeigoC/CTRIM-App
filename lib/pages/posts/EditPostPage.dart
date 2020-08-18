@@ -16,8 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditPostPage extends StatefulWidget {
-  final Post _post;
-  EditPostPage(this._post);
+  final String _postID;
+  EditPostPage(this._postID);
 
   @override
   _EditPostPageState createState() => _EditPostPageState();
@@ -29,24 +29,54 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
   TextEditingController _tecTitle;
   List<TimelinePost> _allTimelinePosts = [];
 
+  Post _post;
+
   @override
   void initState() {
-    _postBloc = PostBloc.editMode(widget._post);
+    //_postBloc = PostBloc.editMode(widget._post);
     _tabController = TabController(vsync: this, length: 4);
-    _tecTitle = TextEditingController(text: widget._post.title);
+    //_tecTitle = TextEditingController(text: widget._post.title);
     super.initState();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _tecTitle.dispose();
-    _postBloc.close();
+    if(_tecTitle!=null) _tecTitle.dispose();
+    if(_postBloc!=null) _postBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if(_post!=null){
+      return _buildBodyWithData();
+    }
+    return FutureBuilder<Post>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchPostByID(widget._postID),
+      builder: (_,snap){
+        Widget result;
+
+        if(snap.hasData){
+          result = Center(child: CircularProgressIndicator(),);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            setState(() { 
+            _post = snap.data; 
+            _postBloc = PostBloc.editMode(_post);
+            _tecTitle = TextEditingController(text: _post.title);
+           });
+          });
+        }else if(snap.hasError){
+          result = Center(child: Text('Something went wrong!'),);
+        }else{
+          result = Center(child: CircularProgressIndicator(),);
+        }
+        return result;
+      },
+    );
+  }
+
+  Widget _buildBodyWithData(){
     return WillPopScope(
       onWillPop: () async {
         return await ConfirmationDialogue.leaveEditPage(context: context);
@@ -149,7 +179,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
   }
 
   Widget _buildDeleteButton(BuildContext context) {
-    if(widget._post.deleted) return Container();
+    if(_post.deleted) return Container();
     return MyRaisedButton(
       externalPadding: EdgeInsets.all(8),
       label: 'Delete',
@@ -158,7 +188,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
         ConfirmationDialogue.deleteRecord(context: context, record: 'Post').then((confirmation) {
           if(confirmation){
             BlocProvider.of<TimelineBloc>(context).add(
-              TimelineDeletePostEvent(post: widget._post, uid: BlocProvider.of<AppBloc>(context).currentUser.id));
+              TimelineDeletePostEvent(post: _post, uid: BlocProvider.of<AppBloc>(context).currentUser.id));
             Navigator.of(context).pop();
           }
         });
@@ -184,14 +214,14 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
   
   Widget _buildUpdatesTab(){
     if(_allTimelinePosts.length==0){
-      BlocProvider.of<TimelineBloc>(context).fetchPostUpdatesData(widget._post.id).then((timelines){
+      BlocProvider.of<TimelineBloc>(context).fetchPostUpdatesData(_post.id).then((timelines){
         setState(() {
           _allTimelinePosts = timelines;
         });
       });
       return Center(child: CircularProgressIndicator());
     }
-    return AbsorbPointer(child: PostUpdatesTab(widget._post, _allTimelinePosts));
+    return AbsorbPointer(child: PostUpdatesTab(_post, _allTimelinePosts));
   }
 
   void _confirmSave() async {

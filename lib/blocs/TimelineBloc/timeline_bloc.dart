@@ -11,7 +11,6 @@ import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:equatable/equatable.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 part 'timeline_event.dart';
 part 'timeline_state.dart';
@@ -32,8 +31,11 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   List<User> get allUsers => UserDBManager.allUsers;
  
-  Map<TimelinePost,Post> _feedData ={};
-  Map<TimelinePost,Post> get feedData =>_feedData;
+  List<TimelinePost> _feedData =[];
+  List<TimelinePost> get feedData {
+    _feedData.sort((a,b)=>b.postDate.compareTo(a.postDate));
+    return _feedData;
+  }
 
   Map<PostTag, bool> _selectedTags = {
     PostTag.BELFAST: false,
@@ -56,7 +58,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   Map<String, bool> getSelectedTags() {
     Map<String, bool> result = {};
     _selectedTags.forEach((key, value) {
-      result[Post.tagToString(key)] = value;
+      result[Post().tagToString(key)] = value;
     });
     return result;
   }
@@ -78,72 +80,50 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   // ! Future Functions
   Future<Null> reloadAllRecords() async{
+    //TODO needs to check if most recent TP is new, if new then update; otherwise don't
     await _locationDBManager.fetchAllLocations();
     await _userDBManager.fetchAllUsers();
     await fetchMainPostFeed();
   }
    
    // * ----------------------------NEW STUFF
-  Future<Map<TimelinePost, Post>> fetchLikedPostsFeed(List<String> likedPostsIDs) async{
-    List<Post> likedPosts = await _postDBManager.fetchPostsByIDs(likedPostsIDs);
+  Future<List<TimelinePost>> fetchLikedPostsFeed(List<String> likedPostsIDs) async{
     List<TimelinePost> timelinePosts = await _timelinePostDBManager.fetchOriginalLikedPosts(likedPostsIDs);
-    Map<TimelinePost,Post> results = {};
     timelinePosts.sort((a,b) => b.postDate.compareTo(a.postDate));
-    timelinePosts.forEach((tp) {
-      results[tp] = likedPosts.firstWhere((p) => p.id.compareTo(tp.postID)==0);
-    });
-    return results;
+    return timelinePosts;
   }
 
-  Future<Map<TimelinePost, Post>> fetchAllUserPosts(String userID) async{
-    List<TimelinePost> timelinePosts = await _timelinePostDBManager.fetchUserPosts(userID);
-    List<Post> likedPosts = await _postDBManager.fetchPostsByIDs(timelinePosts.map((tp) => tp.postID).toList());
-    
-    Map<TimelinePost,Post> results = {};
-    timelinePosts.sort((a,b) => b.postDate.compareTo(a.postDate));
-    timelinePosts.forEach((tp) {
-      results[tp] = likedPosts.firstWhere((p) => p.id.compareTo(tp.postID)==0);
-    });
-    return results;
+  Future<List<TimelinePost>> fetchAllUserPosts(String userID) async{
+    return _timelinePostDBManager.fetchUserPosts(userID);
   }
 
   // ! important
-  Future<Map<TimelinePost, Post>> fetchMainPostFeed() async{
+  Future<Null> fetchMainPostFeed() async{
     _feedData.clear();
-    await _timelinePostDBManager.fetchHomeFeedTPs();
-
-    List<String> feedIDs = [];
-    TimelinePostDBManager.feedTimelinePosts.forEach((tp) {
-      if(!feedIDs.contains(tp.postID)) feedIDs.add(tp.postID);
-    });
-    var feedPosts = await _postDBManager.fetchPostsByIDs(feedIDs);
-    
-    TimelinePostDBManager.feedTimelinePosts.forEach((tp) {
-      _feedData[tp] = feedPosts.firstWhere((e) => e.id.compareTo(tp.postID)==0);
-    });
-    return _feedData;
+    _feedData = await _timelinePostDBManager.fetchHomeFeedTPs();
   }
 
   // ! important
-  Future<Map<TimelinePost, Post>> fetchPostFeedWithTags() async{
+  Future<List<TimelinePost>> fetchPostFeedWithTags() async{
     List<String> tags = []; 
     _feedData.clear();
 
     _selectedTags.forEach((key, value) {
-      if(value){tags.add(Post.tagToString(key));}
+      if(value){tags.add(Post().tagToString(key));}
     });
-    List<Post> posts =  await _postDBManager.fetchPostsByTags(tags);
-    List<TimelinePost> tps = await _timelinePostDBManager.fetchFeedWithTags(posts.map((e) => e.id).toList());
+    
+    List<TimelinePost> tps = [];//await _timelinePostDBManager.fetchFeedWithTags(posts.map((e) => e.id).toList());
     tps.sort((a,b) => b.postDate.compareTo(a.postDate));
-  
-    tps.forEach((tp) { 
-      _feedData[tp] = posts.firstWhere((e) => e.id.compareTo(tp.postID)==0);
-    });
-    return _feedData;
+    
+    return tps;
   }
 
   Future<List<TimelinePost>> fetchPostUpdatesData(String postID) async{
     return _timelinePostDBManager.fetchTimelinePostsFromPostID(postID);
+  }
+
+  Future<Post> fetchPostByID(String id) async{
+    return _postDBManager.fetchPostByID(id);
   }
 
   // * ---------------------------- END OF NEW STUFF
@@ -177,8 +157,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   Stream<TimelineState> _buildHomeFeed() async*{
     yield TimelineLoadingFeedState();
-    Map<TimelinePost, Post> data = await fetchMainPostFeed();
-    yield TimelineFetchedFeedState(data);
+    await fetchMainPostFeed();
+    yield TimelineRebuildFeedState();
   }
 
   //TODO needs to be redone
@@ -203,43 +183,40 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   Stream<TimelineState> _mapNewPostEventToState(TimelineAddNewPostEvent event) async*{
     yield TimelineAttemptingToUploadNewPostState();
     await _postDBManager.addPost(event.post);
+
     TimelinePost timelinePost = _createOriginalTimelinePost(event);
     await _timelinePostDBManager.addTimelinePost(timelinePost);
-
-    _feedData[timelinePost] = event.post;//Needs to be tested
-    yield TimelineNewPostUploadedState();
+  
+    _feedData.add(timelinePost);
+    yield TimelineNewPostUploadedState();// * Rebuilds the list with the same data + 1
   }
 
   Stream<TimelineState> _mapPostUpdateToState(TimelineUpdatePostEvent event) async*{
     yield TimelineAttemptingToUploadNewPostState();
     await _postDBManager.updatePost(event.post);
-    await _createAndUploadUpdateTPost(event);
-   
-    yield TimelineRebuildMyPostsPageState(null);
+    await _processUpdateTPost(event);
+
+    TimelinePost updatedOriginalTPost = await _timelinePostDBManager.fetchOriginalPostByID(event.post.id);
+
+    await reloadAllRecords();
+    yield TimelineRebuildMyPostsPageState(updatedOriginalTPost);
     yield TimelineRebuildFeedState();
     yield TimelineEmptyState();
   }
   
   Stream<TimelineState> _mapPostDeletedToState(TimelinePostUpdateEvent event) async*{
+    yield TimelineAttemptingToUploadNewPostState();
     event.post.deleted = true;
     _postDBManager.updatePost(event.post);
-    await _createAndUploadUpdateTPost(event);
-    await _timelinePostDBManager.updateDeletedPostTPs(event.post.id);
-
+    await _processUpdateTPost(event);
+    //await _timelinePostDBManager.updateDeletedPostTPs(event.post.id);
+    
+    TimelinePost updatedOriginalTPost = await _timelinePostDBManager.fetchOriginalPostByID(event.post.id);
+    
     await reloadAllRecords();
-    yield TimelineRebuildMyPostsPageState(null);
+    yield TimelineRebuildMyPostsPageState(updatedOriginalTPost);
     yield TimelineRebuildFeedState();
     yield TimelineEmptyState();
-  }
-
-  TimelinePost _createOriginalTimelinePost(TimelineAddNewPostEvent event) {
-    return TimelinePost(
-      postID: event.post.id,
-      postType: 'original',
-      authorID: event.authorID,
-      updateLog: '',
-      postDate: DateTime.now(),
-    );
   }
 
   // ! User Related
@@ -299,33 +276,78 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return null;
   }
 
-  Future _createAndUploadUpdateTPost(TimelinePostUpdateEvent event) async{
-    TimelinePost thisTPost = TimelinePost(
-        id: '',//this is changed don't worry
-        authorID: event.uid,//needs to test
-        postDate: DateTime.now(),
-        postID: event.post.id,
-        updateLog: event.updateLog,
-        postType: 'update',
-        postDeleted: event.post.deleted
-      );
-    await _timelinePostDBManager.addTimelinePost(thisTPost);
-
-    if(!event.post.deleted){
-       _updatePostInFeedData(event.post);
-      _feedData[thisTPost] = event.post;
+  Future _processUpdateTPost(TimelinePostUpdateEvent event) async{
+    String thumbnailSrc='';
+    Map<String,String> gallerySrc ={};
+    if(event.post.gallerySources.length!=0){
+       gallerySrc = _getTPGallerySrc(event.post);
+      if(gallerySrc.values.first=='vid'){
+        thumbnailSrc = event.post.thumbnails[gallerySrc.keys.first];
+      }
     }
+    
+    TimelinePost thisTPost = TimelinePost(
+      id: '',
+      authorID: event.uid,
+      postDate: DateTime.now(),
+      postID: event.post.id,
+      updateLog: event.updateLog,
+      postType: 'update',
+      postDeleted: event.post.deleted,
+
+      title: event.post.title,
+      description: event.post.description,
+      thumbnailSrc: thumbnailSrc,
+      gallerySources: gallerySrc,
+      tags: event.post.selectedTagsString
+    );
+
+    await _timelinePostDBManager.updateAllTPsWithPostID(thisTPost.postID, thisTPost);
+    await _timelinePostDBManager.addTimelinePost(thisTPost);
   }
 
-  void _updatePostInFeedData(Post post){
-    List<TimelinePost> timelinePosts = _feedData.keys.where((e) => e.postID.compareTo(post.id)==0).toList();
-    timelinePosts.forEach((tp) {
-      _feedData[tp] = post;
-    });
+  TimelinePost _createOriginalTimelinePost(TimelineAddNewPostEvent event) {
+    String thumbnailSrc='';
+    Map<String,String> gallerySrc ={};
+    if(event.post.gallerySources.length!=0){
+       gallerySrc = _getTPGallerySrc(event.post);
+      if(gallerySrc.values.first=='vid'){
+        thumbnailSrc = event.post.thumbnails[gallerySrc.keys.first];
+      }
+    }
+
+    return TimelinePost(
+      postID: event.post.id,
+      postType: 'original',
+      authorID: event.authorID,
+      updateLog: '',
+      postDate: DateTime.now(),
+      postDeleted: false,
+
+      title: event.post.title,
+      description: event.post.description,
+      gallerySources: gallerySrc,
+      thumbnailSrc: thumbnailSrc,
+      tags: event.post.selectedTagsString
+    );
   }
 
-  /* List<Post> _createList(List<Post> list) {
-    if (list == null) return [];
-    return list;
-  } */
+  Map<String,String> _getTPGallerySrc(Post post){
+    Map<String,String> result ={};
+
+    if(post.gallerySources.length!=0){
+      if(post.gallerySources.values.first.compareTo('vid')==0){
+       result[post.gallerySources.keys.first] = 'vid';
+      }else{
+        for (var i = 0; i < post.gallerySources.length; i++) {
+          String src = post.gallerySources.keys.elementAt(i);
+          if(post.gallerySources[src]=='img'){
+            result[src]='img';
+          }
+          if(result.length==4) break;
+        }
+      }
+    }
+    return result;
+  }
 }

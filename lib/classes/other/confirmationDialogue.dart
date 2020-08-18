@@ -152,7 +152,7 @@ class ConfirmationDialogue{
 
   static void uploadTaskStarted({
     @required BuildContext context,
-    AppBloc appBloc,
+    //@required AppBloc appBloc,
   }){
     showDialog(
       context: context,
@@ -173,16 +173,15 @@ class ConfirmationDialogue{
                   height: MediaQuery.of(context).size.width *0.1,
                   width: MediaQuery.of(context).size.width *0.1,),
                   SizedBox(height: 8,),
-                  BlocBuilder(
-                    bloc: appBloc,
+                  BlocBuilder<AppBloc, AppState>(
                     condition: (_,state){
                       if(state is AppMapUploadTaskToDialogueState) return true;
                       else if(state is AppCompressingImageTaskState) return true;
                       return false;
                     },
                     builder: (_,state){
-                      String title = 'Loading Item...',subtitle='Awaiting Task...';
-                      Widget trailing = Text('...');
+                      String title = 'Awaiting Task',subtitle="Loading...";
+                      Widget trailing = Text('');
 
                       if(state is AppMapUploadTaskToDialogueState){
                         return StreamBuilder<StorageTaskEvent>(

@@ -61,9 +61,18 @@ class TimelinePostDBManager{
     return results;
   }
 
-  Future<TimelinePost> getTimelinePostByID(String id) async{
+  Future<TimelinePost> fetchTimelinePostByID(String id) async{
     var doc = await _ref.document(id).get();
     return TimelinePost.fromMap(doc.documentID, doc.data);
+  }
+
+  Future<TimelinePost> fetchOriginalPostByID(String postID) async{
+    var col = await _ref
+    .where('PostType',isEqualTo: 'original',)
+    .where('PostID',isEqualTo: postID)
+    .getDocuments();
+
+    return TimelinePost.fromMap(col.documents.first.documentID, col.documents.first.data);
   }
 
   Future<Null> addTimelinePost(TimelinePost timelinePost) async{
@@ -76,6 +85,21 @@ class TimelinePostDBManager{
 
   Future<Null> updateTimelinePost(TimelinePost timelinePost) async{
     await _ref.document(timelinePost.id).setData(timelinePost.toJson());
+  }
+
+  Future<Null> updateAllTPsWithPostID(String postID, TimelinePost tp) async{
+    var collection = await _ref.where('PostID',isEqualTo: postID).getDocuments();
+    collection.documents.forEach((doc) {
+      TimelinePost tPost = TimelinePost.fromMap(doc.documentID, doc.data);
+      tPost.title = tp.title;
+      tPost.description = tp.description;
+      tPost.gallerySources = tp.gallerySources;
+      tPost.thumbnailSrc = tp.thumbnailSrc;
+      tPost.tags = tp.tags;
+      tPost.postDeleted = tp.postDeleted;
+
+      updateTimelinePost(tPost);
+    });
   }
 
   Future<Null> updateDeletedPostTPs(String postID) async{

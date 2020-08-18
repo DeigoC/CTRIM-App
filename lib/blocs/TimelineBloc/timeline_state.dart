@@ -12,28 +12,29 @@ class TimelineEmptyState extends TimelineState {}
 class TimelineLoadingFeedState extends TimelineState{}
 
 abstract class TimelineFeedState extends TimelineState{
-  final Map<TimelinePost,Post> feedData;
+  final List<TimelinePost> feedData;
   TimelineFeedState(this.feedData);
 }
 
 class TimelineFetchedFeedState extends TimelineFeedState {
-  final Map<TimelinePost,Post> feedData;
+  final List<TimelinePost> feedData;
   TimelineFetchedFeedState(this.feedData):super(feedData);
 }
 
 class TimelineFetchedFeedWithTagsState extends TimelineFeedState{
-  final Map<TimelinePost,Post> feedData;
+  final List<TimelinePost> feedData;
   TimelineFetchedFeedWithTagsState(this.feedData):super(feedData);
 }
 
 class TimelineRebuildFeedState extends TimelineState{}
-
 class TimelineTagChangedState extends TimelineState {}
-
-//TODO change this?
 class TimelineNewPostUploadedState extends TimelineState{}
 class TimelineAttemptingToUploadNewPostState extends TimelineState{}
 
+class TimelineRebuildMyPostsPageState extends TimelineState {
+  final TimelinePost updatedOriginalTP;
+  TimelineRebuildMyPostsPageState(this.updatedOriginalTP);
+}
 
 // ! Search Post
 class TimelineSearchState extends TimelineState {}
@@ -59,10 +60,7 @@ class TimelineAlbumDisplaySearchResultsState extends TimelineAlbumSearchState {
   final List<Post> queryResults;
   TimelineAlbumDisplaySearchResultsState(this.queryResults);
 }
-class TimelineRebuildMyPostsPageState extends TimelineState {
-  final Map<Post, TimelinePost> postTime;
-  TimelineRebuildMyPostsPageState(this.postTime);
-}
+
 
 // ! User related
 class TimelineRebuildUserListState extends TimelineState{}

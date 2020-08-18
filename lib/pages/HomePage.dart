@@ -171,7 +171,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       });
     }else{
       if(_selectedIndex == 0){
-        _postsScrollController.animateTo(_postsScrollController.position.minScrollExtent,
+      _postsScrollController.animateTo(_postsScrollController.position.minScrollExtent,
       duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
       }else if(_selectedIndex==1){
         _locationScrollController.animateTo(_locationScrollController.position.minScrollExtent,

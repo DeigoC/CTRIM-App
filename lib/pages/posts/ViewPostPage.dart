@@ -12,8 +12,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 //import 'package:zefyr/zefyr.dart';
 
 class ViewPostPage extends StatefulWidget {
-  final Post _post;
-  ViewPostPage(this._post);
+  final String postID;
+  ViewPostPage(this.postID);
   @override
   _ViewPostPageState createState() => _ViewPostPageState();
 }
@@ -22,6 +22,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   TabController _tabController;
   //ZefyrController _zefyrController;
   FocusNode _fn;
+
+  Post _post;
 
   List<TimelinePost> _allTimelinePosts = [];
 
@@ -48,6 +50,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   void dispose() { 
     //_zefyrController.dispose();
    // SystemChrome.setSystemUIOverlayStyle(_systemStyle);
+   _tabController.dispose();
     _fn.dispose();
     super.dispose();
   }
@@ -55,11 +58,40 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: _buildFAB(),
+      floatingActionButton: _post==null ? null:_buildFAB(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: NestedScrollView(
+      body: _buildBody()
+    );
+  }
+
+  Widget _buildBody(){
+    if(_post!=null){
+      return  _buildBodyWithData();
+    }
+    return FutureBuilder<Post>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchPostByID(widget.postID),
+      builder: (_,snap){
+        Widget result;
+
+        if(snap.hasData){
+          result = Center(child: CircularProgressIndicator(),);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            setState(() { _post = snap.data; });
+          });
+        }else if(snap.hasError){
+          result = Center(child: Text('Something went wrong!'),);
+        }else{
+          result = Center(child: CircularProgressIndicator(),);
+        }
+        return result;
+      },
+    );
+  }
+
+  NestedScrollView _buildBodyWithData(){
+    return NestedScrollView(
         headerSliverBuilder: (_, __) {
-          bool hasImage = widget._post.firstImageSrc != null;
+          bool hasImage = _post.firstImageSrc != null;
           return [
             SliverAppBar(
               expandedHeight: MediaQuery.of(context).size.height * 0.33,
@@ -70,27 +102,27 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                     return false;
                   },
                   builder: (_, state) {
-                    bool liked = BlocProvider.of<AppBloc>(context).currentUser.likedPosts.contains(widget._post.id);
+                    bool liked = BlocProvider.of<AppBloc>(context).currentUser.likedPosts.contains(_post.id);
                     return IconButton(
                       tooltip: 'Save/unsave post',
                       icon: liked
                           ? Icon(Icons.favorite,color: Colors.red,)
                           : Icon(Icons.favorite_border),
                       onPressed: () => BlocProvider.of<AppBloc>(context)
-                          .add(AppPostLikeClickedEvent(widget._post)),
+                          .add(AppPostLikeClickedEvent(_post)),
                     );
                   },
                 ),
               ],
               flexibleSpace: FlexibleSpaceBar(
-                background: hasImage ? Image.network(widget._post.firstImageSrc, fit: BoxFit.cover,): null,
+                background: hasImage ? Image.network(_post.firstImageSrc, fit: BoxFit.cover,): null,
               ),
             ),
             SliverPadding(
               padding: EdgeInsets.all(8.0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  Text(widget._post.title,style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),),
+                  Text(_post.title,style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),),
                   TabBar(
                     labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
                     controller: _tabController,
@@ -125,30 +157,29 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
               _buildAboutTab(),
               _buildDetailsTab(),
               GalleryTabBody.view(
-                thumbnails: widget._post.thumbnails,
-                gallerySrc: widget._post.gallerySources),
+                thumbnails: _post.thumbnails,
+                gallerySrc: _post.gallerySources),
               _buildUpdatesTab(),
             ],
             //child: _buildTabBody(_selectedTabIndex)
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildFAB(){
-    if(!widget._post.isDateNotApplicable && widget._post.startDate.isAfter(DateTime.now())){
+    if(!_post.isDateNotApplicable && _post.startDate.isAfter(DateTime.now())){
       return FloatingActionButton.extended(
         onPressed: (){
           Event event = Event(
-            title: widget._post.title,
-            description: widget._post.description,
+            title: _post.title,
+            description: _post.description,
             location: BlocProvider.of<TimelineBloc>(context).selectableLocations
-            .firstWhere((element) => element.id == widget._post.locationID)
+            .firstWhere((element) => element.id == _post.locationID)
             .getAddressLine(),
-            startDate: widget._post.startDate,
-            endDate: widget._post.endDate,
-            allDay: widget._post.allDayEvent,
+            startDate: _post.startDate,
+            endDate: _post.endDate,
+            allDay: _post.allDayEvent,
           );
           Add2Calendar.addEvent2Cal(event);
         }, 
@@ -174,7 +205,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                    Text('Tags: ',style: TextStyle(fontSize: 18),),
                    Wrap(
                     spacing: 4,
-                    children: widget._post.selectedTagsString.map((tag) {
+                    children: _post.selectedTagsString.map((tag) {
                       return MyFilterChip(
                         label: tag,
                         selected: false,
@@ -212,9 +243,9 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
       _buildLocationWidget(),
       SizedBox(height: 16,),
       Text('Time',style: TextStyle(fontSize: 24),),
-      Text(widget._post.dateString,style: TextStyle(fontSize: 18),textAlign: TextAlign.center,),
+      Text(_post.dateString,style: TextStyle(fontSize: 18),textAlign: TextAlign.center,),
     ];
-    if (widget._post.detailTable.length != 0) {
+    if (_post.detailTable.length != 0) {
       children.addAll(_buildDetailListItems());
     }
 
@@ -231,7 +262,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
   Widget _buildLocationWidget(){
     Location l = BlocProvider.of<TimelineBloc>(context).allLocations
-    .firstWhere((element) => element.id == widget._post.locationID);
+    .firstWhere((element) => element.id == _post.locationID);
       
     if(l.id.compareTo('0')==0) return Text('N/A',style: TextStyle(fontSize: 18),);
     return MyFlatButton(
@@ -245,22 +276,22 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
   Widget _buildUpdatesTab(){
     if(_allTimelinePosts.length==0){
-      BlocProvider.of<TimelineBloc>(context).fetchPostUpdatesData(widget._post.id).then((timelines){
+      BlocProvider.of<TimelineBloc>(context).fetchPostUpdatesData(_post.id).then((timelines){
         setState(() {_allTimelinePosts = timelines;});
       });
       return Center(child: CircularProgressIndicator(),);
     }
-    return PostUpdatesTab(widget._post, _allTimelinePosts);
+    return PostUpdatesTab(_post, _allTimelinePosts);
   }
 
   List<Widget> _buildDetailListItems() {
     return [
       SizedBox(height: 32,),
-      Text(widget._post.detailTableHeader,style: TextStyle(fontSize: 24),),
+      Text(_post.detailTableHeader,style: TextStyle(fontSize: 24),),
       Divider(),
       Expanded(
         child: ListView.separated(
-          itemCount: widget._post.detailTable.length,
+          itemCount: _post.detailTable.length,
           padding: EdgeInsets.all(8),
           separatorBuilder: (_,index)=>Divider(thickness: 0.4,),
           itemBuilder: (_, index) {
@@ -270,11 +301,11 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(widget._post.detailTable[index]['Leading']),
+                    child: Text(_post.detailTable[index]['Leading']),
                     flex: 1,
                   ),
                   Expanded(
-                    child: Text(widget._post.detailTable[index]['Trailing']),
+                    child: Text(_post.detailTable[index]['Trailing']),
                     flex: 2,
                   )
                 ],

@@ -61,15 +61,11 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
     try{
       LocationDBManager locationDBManager = LocationDBManager(BlocProvider.of<AppBloc>(context));
       UserDBManager userDBManager = UserDBManager();
-      //PostDBManager postDBManager = PostDBManager(BlocProvider.of<AppBloc>(context));
-      //TimelinePostDBManager timelinePostDBManager = TimelinePostDBManager();
       AboutDBManager aboutDBManager = AboutDBManager();
       
       await aboutDBManager.fetchAllPosts();
       await locationDBManager.fetchAllLocations();
-      //await timelinePostDBManager.fetchAllTimelinePosts();
       await BlocProvider.of<TimelineBloc>(context).fetchMainPostFeed();
-      //await timelinePostDBManager.fetchHomeFeedTPs();
       userDBManager.fetchAllUsers().then((_){
         BlocProvider.of<AppBloc>(context).add(AppStartupLoadUserEvent());
       });

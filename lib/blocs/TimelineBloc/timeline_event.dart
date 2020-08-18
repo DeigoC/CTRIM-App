@@ -22,22 +22,25 @@ class TimelineTagClickedEvent extends TimelineEvent {
 
 class TimelinePostUpdateEvent extends TimelineEvent{
   final Post post;
-  final String uid, updateLog;
-  TimelinePostUpdateEvent(this.post, this.uid, this.updateLog);
+  final String uid, updateLog, thumbnailSrc;
+  final Map<String, String> gallerySrc;
+  TimelinePostUpdateEvent({this.post, this.uid, this.updateLog,this.thumbnailSrc, this.gallerySrc});
 }
 
 class TimelineUpdatePostEvent extends TimelinePostUpdateEvent {
   final Post post;
-  final String uid, updateLog;
-  TimelineUpdatePostEvent({this.post, this.uid, this.updateLog}) : 
-  super(post, uid, updateLog);
+  final String uid, updateLog, thumbnailSrc;
+  final Map<String, String> gallerySrc;
+  TimelineUpdatePostEvent({this.post, this.uid, this.updateLog, this.gallerySrc, this.thumbnailSrc}) : 
+  super();
 }
 
 class TimelineDeletePostEvent extends TimelinePostUpdateEvent{
   final Post post;
-  final String uid;
-  TimelineDeletePostEvent({this.post, this.uid})
-  :super(post, uid, 'Post Deleted');
+  final String uid, updateLog, thumbnailSrc;
+  final Map<String, String> gallerySrc;
+  TimelineDeletePostEvent({this.post, this.uid, this.updateLog = 'Post Deleted', this.gallerySrc, this.thumbnailSrc})
+  :super();
 }
 
 // ! User related

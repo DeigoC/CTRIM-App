@@ -16,6 +16,7 @@ class AppStorage{
   String directory ='';
 
   final AppBloc _appBloc;
+
   AppStorage(this._appBloc){
     getApplicationDocumentsDirectory().then((d) => directory =d.path);
   }
@@ -30,7 +31,7 @@ class AppStorage{
         String filePath = 'posts/${post.id}/item_$index';
 
         if(post.temporaryFiles[fileSrc]=='img'){
-          _appBloc.add(AppUploadCompressingImageEvent(itemNo: itemNo, totalLength: totalLength));//TODO finish this up!
+          _appBloc.add(AppUploadCompressingImageEvent(itemNo: itemNo, totalLength: totalLength));
           itemToSend = await _compressImage(fileSrc);
         }
         
@@ -85,7 +86,7 @@ class AppStorage{
       await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
         File itemToSend = File(fileSrc);
         String filePath = 'posts/${post.id}/item_$index';
-        itemNo = index + 1;
+        itemNo = index - totalLength;
 
         if(post.temporaryFiles[fileSrc]=='img'){
           _appBloc.add(AppUploadCompressingImageEvent(itemNo: itemNo, totalLength: totalLength));
@@ -96,8 +97,11 @@ class AppStorage{
         _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: itemNo,totalLength: totalLength));
 
         await task.onComplete.then((_) async{
-          await _ref.child(filePath).getDownloadURL().then((url){
+          await _ref.child(filePath).getDownloadURL().then((url) async{
             post.gallerySources[url] = post.temporaryFiles[fileSrc];
+            if(post.temporaryFiles[fileSrc] == 'vid'){
+              post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(fileSrc, filePath);
+            }
           });
           index++;
         });

@@ -111,7 +111,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
 
   Widget _buildNewListBody(){
     return FutureBuilder<Map<TimelinePost, Post>>(
-      future: BlocProvider.of<TimelineBloc>(context).fetchAllUserPosts(widget.user.id),
+      future: null,//BlocProvider.of<TimelineBloc>(context).fetchAllUserPosts(widget.user.id),
       builder: (_,snap){
         SliverChildDelegate result;
 
@@ -147,7 +147,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
           allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
           mode: 'view',
           timelinePost: data.keys.elementAt(index),
-          post: data[data.keys.elementAt(index)],
+          //post: data[data.keys.elementAt(index)],
         );
       },
       childCount: data.length

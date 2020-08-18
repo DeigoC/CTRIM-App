@@ -48,7 +48,16 @@ class PostDBManager{
   Future<Null> updatePost(Post post) async{
     await _appStorage.uploadEditPostNewFiles(post);
     post.temporaryFiles.clear();
+    _removeUnusedThumbnails(post);
     await _ref.document(post.id).setData(post.toJson());
+  }
+
+  void _removeUnusedThumbnails(Post post){
+    List<String> gallerySrcs = post.gallerySources.keys.toList(), srcsToRemove =[];
+    post.thumbnails.keys.forEach((src) {
+      if(!gallerySrcs.contains(src)) srcsToRemove.add(src);
+    });
+    srcsToRemove.forEach((src) => post.thumbnails.remove(src));
   }
 
 }

@@ -44,12 +44,12 @@ class _GalleryItemState extends State<GalleryItem> {
 
   @override
   void initState() {
-    if(widget.type=='vid'){
-      if(widget.isItemAFile){
-        _videoPlayerController = VideoPlayerController.file(File(widget.filePath));
-        _videoPlayerController.initialize().then((_){ setState(() {});});
-      }
-    }
+    /* print('--------------TYPE IS ' + widget.type + '----------------is file: ' + widget.isItemAFile.toString());
+    if(widget.type.compareTo('vid')==0 && widget.isItemAFile){
+      print('-----------------INITIALISING VIDEO------------');
+      _videoPlayerController = VideoPlayerController.file(File(widget.filePath));
+      _videoPlayerController.initialize().then((_){ setState(() {});});
+    } */
     super.initState();
   }
 
@@ -67,6 +67,12 @@ class _GalleryItemState extends State<GalleryItem> {
       // * 4 blocks accross so 5 paddings accross
       _pictureSize = MediaQuery.of(context).size.width * 0.2375;
       _paddingSize = MediaQuery.of(context).size.width * 0.01;
+    }
+
+    // ! This has to be done here to avoid times when Items 'overlap'
+    if(widget.type.compareTo('vid')==0 && widget.isItemAFile && _videoPlayerController==null){
+      _videoPlayerController = VideoPlayerController.file(File(widget.filePath));
+      _videoPlayerController.initialize().then((_){ setState(() {});});
     }
 
     if(widget.isItemAFile) return widget.type=='vid' ?  _buildFileVideoContainer(): _buildFileImageContainer();
@@ -138,6 +144,11 @@ class _GalleryItemState extends State<GalleryItem> {
   }
 
   Widget _buildFileVideoContainer(){
+    bool initialised = false;
+    if(_videoPlayerController != null){
+      initialised = _videoPlayerController.value.initialized;
+    }
+
     return Padding(
       padding:  EdgeInsets.only(top: _paddingSize, left: _paddingSize),
       child: AnimatedContainer(
@@ -145,10 +156,11 @@ class _GalleryItemState extends State<GalleryItem> {
         curve: Curves.easeInOut,
         width: _pictureSize,
         height: _pictureSize,
+        //color: Colors.black,
         child: Stack(
           alignment: Alignment.center,
           children:[ 
-            VideoPlayer(_videoPlayerController),
+            initialised ? VideoPlayer(_videoPlayerController):CircularProgressIndicator(),
             Icon(Icons.play_circle_outline, color: Colors.white,),
             widget.child??Container(),
           ]),

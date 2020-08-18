@@ -136,7 +136,7 @@ class _AppState extends State<App> {
         case HomeRoute: screen = HomePage();
         break;
 
-        case ViewEventRoute: screen = ViewPostPage(arguments['post']);
+        case ViewEventRoute: screen = ViewPostPage(arguments['postID']);
         break;
 
         case AddEventRoute: screen = AddEventPage();
@@ -184,7 +184,7 @@ class _AppState extends State<App> {
         case ViewMyPostsRoute: screen = ViewMyPostsPage();
         break;
 
-        case EditPostRoute: screen = EditPostPage(arguments['post']);
+        case EditPostRoute: screen = EditPostPage(arguments['postID']);
         break;
 
         case EditAlbumRoute: screen = EditAlbumPage(arguments['postBloc']);

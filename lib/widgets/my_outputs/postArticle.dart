@@ -10,19 +10,17 @@ import 'package:flutter_image/network.dart';
 
 // ignore: must_be_immutable
 class PostArticle extends StatelessWidget {
-  final Post post;
   final List<User> allUsers;
   final TimelinePost timelinePost;
   final String mode;
   bool _isOriginal;
   BuildContext _context;
 
-  PostArticle(
-      {@required this.post,
-      @required this.timelinePost,
-      @required this.allUsers,
-      @required this.mode,
-    });
+  PostArticle({
+    @required this.timelinePost,
+    @required this.allUsers,
+    @required this.mode,
+  });
        
  
   @override
@@ -49,12 +47,12 @@ class PostArticle extends StatelessWidget {
     List<Widget> colChildren = [
       RichText(
         text: TextSpan(
-          text: post.title,
+          text: timelinePost.title,
           style:TextStyle(fontSize: isUpdatePost ? 22 : 26, color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
           ? Colors.white : Colors.black),
           children: [
             TextSpan(
-                text: _getAuthorNameAndTagsLine(timelinePost, post),
+                text: _getAuthorNameAndTagsLine(timelinePost),
                 style: TextStyle(fontSize: isUpdatePost ? 8 : 12,color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
           ? Colors.white60 : Colors.black.withOpacity(0.6)))
           ],
@@ -71,13 +69,13 @@ class PostArticle extends StatelessWidget {
   }
 
   void _addDescription(List<Widget> colChildren) {
-    if (post.description.trim().length > 0) {
+    if (timelinePost.description.trim().length > 0) {
       colChildren.add(
         Padding(
         padding: EdgeInsets.only(top: 8),
         child:
         Text(
-          post.description,
+          timelinePost.description,
           style: TextStyle(fontSize: 16),
         ),
       ));
@@ -85,13 +83,12 @@ class PostArticle extends StatelessWidget {
   }
 
   void _addImages(List<Widget> colChildren) {
-    if (post.gallerySources.length != 0) {
+    if (timelinePost.gallerySources.length != 0) {
       colChildren.add(Padding(
         padding: EdgeInsets.symmetric(vertical: 8.0),
         child: PostArticleMediaContainer(
           isOriginal: _isOriginal,
           timelinePost: timelinePost,
-          post: post,
         ),
       ));
     }
@@ -120,12 +117,12 @@ class PostArticle extends StatelessWidget {
     );
   }
 
-  String _getAuthorNameAndTagsLine(TimelinePost timelinePost,Post post,) {
+  String _getAuthorNameAndTagsLine(TimelinePost timelinePost) {
     String result = '\nBy ';
     User author = _getUserFromID(timelinePost.authorID);
     result += author.forename + ' ' + author.surname[0] + '. ';
     result += timelinePost.getPostDateString();
-    result += post.getTagsString();
+    result += timelinePost.getTagsString();
     return result;
   }
 
@@ -140,18 +137,16 @@ class PostArticle extends StatelessWidget {
   }
 
   void _performOnTapFunction() {
-    if(mode.compareTo('view')==0) BlocProvider.of<AppBloc>(_context).add(AppToViewPostPageEvent(post));
-    else if(mode.compareTo('edit')==0)  BlocProvider.of<AppBloc>(_context).add(AppToEditPostPageEvent(post));
-   
+    if(mode.compareTo('view')==0) BlocProvider.of<AppBloc>(_context).add(AppToViewPostPageEvent(timelinePost.postID));
+    else if(mode.compareTo('edit')==0)  BlocProvider.of<AppBloc>(_context).add(AppToEditPostPageEvent(timelinePost.postID));
   }
 }
 
 class PostArticleMediaContainer extends StatefulWidget {
-  final Post post;
   final bool isOriginal;
   final TimelinePost timelinePost;
   
-  PostArticleMediaContainer({@required this.post, @required this.isOriginal, @required this.timelinePost});
+  PostArticleMediaContainer({@required this.isOriginal, @required this.timelinePost});
   @override
   _PostArticleMediaContainerState createState() => _PostArticleMediaContainerState();
 }
@@ -165,22 +160,17 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
 
    @override
   void initState() {
-    _initalPostID = widget.post.id;
+    _initalPostID = widget.timelinePost.postID;
     super.initState();
   }
 
-  @override
-  void dispose() { 
-    super.dispose();
-  }
-
   void _initialiseData(){
-    List<String> srcs = widget.post.gallerySources.keys.toList();
+    List<String> srcs = widget.timelinePost.gallerySources.keys.toList();
     srcs.sort();
 
-    if(widget.post.gallerySources.length !=0 && !_initialisedData){
+    if(widget.timelinePost.gallerySources.length !=0 && !_initialisedData){
       String src = srcs.first;
-      String type = widget.post.gallerySources[src];
+      String type = widget.timelinePost.gallerySources[src];
       
       if(type =='vid'){
         _gallerySrc[src] = ImageTag(
@@ -192,10 +182,10 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
         int imageNo = 0;
 
         srcs.forEach((key) {
-          if(imageNo != 4 &&  widget.post.gallerySources[key]=='img'){
+          if(imageNo != 4 &&  widget.timelinePost.gallerySources[key]=='img'){
             _gallerySrc[key] = ImageTag(
               src: key,
-              type: widget.post.gallerySources[key],
+              type: widget.timelinePost.gallerySources[key],
               tPostID: widget.isOriginal ? '0' : widget.timelinePost.id
             );
             imageNo++;
@@ -207,19 +197,21 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
 
   @override
   Widget build(BuildContext context) {
-    if(_initalPostID.compareTo(widget.post.id) != 0){
+    if(_initalPostID.compareTo(widget.timelinePost.id) != 0){
       // ! Data has changed
-
       WidgetsBinding.instance.addPostFrameCallback((_) {
          if(mounted){
            setState(() {
           _initialisedData = false;
-          _initalPostID = widget.post.id;
+          _initalPostID = widget.timelinePost.id;
           _gallerySrc.clear();
         });
          }
       });
-      return Center(child: CircularProgressIndicator(),);
+      return AspectRatio(
+        aspectRatio: 16/9,
+        child: Center(child: CircularProgressIndicator(),)
+      );
     }else{
       _initialiseData();
     }
@@ -292,7 +284,7 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
   }
 
   Widget _buildVideoContainer(int index){
-    String thumbnailSrc = widget.post.thumbnails[_gallerySrc.keys.elementAt(index)];
+    String thumbnailSrc = widget.timelinePost.thumbnailSrc;
     return GestureDetector(
       onTap: ()=>_moveToViewImageVideo(index),
       child: Container(

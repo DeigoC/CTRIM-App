@@ -1,6 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
-import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ class ViewMyPostsPage extends StatefulWidget {
 
 class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
   bool _showDeleted = false;
+  List<TimelinePost> _allUserTPs = [];
 
   @override
   Widget build(BuildContext context) {
@@ -38,23 +38,32 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
           ),
         ],
       ),
-      body: BlocBuilder<TimelineBloc, TimelineState>(condition: (_, state) {
+      body: BlocBuilder<TimelineBloc, TimelineState>(
+        condition: (_, state) {
         if (state is TimelineRebuildMyPostsPageState) return true;
         return false;
       }, builder: (_, state) {
+        if(state is TimelineRebuildMyPostsPageState){
+          _allUserTPs.removeWhere((e) => state.updatedOriginalTP.id.compareTo(e.id)==0);
+          _allUserTPs.add(state.updatedOriginalTP);
+          return _buildBodyWithData(_allUserTPs);
+        }
         return _newBody();
       }),
     );
   }
 
   Widget _newBody(){
-    return FutureBuilder<Map<TimelinePost, Post>>(
+    return FutureBuilder<List<TimelinePost>>(
       future: BlocProvider.of<TimelineBloc>(context).fetchAllUserPosts(BlocProvider.of<AppBloc>(context).currentUser.id),
       builder: (_,snap){
         Widget result;
 
         if(snap.hasData){
           result = _buildBodyWithData(snap.data);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            setState(() {_allUserTPs = snap.data;});
+          });
         }else if(snap.hasError){
           result = Center(child: Text('Something went wrong!'),);
         }else{
@@ -65,11 +74,12 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
     );
   }
 
-  Widget _buildBodyWithData(Map<TimelinePost, Post> data){
-    Map<TimelinePost, Post> deleted = Map.from(data), notDeleted = Map.from(data);
-    deleted.removeWhere((key, value) => !value.deleted);
-    notDeleted.removeWhere((key, value) => value.deleted);
-    Map<TimelinePost, Post> listToDisplay = _showDeleted ? deleted : notDeleted;
+  Widget _buildBodyWithData(List<TimelinePost> data){
+    List<TimelinePost> deleted = List.from(data), notDeleted = List.from(data);
+    deleted.removeWhere((value) => !value.postDeleted);
+    notDeleted.removeWhere((value) => value.postDeleted);
+    List<TimelinePost> listToDisplay = _showDeleted ? deleted : notDeleted;
+    listToDisplay.sort((a,b)=>b.postDate.compareTo(a.postDate));
 
     return ListView.builder(
       itemCount: listToDisplay.length,
@@ -77,8 +87,8 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
         return PostArticle(
           mode: 'edit',
           allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
-          timelinePost: listToDisplay.keys.elementAt(index),
-          post: data[listToDisplay.keys.elementAt(index)],
+          timelinePost: listToDisplay.elementAt(index),
+          //post: data[listToDisplay.keys.elementAt(index)],
         );
       }
     );

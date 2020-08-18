@@ -98,7 +98,13 @@ class GalleryTabBody extends StatelessWidget {
 
     wrapChildren.addAll(BlocProvider.of<PostBloc>(_context).files.keys.map((file) {
       String type = BlocProvider.of<PostBloc>(_context).files[file];
-      return type == 'vid'? GalleryItem.file(type: 'vid', filePath: file,thumbnails: thumbnails,)
+     
+
+      return type == 'vid'? 
+      GalleryItem.file(type: 'vid', 
+      filePath: file,
+      thumbnails: thumbnails,
+      )
       : GalleryItem.file(type: 'img', filePath: file,thumbnails: thumbnails,);
     }).toList());
 

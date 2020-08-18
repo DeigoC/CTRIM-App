@@ -77,7 +77,7 @@ class _SearchPostsPageState extends State<SearchPostsPage> {
     List<TimelinePost> _timelines = state.timelines;
     List<Widget> children = _timelines
         .map((timelinePost) => PostArticle(
-              post: _getPostFromID(timelinePost.postID, state.posts),
+              //post: _getPostFromID(timelinePost.postID, state.posts),
               allUsers: state.users,
               timelinePost: timelinePost,
               mode: 'view',

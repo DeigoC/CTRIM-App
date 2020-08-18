@@ -50,8 +50,8 @@ class AppToHomePageEvent extends AppNavigateToPageEvent{}
 
 // ! Posts
 class AppToViewPostPageEvent extends AppNavigateToPageEvent {
-  final Post post;
-  AppToViewPostPageEvent(this.post);
+  final String postID;
+  AppToViewPostPageEvent(this.postID);
 }
 class AppToAddPostPageEvent extends AppNavigateToPageEvent {}
 
@@ -66,8 +66,8 @@ class AppToPostBodyEditorEvent extends AppNavigateToPageEvent {
 }
 class AppToViewMyPostsPageEvent extends AppNavigateToPageEvent {}
 class AppToEditPostPageEvent extends AppNavigateToPageEvent {
-  final Post post;
-  AppToEditPostPageEvent(this.post);
+  final String postID;
+  AppToEditPostPageEvent(this.postID);
 }
 class AppToSearchPostsPageEvent extends AppNavigateToPageEvent {}
 

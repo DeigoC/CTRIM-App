@@ -99,7 +99,8 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
         label: 'Remove ${_selectedFiles.length} items',
         isDestructive: true,
         onPressed: (){
-          widget._postBloc.add(PostRemoveSelectedFilesAndSrcEvent(_selectedFiles));
+          List<String> selectedFiles = List.from(_selectedFiles);
+          widget._postBloc.add(PostRemoveSelectedFilesAndSrcEvent(selectedFiles));
           setState(() {
             _selectedFiles.clear();
             _onDeleteMode = false;
@@ -250,7 +251,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
             setState(() {
             if(selected)_selectedFiles.remove(src);
             else _selectedFiles.add(src);
-          }); 
+            }); 
           }
         },
         child: Opacity(
