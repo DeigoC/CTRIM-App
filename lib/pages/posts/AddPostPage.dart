@@ -138,6 +138,8 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                   _postBloc.newPost,
                   BlocProvider.of<AppBloc>(context).currentUser.id,
                 ));
+                
+                _postBloc.add(PostLocationAddReferenceEvent());
               }
             });
           }

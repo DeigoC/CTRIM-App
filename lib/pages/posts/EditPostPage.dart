@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ctrim_app_v1/App.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
@@ -152,9 +153,12 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
               },
               listener: (_,state){
                 if(state is TimelineRebuildMyPostsPageState){
-                 Navigator.of(context).pop();
-                 Navigator.of(context).pop();
-                 Navigator.of(context).pop();
+                  //Navigator.of(context).popUntil(ModalRoute.withName(ViewMyPostsRoute));
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  if(!state.updatedOriginalTP.postDeleted){
+                    Navigator.of(context).pop();
+                  }
                }else if(state is TimelineAttemptingToUploadNewPostState){
                  ConfirmationDialogue.uploadTaskStarted(context: context);
                }
@@ -189,7 +193,8 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
           if(confirmation){
             BlocProvider.of<TimelineBloc>(context).add(
               TimelineDeletePostEvent(post: _post, uid: BlocProvider.of<AppBloc>(context).currentUser.id));
-            Navigator.of(context).pop();
+             
+             _postBloc.add(PostLocationRemoveReferenceEvent());
           }
         });
       },

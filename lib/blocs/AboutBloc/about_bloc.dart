@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/aboutDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:meta/meta.dart';
-//import 'package:zefyr/zefyr.dart';
+import 'package:zefyr/zefyr.dart';
 import 'dart:convert';
 
 part 'about_event.dart';
@@ -42,18 +42,16 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
       socialLinks: articleToEdit.socialLinks,
     );
   }
-
-  //TODO changed: was NotusDocument
-  getAboutBody(){
+  
+  NotusDocument getAboutBody(){
     if(_articleToEdit.body==''){
       List<dynamic> initialWords = [
         {"insert": "Body Starts Here\n"}
       ];
-      //return NotusDocument.fromJson(initialWords);
+      return NotusDocument.fromJson(initialWords);
     }
     var jsonDecoded = jsonDecode(_articleToEdit.body);
-    //return NotusDocument.fromJson(jsonDecoded);
-    return null;
+    return NotusDocument.fromJson(jsonDecoded);
   }
 
   @override

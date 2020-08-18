@@ -12,7 +12,7 @@ class ViewMyPostsPage extends StatefulWidget {
 
 class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
   bool _showDeleted = false;
-  List<TimelinePost> _allUserTPs = [];
+  List<TimelinePost> _allUserTPs;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +48,9 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
           _allUserTPs.add(state.updatedOriginalTP);
           return _buildBodyWithData(_allUserTPs);
         }
+        if(_allUserTPs!=null){
+          return  _buildBodyWithData(_allUserTPs);
+        }
         return _newBody();
       }),
     );
@@ -60,7 +63,7 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
         Widget result;
 
         if(snap.hasData){
-          result = _buildBodyWithData(snap.data);
+          result = Center(child: CircularProgressIndicator(),);
           WidgetsBinding.instance.addPostFrameCallback((_) {
             setState(() {_allUserTPs = snap.data;});
           });
@@ -76,6 +79,7 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
 
   Widget _buildBodyWithData(List<TimelinePost> data){
     List<TimelinePost> deleted = List.from(data), notDeleted = List.from(data);
+
     deleted.removeWhere((value) => !value.postDeleted);
     notDeleted.removeWhere((value) => value.postDeleted);
     List<TimelinePost> listToDisplay = _showDeleted ? deleted : notDeleted;

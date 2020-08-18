@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-//import 'package:zefyr/zefyr.dart';
+import 'package:zefyr/zefyr.dart';
 
 class AboutArticle{
 
@@ -57,16 +57,15 @@ class AboutArticle{
     });
     return result;
   } 
-  
-  //TODO changed: was NotusDocument
-  getBodyDocument(){
+ 
+  NotusDocument getBodyDocument(){
     if(body == null || body == ''){
       List<dynamic> initialWords = [
         {"insert": "Body Starts Here\n"}
       ];
-      //return NotusDocument.fromJson(initialWords);
+      return NotusDocument.fromJson(initialWords);
     }
     var jsonDecoded = jsonDecode(body);
-    //return NotusDocument.fromJson(jsonDecoded);
+    return NotusDocument.fromJson(jsonDecoded);
   }
 }

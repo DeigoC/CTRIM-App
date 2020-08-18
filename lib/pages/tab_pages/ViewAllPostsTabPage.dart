@@ -1,6 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
-import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,8 +30,8 @@ class ViewAllEventsPage {
   Widget buildBody() {
     return RefreshIndicator(
       onRefresh: () async {
-        await BlocProvider.of<TimelineBloc>(_context).reloadAllRecords().then((_){
-          BlocProvider.of<TimelineBloc>(_context).add(TimelineFetchAllPostsEvent());
+        await BlocProvider.of<TimelineBloc>(_context).processRefresh().then((_){
+          BlocProvider.of<TimelineBloc>(_context).add(TimelineRefreshCompletedEvent());
         });
       },
       child: NotificationListener(
@@ -143,7 +142,7 @@ class ViewAllEventsPage {
                 }
               },
               buildWhen: (_, state) {
-                if (state is TimelineFeedState) return true;
+                if (state is TimelineDisplayFilteredFeedState) return true;
                 else if(state is TimelineNewPostUploadedState) return true;
                 else if(state is TimelineLoadingFeedState) return true;
                 else if(state is TimelineRebuildFeedState) return true;
@@ -160,7 +159,7 @@ class ViewAllEventsPage {
                     ]),
                   );
                 }
-                else if(state is TimelineFeedState){
+                else if(state is TimelineDisplayFilteredFeedState){
                   return _buildFeedList(state.feedData);
                 }
                 return _buildFeedList(BlocProvider.of<TimelineBloc>(_context).feedData);

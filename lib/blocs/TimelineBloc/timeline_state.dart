@@ -11,19 +11,9 @@ class TimelineInitial extends TimelineState {}
 class TimelineEmptyState extends TimelineState {}
 class TimelineLoadingFeedState extends TimelineState{}
 
-abstract class TimelineFeedState extends TimelineState{
+class TimelineDisplayFilteredFeedState extends TimelineState{
   final List<TimelinePost> feedData;
-  TimelineFeedState(this.feedData);
-}
-
-class TimelineFetchedFeedState extends TimelineFeedState {
-  final List<TimelinePost> feedData;
-  TimelineFetchedFeedState(this.feedData):super(feedData);
-}
-
-class TimelineFetchedFeedWithTagsState extends TimelineFeedState{
-  final List<TimelinePost> feedData;
-  TimelineFetchedFeedWithTagsState(this.feedData):super(feedData);
+  TimelineDisplayFilteredFeedState(this.feedData);
 }
 
 class TimelineRebuildFeedState extends TimelineState{}

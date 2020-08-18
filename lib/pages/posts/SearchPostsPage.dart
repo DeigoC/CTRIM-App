@@ -1,5 +1,4 @@
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
-import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +76,6 @@ class _SearchPostsPageState extends State<SearchPostsPage> {
     List<TimelinePost> _timelines = state.timelines;
     List<Widget> children = _timelines
         .map((timelinePost) => PostArticle(
-              //post: _getPostFromID(timelinePost.postID, state.posts),
               allUsers: state.users,
               timelinePost: timelinePost,
               mode: 'view',
@@ -89,15 +87,5 @@ class _SearchPostsPageState extends State<SearchPostsPage> {
         itemBuilder: (_, index) {
           return children[index];
         });
-  }
-
-  Post _getPostFromID(String id, List<Post> allPosts) {
-    Post result;
-    allPosts.forEach((post) {
-      if (post.id.compareTo(id) == 0) {
-        result = post;
-      }
-    });
-    return result;
   }
 }

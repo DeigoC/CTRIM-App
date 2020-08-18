@@ -4,9 +4,6 @@ import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 class TimelinePostDBManager{
   static final CollectionReference _ref = Firestore.instance.collection('timelinePosts');
 
-  static List<TimelinePost> _feedTPs;
-  static List<TimelinePost> get feedTimelinePosts => _feedTPs;
-
   Future<List<TimelinePost>> fetchHomeFeedTPs() async{
     var collections = await _ref
     .limit(25)
@@ -14,21 +11,18 @@ class TimelinePostDBManager{
     .orderBy('PostDate',descending: true)
     .getDocuments();
     
-    _feedTPs = collections.documents.map((doc) => TimelinePost.fromMap(doc.documentID, doc.data)).toList();
-    return _feedTPs;
+    return collections.documents.map((doc) => TimelinePost.fromMap(doc.documentID, doc.data)).toList();
   }
 
-  Future<List<TimelinePost>> fetchFeedWithTags(List<String> postIDs) async{
-    List<DocumentSnapshot> snaps=[];
-    await Future.forEach(postIDs, (postID)async{
-      var docSnaps = await _ref
-      .where('PostID',isEqualTo: postID)
-      .where('PostType',isEqualTo: 'original')
-      .getDocuments();
-      snaps.addAll(docSnaps.documents);
-    });
+  Future<List<TimelinePost>> fetchFeedWithTags(List<String> tags) async{
+    tags.sort();
+  
+    var collections = await _ref.limit(10)
+    .where('Tags', isEqualTo: tags)
+    .orderBy('PostDate',descending: true)
+    .getDocuments();
     
-    return snaps.map((doc) => TimelinePost.fromMap(doc.documentID, doc.data)).toList();
+    return collections.documents.map((doc) => TimelinePost.fromMap(doc.documentID, doc.data)).toList();
   }
 
   // ? Test again
@@ -40,10 +34,26 @@ class TimelinePostDBManager{
         results.add(TimelinePost.fromMap(doc.documentID, doc.data));
       }
     });
+    results.sort((a,b) => b.postDate.compareTo(a.postDate));
     return results;
   }
 
-  Future<List<TimelinePost>> fetchUserPosts(String userID) async{
+  Future<List<TimelinePost>> fetchUserPosts(String userID,) async{
+    var collection = await _ref
+    .where('AuthorID', isEqualTo: userID)
+    .where('PostType',isEqualTo: 'original')
+    .where('PostDeleted',isEqualTo: false)
+    .getDocuments();
+
+    List<TimelinePost> results = collection.documents
+    .map((doc) => TimelinePost.fromMap(doc.documentID, doc.data)).toList();
+    results.sort((a,b) => b.postDate.compareTo(a.postDate));
+    return results;
+  }
+
+  Future<List<TimelinePost>> fetchAllUserPosts(String userID,) async{
+    
+    
     var collection = await _ref
     .where('AuthorID', isEqualTo: userID)
     .where('PostType',isEqualTo: 'original')
@@ -51,8 +61,9 @@ class TimelinePostDBManager{
 
     List<TimelinePost> results = collection.documents
     .map((doc) => TimelinePost.fromMap(doc.documentID, doc.data)).toList();
+    results.sort((a,b) => b.postDate.compareTo(a.postDate));
     return results;
-  }
+}
 
   Future<List<TimelinePost>> fetchTimelinePostsFromPostID(String postID) async{
     var collection = await _ref.where('PostID', isEqualTo: postID).getDocuments();
@@ -109,5 +120,10 @@ class TimelinePostDBManager{
       tp.postDeleted= true;
       updateTimelinePost(tp);
     });
+  }
+
+  Future<bool> hasTimelinePostsChanged(String latestID) async{
+    var col = await _ref.limit(1).orderBy('PostDate',descending: true).getDocuments();
+    return col.documents.first.documentID.compareTo(latestID)!=0;
   }
 }

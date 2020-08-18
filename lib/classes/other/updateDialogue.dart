@@ -67,6 +67,8 @@ class _UpdateLogDialogueState extends State<UpdateLogDialogue> {
                             uid: userID, 
                             updateLog:_tecUpdateLog.text)
                           );
+
+                           widget.postBloc.add(PostLocationCheckReferenceEvent());
                         }
                       : null,
                 ),

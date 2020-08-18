@@ -9,7 +9,7 @@ import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/updatesTabBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-//import 'package:zefyr/zefyr.dart';
+import 'package:zefyr/zefyr.dart';
 
 class ViewPostPage extends StatefulWidget {
   final String postID;
@@ -20,7 +20,7 @@ class ViewPostPage extends StatefulWidget {
 
 class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderStateMixin {
   TabController _tabController;
-  //ZefyrController _zefyrController;
+  ZefyrController _zefyrController;
   FocusNode _fn;
 
   Post _post;
@@ -30,26 +30,13 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   @override
   void initState() {
     _tabController = TabController(vsync: this, length: 4);
-    /* _zefyrController = ZefyrController(widget._post.getBodyDoc())..addListener(() {
-      NotusStyle style =  _zefyrController.getSelectionStyle();
-      if(style.contains(NotusAttribute.link)){
-        AppBloc.openURL(style.values.first.value, context);
-      }
-    }); */
-
-    /* _systemStyle = SystemChrome.latestStyle;
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.red
-    )); */
-  
     _fn = FocusNode();
     super.initState();
   }
 
   @override
   void dispose() { 
-    //_zefyrController.dispose();
-   // SystemChrome.setSystemUIOverlayStyle(_systemStyle);
+   _zefyrController.dispose();
    _tabController.dispose();
     _fn.dispose();
     super.dispose();
@@ -76,7 +63,15 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         if(snap.hasData){
           result = Center(child: CircularProgressIndicator(),);
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() { _post = snap.data; });
+            setState(() { 
+              _post = snap.data; 
+              _zefyrController = ZefyrController(_post.getBodyDoc())..addListener(() {
+                NotusStyle style =  _zefyrController.getSelectionStyle();
+                if(style.contains(NotusAttribute.link)){
+                  AppBloc.openURL(style.values.first.value, context);
+                }
+              });
+            });
           });
         }else if(snap.hasError){
           result = Center(child: Text('Something went wrong!'),);
@@ -161,7 +156,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                 gallerySrc: _post.gallerySources),
               _buildUpdatesTab(),
             ],
-            //child: _buildTabBody(_selectedTabIndex)
           ),
         ),
       );
@@ -191,49 +185,17 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
 
   Widget _buildAboutTab() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-           padding: EdgeInsets.only(left: 8),
-           child: Column(
-             crossAxisAlignment: CrossAxisAlignment.stretch,
-             children: [
-               Row(
-                 crossAxisAlignment: CrossAxisAlignment.center,
-                 children: [
-                   Text('Tags: ',style: TextStyle(fontSize: 18),),
-                   Wrap(
-                    spacing: 4,
-                    children: _post.selectedTagsString.map((tag) {
-                      return MyFilterChip(
-                        label: tag,
-                        selected: false,
-                        onSelected: (_)=>null,
-                      );
-                    }).toList(),
-              ),
-                 ],
-               ),
-             ],
-           ),
-         ),
-         Divider(),
-         Expanded(
-            child: Text('To be fixed')/* ZefyrTheme(
-             data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
-             child: ZefyrScaffold(
-               child: ZefyrEditor(
-                 focusNode: _fn,
-                 autofocus: false,
-                 mode: ZefyrMode.view,
-                 controller: _zefyrController,
-               ),
-             ),
-           ), */
-         ),
-      ],
-    );
+    return ZefyrTheme(
+      data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
+      child: ZefyrScaffold(
+        child: ZefyrEditor(
+          focusNode: _fn,
+          autofocus: false,
+          mode: ZefyrMode.view,
+          controller: _zefyrController,
+        ),
+      ),
+    );  
   }
 
   Widget _buildDetailsTab() {

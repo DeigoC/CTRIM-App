@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-//import 'package:zefyr/zefyr.dart';
+import 'package:zefyr/zefyr.dart';
 
 enum PostTag { MEN, YOUTH, WOMEN, KIDS, BELFAST, NORTHCOAST, PORTADOWN, EVENTS, TESTIMONIES }
 
@@ -145,10 +145,9 @@ class Post {
     }
   }
 
-//TODO changed: was NotusDocument
-  getBodyDoc() {
+  NotusDocument getBodyDoc() {
     var jsonDecoded = jsonDecode(body);
-    //return NotusDocument.fromJson(jsonDecoded);
+    return NotusDocument.fromJson(jsonDecoded);
   }
 
   String getTagsString() {
@@ -211,7 +210,7 @@ class Post {
   }
 
   List<String> get selectedTagsString {
-    return selectedTags.map((tag) {
+    List<String> result = selectedTags.map((tag) {
       switch (tag) {
         case PostTag.YOUTH:return 'Youth';
         case PostTag.WOMEN:return 'Women';
@@ -225,5 +224,7 @@ class Post {
       }
       return null;
     }).toList();
+    result.sort();
+    return result;
   }
 }

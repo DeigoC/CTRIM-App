@@ -110,8 +110,8 @@ class _ViewUserPageState extends State<ViewUserPage> {
   }
 
   Widget _buildNewListBody(){
-    return FutureBuilder<Map<TimelinePost, Post>>(
-      future: null,//BlocProvider.of<TimelineBloc>(context).fetchAllUserPosts(widget.user.id),
+    return FutureBuilder<List<TimelinePost>>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchUserPosts(widget.user.id),
       builder: (_,snap){
         SliverChildDelegate result;
 
@@ -133,8 +133,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
     );
   }
 
-  SliverChildDelegate _buildBodyWithData(Map<TimelinePost, Post> data){
-    data.removeWhere((key, value) => value.deleted);
+  SliverChildDelegate _buildBodyWithData(List<TimelinePost> data){
     if(data.length==0){
       return SliverChildListDelegate([
         Center(child: Text('No Posts made yet!'),),
@@ -146,25 +145,12 @@ class _ViewUserPageState extends State<ViewUserPage> {
         return PostArticle(
           allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
           mode: 'view',
-          timelinePost: data.keys.elementAt(index),
+          timelinePost: data.elementAt(index),
           //post: data[data.keys.elementAt(index)],
         );
       },
       childCount: data.length
     );
-    
-
-    /* return ListView.builder(
-      itemCount: data.length,
-      itemBuilder: (_,index){
-        return PostArticle(
-          allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
-          mode: 'view',
-          timelinePost: data.keys.elementAt(index),
-          post: data[data.keys.elementAt(index)],
-        );
-      }
-    ); */
   }
 
 }

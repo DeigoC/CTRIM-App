@@ -100,3 +100,9 @@ class PostRemoveSelectedFilesAndSrcEvent extends PostGalleryEvent {
 }
 
 class PostDiscardGalleryChnagesEvent extends PostGalleryEvent{}
+
+// ! Other
+class PostLocationReferenceEvent extends PostEvent{}
+class PostLocationAddReferenceEvent extends PostLocationReferenceEvent{}
+class PostLocationCheckReferenceEvent extends PostLocationReferenceEvent{}
+class PostLocationRemoveReferenceEvent extends PostLocationReferenceEvent{}

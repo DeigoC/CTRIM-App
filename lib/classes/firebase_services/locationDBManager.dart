@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
+import 'package:ctrim_app_v1/classes/models/post.dart';
 
 class LocationDBManager{
   static final CollectionReference _ref = Firestore.instance.collection('locations');
@@ -45,6 +46,18 @@ class LocationDBManager{
     await _ref.document(location.id).setData(location.toJson());
     _updateLocationList(location);
   }
+
+  Future<Null> updateReferenceList(Post newPost, Post oldPost) async{
+    if(oldPost == null){
+      // * Add reference
+    }
+    else if(newPost.locationID.compareTo(oldPost.locationID)!=0){
+      // * Remove reference from old and add reference to new
+    }else if(newPost.deleted){
+      // * remove reference (use oldPost?)
+    }
+  }
+
 
   void _updateLocationList(Location location){
     int index = _allLocations.indexWhere((e) => e.id.compareTo(location.id)==0);

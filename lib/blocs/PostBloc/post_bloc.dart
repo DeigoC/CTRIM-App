@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-//import 'package:zefyr/zefyr.dart';
+import 'package:zefyr/zefyr.dart';
 import 'package:collection/collection.dart';
 part 'post_event.dart';
 part 'post_state.dart';
@@ -30,17 +31,16 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   String get postDescription => _post.description;
   String _addressLine = 'PENDING';
   String get addressLine => _addressLine;
-
-  //TODO changed: was NotusDocument
-  getEditorDoc() {
+ 
+  NotusDocument getEditorDoc() {
     if (_post.body == '') {
       List<dynamic> initialWords = [
         {"insert": "Body Starts Here\n"}
       ];
-      //return NotusDocument.fromJson(initialWords);
+      return NotusDocument.fromJson(initialWords);
     }
     var jsonDecoded = jsonDecode(_post.body);
-    //return NotusDocument.fromJson(jsonDecoded);
+    return NotusDocument.fromJson(jsonDecoded);
   }
 
   Map<PostTag, bool> selectedTags = {
@@ -91,7 +91,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   // ! Post Fields - Gallery Tab
-  Map<String, String> get files => _post.temporaryFiles;// TODO needs to change
+  Map<String, String> get files => _post.temporaryFiles;
 
   Map<String, String> get gallerySrc => _post.gallerySources;
 
@@ -173,6 +173,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       yield* _canEnableSaveButton();
     } else if (event is PostDetailListEvent)  yield* _mapDetailListEventToState(event);
     else if (event is PostGalleryEvent) yield* _mapGalleryEventsToState(event);
+    else if (event is PostLocationReferenceEvent) _performPostLocationReferenceProcess(event);
   }
 
   Stream<PostState> _mapGalleryEventsToState(PostGalleryEvent event) async* {
@@ -380,6 +381,18 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       case 3:
         yield PostUpdatesTabClickState();
         break;
+    }
+  }
+
+  void _performPostLocationReferenceProcess(PostLocationReferenceEvent event){
+    LocationDBManager dbManager = LocationDBManager(null);
+
+    if(event is PostLocationAddReferenceEvent){
+      dbManager.updateReferenceList(newPost, null);
+    }else if(event is PostLocationCheckReferenceEvent){
+
+    }else{
+
     }
   }
 }

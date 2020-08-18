@@ -43,6 +43,8 @@ class TimelineDeletePostEvent extends TimelinePostUpdateEvent{
   :super();
 }
 
+class TimelineRefreshCompletedEvent extends TimelineEvent{}
+
 // ! User related
 class TimelineUserUpdatedEvent extends TimelineEvent {
   final User updatedUser;

@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/widgets/my_outputs/galleryItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// ignore: must_be_immutable
 class GalleryTabBody extends StatelessWidget {
   Orientation _orientation;
   final Map<String, String> gallerySrc;

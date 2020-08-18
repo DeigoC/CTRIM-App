@@ -62,8 +62,8 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
   Widget _newBody(){
     List<String> likedPostsIDs = BlocProvider.of<AppBloc>(context).currentUser.likedPosts;
     
-    return FutureBuilder<Map<TimelinePost,Post>>(
-      future: null,//BlocProvider.of<TimelineBloc>(context).fetchLikedPostsFeed(likedPostsIDs),
+    return FutureBuilder<List<TimelinePost>>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchLikedPostsFeed(likedPostsIDs),
       builder: (_,snap){
         Widget result;
 
@@ -79,7 +79,7 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
     );
   }
 
-  Widget _buildBodyWithData(Map<TimelinePost,Post> data){
+  Widget _buildBodyWithData(List<TimelinePost> data){
     if(data.length == 0){
       return Center(child: Text('No Liked Posts'),);
     }
@@ -89,7 +89,7 @@ class _UserLikedPostsPageState extends State<UserLikedPostsPage> {
         return PostArticle(
           mode: 'view',
           allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
-          timelinePost: data.keys.elementAt(index),
+          timelinePost: data.elementAt(index),
           //post: data[data.keys.elementAt(index)],
         );
       }

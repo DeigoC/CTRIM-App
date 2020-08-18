@@ -63,7 +63,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return result;
   }
 
-  List<Location> get allLocations =>LocationDBManager.allLocations;
+  List<Location> get allLocations => LocationDBManager.allLocations;
 
   List<Location> get selectableLocations{
     List<Location> result = List.from(LocationDBManager.allLocations);
@@ -79,11 +79,19 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   // ! Future Functions
-  Future<Null> reloadAllRecords() async{
-    //TODO needs to check if most recent TP is new, if new then update; otherwise don't
-    await _locationDBManager.fetchAllLocations();
-    await _userDBManager.fetchAllUsers();
-    await fetchMainPostFeed();
+  Future<Null> processRefresh() async{
+    if(_selectedTags.values.contains(true)){
+      await Future.delayed(Duration(seconds: 1,milliseconds: 500));
+    }else{
+      String latestTPId = _feedData.first.id;
+      bool timelineUpdated = await _timelinePostDBManager.hasTimelinePostsChanged(latestTPId);
+      print('-----------------CHANGED: ' + timelineUpdated.toString());
+      if(timelineUpdated){
+        await _locationDBManager.fetchAllLocations();
+        await _userDBManager.fetchAllUsers();
+        await fetchMainPostFeed();
+      }
+    }
   }
    
    // * ----------------------------NEW STUFF
@@ -94,6 +102,10 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   Future<List<TimelinePost>> fetchAllUserPosts(String userID) async{
+    return _timelinePostDBManager.fetchAllUserPosts(userID);
+  }
+
+  Future<List<TimelinePost>> fetchUserPosts(String userID) async{
     return _timelinePostDBManager.fetchUserPosts(userID);
   }
 
@@ -106,16 +118,12 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   // ! important
   Future<List<TimelinePost>> fetchPostFeedWithTags() async{
     List<String> tags = []; 
-    _feedData.clear();
-
     _selectedTags.forEach((key, value) {
       if(value){tags.add(Post().tagToString(key));}
     });
-    
-    List<TimelinePost> tps = [];//await _timelinePostDBManager.fetchFeedWithTags(posts.map((e) => e.id).toList());
-    tps.sort((a,b) => b.postDate.compareTo(a.postDate));
-    
-    return tps;
+    List<TimelinePost> result = await _timelinePostDBManager.fetchFeedWithTags(tags);
+    result.sort((a,b) => b.postDate.compareTo(a.postDate));
+    return result;
   }
 
   Future<List<TimelinePost>> fetchPostUpdatesData(String postID) async{
@@ -147,6 +155,14 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     else if (event is TimelineUserEnabledEvent) yield* _mapUserEnabledToState(event);
     else if (event is TimelineAboutTabEvent) yield* _mapAboutTabEventToState(event);
     else if(event is TimelineLocationUpdateOccuredEvent) this.mapEventToState(TimelineLocationSearchTextChangeEvent(null));
+    else if(event is TimelineRefreshCompletedEvent) yield* _mapRefreshToState();
+  }
+
+  Stream<TimelineState> _mapRefreshToState() async*{
+    yield TimelineEmptyState();
+    if(!_selectedTags.values.contains(true)){
+      yield TimelineRebuildFeedState();
+    }
   }
 
   Stream<TimelineState> _mapAboutTabEventToState(TimelineAboutTabEvent event) async*{
@@ -160,8 +176,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     await fetchMainPostFeed();
     yield TimelineRebuildFeedState();
   }
-
-  //TODO needs to be redone
+  
   Stream<TimelineState> _mapTagChangeToState(TimelineTagClickedEvent event) async* {
     PostTag selectedTag = _stringToTag(event.tag);
     _selectedTags[selectedTag] = !_selectedTags[selectedTag];
@@ -169,10 +184,10 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     yield TimelineTagChangedState();
     if(_selectedTags.containsValue(true)){
       yield TimelineLoadingFeedState();
-      await fetchPostFeedWithTags();
-      yield TimelineFetchedFeedWithTagsState(_feedData);
+      List<TimelinePost> data = await fetchPostFeedWithTags();
+      yield TimelineDisplayFilteredFeedState(data);
     }else{
-      yield* _buildHomeFeed();
+      yield TimelineDisplayFilteredFeedState(_feedData);
     }
   }
 
@@ -198,7 +213,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
     TimelinePost updatedOriginalTPost = await _timelinePostDBManager.fetchOriginalPostByID(event.post.id);
 
-    await reloadAllRecords();
+    await processRefresh();
     yield TimelineRebuildMyPostsPageState(updatedOriginalTPost);
     yield TimelineRebuildFeedState();
     yield TimelineEmptyState();
@@ -213,7 +228,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     
     TimelinePost updatedOriginalTPost = await _timelinePostDBManager.fetchOriginalPostByID(event.post.id);
     
-    await reloadAllRecords();
+    await processRefresh();
     yield TimelineRebuildMyPostsPageState(updatedOriginalTPost);
     yield TimelineRebuildFeedState();
     yield TimelineEmptyState();
