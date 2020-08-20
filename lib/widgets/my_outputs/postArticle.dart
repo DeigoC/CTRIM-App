@@ -117,9 +117,9 @@ class PostArticle extends StatelessWidget {
   }
 
   String _getAuthorNameAndTagsLine(TimelinePost timelinePost) {
-    String result = '\nBy ';
+    String result = '\n';
     User author = _getUserFromID(timelinePost.authorID);
-    result += author.forename + ' ' + author.surname[0] + '. ';
+    result += author.forename + ' ' + author.surname[0] + '. • ';
     result += timelinePost.getPostDateString();
     result += timelinePost.getTagsString();
     return result;

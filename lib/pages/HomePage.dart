@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       onWillPop: () async=> false,
       child: BlocConsumer<AppBloc, AppState>(
       listener: (_, state){
-        if(state is AppRebuildSettingsDrawerState) BlocProvider.of<AppBloc>(context).add(TabButtonClicked(4));
+        if(state is AppRebuildSettingsDrawerState) BlocProvider.of<AppBloc>(context).add(TabButtonClicked(3));
       },
       buildWhen: (previousState, currentState){
         if(currentState is AppTabClickedState)return true;

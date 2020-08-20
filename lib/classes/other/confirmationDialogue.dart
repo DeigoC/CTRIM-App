@@ -90,14 +90,18 @@ class ConfirmationDialogue{
 
    static Future<bool> leaveEditPage ({
     @required BuildContext context,
+    bool creatingRecord = false,
   }) async{
     bool result = false;
+    String content = creatingRecord ?
+    'Do you wish to continue?':
+    'Any changes made will be discarded, do you wish to continue?';
     await showDialog(
       context: context,
       builder: (_){
         return AlertDialog(
           title: Text('Leave Page'),
-          content: Text('Any changes made will be discarded, do you wish to continue?'),
+          content: Text(content),
           actions: [
           MyFlatButton(label: 'Cancel', onPressed: (){
             Navigator.of(context).pop();

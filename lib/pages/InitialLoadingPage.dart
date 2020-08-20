@@ -6,9 +6,7 @@ import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 class InitialLoadingPage extends StatefulWidget {
   @override
@@ -19,9 +17,6 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
 
   @override
   void initState() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-  ]);
     _loadAllData();
     super.initState();
   }
@@ -31,28 +26,7 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
     return Scaffold(
       backgroundColor: LightPrimaryColor,
       body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            alignment: Alignment.center,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Hero(
-                  tag: 'openningIcon',
-                  child: Icon(FontAwesome5Solid.church, color: Colors.white,size: MediaQuery.of(context).size.width * 0.4,)),
-                SizedBox(height: 40,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+        child:CircularProgressIndicator(),
       ),
     );
   }

@@ -39,82 +39,87 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => _postBloc,
-      child: Scaffold(
-        resizeToAvoidBottomPadding: false,
-        body: NestedScrollView(
-          headerSliverBuilder: (_, __) {
-            bool hasImage = _postBloc.newPost.firstFileImage != null;
-            return [
-              SliverAppBar(
-                expandedHeight: MediaQuery.of(context).size.height * 0.33,
-                flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: EdgeInsets.zero,
-                  background: hasImage ? Image.file(File(_postBloc.newPost.firstFileImage), fit: BoxFit.cover,):null,
+    return WillPopScope(
+      onWillPop: (){
+        return ConfirmationDialogue.leaveEditPage(context: context,creatingRecord: true);
+      },
+      child: BlocProvider(
+        create: (_) => _postBloc,
+        child: Scaffold(
+          resizeToAvoidBottomPadding: false,
+          body: NestedScrollView(
+            headerSliverBuilder: (_, __) {
+              bool hasImage = _postBloc.newPost.firstFileImage != null;
+              return [
+                SliverAppBar(
+                  expandedHeight: MediaQuery.of(context).size.height * 0.33,
+                  flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: EdgeInsets.zero,
+                    background: hasImage ? Image.file(File(_postBloc.newPost.firstFileImage), fit: BoxFit.cover,):null,
+                  ),
+                  actions: [_buildAppBarActions(),],
                 ),
-                actions: [_buildAppBarActions(),],
-              ),
-              SliverPadding(
-                padding: EdgeInsets.all(8.0),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    MyTextField(
-                      label: 'Title',
-                      hint: 'Required',
-                      maxLength: 60,
-                      controller: _tecTitle,
-                      onTextChange: (newTitle) =>
-                          _postBloc.add(PostTextChangeEvent(title: newTitle)),
-                    ),
-                    TabBar(
-                      labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
-                      controller: _tabController,
-                      tabs: [
-                        Tab(
-                          icon: Icon(Icons.info_outline),
-                          text: 'About',
-                        ),
-                        Tab(
-                          icon: Icon(Icons.calendar_today),
-                          text: 'Details',
-                        ),
-                        Tab(
-                          icon: Icon(Icons.photo_library),
-                          text: 'Gallery',
-                        ),
-                      ],
-                      onTap: (newIndex) {
-                        _postBloc.add(PostTabClickEvent(newIndex));
-                      },
-                    ),
-                  ]),
-                ),
+                SliverPadding(
+                  padding: EdgeInsets.all(8.0),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      MyTextField(
+                        label: 'Title',
+                        hint: 'Required',
+                        maxLength: 60,
+                        controller: _tecTitle,
+                        onTextChange: (newTitle) =>
+                            _postBloc.add(PostTextChangeEvent(title: newTitle)),
+                      ),
+                      TabBar(
+                        labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
+                        controller: _tabController,
+                        tabs: [
+                          Tab(
+                            icon: Icon(Icons.info_outline),
+                            text: 'About',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.calendar_today),
+                            text: 'Details',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.photo_library),
+                            text: 'Gallery',
+                          ),
+                        ],
+                        onTap: (newIndex) {
+                          _postBloc.add(PostTabClickEvent(newIndex));
+                        },
+                      ),
+                    ]),
+                  ),
+                )
+              ];
+            },
+            body: BlocListener<TimelineBloc,TimelineState>(
+              condition: (_,state){
+                if(state is TimelineNewPostUploadedState||
+                state is TimelineAttemptingToUploadNewPostState) return true;
+                return false;
+              },
+              listener: (_,state){
+                 if(state is TimelineNewPostUploadedState){
+                   Navigator.of(context).pop();
+                   Navigator.of(context).pop();
+                 }else if(state is TimelineAttemptingToUploadNewPostState){
+                   ConfirmationDialogue.uploadTaskStarted(context: context);
+                 }
+              },
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  MainTabBody(),
+                  PostDetailsTabBody(),
+                  GalleryTabBody(gallerySrc: {},),
+                ],
               )
-            ];
-          },
-          body: BlocListener<TimelineBloc,TimelineState>(
-            condition: (_,state){
-              if(state is TimelineNewPostUploadedState||
-              state is TimelineAttemptingToUploadNewPostState) return true;
-              return false;
-            },
-            listener: (_,state){
-               if(state is TimelineNewPostUploadedState){
-                 Navigator.of(context).pop();
-                 Navigator.of(context).pop();
-               }else if(state is TimelineAttemptingToUploadNewPostState){
-                 ConfirmationDialogue.uploadTaskStarted(context: context);
-               }
-            },
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                MainTabBody(),
-                PostDetailsTabBody(),
-                GalleryTabBody(gallerySrc: {},),
-              ],
-            )
+            ),
           ),
         ),
       ),

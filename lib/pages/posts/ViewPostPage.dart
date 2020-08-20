@@ -22,7 +22,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   TabController _tabController;
   ZefyrController _zefyrController;
   FocusNode _fn;
-
   Post _post;
 
   List<TimelinePost> _allTimelinePosts = [];
@@ -36,8 +35,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
   @override
   void dispose() { 
-   _zefyrController.dispose();
-   _tabController.dispose();
+    if(_zefyrController != null) _zefyrController.dispose();
+    _tabController.dispose();
     _fn.dispose();
     super.dispose();
   }
@@ -85,81 +84,81 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
   NestedScrollView _buildBodyWithData(){
     return NestedScrollView(
-        headerSliverBuilder: (_, __) {
-          bool hasImage = _post.firstImageSrc != null;
-          return [
-            SliverAppBar(
-              expandedHeight: MediaQuery.of(context).size.height * 0.33,
-              actions: [
-                BlocBuilder<AppBloc, AppState>(
-                  condition: (_, state) {
-                    if (state is AppCurrentUserLikedPostState) return true;
-                    return false;
-                  },
-                  builder: (_, state) {
-                    bool liked = BlocProvider.of<AppBloc>(context).currentUser.likedPosts.contains(_post.id);
-                    return IconButton(
-                      tooltip: 'Save/unsave post',
-                      icon: liked
-                          ? Icon(Icons.favorite,color: Colors.red,)
-                          : Icon(Icons.favorite_border),
-                      onPressed: () => BlocProvider.of<AppBloc>(context)
-                          .add(AppPostLikeClickedEvent(_post)),
-                    );
-                  },
-                ),
-              ],
-              flexibleSpace: FlexibleSpaceBar(
-                background: hasImage ? Image.network(_post.firstImageSrc, fit: BoxFit.cover,): null,
+      headerSliverBuilder: (_, __) {
+        bool hasImage = _post.firstImageSrc != null;
+        return [
+          SliverAppBar(
+            expandedHeight: MediaQuery.of(context).size.height * 0.33,
+            actions: [
+              BlocBuilder<AppBloc, AppState>(
+                condition: (_, state) {
+                  if (state is AppCurrentUserLikedPostState) return true;
+                  return false;
+                },
+                builder: (_, state) {
+                  bool liked = BlocProvider.of<AppBloc>(context).currentUser.likedPosts.contains(_post.id);
+                  return IconButton(
+                    tooltip: 'Save/unsave post',
+                    icon: liked
+                        ? Icon(Icons.favorite,color: Colors.red,)
+                        : Icon(Icons.favorite_border),
+                    onPressed: () => BlocProvider.of<AppBloc>(context)
+                        .add(AppPostLikeClickedEvent(_post)),
+                  );
+                },
               ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.all(8.0),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  Text(_post.title,style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),),
-                  TabBar(
-                    labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
-                    controller: _tabController,
-                    tabs: [
-                      Tab(
-                        icon: Icon(Icons.info_outline),
-                        text: 'About',
-                      ),
-                      Tab(
-                        icon: Icon(Icons.calendar_today),
-                        text: 'Details',
-                      ),
-                      Tab(
-                        icon: Icon(Icons.photo_library),
-                        text: 'Gallery',
-                      ),
-                      Tab(
-                        icon: Icon(Icons.track_changes),
-                        text: 'Updates',
-                      ),
-                    ],
-                  ),
-                ]),
-              ),
-            )
-          ];
-        },
-        body: SafeArea(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              _buildAboutTab(),
-              _newDetailTab(),
-              //_buildDetailsTab(),
-              GalleryTabBody.view(
-                thumbnails: _post.thumbnails,
-                gallerySrc: _post.gallerySources),
-              _buildUpdatesTab(),
             ],
+            flexibleSpace: FlexibleSpaceBar(
+              background: hasImage ? Image.network(_post.firstImageSrc, fit: BoxFit.cover,): null,
+            ),
           ),
+          SliverPadding(
+            padding: EdgeInsets.all(8.0),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                Text(_post.title,style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),),
+                TabBar(
+                  labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
+                  controller: _tabController,
+                  tabs: [
+                    Tab(
+                      icon: Icon(Icons.info_outline),
+                      text: 'About',
+                    ),
+                    Tab(
+                      icon: Icon(Icons.calendar_today),
+                      text: 'Details',
+                    ),
+                    Tab(
+                      icon: Icon(Icons.photo_library),
+                      text: 'Gallery',
+                    ),
+                    Tab(
+                      icon: Icon(Icons.track_changes),
+                      text: 'Updates',
+                    ),
+                  ],
+                ),
+              ]),
+            ),
+          )
+        ];
+      },
+      body: SafeArea(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildAboutTab(),
+            _newDetailTab(),
+            //_buildDetailsTab(),
+            GalleryTabBody.view(
+              thumbnails: _post.thumbnails,
+              gallerySrc: _post.gallerySources),
+            _buildUpdatesTab(),
+          ],
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildFAB(){
@@ -186,41 +185,27 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
 
   Widget _buildAboutTab() {
+    ZefyrEditableText(
+      controller: _zefyrController,
+      focusNode: _fn,
+      autofocus: false,
+      imageDelegate: null,
+    );
     return ZefyrTheme(
       data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
       child: ZefyrScaffold(
-        child: ZefyrEditor(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(8),
+          child: ZefyrView(document: _zefyrController.document),
+        )/* ZefyrEditor(
           focusNode: _fn,
           autofocus: false,
           mode: ZefyrMode.view,
           controller: _zefyrController,
-        ),
+          imageDelegate: null,
+        ), */
       ),
     );  
-  }
-
-  Widget _buildDetailsTab() {
-    List<Widget> children = [
-      SizedBox(height: 16,),
-      Text('Location',style: TextStyle(fontSize: 24),),
-      _buildLocationWidget(),
-      SizedBox(height: 16,),
-      Text('Time',style: TextStyle(fontSize: 24),),
-      Text(_post.dateString,style: TextStyle(fontSize: 18),textAlign: TextAlign.center,),
-    ];
-    if (_post.detailTable.length != 0) {
-      children.addAll(_buildDetailListItems());
-    }
-
-    return SingleChildScrollView(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: children,
-        ),
-      ),
-    );
   }
 
   Widget _buildLocationWidget(){
@@ -245,39 +230,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
       return Center(child: CircularProgressIndicator(),);
     }
     return PostUpdatesTab(_post, _allTimelinePosts);
-  }
-
-  List<Widget> _buildDetailListItems() {
-    return [
-      SizedBox(height: 32,),
-      Text(_post.detailTableHeader,style: TextStyle(fontSize: 24),),
-      Divider(),
-      Expanded(
-        child: ListView.separated(
-          itemCount: _post.detailTable.length,
-          padding: EdgeInsets.all(8),
-          separatorBuilder: (_,index)=>Divider(thickness: 0.4,),
-          itemBuilder: (_, index) {
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(_post.detailTable[index]['Leading']),
-                    flex: 1,
-                  ),
-                  Expanded(
-                    child: Text(_post.detailTable[index]['Trailing']),
-                    flex: 2,
-                  )
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    ];
   }
  
   Widget _newDetailTab(){
