@@ -2,6 +2,16 @@
 
 An informative app about CTRIM for everyday people
 
+## Updating the app for playstore console
+Check the local.properties file under the android folder
+check pubspec.yaml file
+Check Android Manifest file
+Check build.gradle under Android
+
+in the yaml file: a.b.c + X bit
+Add 1 to the X for version code
+
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
