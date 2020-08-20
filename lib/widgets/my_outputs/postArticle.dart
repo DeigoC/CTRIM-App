@@ -163,9 +163,11 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
     super.initState();
   }
 
+
   void _initialiseData(){
     List<String> srcs = widget.timelinePost.gallerySources.keys.toList();
     srcs.sort();
+    _gallerySrc.clear();
 
     if(widget.timelinePost.gallerySources.length !=0 && !_initialisedData){
       String src = srcs.first;

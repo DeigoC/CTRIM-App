@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/idTracker.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 
@@ -11,6 +12,8 @@ class LocationDBManager{
 
   static List<Location> _allLocations;
   static List<Location> get allLocations => _allLocations;
+
+  final String _subCollection = 'postsReference', _subCollectionDoc = 'postsUsed', _subCollectionField = 'posts';
 
   final AppStorage _appStorage;
 
@@ -27,15 +30,17 @@ class LocationDBManager{
   }
 
   Future<Null> addLocation(Location location, File file) async{
-    await _ref.getDocuments().then((collection){
-      List<int> allIDs = collection.documents.map((e) => int.parse(e.documentID)).toList();
-      allIDs.sort();
-      location.id = (allIDs.last + 1).toString();
-    });
+    location.id = await IDTracker().getAndUpdateNewLocationID();
     if(file != null){
       location.imgSrc = await _appStorage.uploadAndGetLocationImageSrc(location, file);
     }
     await _ref.document(location.id).setData(location.toJson());
+    
+    _ref.document(location.id)
+    .collection(_subCollection)
+    .document(_subCollectionDoc)
+    .setData({'posts':[]});
+
     _allLocations.add(location);
   }
 
@@ -47,17 +52,49 @@ class LocationDBManager{
     _updateLocationList(location);
   }
 
-  Future<Null> updateReferenceList(Post newPost, Post oldPost) async{
+  void updateReferenceList(Post newPost, Post oldPost){
     if(oldPost == null){
-      // * Add reference
+      _addReferenceToPost(newPost);
+    }else if(newPost.deleted){
+      _removeReferenceToPost(oldPost);
     }
     else if(newPost.locationID.compareTo(oldPost.locationID)!=0){
-      // * Remove reference from old and add reference to new
-    }else if(newPost.deleted){
-      // * remove reference (use oldPost?)
+      _updateReferenceToPost(newPost, oldPost);
     }
   }
 
+  Future _addReferenceToPost(Post newPost) async{
+    List<String> postIDs = await fetchPostReferenceList(newPost.locationID);
+    postIDs.add(newPost.id);
+    await _setNewPostReferenceList(newPost.locationID, postIDs);
+  }
+  
+  Future _updateReferenceToPost(Post newPost, Post oldPost) async{
+    _removeReferenceToPost(oldPost);
+    _addReferenceToPost(newPost);
+  }
+
+  Future _removeReferenceToPost(Post post) async{
+    List<String> postIDs =  await fetchPostReferenceList(post.locationID);
+    postIDs.removeWhere((e) => e.compareTo(post.id)==0);
+    await _setNewPostReferenceList(post.locationID, postIDs);
+  }
+
+  Future<List<String>> fetchPostReferenceList(String locationID) async{
+    var doc = await _ref.document(locationID)
+      .collection(_subCollection)
+      .document(_subCollectionDoc)
+      .get();
+    
+    return List.from(doc.data[_subCollectionField], growable: true);
+  }
+
+  Future _setNewPostReferenceList(String locationID, List<String> postIDs) async{
+    await _ref.document(locationID)
+      .collection(_subCollection)
+      .document(_subCollectionDoc)
+      .setData({_subCollectionField:postIDs});
+  }
 
   void _updateLocationList(Location location){
     int index = _allLocations.indexWhere((e) => e.id.compareTo(location.id)==0);

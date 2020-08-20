@@ -53,8 +53,9 @@ class LocationCard extends StatelessWidget {
                       onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location)),
                       internalPadding: EdgeInsets.zero,
                     ),
-                    subtitle: Text(location.description,),
+                    subtitle: Text(location.description,textAlign: TextAlign.center,),
                     isThreeLine: true,
+                    //onTap: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location)),
                   ),
                   ButtonBar(
                     alignment: MainAxisAlignment.end,

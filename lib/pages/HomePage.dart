@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
       },
       onLaunch: (message)async{
-
+        
       },
     );
   }
@@ -228,4 +228,5 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     if(selectedIndex == 3) return _settingsPage.buildDrawer();
     return null;
   }
+
 }

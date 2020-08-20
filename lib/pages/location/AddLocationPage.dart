@@ -50,9 +50,7 @@ class _AddLocationState extends State<AddLocation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Location'),
-      ),
+      appBar: AppBar(title: Text('Add Location'),),
       body: BlocListener(
           bloc: _locationBloc,
           listener: (_, state) {

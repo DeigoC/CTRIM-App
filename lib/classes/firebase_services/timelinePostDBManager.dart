@@ -26,14 +26,14 @@ class TimelinePostDBManager{
   }
 
   // ? Test again
-  Future<List<TimelinePost>> fetchOriginalLikedPosts(List<String> likedPostsIDs) async{
-    var collection = await _ref.where('PostType', isEqualTo: 'original').getDocuments();
+  Future<List<TimelinePost>> fetchOriginalPostsByList(List<String> likedPostsIDs) async{
     List<TimelinePost> results = [];
-    collection.documents.forEach((doc) {
-      if(likedPostsIDs.contains(doc.data['PostID'].toString())){
-        results.add(TimelinePost.fromMap(doc.documentID, doc.data));
-      }
+
+    await Future.forEach(likedPostsIDs, (id) async{
+      TimelinePost tp = await fetchOriginalPostByID(id);
+      results.add(tp);
     });
+
     results.sort((a,b) => b.postDate.compareTo(a.postDate));
     return results;
   }
@@ -52,8 +52,6 @@ class TimelinePostDBManager{
   }
 
   Future<List<TimelinePost>> fetchAllUserPosts(String userID,) async{
-    
-    
     var collection = await _ref
     .where('AuthorID', isEqualTo: userID)
     .where('PostType',isEqualTo: 'original')

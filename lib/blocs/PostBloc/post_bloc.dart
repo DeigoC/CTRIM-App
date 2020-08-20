@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:equatable/equatable.dart';
@@ -133,6 +134,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         temporaryFiles: {});
 
     _originalPost = Post(
+      id: postToEdit.id,
       title: _post.title,
       body: _post.body,
       selectedTags: List<PostTag>.from(postToEdit.selectedTags),
@@ -174,6 +176,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     } else if (event is PostDetailListEvent)  yield* _mapDetailListEventToState(event);
     else if (event is PostGalleryEvent) yield* _mapGalleryEventsToState(event);
     else if (event is PostLocationReferenceEvent) _performPostLocationReferenceProcess(event);
+    else if(event is PostCheckToDeleteUnusedFilesEvent) _deleteUnusedStorageItems();
   }
 
   Stream<PostState> _mapGalleryEventsToState(PostGalleryEvent event) async* {
@@ -388,11 +391,36 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     LocationDBManager dbManager = LocationDBManager(null);
 
     if(event is PostLocationAddReferenceEvent){
-      dbManager.updateReferenceList(newPost, null);
+      
     }else if(event is PostLocationCheckReferenceEvent){
-
-    }else{
-
+      dbManager.updateReferenceList(_post, _originalPost);
+    }else if(event is PostLocationRemoveReferenceEvent){
+      _post.deleted = true;
+      dbManager.updateReferenceList(_post, _originalPost);
     }
+  }
+  
+  void _deleteUnusedStorageItems(){
+    AppStorage _appStorage = AppStorage(null);
+    List<String> updatedGallerySrcs = _post.gallerySources.keys.toList(),
+    oldGallerySrcs = _originalPost.gallerySources.keys.toList();
+    
+    oldGallerySrcs.forEach((oldSrc) {
+      if(!updatedGallerySrcs.contains(oldSrc)){
+        bool isVideo = _originalPost.gallerySources[oldSrc].compareTo('vid')==0;
+
+        List<String> firstLayer = oldSrc.split('2F');
+        String itemName = firstLayer.last.split('?').first;
+        String filePath = 'posts/${_post.id}/$itemName';
+        _appStorage.deleteFile(filePath);
+
+        if(isVideo){
+          String thumbnailSrc = _originalPost.thumbnails[oldSrc];
+          itemName = (thumbnailSrc.split('2F')).last.split('?').first;
+          String thumbnailFilePath = 'posts/${_post.id}/$itemName';  
+          _appStorage.deleteFile(thumbnailFilePath);
+        }
+      }
+    });
   }
 }

@@ -16,8 +16,10 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   // ! Bloc Fields
   final LocationDBManager _locationDBManager;
 
-  LocationBloc(AppBloc appBloc):_locationDBManager = LocationDBManager(appBloc);
-
+  LocationBloc(AppBloc appBloc):
+  _locationDBManager = LocationDBManager(appBloc), 
+  _location = Location(),
+  _originalLocation = Location();
 
   List<Address> _queryAddresses =[];
 
@@ -26,6 +28,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   File _imageFile;
 
   Location _location, _originalLocation;
+
   void setLocationForEdit(Location location) {
     _location = Location(
       id: location.id,

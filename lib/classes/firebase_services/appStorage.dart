@@ -12,7 +12,7 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 
 class AppStorage{
   
-  StorageReference _ref =  FirebaseStorage(storageBucket: 'gs://ctrim-app.appspot.com/').ref();
+  final StorageReference _ref =  FirebaseStorage(storageBucket: 'gs://ctrim-app.appspot.com/').ref();
   String directory ='';
 
   final AppBloc _appBloc;
@@ -108,6 +108,10 @@ class AppStorage{
       });
     }
     post.noOfGalleryItems = index;
+  }
+
+  void deleteFile(String filePath){
+    _ref.child(filePath).delete();
   }
 
   Future<String> uploadAndGetUserImageSrc(User user, File file) async{

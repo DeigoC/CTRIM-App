@@ -150,7 +150,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
             controller: _tabController,
             children: [
               _buildAboutTab(),
-              _buildDetailsTab(),
+              _newDetailTab(),
+              //_buildDetailsTab(),
               GalleryTabBody.view(
                 thumbnails: _post.thumbnails,
                 gallerySrc: _post.gallerySources),
@@ -279,4 +280,56 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     ];
   }
  
+  Widget _newDetailTab(){
+    List<Widget> slivers =[
+       SliverList(
+          delegate: SliverChildListDelegate([
+            SizedBox(height: 16,),
+            Text('Location',style: TextStyle(fontSize: 24),textAlign: TextAlign.center,),
+            _buildLocationWidget(),
+            SizedBox(height: 16,),
+            Text('Time',style: TextStyle(fontSize: 24),textAlign: TextAlign.center,),
+            Text(_post.dateString,style: TextStyle(fontSize: 18),textAlign: TextAlign.center,),
+            SizedBox(height: 32,),
+          ]),
+        )
+    ];
+    
+    if (_post.detailTable.length != 0) {
+      slivers.addAll([
+        SliverList(
+          delegate: SliverChildListDelegate([
+            Text(_post.detailTableHeader,style: TextStyle(fontSize: 24),textAlign: TextAlign.center,),
+          ]),
+        ),
+        SliverList(delegate: SliverChildBuilderDelegate(
+          (_,index){
+             return Container(
+              padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(_post.detailTable[index]['Leading']),
+                    flex: 1,
+                  ),
+                  Expanded(
+                    child: Text(_post.detailTable[index]['Trailing']),
+                    flex: 2,
+                  )
+                ],
+              ),
+            );
+          },
+          childCount: _post.detailTable.length
+        ))
+      ]);
+    }
+
+
+    return CustomScrollView(
+      slivers: slivers,
+    );
+  }
+
 }

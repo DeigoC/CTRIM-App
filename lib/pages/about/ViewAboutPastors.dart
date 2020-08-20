@@ -45,8 +45,9 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
 
   Widget _buildBody(){
     return ZefyrScaffold(
-      child: Column(
-        children: <Widget>[
+      child: ListView(
+        padding: EdgeInsets.all(8),
+        children: [
           GestureDetector(
             onTap: (){
               BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({
@@ -64,14 +65,9 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
               ),
             ),
           ),
-          Expanded(
-            child: ZefyrEditor(
-              mode: ZefyrMode.view,
-              autofocus: false,
-              focusNode: _fnEditor,
-              controller: _zefyrController,
-              padding: EdgeInsets.all(8),
-            ),
+          SizedBox(height: 16,),
+          ZefyrView(
+            document: _zefyrController.document,
           ),
         ],
       ),

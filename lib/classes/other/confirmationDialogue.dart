@@ -180,7 +180,7 @@ class ConfirmationDialogue{
                       return false;
                     },
                     builder: (_,state){
-                      String title = 'Awaiting Task',subtitle="Loading...";
+                      String title = 'Uploading...',subtitle="Waiting for next task.";
                       Widget trailing = Text('');
 
                       if(state is AppMapUploadTaskToDialogueState){

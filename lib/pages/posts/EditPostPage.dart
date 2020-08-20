@@ -34,9 +34,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
 
   @override
   void initState() {
-    //_postBloc = PostBloc.editMode(widget._post);
     _tabController = TabController(vsync: this, length: 4);
-    //_tecTitle = TextEditingController(text: widget._post.title);
     super.initState();
   }
 
@@ -100,8 +98,8 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
                   expandedHeight: MediaQuery.of(context).size.height*0.33,
                   flexibleSpace: FlexibleSpaceBar(background: postImage,),
                   actions: [
-                    _buildUpdateButton(),
                     _buildDeleteButton(context),
+                    _buildUpdateButton(),
                   ],
                 ),
                 SliverPadding(
@@ -153,7 +151,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
               },
               listener: (_,state){
                 if(state is TimelineRebuildMyPostsPageState){
-                  //Navigator.of(context).popUntil(ModalRoute.withName(ViewMyPostsRoute));
+                  _postBloc.add(PostCheckToDeleteUnusedFilesEvent());
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                   if(!state.updatedOriginalTP.postDeleted){

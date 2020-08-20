@@ -158,12 +158,12 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
             title: Text('Post Confirmation'),
             content: Text('Are you sure you want to save this post?'),
             actions: [
-              FlatButton(
-                child: Text('Cancel'),
+              MyFlatButton(
+                label: 'Cancel',
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              FlatButton(
-                child: Text('Post'),
+              MyFlatButton(
+                label: 'Post',
                 onPressed: () {
                   result = true;
                   Navigator.of(context).pop();

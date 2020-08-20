@@ -89,7 +89,7 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
       itemCount: listToDisplay.length,
       itemBuilder: (_,index){
         return PostArticle(
-          mode: 'edit',
+          mode: _showDeleted ? 'view':'edit',
           allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
           timelinePost: listToDisplay.elementAt(index),
           //post: data[listToDisplay.keys.elementAt(index)],

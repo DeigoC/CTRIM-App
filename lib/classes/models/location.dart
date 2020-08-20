@@ -12,8 +12,8 @@ class Location{
     this.id,
     this.imgSrc='',
     this.coordinates,
-    this.addressLine,
-    this.description,
+    this.addressLine ='',
+    this.description ='',
     this.deleted = false,
   });
 

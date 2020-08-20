@@ -58,6 +58,8 @@ class PostSelectedLocationEvent extends PostEvent {
   PostSelectedLocationEvent({this.locationID, this.addressLine});
 }
 
+class PostCheckToDeleteUnusedFilesEvent extends PostEvent{}
+
 // ! Detail List Events
 class PostDetailListEvent extends PostEvent {}
 
