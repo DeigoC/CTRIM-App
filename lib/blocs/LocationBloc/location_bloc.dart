@@ -138,8 +138,9 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   }
 
   Stream<LocationState> _saveNewLocation() async*{
-    Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
+    yield LocationEditAttemptToUpdateState();
 
+    Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
     Location newLocation = Location(
       addressLine: _selectedAddressLine,
       coordinates: {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude},

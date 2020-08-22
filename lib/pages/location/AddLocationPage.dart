@@ -4,6 +4,7 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/LocationBloc/location_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
+import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/location_query.dart';
 import 'package:file_picker/file_picker.dart';
@@ -60,11 +61,14 @@ class _AddLocationState extends State<AddLocation> {
               Navigator.of(context).pop();
             } else if (state is LocationDisplayConfirmedQueryAddressState) {
               Navigator.of(context).pop();
-            }else if (state is LocationCreatedState){
+            }else if(state is LocationEditAttemptToUpdateState){
+              ConfirmationDialogue.uploadTaskStarted(context: context);
+            } else if (state is LocationCreatedState){
               widget._postBloc.add(PostSelectedLocationEvent(
                 addressLine: LocationDBManager.allLocations.last.addressLine,
                 locationID: LocationDBManager.allLocations.last.id,
               ));
+              Navigator.of(context).pop();
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             }
@@ -114,8 +118,8 @@ class _AddLocationState extends State<AddLocation> {
               if (state is LocationEnableFindButtonState) enabled = true;
               return Container(
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 8),
-                child: RaisedButton(
-                  child: Text('Find Address'),
+                child: MyRaisedButton(
+                  label: 'Find Address',
                   onPressed: enabled
                       ? () {
                           _locationBloc.add(LocationFindAddressEvent(
@@ -149,12 +153,12 @@ class _AddLocationState extends State<AddLocation> {
                   Container(
                     padding: EdgeInsets.only(top: 8.0),
                     width: MediaQuery.of(context).size.width * 0.85,
-                    child: RaisedButton(
+                    child: MyRaisedButton(
                       onPressed:
                           _tecSelectedAddress.text.isEmpty ? null : (){
                             _locationBloc.add(LocationSaveNewLocationEvent());
                           },
-                      child: Text('Save New Location'),
+                      label: 'Save New Location',
                     ),
                   ),
                 ],

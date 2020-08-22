@@ -189,8 +189,7 @@ class _EditLocationState extends State<EditLocation> {
                               editing: true)
                           .then((confirmation) {
                         if (confirmation)
-                          _locationBloc
-                              .add(LocationEditUpdateLocationEvent());
+                          _locationBloc.add(LocationEditUpdateLocationEvent());
                       });
                     }: null,
             );

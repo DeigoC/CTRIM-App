@@ -67,7 +67,7 @@ class SocialLinksDisplay extends StatelessWidget {
                   icon: Icon(Icons.content_copy),
                   onPressed: (){
                     Clipboard.setData(ClipboardData(text: socialLinks[type]));
-                    Scaffold.of(context).showSnackBar(SnackBar(content: Text('Address line copied')));
+                    Scaffold.of(context).showSnackBar(SnackBar(content: Text('Phone no. Copied!')));
                     Navigator.of(context).pop();
                   },
                 ),

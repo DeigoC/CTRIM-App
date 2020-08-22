@@ -212,7 +212,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     Location l = BlocProvider.of<TimelineBloc>(context).allLocations
     .firstWhere((element) => element.id == _post.locationID);
       
-    if(l.id.compareTo('0')==0) return Text('N/A',style: TextStyle(fontSize: 18),);
+    if(l.id.compareTo('0')==0) return Text('N/A',style: TextStyle(fontSize: 18),textAlign: TextAlign.center,);
     return MyFlatButton(
       fontSize: 18,
       label: l.getAddressLine(),
