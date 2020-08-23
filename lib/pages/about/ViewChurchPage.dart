@@ -11,6 +11,7 @@ import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image/network.dart';
+import 'package:scroll_app_bar/scroll_app_bar.dart';
 
 class ViewChurchPage extends StatefulWidget {
   final AboutArticle _aboutArticle;
@@ -21,6 +22,8 @@ class ViewChurchPage extends StatefulWidget {
 
 class _ViewChurchPageState extends State<ViewChurchPage> {
 
+  ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -29,8 +32,17 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget._aboutArticle.title + ' Church'),centerTitle: true,),
-      body: _buildBody(),
+      appBar: ScrollAppBar(
+        controller: _scrollController,
+        title: Text(widget._aboutArticle.title + ' Church'),
+        centerTitle: true,
+      ),
+      
+      //AppBar(title: Text(widget._aboutArticle.title + ' Church'),centerTitle: true,),
+      body: Snap(
+        controller: _scrollController.appBar,
+        child: _buildBody()
+      ),
     );
   }
 
@@ -43,6 +55,7 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
     .firstWhere((e) => e.id.compareTo(widget._aboutArticle.locationID)==0);
 
     return ListView(
+      controller: _scrollController,
       children: [
         GallerySlideShow(galleryItems: widget._aboutArticle.slideShowItems,),
         SizedBox(height: 16,),

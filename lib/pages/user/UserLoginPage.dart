@@ -140,6 +140,19 @@ class _UserLoginPageState extends State<UserLoginPage> {
         onTextChange: (newEmail) =>
             _adminBloc.add(AdminLoginTextChangeEvent(email: newEmail)),
       ),
+      /* FlatButton(
+        child: Text('Test'),
+        onPressed: (){
+          showBottomSheet(context: _context, builder: (_){
+            return Container(
+              alignment: Alignment.center,
+              height: MediaQuery.of(_context).size.height*0.8,
+              color: Colors.red,
+              child: Text('Hello!'),
+            );
+          });
+        },
+      ), */
       BlocBuilder(
           bloc: _adminBloc,
           condition: (prev, currentState) {

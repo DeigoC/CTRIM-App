@@ -183,7 +183,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     }
     return null;
   }
-
+  
   Widget _buildAboutTab() {
     ZefyrEditableText(
       controller: _zefyrController,
@@ -191,6 +191,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
       autofocus: false,
       imageDelegate: null,
     );
+
     return ZefyrTheme(
       data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
       child: ZefyrScaffold(
