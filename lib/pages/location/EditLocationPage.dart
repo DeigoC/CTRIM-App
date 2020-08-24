@@ -55,7 +55,7 @@ class _EditLocationState extends State<EditLocation> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        return ConfirmationDialogue.leaveEditPage(
+        return ConfirmationDialogue().leaveEditPage(
           context: context,
         );
       },
@@ -71,7 +71,7 @@ class _EditLocationState extends State<EditLocation> {
               } else if (state is LocationDisplayConfirmedQueryAddressState) {
                 Navigator.of(context).pop();
               } else if (state is LocationEditAttemptToUpdateState) {
-                ConfirmationDialogue.uploadTaskStarted(context: context);
+                ConfirmationDialogue().uploadTaskStarted(context: context);
               }else if(state is LocationEditUpdateCompleteState){
                 BlocProvider.of<TimelineBloc>(context).add(TimelineLocationUpdateOccuredEvent());
                 Navigator.of(context).pop();
@@ -183,7 +183,7 @@ class _EditLocationState extends State<EditLocation> {
               label: 'Update Location',
               onPressed: (state is LocationEditEnableUpdateButtonState)
                   ? () {
-                      ConfirmationDialogue.saveRecord(
+                      ConfirmationDialogue().saveRecord(
                               context: context,
                               record: 'Location',
                               editing: true)
@@ -209,7 +209,7 @@ class _EditLocationState extends State<EditLocation> {
       label: 'Delete Location',
       isDestructive: true,
       onPressed: hasEvents ? null :(){
-        ConfirmationDialogue.deleteRecord(context: context, record: 'Location').then((confirmation){
+        ConfirmationDialogue().deleteRecord(context: context, record: 'Location').then((confirmation){
           if(confirmation){
             _locationBloc.add(LocationEditDeleteLocationEvent());
             Navigator.of(context).pop();
@@ -275,7 +275,7 @@ class _EditLocationState extends State<EditLocation> {
       ),
       onPressed: () {
         if (hasSrc) {
-          ConfirmationDialogue.deleteRecord(context: context, record: 'Image')
+          ConfirmationDialogue().deleteRecord(context: context, record: 'Image')
               .then((confirmation) {
             if (confirmation) {
               _locationBloc.add(LocationEditRemoveSrcEvent());

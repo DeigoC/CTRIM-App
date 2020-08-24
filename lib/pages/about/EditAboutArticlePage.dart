@@ -29,7 +29,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async{
-        return ConfirmationDialogue.leaveEditPage(context: context);
+        return ConfirmationDialogue().leaveEditPage(context: context);
       },
       child: Scaffold(
         appBar: AppBar(title: Text('Edit About Article'),),
@@ -42,7 +42,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
           },
           listener: (_,state){
             if(state is AboutArticleAttemptingToSaveRecordState){
-              ConfirmationDialogue.uploadTaskStarted(context: context);
+              ConfirmationDialogue().uploadTaskStarted(context: context);
             }else if(state is AboutArticleRebuildAboutTabState){
               BlocProvider.of<TimelineBloc>(context).add(TimelineRebuildAboutTabEvent());
               Navigator.of(context).pop();
@@ -164,7 +164,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
           externalPadding: EdgeInsets.symmetric(horizontal: 8),
           label: 'Save Changes',
           onPressed: (state is AboutArticleEnableSaveButtonState) ? (){
-            ConfirmationDialogue.saveRecord(context: context, record: 'About Article',editing: true).then((result){
+            ConfirmationDialogue().saveRecord(context: context, record: 'About Article',editing: true).then((result){
               if(result){
                 _aboutBloc.add(AboutArticleSaveRecordEvent());
               }

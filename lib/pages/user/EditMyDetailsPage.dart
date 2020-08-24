@@ -53,7 +53,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
     return WillPopScope(
       onWillPop: ()async{
         bool result = false;
-        await ConfirmationDialogue.saveRecord(
+        await ConfirmationDialogue().saveRecord(
           editing: true, discardOption: true, context: context,record: 'User details').then((_){
           if(_ != null){
             if(_){
@@ -78,7 +78,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
           bloc: _adminBloc,
           listener: (_,state){
             if(state is AdminUserImageUploadingState){
-              ConfirmationDialogue.uploadTaskStarted(context: context);
+              ConfirmationDialogue().uploadTaskStarted(context: context);
             }else if(state is AdminUserImageUploadCompleteState){
               Navigator.of(context).pop();
               Navigator.of(context).pop();
@@ -205,7 +205,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
               IconButton(icon: Icon(Icons.delete_outline),onPressed: (){
                 if(_user.imgSrc != '' && _imageFile == null){
                   // ! Confimation message
-                  ConfirmationDialogue.deleteRecord(context: context, record: 'image').then((confirmation){
+                  ConfirmationDialogue().deleteRecord(context: context, record: 'image').then((confirmation){
                     if(confirmation){
                        setState(() {_user.imgSrc = '';});
                     }

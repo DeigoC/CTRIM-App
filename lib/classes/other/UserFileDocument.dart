@@ -55,6 +55,33 @@ class UserFileDocument{
     file.delete();
   }
 
+  // ! Checking for DeviceToken file
+  Future<bool> hasDeviceTokenFile() async{
+    File deviceTokenFile;
+    try{
+      deviceTokenFile = await _deviceTokenFile;
+      await deviceTokenFile.readAsLines().then((value){ 
+        //print('--------device token file says: ' +value.toString());
+      });
+    }catch(e){
+      _writeDeviceTokenFile();
+      return false;
+    }
+    return true;
+  }
+
+  Future<File> _writeDeviceTokenFile() async{
+    final file = await _deviceTokenFile;
+    return file.writeAsString("ignore this, but don't delete it either. this is just a flag");
+  }
+
+  Future<File> get _deviceTokenFile async{
+    final path = await _localPath;
+    return File('$path/deviceToken.txt');
+  }
+
+  // ! End of section
+
   // * WRITING THE DATA
   Future<Null> saveLoginData(String email, String password)async{
     String contents = '$email\n$password';

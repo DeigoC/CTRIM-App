@@ -1,4 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart';
+import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ConfirmationDialogue{
 
-  static Future<bool> userLogout ({
+  Future<bool> userLogout ({
     @required BuildContext context,
   }) async{
     bool result = false;
@@ -31,8 +33,7 @@ class ConfirmationDialogue{
     return result;
   }
 
-
-  static Future<bool> deleteRecord ({
+  Future<bool> deleteRecord ({
     @required BuildContext context,
     @required String record,
   }) async{
@@ -58,7 +59,7 @@ class ConfirmationDialogue{
     return result;
   }
 
-  static Future<bool> disableReenableUser ({
+  Future<bool> disableReenableUser ({
     @required BuildContext context,
     @required bool toDisable,
   }) async{
@@ -88,7 +89,7 @@ class ConfirmationDialogue{
     return result;
   }
 
-   static Future<bool> leaveEditPage ({
+   Future<bool> leaveEditPage ({
     @required BuildContext context,
     bool creatingRecord = false,
   }) async{
@@ -117,7 +118,7 @@ class ConfirmationDialogue{
     return result;
   }
 
-  static Future<bool> saveRecord ({
+  Future<bool> saveRecord ({
     @required BuildContext context,
     @required String record,
     bool editing = false,
@@ -154,7 +155,38 @@ class ConfirmationDialogue{
     return result;
   }
 
-  static void uploadTaskStarted({
+  Future<bool> sendNotification ({
+    @required BuildContext context,
+  }) async{
+    bool result = false;
+    await showDialog(
+      context: context,
+      builder: (_){
+        return AlertDialog(
+          title: Text('Notify everyone of this post?'),
+          content: Text('Do you wish to continue? Do not abuse this!'),
+          actions: [
+            MyFlatButton(
+              label: 'Cancel',
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            ),
+            MyFlatButton(
+              label: 'Notify Users',
+              onPressed: (){
+                result = true;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
+    );
+    return result;
+  }
+
+  void uploadTaskStarted({
     @required BuildContext context,
     //@required AppBloc appBloc,
   }){

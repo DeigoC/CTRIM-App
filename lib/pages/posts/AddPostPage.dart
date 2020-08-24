@@ -41,7 +41,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: (){
-        return ConfirmationDialogue.leaveEditPage(context: context,creatingRecord: true);
+        return ConfirmationDialogue().leaveEditPage(context: context,creatingRecord: true);
       },
       child: BlocProvider(
         create: (_) => _postBloc,
@@ -108,7 +108,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                    Navigator.of(context).pop();
                    Navigator.of(context).pop();
                  }else if(state is TimelineAttemptingToUploadNewPostState){
-                   ConfirmationDialogue.uploadTaskStarted(context: context);
+                   ConfirmationDialogue().uploadTaskStarted(context: context);
                  }
               },
               child: TabBarView(

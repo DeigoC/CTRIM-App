@@ -78,7 +78,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
   Widget _buildBodyWithData(){
     return WillPopScope(
       onWillPop: () async {
-        return await ConfirmationDialogue.leaveEditPage(context: context);
+        return await ConfirmationDialogue().leaveEditPage(context: context);
       },
       child: BlocProvider(
         create: (_) => _postBloc,
@@ -158,7 +158,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
                     Navigator.of(context).pop();
                   }
                }else if(state is TimelineAttemptingToUploadNewPostState){
-                 ConfirmationDialogue.uploadTaskStarted(context: context);
+                 ConfirmationDialogue().uploadTaskStarted(context: context);
                }
               },
               child: TabBarView(
@@ -187,7 +187,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
       label: 'Delete',
       isDestructive: true,
       onPressed: () {
-        ConfirmationDialogue.deleteRecord(context: context, record: 'Post').then((confirmation) {
+        ConfirmationDialogue().deleteRecord(context: context, record: 'Post').then((confirmation) {
           if(confirmation){
             BlocProvider.of<TimelineBloc>(context).add(
               TimelineDeletePostEvent(post: _post, uid: BlocProvider.of<AppBloc>(context).currentUser.id));

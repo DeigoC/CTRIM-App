@@ -122,7 +122,7 @@ class _RegisterUserState extends State<RegisterUser> {
                     content: Text('User with this email already exists!'),
                   ));
                 }else if(state is AdminLoginAttempToRegisterUserState){
-                  ConfirmationDialogue.uploadTaskStarted(context: context);
+                  ConfirmationDialogue().uploadTaskStarted(context: context);
                 }
               },
               buildWhen: (_, state) {

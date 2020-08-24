@@ -1,4 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart';
+import 'package:ctrim_app_v1/classes/other/UserFileDocument.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/AboutTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
@@ -46,18 +48,34 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     _aboutTabPage = AboutTabPage(context, TabController(length: 3, vsync: this));
       
     // ! Firebase messaging
+    // * Some notes:
+    // * message has 2 keys of interest: 'notification' and 'data'
+    // * notification just states the 'title' and 'body' of the message (seen from standard notifications)
+    // * data is the important one, you can add whatever data you want in it and i think
+    // * data must include the "click_action: FLUTTER_NOTIFICATION_CLICK" key value pair
+    NotificationHandler _notificationHandler = NotificationHandler(context);
+    
     _firebaseMessaging.configure(
       onMessage: (message)async{
         // * When app's open
-        print('-------------------ON MESSAGE: ' + message.toString());
+        _notificationHandler.handleOnMessage(message);
       },
       onResume: (message)async{
-
+        _notificationHandler.handleOnResume(message);
       },
       onLaunch: (message)async{
-        
+        _notificationHandler.handleOnLaunch(message);
       },
     );
+    
+    UserFileDocument().hasDeviceTokenFile().then((hasFile){
+      if(!hasFile){
+        print('------------------!GRABBING THE DEVICE TOKEN!--------------------');
+         _firebaseMessaging.getToken().then((token){
+          _notificationHandler.addTokenDevice(token);
+        });
+      }
+    });
   }
 
   @override
@@ -228,5 +246,4 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     if(selectedIndex == 3) return _settingsPage.buildDrawer();
     return null;
   }
-
 }

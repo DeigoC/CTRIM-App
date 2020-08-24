@@ -35,7 +35,7 @@ class _EditUserPageState extends State<EditUserPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        return ConfirmationDialogue.leaveEditPage(context: context);
+        return ConfirmationDialogue().leaveEditPage(context: context);
       },
       child: BlocProvider<AdminBloc>(
         create: (_) => _adminBloc,
@@ -104,7 +104,7 @@ class _EditUserPageState extends State<EditUserPage> {
                 return RaisedButton(
                   child: Text('Update User'),
                   onPressed: (state is AdminUserModEnableSaveButtonState)? () {
-                    ConfirmationDialogue.saveRecord(
+                    ConfirmationDialogue().saveRecord(
                       context: context,
                       record: 'User',
                       editing: true).then((confirmation) {
@@ -138,7 +138,7 @@ class _EditUserPageState extends State<EditUserPage> {
       return RaisedButton(
         child: Text(disabled ? 'Enable User' : 'Disable User'),
         onPressed: (){
-          ConfirmationDialogue.disableReenableUser(
+          ConfirmationDialogue().disableReenableUser(
             context: context,
             toDisable: !disabled
           ).then((confirmation){

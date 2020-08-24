@@ -62,7 +62,7 @@ class _AddLocationState extends State<AddLocation> {
             } else if (state is LocationDisplayConfirmedQueryAddressState) {
               Navigator.of(context).pop();
             }else if(state is LocationEditAttemptToUpdateState){
-              ConfirmationDialogue.uploadTaskStarted(context: context);
+              ConfirmationDialogue().uploadTaskStarted(context: context);
             } else if (state is LocationCreatedState){
               widget._postBloc.add(PostSelectedLocationEvent(
                 addressLine: LocationDBManager.allLocations.last.addressLine,

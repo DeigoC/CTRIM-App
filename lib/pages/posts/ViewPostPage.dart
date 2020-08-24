@@ -1,9 +1,11 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
+import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/updatesTabBody.dart';
@@ -90,6 +92,21 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           SliverAppBar(
             expandedHeight: MediaQuery.of(context).size.height * 0.33,
             actions: [
+              IconButton(
+                tooltip: 'Send Notification',
+                icon: Icon(Icons.notifications_active),
+                onPressed: (){
+                  ConfirmationDialogue().sendNotification(context: context).then((value){
+                    if(value){
+                      Scaffold.of(_).showSnackBar(SnackBar(
+                        content: Text('Notification Sent!'),
+                      ));
+                      NotificationHandler(context).notifyUsersAboutPost(_post);
+                    }
+                  });
+                },
+              ),
+
               BlocBuilder<AppBloc, AppState>(
                 condition: (_, state) {
                   if (state is AppCurrentUserLikedPostState) return true;

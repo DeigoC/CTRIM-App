@@ -79,7 +79,7 @@ class SettingsPage{
             title: Text('Log out'),
             leading: Icon(Icons.person_outline),
             onTap: (){
-              ConfirmationDialogue.userLogout(context: _context).then((confirmation){
+              ConfirmationDialogue().userLogout(context: _context).then((confirmation){
                 if(confirmation){
                   Navigator.of(_context).pop();
                   BlocProvider.of<AppBloc>(_context).add(AppCurrentUserLogsOutEvent());
