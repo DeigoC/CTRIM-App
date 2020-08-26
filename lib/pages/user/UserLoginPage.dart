@@ -143,14 +143,12 @@ class _UserLoginPageState extends State<UserLoginPage> {
       /* FlatButton(
         child: Text('Test'),
         onPressed: (){
-          showBottomSheet(context: _context, builder: (_){
-            return Container(
-              alignment: Alignment.center,
-              height: MediaQuery.of(_context).size.height*0.8,
-              color: Colors.red,
-              child: Text('Hello!'),
-            );
-          });
+          showBottomSheet(
+            context: _context, 
+            backgroundColor: Colors.transparent,
+            builder: (_){
+              return ViewUserSheet(null);
+            });
         },
       ), */
       BlocBuilder(

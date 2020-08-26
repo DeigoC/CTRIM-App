@@ -124,59 +124,65 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       },
       builder: (context, state) {
         bool onDark = BlocProvider.of<AppBloc>(context).onDarkTheme;
-        return Container(
-          color: onDark ? Color(0xff525252):Color(0xffdb9423),
-          child: SafeArea(
-            child: Scaffold(
-            appBar: _getAppBar(selectedIndex),
-            body: Builder(
-              builder: (_){
-                _setNewContext(_);
-                return _getBody(selectedIndex);
-              }),
-            floatingActionButton: _getFAB(selectedIndex),
-            drawer: _getDrawer(selectedIndex),
-            bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-              condition: (_,state){
-                if(state is SettingsState) return true;
-                return false;
-              },
-                builder:(_,state) => BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                currentIndex: selectedIndex,
-                unselectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white38 :null,
-                selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
-                backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
-                onTap: (newIndex){
-                  _scrollToTop(newIndex);
-                  BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
+        return Stack(
+          children: [
+          SafeArea(
+              child: Scaffold(
+              appBar: _getAppBar(selectedIndex),
+              body: Builder(
+                builder: (_){
+                  _setNewContext(_);
+                  return _getBody(selectedIndex);
+                }),
+              floatingActionButton: _getFAB(selectedIndex),
+              drawer: _getDrawer(selectedIndex),
+              bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                condition: (_,state){
+                  if(state is SettingsState) return true;
+                  return false;
                 },
-                items: [
-                   BottomNavigationBarItem(
-                    title: Container(),
-                    icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
-                  ),
-                  /* BottomNavigationBarItem(
-                    title: Container(),
-                    icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
-                  ), */
-                  BottomNavigationBarItem(
-                    title: Container(),
-                    icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
-                  ),
-                   BottomNavigationBarItem(
-                     title: Container(),
-                    icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
-                  ),
-                  BottomNavigationBarItem(
-                    title: Container(),
-                    icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
-                  ),
-                ],
+                  builder:(_,state) => BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  currentIndex: selectedIndex,
+                  unselectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white38 :null,
+                  selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
+                  backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
+                  onTap: (newIndex){
+                    _scrollToTop(newIndex);
+                    BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
+                  },
+                  items: [
+                     BottomNavigationBarItem(
+                      title: Container(),
+                      icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
+                    ),
+                    /* BottomNavigationBarItem(
+                      title: Container(),
+                      icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
+                    ), */
+                    BottomNavigationBarItem(
+                      title: Container(),
+                      icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
+                    ),
+                     BottomNavigationBarItem(
+                       title: Container(),
+                      icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
+                    ),
+                    BottomNavigationBarItem(
+                      title: Container(),
+                      icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
+                    ),
+                  ],
+                ),
               ),
-            ),
       ),
-          ),
+            ),
+          Container(
+              color: onDark ? Color(0xff525252):Color(0xffdb9423),
+              height: MediaQuery.of(context).padding.top,
+              width: double.infinity,
+            ),
+          ],
         );
       },
     );
@@ -209,9 +215,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     return null;
   }
 
-  AppBar _getAppBar(int selectedIndex){
+  PreferredSizeWidget _getAppBar(int selectedIndex){
     switch(selectedIndex){
-      //case 1: return _galleryPage.buildAppBar();
+      case 0: return _eventPage.buildAppBar();
+      case 1: return _locationsPage.buildAppBar();
       case 3: return _settingsPage.buildAppbar();
       break;
     }
@@ -220,18 +227,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   Widget _getBody(int selectedIndex){
     switch(selectedIndex){
-      case 0:return BlocBuilder<AppBloc, AppState>(
-        condition: (_,state){
-          if(state is AppRebuildSliverAppBarState) return true;
-          return false;
-        },
-        builder:(_,state){
-          return _eventPage.buildBody();
-        }
-      );
+      case 0: return _eventPage.buildBody();
       break;
-      /* case 1: return _galleryPage.buildBody();
-      break; */
       case 1: return _locationsPage.buildBody();
       break;
       case 2: return _aboutTabPage.buildBody();

@@ -20,6 +20,7 @@ import 'package:ctrim_app_v1/pages/location/EditLocationPage.dart';
 import 'package:ctrim_app_v1/pages/location/SelectLocationForPostPage.dart';
 import 'package:ctrim_app_v1/pages/location/ViewAllPostsForLocationPage.dart';
 import 'package:ctrim_app_v1/pages/location/ViewLocationOnMapPage.dart';
+import 'package:ctrim_app_v1/pages/user/EditUserBodyPage.dart';
 import 'package:ctrim_app_v1/pages/user/EditUserPage.dart';
 import 'package:ctrim_app_v1/pages/user/EditMyDetailsPage.dart';
 import 'package:ctrim_app_v1/pages/user/RegisterUserPage.dart';
@@ -57,6 +58,7 @@ const SelectLocationForEventRoute = '/SelectLcoationForEvent';
 const RegisterUserRoute = '/RegisterUser';
 const ViewAllUsersRoute = '/ViewAllUsers';
 const EditUserRoute = '/EditUser';
+const EditUserBodyRoute = '/EditUserBody';
 const UserLoginRoute = '/UserLogin';
 const MyDetailsRoute = '/MyDetailsPage';
 const MyLikedPostsRoute = '/LikedPostsPage';
@@ -212,6 +214,9 @@ class _AppState extends State<App> {
         break;
 
         case ViewUserPageRoute: screen = ViewUserPage(arguments['user']);
+        break;
+
+        case EditUserBodyRoute: screen = EditUserBodyPage(arguments['user']);
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

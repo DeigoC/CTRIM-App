@@ -1,16 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:zefyr/zefyr.dart';
 
 class User{
-  String id, forename,surname, imgSrc, email, authID, role;
+  String id, forename,surname, imgSrc, email, authID, role, body;
   int adminLevel;
   List<String> likedPosts;
   Map<String, String> socialLinks;
   bool disabled, onDarkTheme;
-
-  String get roleString {
-    if(role.trim().isEmpty) return 'N/A';
-    return role;
-  }
 
   User({
     this.id, 
@@ -21,6 +19,7 @@ class User{
     this.email,
     this.adminLevel,
     this.likedPosts,
+    this.body,
     this.disabled = false,
     this.onDarkTheme = false,
     this.role = '',
@@ -31,6 +30,7 @@ class User{
   : id = id,
   forename = data['Forename'],
   surname = data['Surname'],
+  this.body = data['Body'],
   role = data['Role'],
   authID = data['AuthID'],
   adminLevel = data['AdminLevel'],
@@ -54,6 +54,7 @@ class User{
       'OnDarkTheme':onDarkTheme,
       'Role':role,
       'Surname':surname,
+      'Body':body,
     };
   }
 
@@ -70,4 +71,15 @@ class User{
       backgroundImage: NetworkImage(imgSrc),
     );
   }
+
+  String get roleString {
+    if(role.trim().isEmpty) return 'N/A';
+    return role;
+  }
+
+  NotusDocument getBodyDoc() {
+    var jsonDecoded = jsonDecode(body);
+    return NotusDocument.fromJson(jsonDecoded);
+  }
+
 }

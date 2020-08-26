@@ -16,7 +16,7 @@ class SocialLinksDisplay extends StatelessWidget {
     List<String> types = socialLinks.keys.toList();
     types.sort();
 
-    if(socialLinks.length == 0) return Center(child: Text('N/A'));
+    if(socialLinks.length == 0) return Center(child: Text('No Social Links/Contacts added.'));
     return Align(
       alignment: Alignment.center,
       child: Wrap(

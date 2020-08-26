@@ -1,25 +1,26 @@
 import 'dart:convert';
-import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+
+import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:zefyr/zefyr.dart';
 
-class PostBodyEditor extends StatefulWidget {
-  final PostBloc _postBloc;
-  PostBodyEditor(this._postBloc);
+class EditUserBodyPage extends StatefulWidget {
+  final User user;
+  EditUserBodyPage(this.user);
   @override
-  _PostBodyEditorState createState() => _PostBodyEditorState();
+  _EditUserBodyPageState createState() => _EditUserBodyPageState();
 }
 
-class _PostBodyEditorState extends State<PostBodyEditor> {
- 
+class _EditUserBodyPageState extends State<EditUserBodyPage> {
+  
   ZefyrController _textController;
   FocusNode _fnEditor;
 
   @override
   void initState() {
-    super.initState();
-    _textController = ZefyrController(widget._postBloc.getEditorDoc());
+    _textController = ZefyrController(widget.user.getBodyDoc());
     _fnEditor = FocusNode();
+    super.initState();
   }
 
   @override
@@ -32,17 +33,14 @@ class _PostBodyEditorState extends State<PostBodyEditor> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async{
+      onWillPop: ()async{
         String contents = jsonEncode(_textController.document);
-        widget._postBloc.add(PostSaveBodyDocumentEvent(contents));
-        Navigator.pop(context);
+        widget.user.body = contents;
         return true;
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Body Editor'),
-        ),
-        body: ZefyrScaffold(
+        appBar: AppBar(title: Text('Edit About Pastor Body'),),
+        body:  ZefyrScaffold(
           child: ZefyrEditor(
             mode: ZefyrMode.edit,
             controller: _textController,
@@ -53,5 +51,4 @@ class _PostBodyEditorState extends State<PostBodyEditor> {
       ),
     );
   }
-
 }

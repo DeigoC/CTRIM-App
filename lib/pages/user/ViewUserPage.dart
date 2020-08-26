@@ -1,6 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
-import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
@@ -20,15 +19,6 @@ class ViewUserPage extends StatefulWidget {
 
 class _ViewUserPageState extends State<ViewUserPage> {
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() { 
-    super.dispose();
-  }
  
   @override
   Widget build(BuildContext context) {

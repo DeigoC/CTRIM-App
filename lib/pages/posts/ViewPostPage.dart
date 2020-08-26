@@ -1,5 +1,6 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
@@ -27,9 +28,12 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   Post _post;
 
   List<TimelinePost> _allTimelinePosts = [];
+  PostBloc _postBloc;
 
   @override
   void initState() {
+    _postBloc = PostBloc();
+
     _tabController = TabController(vsync: this, length: 4);
     _fn = FocusNode();
     super.initState();
@@ -41,14 +45,18 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     _tabController.dispose();
     _fn.dispose();
     super.dispose();
+    _postBloc.close();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: _post==null ? null:_buildFAB(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _buildBody()
+    return BlocProvider(
+      create: (_) => _postBloc,
+      child: Scaffold(
+        floatingActionButton: _post==null ? null:_buildFAB(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        body: _buildBody()
+      ),
     );
   }
 
@@ -180,7 +188,38 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
   Widget _buildFAB(){
     if(!_post.isDateNotApplicable && _post.startDate.isAfter(DateTime.now())){
-      return FloatingActionButton.extended(
+      return BlocBuilder(
+        bloc: _postBloc,
+        condition: (_,state){
+          if(state is PostRemoveViewFABState||state is PostBuildViewFABState){
+            return true;
+          }
+          return false;
+        },
+        builder: (_,state){
+          if(state is PostRemoveViewFABState) return Container();
+          return FloatingActionButton.extended(
+            onPressed: (){
+              Event event = Event(
+                title: _post.title,
+                description: _post.description,
+                location: BlocProvider.of<TimelineBloc>(context).selectableLocations
+                .firstWhere((element) => element.id == _post.locationID)
+                .getAddressLine(),
+                startDate: _post.startDate,
+                endDate: _post.endDate,
+                allDay: _post.allDayEvent,
+              );
+              Add2Calendar.addEvent2Cal(event);
+            }, 
+            label: Text('Set Reminder',style: TextStyle(color: Colors.white),),
+            icon: Icon(Icons.calendar_today,color: Colors.white,),
+          );
+        },
+      );
+
+
+      /* return FloatingActionButton.extended(
         onPressed: (){
           Event event = Event(
             title: _post.title,
@@ -196,7 +235,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         }, 
         label: Text('Set Reminder',style: TextStyle(color: Colors.white),),
         icon: Icon(Icons.calendar_today,color: Colors.white,),
-      );
+      ); */
     }
     return null;
   }

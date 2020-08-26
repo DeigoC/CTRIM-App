@@ -22,8 +22,6 @@ class ViewChurchPage extends StatefulWidget {
 
 class _ViewChurchPageState extends State<ViewChurchPage> {
 
-  ScrollController _scrollController = ScrollController();
-
   @override
   void initState() {
     super.initState();
@@ -32,17 +30,8 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ScrollAppBar(
-        controller: _scrollController,
-        title: Text(widget._aboutArticle.title + ' Church'),
-        centerTitle: true,
-      ),
-      
-      //AppBar(title: Text(widget._aboutArticle.title + ' Church'),centerTitle: true,),
-      body: Snap(
-        controller: _scrollController.appBar,
-        child: _buildBody()
-      ),
+      appBar: AppBar(title: Text(widget._aboutArticle.title + ' Church'),centerTitle: true,),
+      body: _buildBody(),
     );
   }
 
@@ -55,7 +44,6 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
     .firstWhere((e) => e.id.compareTo(widget._aboutArticle.locationID)==0);
 
     return ListView(
-      controller: _scrollController,
       children: [
         GallerySlideShow(galleryItems: widget._aboutArticle.slideShowItems,),
         SizedBox(height: 16,),

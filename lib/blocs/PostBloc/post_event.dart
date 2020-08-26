@@ -108,3 +108,9 @@ class PostLocationReferenceEvent extends PostEvent{}
 class PostLocationAddReferenceEvent extends PostLocationReferenceEvent{}
 class PostLocationCheckReferenceEvent extends PostLocationReferenceEvent{}
 class PostLocationRemoveReferenceEvent extends PostLocationReferenceEvent{}
+
+// ! View Post FAB
+class PostViewPostFABEvent extends PostEvent{}
+class PostRemoveViewFABEvent extends PostViewPostFABEvent{}
+class PostBuildViewFABEvent extends PostViewPostFABEvent{}
+

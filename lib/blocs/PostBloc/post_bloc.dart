@@ -177,6 +177,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     else if (event is PostGalleryEvent) yield* _mapGalleryEventsToState(event);
     else if (event is PostLocationReferenceEvent) _performPostLocationReferenceProcess(event);
     else if(event is PostCheckToDeleteUnusedFilesEvent) _deleteUnusedStorageItems();
+    else if(event is PostViewPostFABEvent) yield* _mapViewPostFABEventToState(event);
   }
 
   Stream<PostState> _mapGalleryEventsToState(PostGalleryEvent event) async* {
@@ -257,6 +258,11 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       yield PostLocationSelectedState();
     }
     yield* _canEnableSaveButton();
+  }
+
+  Stream<PostState> _mapViewPostFABEventToState(PostViewPostFABEvent event) async*{
+    if(event is PostRemoveViewFABEvent) yield PostRemoveViewFABState();
+    else if(event is PostBuildViewFABEvent) yield PostBuildViewFABState();
   }
 
   PostScheduleState _setStartDate(PostSetStartPostDateEvent event){

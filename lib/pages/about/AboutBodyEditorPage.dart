@@ -38,9 +38,7 @@ class _AboutBodyEditorPageState extends State<AboutBodyEditorPage> {
         return true;
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Edit About Pastor Body'),
-        ),
+        appBar: AppBar(title: Text('Edit About Pastor Body'),),
         body:  ZefyrScaffold(
           child: ZefyrEditor(
             mode: ZefyrMode.edit,

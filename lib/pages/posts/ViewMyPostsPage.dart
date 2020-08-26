@@ -20,20 +20,24 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
       appBar: AppBar(
         title: Text('Your Posts'),
         actions: [
-          PopupMenuButton(
-            itemBuilder: (_){
-              return [
-                PopupMenuItem(
-                  child: SwitchListTile(
+          FlatButton(
+            padding: EdgeInsets.zero,
+            child: AbsorbPointer(
+              child: Row(
+                children: [
+                  Icon(Icons.delete,color: Colors.white,),
+                  Switch(
+                    activeColor: Color(0xff236adb),
                     value: _showDeleted,
-                    title: Icon(Icons.delete, color: Colors.black,),
-                    onChanged: (newValue){ 
-                      Navigator.of(context).pop();
-                      setState(() {_showDeleted = newValue;});
-                    },
+                    onChanged: (_){},
                   ),
-                )
-              ];
+                ],
+              ),
+            ),
+            onPressed: (){
+              setState(() {
+                _showDeleted = !_showDeleted;
+              });
             },
           ),
         ],
@@ -51,12 +55,12 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
         if(_allUserTPs!=null){
           return  _buildBodyWithData(_allUserTPs);
         }
-        return _newBody();
+        return _buildFB();
       }),
     );
   }
 
-  Widget _newBody(){
+  Widget _buildFB(){
     return FutureBuilder<List<TimelinePost>>(
       future: BlocProvider.of<TimelineBloc>(context).fetchAllUserPosts(BlocProvider.of<AppBloc>(context).currentUser.id),
       builder: (_,snap){

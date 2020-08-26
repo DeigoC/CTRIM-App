@@ -99,6 +99,10 @@ class AppToEditUserEvent extends AppNavigateToPageEvent {
 class AppToUserLoginEvent extends AppNavigateToPageEvent {}
 class AppToMyDetailsEvent extends AppNavigateToPageEvent {}
 class AppToLikedPostsPageEvent extends AppNavigateToPageEvent {}
+class AppToEditUserBodyPageEvent extends AppNavigateToPageEvent{
+  final User user;
+  AppToEditUserBodyPageEvent(this.user);
+}
 
 // ! Gallery
 class AppToCreateAlbumEvent extends AppNavigateToPageEvent {

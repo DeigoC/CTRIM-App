@@ -10,6 +10,7 @@ import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zefyr/zefyr.dart';
 
 class EditMyDetailsPage extends StatefulWidget {
   @override
@@ -33,6 +34,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
       surname: originalU.surname,
       socialLinks: Map<String,String>.from(originalU.socialLinks),
       likedPosts: List.from(originalU.likedPosts),
+      body: originalU.body,
       imgSrc: originalU.imgSrc
     );
     _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers,BlocProvider.of<AppBloc>(context));
@@ -184,6 +186,16 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
             )
           ],
         ),
+        Divider(),
+        ZefyrView(document: _user.getBodyDoc(),),
+        MyRaisedButton(
+          externalPadding: EdgeInsets.all(8),
+          label: 'Edit Text',
+          onPressed: (){
+            BlocProvider.of<AppBloc>(context).add(AppToEditUserBodyPageEvent(_user));
+          },
+        ),
+        SizedBox(height: 8,),
       ],
     );
   }

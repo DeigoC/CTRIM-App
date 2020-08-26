@@ -69,3 +69,7 @@ class PostDetailListSaveDisabledState extends PostDetailListState {}
 class PostGalleryState extends PostState {}
 
 class PostFilesReceivedState extends PostGalleryState {}
+
+// View Post FAB
+class PostRemoveViewFABState extends PostState{}
+class PostBuildViewFABState extends PostState{}

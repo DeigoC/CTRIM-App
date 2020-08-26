@@ -1,8 +1,9 @@
-import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/viewUserSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,17 +19,30 @@ class PostUpdatesTab extends StatelessWidget {
     User user = BlocProvider.of<TimelineBloc>(context).allUsers
     .firstWhere( (author) => author.id == _allTimelinePosts.last.authorID);
 
-
     return CustomScrollView(
       slivers: [
-        SliverList(
+        SliverList(//TODO wrap this into a FB to fetch user?
           delegate: SliverChildListDelegate([
             ListTile(
-              leading: Hero(child: user.buildAvatar(context),tag: '0/'+user.imgSrc,),
+              leading: Hero(child: user.buildAvatar(context),tag:'no more',),
               title: Text(user.forename + ' ' + user.surname[0] + '.'),
-              subtitle: Text(user.role),
-              onTap: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(user)),
-              trailing: Text('(AUTHOR)'),
+              subtitle: Text('Author'),
+              onTap: (){
+                var controller = showBottomSheet(
+                  context: context, 
+                  backgroundColor: Colors.transparent,
+                  builder: (_){
+                    return ViewUserSheet(user);
+                });
+
+                BlocProvider.of<PostBloc>(context).add(PostRemoveViewFABEvent());
+
+                controller.closed.then((_) => BlocProvider.of<PostBloc>(context).add(PostBuildViewFABEvent()));
+                
+                // * The old style
+                //BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(user));
+              },
+              trailing: Icon(Icons.info),
             ),
             Divider(),
             Padding(

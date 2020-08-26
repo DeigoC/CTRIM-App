@@ -19,37 +19,34 @@ class AboutTabPage{
   AboutTabPage(this._context,this._tabController);
 
   Widget buildBody(){
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          //leading: Icon(FontAwesome5Solid.church,color: Colors.white,),
-          title: Row(
-            children: [
-              Icon(FontAwesome5Solid.church,color: Colors.white,),
-              SizedBox(width: 24,),
-              Text('About Us'),
-            ],
-          ),
-          centerTitle: true,
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: [
-              Tab( text: 'CTRIM',),
-              Tab(text: 'Churches',),
-              Tab(text: 'Contact Us',),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          controller: _tabController,
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        //leading: Icon(FontAwesome5Solid.church,color: Colors.white,),
+        title: Row(
           children: [
-            _buildTab1(),
-            _buildTab2(),
-            _buildTab3()
+            Icon(FontAwesome5Solid.church,color: Colors.white,),
+            SizedBox(width: 24,),
+            Text('About Us'),
           ],
         ),
+        centerTitle: true,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab( text: 'CTRIM',),
+            Tab(text: 'Churches',),
+            Tab(text: 'Contact Us',),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildTab1(),
+          _buildTab2(),
+          _buildTab3()
+        ],
       ),
     );
   }
