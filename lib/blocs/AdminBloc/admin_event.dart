@@ -32,7 +32,7 @@ class AdminSaveMyDetailsEvent extends AdminEvent{
   final File file;
   final bool hasDeletedSrc;
   final String role;
-  AdminSaveMyDetailsEvent({ this.file,this.hasDeletedSrc,this.role});
+  AdminSaveMyDetailsEvent({ this.file,this.hasDeletedSrc,this.role,});
 }
 
 class AdminRebuildSocialLinksEvent extends AdminEvent{}
@@ -59,3 +59,8 @@ class AdminUserModEditTextChangeEvent extends AdminModifyingUserEvent {
 class AdminUserModAddNewUserClickEvent extends AdminModifyingUserEvent {}
 
 class AdminUserModUpdateUserClickEvent extends AdminModifyingUserEvent {}
+
+class AdminBodyChangedEvent extends AdminEvent{
+  final String body;
+  AdminBodyChangedEvent(this.body);
+}

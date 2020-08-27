@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/auth.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
@@ -126,7 +127,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToEditAboutArticleEvent) state.pushNamed(EditAboutArticleRoute);
     else if(event is AppToEditAboutBodyEvent) state.pushNamed(AboutBodyEditorPageRoute);
     else if(event is AppToViewUserPageEvent) state.pushNamed(ViewUserPageRoute, arguments: {'user':event.user});
-    else if(event is AppToEditUserBodyPageEvent) state.pushNamed(EditUserBodyRoute, arguments: {'user':event.user});
+    else if(event is AppToEditUserBodyPageEvent) state.pushNamed(EditUserBodyRoute, arguments: {'adminBloc':event.adminBloc});
   }
 
   Stream<AppState> _appStartupLoad() async*{

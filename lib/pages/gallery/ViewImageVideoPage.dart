@@ -110,7 +110,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
                   if(t is ScrollNotification){
                     // ignore: invalid_use_of_visible_for_testing_member
                     // ignore: invalid_use_of_protected_member
-                    // ignore: invalid_use_of_visible_for_testing_member
                     if(_scrollController.position.activity is BallisticScrollActivity){
                       _scrollController.animateTo(_midScroll, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
                     }

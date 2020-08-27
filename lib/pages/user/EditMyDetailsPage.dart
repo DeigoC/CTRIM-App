@@ -47,6 +47,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
   @override
   void dispose() { 
     _tecRole.dispose();
+    _adminBloc.close();
     super.dispose();
   }
   
@@ -187,16 +188,30 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
           ],
         ),
         Divider(),
-        ZefyrView(document: _user.getBodyDoc(),),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildUserBodySection(),
+        ),
         MyRaisedButton(
           externalPadding: EdgeInsets.all(8),
           label: 'Edit Text',
           onPressed: (){
-            BlocProvider.of<AppBloc>(context).add(AppToEditUserBodyPageEvent(_user));
+            BlocProvider.of<AppBloc>(context).add(AppToEditUserBodyPageEvent(_adminBloc));
           },
         ),
         SizedBox(height: 8,),
       ],
+    );
+  }
+
+  Widget _buildUserBodySection(){
+    return BlocBuilder(
+      bloc: _adminBloc,
+      condition: (_,state){
+        if(state is AdminUserRebuildBodyState) return true;
+        return false;
+      },
+      builder: (_,state) => ZefyrView(document: _adminBloc.selectedUser.getBodyDoc(),),
     );
   }
 

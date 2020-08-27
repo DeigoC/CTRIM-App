@@ -75,7 +75,6 @@ class ViewAllEventsPage {
         controller: _scrollController,
         centerTitle: true,
         title: Container(
-         // color: Colors.blue,
           child: Row(
             children: [
               Hero(tag:'openningIcon',child: Icon(FontAwesome5Solid.church,color: Colors.white,)),
@@ -87,7 +86,6 @@ class ViewAllEventsPage {
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(35),
           child: Container(
-            //color: Colors.red,
             padding: EdgeInsets.only(bottom: 5),
             height: 35,
             child: BlocBuilder<TimelineBloc, TimelineState>(

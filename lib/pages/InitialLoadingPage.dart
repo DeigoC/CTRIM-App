@@ -26,7 +26,7 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
     return Scaffold(
       backgroundColor: LightPrimaryColor,
       body: Center(
-        child:CircularProgressIndicator(),
+        child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
       ),
     );
   }

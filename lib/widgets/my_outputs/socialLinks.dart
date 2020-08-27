@@ -23,19 +23,22 @@ class SocialLinksDisplay extends StatelessWidget {
         alignment: WrapAlignment.center,
         spacing: 4,
         children: types.map((type){
-          return Container(
-            padding: EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              gradient: _getIconGradient(type),
-              shape: BoxShape.circle,
-              color: _getIconColor(type),
-            ),
-            child: IconButton(
-              tooltip: type,
-              icon: _getIconFromString(type),
-              onPressed: (){
-                _iconClick(type,context);
-              },
+          return Padding(
+            padding: EdgeInsets.only(top:4.0),
+            child: Container(
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                gradient: _getIconGradient(type),
+                shape: BoxShape.circle,
+                color: _getIconColor(type),
+              ),
+              child: IconButton(
+                tooltip: type,
+                icon: _getIconFromString(type),
+                onPressed: (){
+                  _iconClick(type,context);
+                },
+              ),
             ),
           );
         }).toList()
@@ -88,7 +91,7 @@ class SocialLinksDisplay extends StatelessWidget {
     }
   }
 
-   Icon _getIconFromString(String socialName){
+  Icon _getIconFromString(String socialName){
     switch(socialName){
       case 'Youtube':return Icon(AntDesign.youtube,color: Colors.white,);
       case 'Facebook': return Icon(AntDesign.facebook_square,color: Colors.white,);

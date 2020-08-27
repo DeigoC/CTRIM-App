@@ -61,6 +61,8 @@ class AdminLoginLoadingState extends AdminLoginState{}
 class AdminUserImageUploadingState extends AdminState{}
 class AdminUserImageUploadCompleteState extends AdminState{}
 class AdminUserRebuildSocialLinkState extends AdminState{}
+class AdminUserRebuildBodyState extends AdminState{}
+class AdminEmptyState extends AdminState{}
 
 class AdminUserModificationState extends AdminState {}
 

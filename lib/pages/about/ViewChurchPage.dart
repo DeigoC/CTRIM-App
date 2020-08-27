@@ -11,7 +11,6 @@ import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image/network.dart';
-import 'package:scroll_app_bar/scroll_app_bar.dart';
 
 class ViewChurchPage extends StatefulWidget {
   final AboutArticle _aboutArticle;

@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart'
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
+import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
@@ -100,6 +101,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           SliverAppBar(
             expandedHeight: MediaQuery.of(context).size.height * 0.33,
             actions: [
+              AdminCheck().isCurrentUserAboveLvl2(context) ? 
               IconButton(
                 tooltip: 'Send Notification',
                 icon: Icon(Icons.notifications_active),
@@ -113,8 +115,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
                     }
                   });
                 },
-              ),
-
+              ): Container(),
+              
               BlocBuilder<AppBloc, AppState>(
                 condition: (_, state) {
                   if (state is AppCurrentUserLikedPostState) return true;
@@ -254,13 +256,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         child: SingleChildScrollView(
           padding: EdgeInsets.all(8),
           child: ZefyrView(document: _zefyrController.document),
-        )/* ZefyrEditor(
-          focusNode: _fn,
-          autofocus: false,
-          mode: ZefyrMode.view,
-          controller: _zefyrController,
-          imageDelegate: null,
-        ), */
+        )
       ),
     );  
   }

@@ -52,7 +52,9 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         socialLinks: Map<String,String>.from(user.socialLinks),
         likedPosts: List.from(user.likedPosts),
         role: user.role,
-        adminLevel: user.adminLevel);
+        adminLevel: user.adminLevel,
+        body: user.body,
+      );
     _selectedUser = User(
       id: user.id,
       authID: user.authID,
@@ -65,6 +67,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       likedPosts: List.from(user.likedPosts),
       imgSrc: user.imgSrc,
       adminLevel: user.adminLevel,
+      body: user.body,
     );
   }
 
@@ -89,6 +92,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     else if (event is AdminModifyingUserEvent) yield* _mapUserModificationEventToState(event);
     else if (event is AdminLoginButtonClickedEvent) yield* _mapAdminLoginClickedToState(event);
     else if (event is AdminSaveMyDetailsEvent) yield* _mapSaveUserDetailsToState(event);
+    else if (event is AdminBodyChangedEvent){
+      _selectedUser.body = event.body;
+      yield AdminEmptyState();
+      yield AdminUserRebuildBodyState();
+    }
   }
 
   Stream<AdminState> _mapSaveUserDetailsToState(AdminSaveMyDetailsEvent event) async*{

@@ -1,6 +1,4 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
-import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart';
-import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';

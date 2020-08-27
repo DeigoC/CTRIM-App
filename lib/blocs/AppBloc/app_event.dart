@@ -100,8 +100,8 @@ class AppToUserLoginEvent extends AppNavigateToPageEvent {}
 class AppToMyDetailsEvent extends AppNavigateToPageEvent {}
 class AppToLikedPostsPageEvent extends AppNavigateToPageEvent {}
 class AppToEditUserBodyPageEvent extends AppNavigateToPageEvent{
-  final User user;
-  AppToEditUserBodyPageEvent(this.user);
+  final AdminBloc adminBloc;
+  AppToEditUserBodyPageEvent(this.adminBloc);
 }
 
 // ! Gallery

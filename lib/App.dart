@@ -216,7 +216,7 @@ class _AppState extends State<App> {
         case ViewUserPageRoute: screen = ViewUserPage(arguments['user']);
         break;
 
-        case EditUserBodyRoute: screen = EditUserBodyPage(arguments['user']);
+        case EditUserBodyRoute: screen = EditUserBodyPage(arguments['adminBloc']);
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);
