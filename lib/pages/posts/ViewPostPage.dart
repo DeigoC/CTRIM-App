@@ -219,37 +219,11 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           );
         },
       );
-
-
-      /* return FloatingActionButton.extended(
-        onPressed: (){
-          Event event = Event(
-            title: _post.title,
-            description: _post.description,
-            location: BlocProvider.of<TimelineBloc>(context).selectableLocations
-            .firstWhere((element) => element.id == _post.locationID)
-            .getAddressLine(),
-            startDate: _post.startDate,
-            endDate: _post.endDate,
-            allDay: _post.allDayEvent,
-          );
-          Add2Calendar.addEvent2Cal(event);
-        }, 
-        label: Text('Set Reminder',style: TextStyle(color: Colors.white),),
-        icon: Icon(Icons.calendar_today,color: Colors.white,),
-      ); */
     }
     return null;
   }
   
   Widget _buildAboutTab() {
-    ZefyrEditableText(
-      controller: _zefyrController,
-      focusNode: _fn,
-      autofocus: false,
-      imageDelegate: null,
-    );
-
     return ZefyrTheme(
       data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
       child: ZefyrScaffold(
