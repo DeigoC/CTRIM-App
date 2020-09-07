@@ -1,4 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart';
 import 'package:ctrim_app_v1/classes/other/UserFileDocument.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/AboutTabPage.dart';
@@ -9,6 +10,8 @@ import 'package:ctrim_app_v1/style.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:scroll_app_bar/scroll_app_bar.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -156,10 +159,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                       title: Container(),
                       icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
                     ),
-                    /* BottomNavigationBarItem(
-                      title: Container(),
-                      icon: Tooltip(child: Icon(Icons.photo_library),message: 'Gallery'),
-                    ), */
                     BottomNavigationBarItem(
                       title: Container(),
                       icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
@@ -227,7 +226,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   Widget _getBody(int selectedIndex){
     switch(selectedIndex){
-      case 0: return _eventPage.buildBody();
+      case 0: return _buildPostTabBody();
       break;
       case 1: return _locationsPage.buildBody();
       break;
@@ -237,6 +236,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       break;
     }
     return Container();
+  }
+
+  Widget _buildPostTabBody(){
+    return BlocListener<TimelineBloc, TimelineState>(
+      condition: (_,state){
+        if(state is TimelinePinPostSnackbarState || state is TimelineUnpinPostSnackbarState) return true;
+        return false;
+      },
+      listener: (_,state){
+        if(state is TimelinePinPostSnackbarState){
+          if(!_postsScrollController.appBar.isPinned){
+            setState(() { _postsScrollController.appBar.tooglePinState(); });
+          }
+        }else if (state is TimelineUnpinPostSnackbarState){
+          if(_postsScrollController.appBar.isPinned){
+            setState(() { _postsScrollController.appBar.tooglePinState(); });
+          }
+        }
+      },
+      child: _eventPage.buildBody(),
+    );
   }
 
   Widget _getDrawer(int selectedIndex){

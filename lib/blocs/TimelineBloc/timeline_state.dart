@@ -15,6 +15,8 @@ class TimelineDisplayFilteredFeedState extends TimelineState{
   final List<TimelinePost> feedData;
   TimelineDisplayFilteredFeedState(this.feedData);
 }
+class TimelinePinPostSnackbarState extends TimelineState{}
+class TimelineUnpinPostSnackbarState extends TimelineState{}
 
 class TimelineRebuildFeedState extends TimelineState{}
 class TimelineTagChangedState extends TimelineState {}

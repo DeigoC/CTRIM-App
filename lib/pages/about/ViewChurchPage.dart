@@ -8,6 +8,7 @@ import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/gallerySlideShow.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/socialLinks.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/viewUserSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image/network.dart';
@@ -21,6 +22,8 @@ class ViewChurchPage extends StatefulWidget {
 
 class _ViewChurchPageState extends State<ViewChurchPage> {
 
+  BuildContext _context;
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +33,12 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget._aboutArticle.title + ' Church'),centerTitle: true,),
-      body: _buildBody(),
+      body: Builder(
+        builder: (_){
+          _context = _;
+          return _buildBody();
+        },
+      ),
     );
   }
 
@@ -66,7 +74,13 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
         label: pastorUser.forename + ' ' + pastorUser.surname,
         fontSize: 18,
         onPressed: (){
-          BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(pastorUser));
+          showBottomSheet(
+            context: _context, 
+            backgroundColor: Colors.transparent,
+            builder: (_){
+              return ViewUserSheet(pastorUser);
+          });
+          //BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(pastorUser));
         },
       ),
 

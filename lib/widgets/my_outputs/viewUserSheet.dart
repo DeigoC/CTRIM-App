@@ -40,7 +40,7 @@ class _ViewUserSheetState extends State<ViewUserSheet> {
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 shape: BoxShape.rectangle,
-                color: Color(0xff236adb),
+                color: Color(0xff184a99),
                 borderRadius: BorderRadius.all(Radius.circular(16)),
               ),
               child: ListView(
@@ -56,7 +56,7 @@ class _ViewUserSheetState extends State<ViewUserSheet> {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16,),
-                  SocialLinksDisplay(widget.user.socialLinks),
+                  _buildSocialLinks(),
                   SizedBox(height: 8,),
                   Divider(indent: 8,endIndent: 8,color: Colors.white,),
                   ZefyrTheme(
@@ -66,7 +66,7 @@ class _ViewUserSheetState extends State<ViewUserSheet> {
                         heading2: _defaultLineTheme,
                         heading3: _defaultLineTheme,
                         link: TextStyle(
-                          color: Colors.grey.shade800,
+                          color: Color(0xffc51f5f),//Colors.grey.shade600,
                           decoration: TextDecoration.underline,
                         ),
                         quote:BlockTheme(
@@ -111,6 +111,11 @@ class _ViewUserSheetState extends State<ViewUserSheet> {
         ],
       ),
     );
+  }
+
+  Widget _buildSocialLinks(){
+    if(widget.user.socialLinks.length != 0) return SocialLinksDisplay(widget.user.socialLinks);
+    return Center(child: Text('No Social Links/Contacts added.', style: TextStyle(color: Colors.white),));
   }
 
   Widget _buildUserAvatar(){

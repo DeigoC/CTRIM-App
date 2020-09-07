@@ -12,7 +12,6 @@ class UserDBManager{
 
   Future<List<User>> fetchAllUsers() async{
     var collections = await _ref.getDocuments();
-    print('-------------body contains: ' + collections.documents.first.data['Body']);
     _allUsers = collections.documents.map((doc) => User.fromMap(doc.documentID, doc.data)).toList();
     return _allUsers;
   }

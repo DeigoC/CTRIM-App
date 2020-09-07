@@ -59,6 +59,10 @@ class ViewAllEventsPage {
             return Center(child: CircularProgressIndicator(),);
           }
           else if(state is TimelineDisplayFilteredFeedState){
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollController.animateTo(_scrollController.position.minScrollExtent,
+              duration: Duration(milliseconds: 500,), curve: Curves.easeIn);
+            });
             return _buildListView(state.feedData);
           }
           return _buildListView(BlocProvider.of<TimelineBloc>(_context).feedData);

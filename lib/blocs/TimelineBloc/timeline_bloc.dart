@@ -137,8 +137,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return _postDBManager.fetchPostByID(id);
   }
 
-  // * ---------------------------- END OF NEW STUFF
-
   // ! Mapping events to state
   @override
   TimelineState get initialState => TimelineInitial();
@@ -186,9 +184,11 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     yield TimelineTagChangedState();
     if(_selectedTags.containsValue(true)){
       yield TimelineLoadingFeedState();
+      yield TimelinePinPostSnackbarState();
       List<TimelinePost> data = await fetchPostFeedWithTags();
       yield TimelineDisplayFilteredFeedState(data);
     }else{
+      yield TimelineUnpinPostSnackbarState();
       yield TimelineDisplayFilteredFeedState(_feedData);
     }
   }

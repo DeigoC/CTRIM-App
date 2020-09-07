@@ -34,13 +34,8 @@ class PostUpdatesTab extends StatelessWidget {
                   builder: (_){
                     return ViewUserSheet(user);
                 });
-
                 BlocProvider.of<PostBloc>(context).add(PostRemoveViewFABEvent());
-
                 controller.closed.then((_) => BlocProvider.of<PostBloc>(context).add(PostBuildViewFABEvent()));
-                
-                // * The old style
-                //BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(user));
               },
               trailing: Icon(Icons.info),
             ),
