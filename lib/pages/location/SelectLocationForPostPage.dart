@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/widgets/my_outputs/locationCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+//TODO delete this
 class SelectLocationForEvent extends StatefulWidget {
   final PostBloc _postBloc;
   SelectLocationForEvent(this._postBloc);
@@ -33,17 +34,17 @@ class _SelectLocationForEventState extends State<SelectLocationForEvent> {
 
   ListView _buildBody() {
     return ListView.builder(
-      itemCount: BlocProvider.of<TimelineBloc>(context).selectableLocations.length,
+      itemCount: BlocProvider.of<TimelineBloc>(context).essentialLocations.length,
       itemBuilder: (_, index) {
-        Location location =BlocProvider.of<TimelineBloc>(context).selectableLocations[index];
+        Location location =BlocProvider.of<TimelineBloc>(context).essentialLocations[index];
         return LocationCard.addressSelect(
           location: location,
           onTap: () {
-            widget._postBloc.add(PostSelectedLocationEvent(
+            /* widget._postBloc.add(PostSelectedLocationEvent(
               locationID: location.id,
               addressLine: location.addressLine,
             ));
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(); */
           },
         );
       });

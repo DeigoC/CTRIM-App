@@ -7,6 +7,7 @@ import 'package:ctrim_app_v1/pages/about/ViewAboutPastors.dart';
 import 'package:ctrim_app_v1/pages/about/ViewChurchPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/CreateAlbumPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/EditAlbumPage.dart';
+import 'package:ctrim_app_v1/pages/location/SearchLocationPage.dart';
 import 'package:ctrim_app_v1/pages/posts/EditPostPage.dart';
 import 'package:ctrim_app_v1/pages/posts/PostBodyEditorPage.dart';
 import 'package:ctrim_app_v1/pages/posts/ViewMyPostsPage.dart';
@@ -54,6 +55,7 @@ const ViewAllEventsForLocationRoute = '/ViewAllEventsForLocation';
 const AddLocationRoute = '/AddLocation';
 const EditLocationRoute = '/EditLocation';
 const SelectLocationForEventRoute = '/SelectLcoationForEvent';
+const SearchLocationPageRoute = '/SearchLocationPage';
 
 const RegisterUserRoute = '/RegisterUser';
 const ViewAllUsersRoute = '/ViewAllUsers';
@@ -217,6 +219,9 @@ class _AppState extends State<App> {
         break;
 
         case EditUserBodyRoute: screen = EditUserBodyPage(arguments['adminBloc']);
+        break;
+
+        case SearchLocationPageRoute: screen = SearchLocationPage(arguments['postBloc']);
         break;
       }
       return MaterialPageRoute(builder: (context) => screen);

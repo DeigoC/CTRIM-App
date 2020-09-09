@@ -63,20 +63,19 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return result;
   }
 
-  List<Location> get allLocations => LocationDBManager.allLocations;
+  //List<Location> get allLocations => LocationDBManager.allLocations;
 
-  List<Location> get selectableLocations{
-    List<Location> result = List.from(LocationDBManager.allLocations);
-    result.removeAt(0);
-    result.removeWhere((e) => e.deleted);
-    return result;
-  }
+  List<Location> get essentialLocations => LocationDBManager.essentialLocations;
 
-  String getLocationAddressLine(String locationID) {
-    if (locationID.trim().isNotEmpty) 
-      return LocationDBManager.allLocations.firstWhere((location) => location.id.compareTo(locationID) == 0).addressLine;
+  /* String getLocationAddressLine(String locationID) {
+    /* if (locationID.trim().isNotEmpty) 
+      return LocationDBManager.allLocations.firstWhere((location) => location.id.compareTo(locationID) == 0).addressLine; */
     return 'Pending';
-  }
+  } */
+
+  // * New FUTURE
+  Future<Location> fetchLocationByID(String id) => _locationDBManager.fetchLocationByID(id);
+  Future<List<Location>> fetchAllUndeletedLocations() => _locationDBManager.fetchAllUndeletedLocations();
 
   // ! Future Functions
   Future<Null> processRefresh() async{
@@ -86,7 +85,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       String latestTPId = _feedData.first.id;
       bool timelineUpdated = await _timelinePostDBManager.hasTimelinePostsChanged(latestTPId);
       if(timelineUpdated){
-        await _locationDBManager.fetchAllLocations();
+        //await _locationDBManager.fetchAllLocations();
         await _userDBManager.fetchAllUsers();
         await fetchMainPostFeed();
       }
@@ -266,7 +265,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   Stream<TimelineState> _mapLocationSearchEventToState(TimelineLocationSearchTextChangeEvent event) async* {
     List<Location> result = [];
     _locationSearchString = event.searchString ?? _locationSearchString;
-    selectableLocations.forEach((location) {
+    essentialLocations.forEach((location) {
       if (location.id != '0' &&
           location.addressLine
               .toLowerCase()

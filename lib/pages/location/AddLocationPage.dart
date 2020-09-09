@@ -64,10 +64,11 @@ class _AddLocationState extends State<AddLocation> {
             }else if(state is LocationEditAttemptToUpdateState){
               ConfirmationDialogue().uploadTaskStarted(context: context);
             } else if (state is LocationCreatedState){
-              widget._postBloc.add(PostSelectedLocationEvent(
+              //TODO update this
+              /* widget._postBloc.add(PostSelectedLocationEvent(
                 addressLine: LocationDBManager.allLocations.last.addressLine,
                 locationID: LocationDBManager.allLocations.last.id,
-              ));
+              )); */
               Navigator.of(context).pop();
               Navigator.of(context).pop();
               Navigator.of(context).pop();

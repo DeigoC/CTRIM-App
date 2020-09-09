@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
@@ -151,8 +152,7 @@ class PostLocationField extends StatelessWidget {
             return false;
         }, 
         builder: (_, state) {
-            String locationID = BlocProvider.of<PostBloc>(context).newPost.locationID;
-            String addressLine = BlocProvider.of<TimelineBloc>(context) .getLocationAddressLine(locationID);
+            String addressLine = BlocProvider.of<PostBloc>(context).addressLine;
             
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +161,7 @@ class PostLocationField extends StatelessWidget {
                 MyFlatButton(
                   border: true,
                   label: addressLine,
-                  onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSelectLocationForPostEvent(
+                  onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSearchLocationEvent(
                           BlocProvider.of<PostBloc>(context))),
                 ),
                 Row(
@@ -172,12 +172,12 @@ class PostLocationField extends StatelessWidget {
                       onChanged: (newValue){
                         if(newValue){
                           BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
-                            locationID: '0',
+                            location: LocationDBManager.essentialLocations.elementAt(0),
                             addressLine: 'Location Not Applicable'
                           ));
                         }else{
                           BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
-                            locationID: '',
+                            location: null,
                             addressLine: 'PENDING'
                           ));
                         }

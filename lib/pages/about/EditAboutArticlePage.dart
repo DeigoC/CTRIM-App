@@ -141,7 +141,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
         return false;
       },
       builder: (_,state){
-        Location l = BlocProvider.of<TimelineBloc>(context).selectableLocations.firstWhere((e) => e.id.compareTo(_aboutBloc.articleToEdit.locationID)==0);
+        Location l = BlocProvider.of<TimelineBloc>(context).essentialLocations.firstWhere((e) => e.id.compareTo(_aboutBloc.articleToEdit.locationID)==0);
         
         return MyFlatButton(
           label: l.addressLine,
@@ -221,7 +221,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
     showDialog(
       context: context,
       builder: (_){
-        List<Location> allLcoations = List.from(BlocProvider.of<TimelineBloc>(context).selectableLocations);
+        List<Location> allLcoations = List.from(BlocProvider.of<TimelineBloc>(context).essentialLocations);
         allLcoations.removeWhere((e) => e.id=='0');
         return Dialog(
           child: Container(

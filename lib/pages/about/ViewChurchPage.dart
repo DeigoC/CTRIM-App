@@ -47,8 +47,10 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
     TextStyle bodyStyle = TextStyle(fontSize: 18);
     User pastorUser = UserDBManager.allUsers
     .firstWhere((e) => e.id.compareTo(widget._aboutArticle.locationPastorUID)==0);
-    Location location = LocationDBManager.allLocations
-    .firstWhere((e) => e.id.compareTo(widget._aboutArticle.locationID)==0);
+
+    //TODO fix this
+    /* Location location = LocationDBManager.allLocations
+    .firstWhere((e) => e.id.compareTo(widget._aboutArticle.locationID)==0); */
 
     return ListView(
       children: [
@@ -57,10 +59,10 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
 
         Text('Location',style: headerStyle, textAlign: TextAlign.center,),
         MyFlatButton(
-          label: location.addressLine,
+          label: 'To be fixed',//location.addressLine,
           fontSize: 18,
           onPressed: (){
-            BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location));
+            BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(null));
           },
         ),
         SizedBox(height: 32,),

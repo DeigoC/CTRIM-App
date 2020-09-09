@@ -128,6 +128,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppToEditAboutBodyEvent) state.pushNamed(AboutBodyEditorPageRoute);
     else if(event is AppToViewUserPageEvent) state.pushNamed(ViewUserPageRoute, arguments: {'user':event.user});
     else if(event is AppToEditUserBodyPageEvent) state.pushNamed(EditUserBodyRoute, arguments: {'adminBloc':event.adminBloc});
+    else if(event is AppToSearchLocationEvent) state.pushNamed(SearchLocationPageRoute, arguments: {'postBloc':event.postBloc});
   }
 
   Stream<AppState> _appStartupLoad() async*{

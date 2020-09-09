@@ -1,3 +1,4 @@
+import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/locationCard.dart';
@@ -16,7 +17,8 @@ class ViewAllLocationsPage {
   ViewAllLocationsPage(this._context,this._controller);
 
   Widget buildBody() {
-    List<Location> allLocations = BlocProvider.of<TimelineBloc>(_context).selectableLocations;
+    List<Location> essentialLocations = BlocProvider.of<TimelineBloc>(_context).essentialLocations;
+    
     return Snap(
       controller: _controller.appBar,
       child: BlocBuilder<TimelineBloc, TimelineState>(
@@ -26,13 +28,13 @@ class ViewAllLocationsPage {
         },
         builder: (_, state) {
           if (state is TimelineDisplayLocationSearchResultsState) {
-            allLocations = state.locations;
+            essentialLocations = state.locations;
           }
           return ListView.builder(
             controller: _controller,
-            itemCount: allLocations.length,
+            itemCount: essentialLocations.length,
             itemBuilder: (_,index){
-              return LocationCard(location: allLocations[index],);
+              return LocationCard(location: essentialLocations[index],);
             }
           );
         },
@@ -44,7 +46,13 @@ class ViewAllLocationsPage {
     return ScrollAppBar(
       controller: _controller,
       automaticallyImplyLeading: false,
-      centerTitle: true,
+      actions: [IconButton(
+        icon: Icon(Icons.search),
+        onPressed: (){
+          BlocProvider.of<AppBloc>(_context).add(AppToSearchLocationEvent(null));
+        },
+      )],
+      centerTitle: false,
       title: Row(
         children: [
           Icon(FontAwesome5Solid.church,color: Colors.white,),

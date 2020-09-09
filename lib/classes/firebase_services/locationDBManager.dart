@@ -9,24 +9,32 @@ import 'package:ctrim_app_v1/classes/models/post.dart';
 
 class LocationDBManager{
   static final CollectionReference _ref = Firestore.instance.collection('locations');
-
-  static List<Location> _allLocations;
-  static List<Location> get allLocations => _allLocations;
+ 
+  static List<Location> _essentialLocations;
+  static List<Location> get essentialLocations => _essentialLocations;
 
   final String _subCollection = 'postsReference', _subCollectionDoc = 'postsUsed', _subCollectionField = 'posts';
 
   final AppStorage _appStorage;
 
   LocationDBManager(AppBloc appBloc):_appStorage = AppStorage(appBloc);
- 
-  Future<List<Location>> fetchAllLocations() async{
-    var collection = await _ref.getDocuments();
-    _allLocations = collection.documents.map((doc) => Location.fromMap(doc.documentID, doc.data)).toList();
-    return _allLocations;
+
+  Future<Location> fetchLocationByID(String id) async{
+    var doc = await _ref.document(id).get();
+    return Location.fromMap(doc.documentID, doc.data);
   }
 
-  Location getLocationByID(String id){
-    return _allLocations.firstWhere((l) => l.id.compareTo(id)==0,orElse: ()=> null);
+  Future<List<Location>> fetchEssentialLocations() async{
+    var collection = await _ref.limit(15).where('Deleted',isEqualTo: false).getDocuments();
+    _essentialLocations = collection.documents.map((doc) => Location.fromMap(doc.documentID, doc.data)).toList();
+    return _essentialLocations;
+  }
+
+  Future<List<Location>> fetchAllUndeletedLocations() async{
+    var collection = await _ref.where('Deleted',isEqualTo: false).getDocuments();
+    List<Location> results = collection.documents.map((e) => Location.fromMap(e.documentID, e.data)).toList();
+    results.removeWhere((e) => e.id.compareTo('0')==0);
+    return results;
   }
 
   Future<Null> addLocation(Location location, File file) async{
@@ -41,7 +49,7 @@ class LocationDBManager{
     .document(_subCollectionDoc)
     .setData({'posts':[]});
 
-    _allLocations.add(location);
+    //_allLocations.add(location);
   }
 
   Future<Null> updateLocation(Location location, File file) async{
@@ -49,7 +57,7 @@ class LocationDBManager{
       location.imgSrc = await _appStorage.uploadAndGetLocationImageSrc(location, file);
     }
     await _ref.document(location.id).setData(location.toJson());
-    _updateLocationList(location);
+    //_updateLocationList(location);
   }
 
   void updateReferenceList(Post newPost, Post oldPost){
@@ -96,9 +104,9 @@ class LocationDBManager{
       .setData({_subCollectionField:postIDs});
   }
 
-  void _updateLocationList(Location location){
+  /* void _updateLocationList(Location location){
     int index = _allLocations.indexWhere((e) => e.id.compareTo(location.id)==0);
     _allLocations[index] = location;
-  }
+  } */
 
 }

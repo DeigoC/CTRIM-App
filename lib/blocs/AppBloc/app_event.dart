@@ -88,6 +88,10 @@ class AppToSelectLocationForPostEvent extends AppNavigateToPageEvent {
   final PostBloc postBloc;
   AppToSelectLocationForPostEvent(this.postBloc);
 }
+class AppToSearchLocationEvent extends AppNavigateToPageEvent{
+  final PostBloc postBloc;
+  AppToSearchLocationEvent(this.postBloc);
+}
 
 // ! User
 class AppToRegisterUserEvent extends AppNavigateToPageEvent {}

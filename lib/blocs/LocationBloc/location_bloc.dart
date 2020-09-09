@@ -105,7 +105,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     } else if (event is LocationSelectedQueryAddressEvent) {
       _selectedAddressLine = event.selectedAddress;
       Address selectedAddress = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
-
+      print('---------------SELECTED POSTCODE IS ' + selectedAddress.postalCode);
       yield LocationDisplaySelectedLocationMapState(selectedAddress: selectedAddress);
       
     } else if (event is LocationWrongQueryAddressEvent) {
@@ -141,6 +141,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     yield LocationEditAttemptToUpdateState();
 
     Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
+    
     Location newLocation = Location(
       addressLine: _selectedAddressLine,
       coordinates: {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude},

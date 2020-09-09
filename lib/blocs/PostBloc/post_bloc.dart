@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
+import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -253,7 +254,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     
     // * Selected Location
     else if (event is PostSelectedLocationEvent) {
-      _post.locationID = event.locationID;
+      _post.locationID = '';
+      if(event.location!=null) _post.locationID = event.location.id;
       _addressLine = event.addressLine;
       yield PostLocationSelectedState();
     }

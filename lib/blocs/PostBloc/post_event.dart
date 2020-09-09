@@ -54,8 +54,9 @@ class PostDateNotApplicableClickEvent extends PostScheduleTabEvent {}
 
 // * End of time related classes
 class PostSelectedLocationEvent extends PostEvent {
-  final String locationID, addressLine;
-  PostSelectedLocationEvent({this.locationID, this.addressLine});
+  final String addressLine;
+  final Location location;
+  PostSelectedLocationEvent({this.location, this.addressLine});
 }
 
 class PostCheckToDeleteUnusedFilesEvent extends PostEvent{}

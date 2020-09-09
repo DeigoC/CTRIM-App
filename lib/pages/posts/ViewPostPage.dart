@@ -29,6 +29,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   Post _post;
 
   List<TimelinePost> _allTimelinePosts = [];
+  Location _postLocation;
   PostBloc _postBloc;
 
   @override
@@ -205,7 +206,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
               Event event = Event(
                 title: _post.title,
                 description: _post.description,
-                location: BlocProvider.of<TimelineBloc>(context).selectableLocations
+                location: BlocProvider.of<TimelineBloc>(context).essentialLocations
                 .firstWhere((element) => element.id == _post.locationID)
                 .getAddressLine(),
                 startDate: _post.startDate,
@@ -236,17 +237,24 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
 
   Widget _buildLocationWidget(){
-    Location l = BlocProvider.of<TimelineBloc>(context).allLocations
-    .firstWhere((element) => element.id == _post.locationID);
-      
-    if(l.id.compareTo('0')==0) return Text('N/A',style: TextStyle(fontSize: 18),textAlign: TextAlign.center,);
-    return MyFlatButton(
-      fontSize: 18,
-      label: l.getAddressLine(),
-      onPressed: (){
-        BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(l));
-      },
-    );
+    if(_post.locationID.compareTo('0')==0){
+      return Text('N/A',style: TextStyle(fontSize: 18),textAlign: TextAlign.center,);
+    }else if(_postLocation == null){
+      BlocProvider.of<TimelineBloc>(context).fetchLocationByID(_post.locationID).then((location){
+        setState(() {
+          _postLocation = location;
+        });
+      });
+      return Center(child: CircularProgressIndicator(),);
+    }else{
+      return MyFlatButton(
+        fontSize: 18,
+        label: _postLocation.getAddressLine(),
+        onPressed: (){
+          BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(_postLocation));
+        },
+      );
+    }
   }
 
   Widget _buildUpdatesTab(){
