@@ -11,7 +11,10 @@ class LocationDBManager{
   static final CollectionReference _ref = Firestore.instance.collection('locations');
  
   static List<Location> _essentialLocations;
-  static List<Location> get essentialLocations => _essentialLocations;
+  static List<Location> get essentialLocations{
+    _essentialLocations.removeWhere((e) => e.id=='0');
+    return _essentialLocations;
+  }
 
   final String _subCollection = 'postsReference', _subCollectionDoc = 'postsUsed', _subCollectionField = 'posts';
 
@@ -30,8 +33,15 @@ class LocationDBManager{
     return _essentialLocations;
   }
 
-  Future<List<Location>> fetchAllUndeletedLocations() async{
-    var collection = await _ref.where('Deleted',isEqualTo: false).getDocuments();
+  Future<List<Location>> fetchLocationsBySearchString(String searchString) async{
+    List<String> searchArray = searchString.trim().toLowerCase().replaceAll(RegExp(r','), '').split(' ');
+
+    var collection = await _ref
+    .where('Deleted',isEqualTo: false)
+    .where('SearchArray',arrayContainsAny: searchArray)
+    .limit(10)
+    .getDocuments();
+
     List<Location> results = collection.documents.map((e) => Location.fromMap(e.documentID, e.data)).toList();
     results.removeWhere((e) => e.id.compareTo('0')==0);
     return results;
@@ -48,8 +58,6 @@ class LocationDBManager{
     .collection(_subCollection)
     .document(_subCollectionDoc)
     .setData({'posts':[]});
-
-    //_allLocations.add(location);
   }
 
   Future<Null> updateLocation(Location location, File file) async{

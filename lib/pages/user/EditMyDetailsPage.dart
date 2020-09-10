@@ -37,7 +37,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
       body: originalU.body,
       imgSrc: originalU.imgSrc
     );
-    _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers,BlocProvider.of<AppBloc>(context));
+    _adminBloc = AdminBloc(BlocProvider.of<AppBloc>(context));
     _adminBloc.setupUserToEdit(originalU);
    
     _tecRole = TextEditingController(text: _user.roleString);
@@ -108,9 +108,6 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
             showDialog(
               context: context,
               builder: (_){
-                List<User> users = List.from(BlocProvider.of<TimelineBloc>(context).allUsers);
-                users.removeWhere((e) => e.adminLevel < 2);
-
                 return Dialog(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18)
@@ -118,25 +115,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
                   child: Container(
                     padding: EdgeInsets.all(8),
                     height: MediaQuery.of(context).size.height * 0.5,
-                    child: Column(
-                      children: [
-                        Text('Users able to modify details:',style: TextStyle(fontSize: 18),),
-                        SizedBox(height: 8,),
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: users.length,
-                            itemBuilder: (_,index){
-                              User u = users[index];
-                              return ListTile(
-                                title: Text(u.forename + ' ' + u.surname),
-                                leading: u.buildAvatar(context),
-                                subtitle: Text('Lvl: ' + u.adminLevel.toString())
-                              );
-                            }
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: _buildLevel3UserList(),
                   ),
                 );
               }
@@ -201,6 +180,43 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
         ),
         SizedBox(height: 8,),
       ],
+    );
+  }
+
+  Widget _buildLevel3UserList(){
+    return FutureBuilder<List<User>>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchLevel3Users(),
+      builder: (_,snap){
+        Widget result;
+
+        if(snap.hasData){
+          result = Column(
+            children: [
+              Text('Users able to modify details:',style: TextStyle(fontSize: 18),),
+              SizedBox(height: 8,),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: snap.data.length,
+                  itemBuilder: (_,index){
+                    User u = snap.data[index];
+                    return ListTile(
+                      title: Text(u.forename + ' ' + u.surname),
+                      leading: u.buildAvatar(context),
+                      subtitle: Text('Lvl: ' + u.adminLevel.toString())
+                    );
+                  }
+                ),
+              ),
+            ],
+          );
+        }else if(snap.hasError){
+          result = Center(child: Text('Something went wrong!'),);
+        }else{
+          result = Center(child: CircularProgressIndicator());
+        }
+
+        return result;
+      },
     );
   }
 

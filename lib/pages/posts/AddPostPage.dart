@@ -8,8 +8,10 @@ import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/mainTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/detailsTabBody.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_compress/video_compress.dart';
 
 class AddEventPage extends StatefulWidget {
   @override
@@ -34,6 +36,9 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     _tabController.dispose();
     _tecTitle.dispose();
     _postBloc.close();
+    
+    FilePicker.clearTemporaryFiles();
+    VideoCompress.deleteAllCache();
     super.dispose();
   }
 

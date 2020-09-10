@@ -40,12 +40,21 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
       await aboutDBManager.fetchAllPosts();
       await locationDBManager.fetchEssentialLocations();
       await BlocProvider.of<TimelineBloc>(context).fetchMainPostFeed();
-      userDBManager.fetchAllUsers().then((_){
+      
+      userDBManager.fetchMainFeedUsers(_getMainFeedUsersID()).then((_){
         BlocProvider.of<AppBloc>(context).add(AppStartupLoadUserEvent());
       });
     }catch(e){
       _showStartupErrorException();
     }
+  }
+
+  List<String> _getMainFeedUsersID(){
+    List<String> result = [];
+    BlocProvider.of<TimelineBloc>(context).feedData.forEach((tp) {
+      if(!result.contains(tp.authorID)) result.add(tp.authorID);
+    });
+    return result;
   }
 
   void _showStartupErrorException(){

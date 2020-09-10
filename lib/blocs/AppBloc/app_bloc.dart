@@ -104,8 +104,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if (event is AppToAddLocationEvent) state.pushNamed(AddLocationRoute, arguments: {'postBloc': event.postBloc});
     else if (event is AppToEditLocationEvent) state.pushNamed(EditLocationRoute,
     arguments: {'location': event.location});
-    else if (event is AppToSelectLocationForPostEvent) state.pushNamed(SelectLocationForEventRoute,
-    arguments: {'postBloc': event.postBloc});
     else if (event is AppToCreateAlbumEvent)state.pushNamed(CreateAlbumRoute, arguments: {'postBloc': event.postBloc});
     else if (event is AppToAddGalleryFileEvent)state.pushNamed(AddGalleryFilesRoute,
     arguments: {'postBloc': event.postBloc});
@@ -126,7 +124,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       'article':event.aboutArticle});
     else if(event is AppToEditAboutArticleEvent) state.pushNamed(EditAboutArticleRoute);
     else if(event is AppToEditAboutBodyEvent) state.pushNamed(AboutBodyEditorPageRoute);
-    else if(event is AppToViewUserPageEvent) state.pushNamed(ViewUserPageRoute, arguments: {'user':event.user});
     else if(event is AppToEditUserBodyPageEvent) state.pushNamed(EditUserBodyRoute, arguments: {'adminBloc':event.adminBloc});
     else if(event is AppToSearchLocationEvent) state.pushNamed(SearchLocationPageRoute, arguments: {'postBloc':event.postBloc});
   }

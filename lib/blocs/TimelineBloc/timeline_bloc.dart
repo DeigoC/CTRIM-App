@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/postDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/timelinePostDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
+import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
@@ -22,15 +23,15 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   final PostDBManager _postDBManager;
   final TimelinePostDBManager _timelinePostDBManager = TimelinePostDBManager();
  
-  TimelineBloc(AppBloc appBloc)
-  :_locationDBManager = LocationDBManager(appBloc),
-  _postDBManager = PostDBManager(appBloc);
+  TimelineBloc(AppBloc appBloc) 
+  :_locationDBManager = LocationDBManager(appBloc)
+  ,_postDBManager = PostDBManager(appBloc);
 
   // ! Bloc Fields
   String _locationSearchString = '';
+  
+  List<User> get mainFeedUsers => UserDBManager.mainFeedUsers;
 
-  List<User> get allUsers => UserDBManager.allUsers;
- 
   List<TimelinePost> _feedData =[];
   List<TimelinePost> get feedData {
     _feedData.sort((a,b)=>b.postDate.compareTo(a.postDate));
@@ -63,19 +64,20 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return result;
   }
 
-  //List<Location> get allLocations => LocationDBManager.allLocations;
-
   List<Location> get essentialLocations => LocationDBManager.essentialLocations;
-
-  /* String getLocationAddressLine(String locationID) {
-    /* if (locationID.trim().isNotEmpty) 
-      return LocationDBManager.allLocations.firstWhere((location) => location.id.compareTo(locationID) == 0).addressLine; */
-    return 'Pending';
-  } */
 
   // * New FUTURE
   Future<Location> fetchLocationByID(String id) => _locationDBManager.fetchLocationByID(id);
-  Future<List<Location>> fetchAllUndeletedLocations() => _locationDBManager.fetchAllUndeletedLocations();
+  Future<List<Location>> fetchLocationsByPostCode(String postCode) => _locationDBManager.fetchLocationsBySearchString(postCode);
+  Future<List<User>> fetchAllUsers() => _userDBManager.fetchAllUsers();
+  Future<User> fetchUserByID(String id) => _userDBManager.fetchUserByID(id);
+  Future<List<User>> fetchLevel3Users() => _userDBManager.fetchLevel3Users();
+
+  Future<Map<String, dynamic>> fetchChurchData(AboutArticle aboutArticle) async{
+    Location churchLocal = await _locationDBManager.fetchLocationByID(aboutArticle.locationID);
+    User user = await _userDBManager.fetchUserByID(aboutArticle.locationPastorUID);
+    return {'Location':churchLocal, 'User':user};
+  }
 
   // ! Future Functions
   Future<Null> processRefresh() async{
@@ -85,17 +87,18 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       String latestTPId = _feedData.first.id;
       bool timelineUpdated = await _timelinePostDBManager.hasTimelinePostsChanged(latestTPId);
       if(timelineUpdated){
-        //await _locationDBManager.fetchAllLocations();
-        await _userDBManager.fetchAllUsers();
         await fetchMainPostFeed();
+        await _userDBManager.fetchMainFeedUsers(_getFeedUsersID(_feedData));//TODO needs testing
       }
     }
   }
 
-  Future<List<TimelinePost>> fetchLikedPostsFeed(List<String> likedPostsIDs) async{
+  Future<Map<String,List>> fetchLikedPostsFeed(List<String> likedPostsIDs) async{
     List<TimelinePost> timelinePosts = await _timelinePostDBManager.fetchOriginalPostsByList(likedPostsIDs);
     timelinePosts.sort((a,b) => b.postDate.compareTo(a.postDate));
-    return timelinePosts;
+
+    List<User> feedUsers = await _userDBManager.fetchListOfUsersByID(_getFeedUsersID(timelinePosts));
+    return {'TimelinePosts':timelinePosts, 'FeedUsers':feedUsers};
   }
 
   Future<List<TimelinePost>> fetchAllUserPosts(String userID) async{
@@ -106,11 +109,13 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return _timelinePostDBManager.fetchUserPosts(userID);
   }
 
-  Future<List<TimelinePost>> fetchPostsForLocation(String locationID) async{
+  Future<Map<String,List>> fetchPostsForLocation(String locationID) async{
     List<String> postIDs = await _locationDBManager.fetchPostReferenceList(locationID);
-    List<TimelinePost> results = await _timelinePostDBManager.fetchOriginalPostsByList(postIDs);
-    results.sort((a,b) => b.postDate.compareTo(a.postDate));
-    return results;
+    List<TimelinePost> timelinePosts = await _timelinePostDBManager.fetchOriginalPostsByList(postIDs);
+    timelinePosts.sort((a,b) => b.postDate.compareTo(a.postDate));
+    List<User> users = await _userDBManager.fetchListOfUsersByID(_getFeedUsersID(timelinePosts));
+    
+    return {'TimelinePosts':timelinePosts, 'Users':users};
   }
 
   Future<Null> fetchMainPostFeed() async{
@@ -238,25 +243,29 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   // ! User Related
   Stream<TimelineState> _mapUserUpdatedEventToState(TimelineUserUpdatedEvent event) async*{
-    int index = allUsers.indexWhere((user) => user.id.compareTo(event.updatedUser.id) == 0);
-    allUsers[index] = event.updatedUser;
+    /* int index = allUsers.indexWhere((user) => user.id.compareTo(event.updatedUser.id) == 0);
+    allUsers[index] = event.updatedUser; */
+
     _userDBManager.updateUser(event.updatedUser);
     yield TimelineRebuildUserListState();
     yield TimelineEmptyState();
   }
 
   Stream<TimelineState> _mapUserDisabledToState(TimelineUserDisabledEvent event) async* {
-    int index = allUsers.indexWhere((e) => e.id == event.user.id);
-    allUsers[index].disabled = true;
-    _userDBManager.updateUser(allUsers[index]);
+    /* int index = allUsers.indexWhere((e) => e.id == event.user.id);
+    allUsers[index].disabled = true; */
+
+    event.user.disabled = true;
+    _userDBManager.updateUser(event.user);
     yield TimelineRebuildUserListState();
     yield TimelineEmptyState();
   }
 
   Stream<TimelineState> _mapUserEnabledToState(TimelineUserEnabledEvent event) async*{
-    int index = allUsers.indexWhere((e) => e.id == event.user.id);
-    allUsers[index].disabled = false;
-    _userDBManager.updateUser(allUsers[index]);
+    //int index = allUsers.indexWhere((e) => e.id == event.user.id);
+    event.user.disabled = false;
+
+    _userDBManager.updateUser(event.user);
     yield TimelineRebuildUserListState();
     yield TimelineEmptyState();
   }
@@ -347,6 +356,14 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       thumbnailSrc: thumbnailSrc,
       tags: event.post.selectedTagsString
     );
+  }
+
+  List<String> _getFeedUsersID(List<TimelinePost> tps){
+    List<String> results = [];
+    tps.forEach((tp) {
+      if(!results.contains(tp.authorID)) results.add(tp.authorID);
+    });
+    return results;
   }
 
   Map<String,String> _getTPGallerySrc(Post post){

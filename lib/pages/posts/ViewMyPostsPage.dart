@@ -94,7 +94,7 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
       itemBuilder: (_,index){
         return PostArticle(
           mode: _showDeleted ? 'view':'edit',
-          allUsers: BlocProvider.of<TimelineBloc>(context).allUsers,
+          allUsers: BlocProvider.of<TimelineBloc>(context).mainFeedUsers,
           timelinePost: listToDisplay.elementAt(index),
           //post: data[listToDisplay.keys.elementAt(index)],
         );

@@ -1,6 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
-import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
@@ -18,7 +17,7 @@ class _RegisterUserState extends State<RegisterUser> {
 
   @override
   void initState() {
-    _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers,BlocProvider.of<AppBloc>(context));
+    _adminBloc = AdminBloc(BlocProvider.of<AppBloc>(context));
     _adminBloc.setupUserToRegister();
     super.initState();
   }

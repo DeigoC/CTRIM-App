@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart'
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
+import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
@@ -31,6 +32,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   List<TimelinePost> _allTimelinePosts = [];
   Location _postLocation;
   PostBloc _postBloc;
+  User _authorUser;
 
   @override
   void initState() {
@@ -76,12 +78,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           WidgetsBinding.instance.addPostFrameCallback((_) {
             setState(() { 
               _post = snap.data; 
-              _zefyrController = ZefyrController(_post.getBodyDoc())..addListener(() {
-                NotusStyle style =  _zefyrController.getSelectionStyle();
-                if(style.contains(NotusAttribute.link)){
-                  AppBloc.openURL(style.values.first.value, context);
-                }
-              });
+              _zefyrController = ZefyrController(_post.getBodyDoc());
             });
           });
         }else if(snap.hasError){
@@ -258,13 +255,23 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
 
   Widget _buildUpdatesTab(){
-    if(_allTimelinePosts.length==0){
+    if(_allTimelinePosts.length==0) {
       BlocProvider.of<TimelineBloc>(context).fetchPostUpdatesData(_post.id).then((timelines){
         setState(() {_allTimelinePosts = timelines;});
       });
       return Center(child: CircularProgressIndicator(),);
+    }else if(_authorUser == null){
+      BlocProvider.of<TimelineBloc>(context).fetchUserByID(_allTimelinePosts.first.authorID).then((user){
+        setState(() {_authorUser = user;});
+      });
+      return Center(child: CircularProgressIndicator(),);
     }
-    return PostUpdatesTab(_post, _allTimelinePosts);
+    
+    return PostUpdatesTab(
+      post: _post,
+      allTimelinePosts: _allTimelinePosts,
+      user: _authorUser,
+    );
   }
  
   Widget _newDetailTab(){

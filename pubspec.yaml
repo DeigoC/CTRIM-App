@@ -37,6 +37,7 @@ dependencies:
   flutter_image: ^3.0.0
   package_info: ^0.4.1
   flutter_image_compress: ^0.7.0
+  video_compress: ^2.0.0
   scroll_app_bar: ^1.0.2
 
 dev_dependencies:

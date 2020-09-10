@@ -105,7 +105,9 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     } else if (event is LocationSelectedQueryAddressEvent) {
       _selectedAddressLine = event.selectedAddress;
       Address selectedAddress = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
-      print('---------------SELECTED POSTCODE IS ' + selectedAddress.postalCode);
+     
+      print('---------SEARCH ARRAY LOOKS LIKE: ' + _setSearchArray(selectedAddress.addressLine).toString());
+
       yield LocationDisplaySelectedLocationMapState(selectedAddress: selectedAddress);
       
     } else if (event is LocationWrongQueryAddressEvent) {
@@ -141,16 +143,24 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     yield LocationEditAttemptToUpdateState();
 
     Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
-    
+
     Location newLocation = Location(
       addressLine: _selectedAddressLine,
       coordinates: {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude},
       deleted: false,
       description: 'Used for Events',
+      searchArray: _setSearchArray(add.addressLine),//TODO test this
     );
 
     await _locationDBManager.addLocation(newLocation, _imageFile);
-    yield LocationCreatedState();
+    yield LocationCreatedState(newLocation);
+  }
+
+  List<String> _setSearchArray(String addressLine){
+    List<String> result = [];
+    String filteredAddressLine = addressLine.toLowerCase().replaceAll(RegExp(r','), '');
+    result = filteredAddressLine.split(' ');
+    return result;
   }
 
   Stream<LocationQueryState> _mapQueryToResultsState(LocationFindAddressEvent event) async*{

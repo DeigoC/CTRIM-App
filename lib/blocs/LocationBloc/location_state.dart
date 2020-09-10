@@ -24,7 +24,10 @@ class LocationSetNewLocationImageState extends LocationState {
 class LocationRemoveSelectedImageState extends LocationState {}
 
 // !  Query Address / Add Location states
-class LocationCreatedState extends LocationState{}
+class LocationCreatedState extends LocationState{
+  final Location location;
+  LocationCreatedState(this.location);
+}
 
 class LocationQueryState extends LocationState {}
 

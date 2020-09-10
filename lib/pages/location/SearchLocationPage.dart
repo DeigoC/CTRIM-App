@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
@@ -20,8 +18,10 @@ class SearchLocationPage extends StatefulWidget {
 class _SearchLocationPageState extends State<SearchLocationPage> {
   
   FocusNode _fnSearchLocation;
-  List<Location> _allLocations= [];
+  List<Location> _locationResults= [];
   String _searchString;
+
+  bool _fetchingResults = false;
 
   @override
   void initState() { 
@@ -51,6 +51,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
           onSubmitted: (searchString){
             setState(() {
               _searchString = searchString;
+              _fetchingResults = true;
             });
           },
         ),
@@ -72,35 +73,38 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
   Widget _buildBody(){
     if(_searchString == null){
        return Center(child: Text('Awaiting Search...'),);
-    }else if(_allLocations.length ==0){
-      BlocProvider.of<TimelineBloc>(context).fetchAllUndeletedLocations().then((allLocations){
+    }else if(_fetchingResults){
+      BlocProvider.of<TimelineBloc>(context).fetchLocationsByPostCode(_searchString).then((results){
         setState(() {
-          _allLocations = allLocations;
+          _locationResults = results;
+          _fetchingResults = false;
         });
       });
       return Center(child: CircularProgressIndicator(),);
     }else{
-      List<Location> filteredList = _allLocations
-      .where((e) => e.addressLine.toLowerCase().contains(_searchString.toLowerCase())).toList();
+      return _buildResults();
+    }
+   
+  }
 
-      return ListView.builder(
-        itemCount: filteredList.length,
+  Widget _buildResults(){
+    if(_locationResults.length ==0) return Center(child: Text('Sorry, No Results!'),);
+    return ListView.builder(
+        itemCount: _locationResults.length,
         itemBuilder: (_,index){
-          if(widget._postBloc==null) return LocationCard(location: filteredList[index],);
+          if(widget._postBloc==null) return LocationCard(location: _locationResults[index],);
           return LocationCard.addressSelect(
-            location: filteredList[index], 
+            location: _locationResults[index], 
             onTap: (){
               widget._postBloc.add(PostSelectedLocationEvent(
-                location: filteredList[index],
-                addressLine: filteredList[index].addressLine,
+                location: _locationResults[index],
+                addressLine: _locationResults[index].addressLine,
               ));
               Navigator.of(context).pop();
             }
           );
         }
       );
-    }
-   
   }
 
   Widget _buildAppbarLeading(){

@@ -20,7 +20,7 @@ class _EditUserPageState extends State<EditUserPage> {
 
   @override
   void initState() {
-    _adminBloc = AdminBloc(BlocProvider.of<TimelineBloc>(context).allUsers,BlocProvider.of<AppBloc>(context));
+    _adminBloc = AdminBloc(BlocProvider.of<AppBloc>(context));
     _adminBloc.setupUserToEdit(widget.user);
     super.initState();
   }

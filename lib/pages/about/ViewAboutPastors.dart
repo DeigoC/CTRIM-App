@@ -35,11 +35,27 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
 
   @override
   Widget build(BuildContext context) {
-    User u = BlocProvider.of<TimelineBloc>(context).allUsers
-    .firstWhere((e) => widget._aboutArticle.locationPastorUID.compareTo(e.id)==0);
+    
     return Scaffold(
-      appBar: AppBar(title: Text(u.surname + ' Family',),centerTitle: true,),
+      appBar: AppBar(title: _buildTitle(),centerTitle: true,),
       body: _buildBody(),
+    );
+  }
+
+  Widget _buildTitle(){
+    return FutureBuilder<User>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchUserByID(widget._aboutArticle.locationPastorUID),
+      builder: (_,snap){
+        Widget result;
+        if(snap.hasData){
+          result = Text(snap.data.surname + ' Family',);
+        }else if(snap.hasError){
+          result = Text('...');
+        }else{
+          result = CircularProgressIndicator();
+        }
+        return result;
+      },
     );
   }
 

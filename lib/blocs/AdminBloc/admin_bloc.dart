@@ -20,27 +20,24 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   final UserDBManager _userDBManager = UserDBManager();
   final AppStorage _appStorage;
 
-  List<User> _users = [];
-  void setUsers(List<User> users) {
-    _users = users;
-  }
+  //List<User> _users = [];
 
   User _selectedUser, _originalUser;
   User get selectedUser => _selectedUser;
 
   String _loginEmail = '', _loginPassword = '', _creationPassword = '', _confirmPassword = '';
 
-  AdminBloc(this._users, AppBloc appBloc):_appStorage = AppStorage(appBloc);
+  AdminBloc(AppBloc appBloc):_appStorage = AppStorage(appBloc);
 
   void setupUserToRegister() {
     _selectedUser = User(
-        id: (int.parse(_users.last.id) + 1).toString(),
-        forename: '',
-        surname: '',
-        email: '',
-        adminLevel: 1,
-        likedPosts: [],
-        socialLinks: {});
+      id: '#',//(int.parse(_users.last.id) + 1).toString(),
+      forename: '',
+      surname: '',
+      email: '',
+      adminLevel: 1,
+      likedPosts: [],
+      socialLinks: {});
   }
 
   void setupUserToEdit(User user) {
@@ -79,7 +76,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   Stream<AdminState> mapEventToState(AdminEvent event,) async* {
     if (event is AdminLoginTextChangeEvent) yield* _mapLoginTextChangeEventToState(event);
     else if (event is AdminContinueClickEvent) {
-      yield _canContinueToPasswordState(event);
+      yield* _canContinueToPasswordState(event);
       yield AdminLoginState();
     } else if(event is AdminSendRecoveryEmailEvent){
       yield* _sendPasswordRecoveryEmail(event);
@@ -155,8 +152,8 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       _selectedUser.surname = event.surname ?? _selectedUser.surname;
       yield _canEnableUpdateUserButton();
     } else if (event is AdminUserModAddNewUserClickEvent) {
-      if (_emailAlreadyExists()) yield AdminUserModEmailAlreadyExistsState();
-      else if (_creationPassword.length < 6) yield AdminUserModPasswordTooSmallState();
+      //if (_emailAlreadyExists()) yield AdminUserModEmailAlreadyExistsState();
+      if (_creationPassword.length < 6) yield AdminUserModPasswordTooSmallState();
       else if(_confirmPassword.compareTo(_creationPassword)!=0) yield AdminLoginConfirmationPasswordWrongState();
       else yield* _attemptToRegisterUser();
     }
@@ -172,11 +169,6 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       print('----------------ERROR WHEN REGISTERING: \n' + error.toString());
     });
     yield AdminUserModAddNewUserState(_selectedUser);
-  }
-
-  bool _emailAlreadyExists() {
-    if (_users.firstWhere((u) => u.email.compareTo(_selectedUser.email) == 0,orElse: () => null) !=null) return true;
-    return false;
   }
 
   Stream<AdminState> _sendPasswordRecoveryEmail(AdminSendRecoveryEmailEvent event) async*{
@@ -206,10 +198,10 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     return AdminUserModEnableSaveButtonState();
   }
 
-  AdminState _canContinueToPasswordState(AdminContinueClickEvent event) {
-    User u = _users.firstWhere((user) => user.email.compareTo(_loginEmail) == 0, orElse: () => null);
-    if (u != null) return AdminLoginContinueToPasswordState();
-    return AdminLoginEmailNotRecognisedState();
+  Stream<AdminState> _canContinueToPasswordState(AdminContinueClickEvent event) async*{
+    User u = await _userDBManager.fetchUserByEmail(_loginEmail);//_users.firstWhere((user) => user.email.compareTo(_loginEmail) == 0, orElse: () => null);
+    if (u != null) yield AdminLoginContinueToPasswordState();
+    else yield AdminLoginEmailNotRecognisedState();
   }
 
   Stream<AdminLoginState> _mapLoginTextChangeEventToState(AdminLoginTextChangeEvent event) async* {

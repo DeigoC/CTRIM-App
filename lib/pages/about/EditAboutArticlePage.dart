@@ -2,13 +2,11 @@ import 'package:ctrim_app_v1/blocs/AboutBloc/about_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
-import 'package:ctrim_app_v1/classes/models/location.dart';
-import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-//import 'package:zefyr/zefyr.dart';
+import 'package:zefyr/zefyr.dart';
 
 class EditAboutArticlePage extends StatefulWidget {
   @override
@@ -94,6 +92,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
           ),
           _buildSelectLocationID(),
           padding,
+          Divider(),
           _buildBodyView(),
           MyRaisedButton(
             externalPadding: EdgeInsets.all(8),
@@ -101,12 +100,6 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
             icon: Icons.edit,
             onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToEditAboutBodyEvent()),
           ),
-          /*  FlatButton.icon(
-            onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToEditAboutBodyEvent()), 
-            icon: Icon(Icons.edit, color: Colors.white,), 
-            label: Text('Edit Body', style: TextStyle(color: Colors.white),),
-            color: Colors.blue,
-          ), */
           _buildSaveButton(),
           padding,
         ],
@@ -115,41 +108,16 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
   }
 
   Widget _buildSelectPastorUID(){
-    return BlocBuilder<AboutBloc, AboutState>(
-      condition: (_,state){
-        if(state is AboutArticlePastorUIDChangedState) return true;
-        return false;
-      },
-      builder: (_,state){
-        User pastor = BlocProvider.of<TimelineBloc>(context).allUsers.firstWhere((u) => u.id.compareTo(_aboutBloc.articleToEdit.locationPastorUID)==0);
-        
-        return MyFlatButton(
-          externalPadding: EdgeInsets.all(8),
-          label: pastor.forename + ' ' + pastor.surname,
-          onPressed:()=>_selectNewPastorUID(),
-          icon:Icons.edit,
-          border: true,
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text('Change This at Firebase Console'),
     );
   }
 
   Widget _buildSelectLocationID(){
-    return BlocBuilder<AboutBloc, AboutState>(
-      condition: (_,state){
-        if(state is AboutArticleLocationIDChangedState) return true;
-        return false;
-      },
-      builder: (_,state){
-        Location l = BlocProvider.of<TimelineBloc>(context).essentialLocations.firstWhere((e) => e.id.compareTo(_aboutBloc.articleToEdit.locationID)==0);
-        
-        return MyFlatButton(
-          label: l.addressLine,
-          onPressed:()=>_selectNewLocationID(),
-          border: true,
-          icon: Icons.edit_location,
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text('Change This at Firebase Console'),
     );
   }
 
@@ -184,62 +152,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
       builder: (_,state){
         return Container(
           padding: EdgeInsets.all(8),
-          child: Text('To be Fixed')
-          //ZefyrView(document: _aboutBloc.getAboutBody(),),
-        );
-      },
-    );
-  }
-
-  void _selectNewPastorUID() {
-     showDialog(
-      context: context,
-      builder: (_){
-        List<User> allUsers = BlocProvider.of<TimelineBloc>(context).allUsers;
-        return Dialog(
-          child: Container(
-            child: ListView.builder(
-              itemCount: allUsers.length,
-              itemBuilder: (_,index){
-                return ListTile(
-                  title: Text(allUsers[index].forename + ' ' + allUsers[index].surname),
-                  subtitle: Text('Admin Level: '+allUsers[index].adminLevel.toString()),
-                  onTap: (){
-                    _aboutBloc.add(AboutPastorUIDChangeEvent(allUsers[index].id));
-                    Navigator.of(context).pop();
-                  },
-                );
-              }
-            ),
-          ),
-        );
-      }
-    );
-  }
-
-  void _selectNewLocationID(){
-    showDialog(
-      context: context,
-      builder: (_){
-        List<Location> allLcoations = List.from(BlocProvider.of<TimelineBloc>(context).essentialLocations);
-        allLcoations.removeWhere((e) => e.id=='0');
-        return Dialog(
-          child: Container(
-            child: ListView.separated(
-              itemCount: allLcoations.length,
-              separatorBuilder: (_,index)=> Divider(),
-              itemBuilder: (_,index){
-                return ListTile(
-                  title: Text(allLcoations[index].addressLine),
-                  subtitle: Text(allLcoations[index].description),
-                  onTap: (){
-                    _aboutBloc.add(AboutLocationIDChangeEvent(allLcoations[index].id));
-                    Navigator.of(context).pop();
-                  },
-                );  
-              }
-            ),
-          ),
+          child: ZefyrView(document: _aboutBloc.getAboutBody(),),
         );
       },
     );

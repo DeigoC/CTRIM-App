@@ -18,7 +18,6 @@ import 'package:ctrim_app_v1/pages/gallery/AddFilesPage.dart';
 import 'package:ctrim_app_v1/pages/gallery/ViewImageVideoPage.dart';
 import 'package:ctrim_app_v1/pages/location/AddLocationPage.dart';
 import 'package:ctrim_app_v1/pages/location/EditLocationPage.dart';
-import 'package:ctrim_app_v1/pages/location/SelectLocationForPostPage.dart';
 import 'package:ctrim_app_v1/pages/location/ViewAllPostsForLocationPage.dart';
 import 'package:ctrim_app_v1/pages/location/ViewLocationOnMapPage.dart';
 import 'package:ctrim_app_v1/pages/user/EditUserBodyPage.dart';
@@ -29,7 +28,6 @@ import 'package:ctrim_app_v1/pages/user/UserLikedPostsPage.dart';
 import 'package:ctrim_app_v1/pages/user/UserLoginPage.dart';
 import 'package:ctrim_app_v1/pages/user/ViewAllUsersPage.dart';
 import 'package:ctrim_app_v1/pages/InitialLoadingPage.dart';
-import 'package:ctrim_app_v1/pages/user/ViewUserPage.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,7 +52,6 @@ const ViewLocationOnMapRoute = '/ViewLocationOnMap';
 const ViewAllEventsForLocationRoute = '/ViewAllEventsForLocation';
 const AddLocationRoute = '/AddLocation';
 const EditLocationRoute = '/EditLocation';
-const SelectLocationForEventRoute = '/SelectLcoationForEvent';
 const SearchLocationPageRoute = '/SearchLocationPage';
 
 const RegisterUserRoute = '/RegisterUser';
@@ -69,7 +66,6 @@ const ViewChurchPageRoute = '/ViewChurchPage';
 const ViewAboutPastorsRoute = '/ViewAboutPastorsRoute';
 const EditAboutArticleRoute = '/EditAboutArticlePageRoute';
 const AboutBodyEditorPageRoute = '/AboutBodyEditorPage';
-const ViewUserPageRoute = '/ViewUserPageRoute';
 
 class App extends StatefulWidget {
 
@@ -170,9 +166,6 @@ class _AppState extends State<App> {
         case EditLocationRoute: screen = EditLocation(arguments['location']);
         break;
 
-        case SelectLocationForEventRoute: screen = SelectLocationForEvent(arguments['postBloc']);
-        break;
-
         case CreateAlbumRoute: screen = EditAlbum(arguments['postBloc']);
         break;
 
@@ -213,9 +206,6 @@ class _AppState extends State<App> {
         break;
 
         case AboutBodyEditorPageRoute: screen = AboutBodyEditorPage();
-        break;
-
-        case ViewUserPageRoute: screen = ViewUserPage(arguments['user']);
         break;
 
         case EditUserBodyRoute: screen = EditUserBodyPage(arguments['adminBloc']);

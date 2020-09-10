@@ -131,7 +131,7 @@ class ViewAllEventsPage {
         itemBuilder: (_,index){
           return PostArticle(
             mode: 'view',
-            allUsers: BlocProvider.of<TimelineBloc>(_context).allUsers,
+            allUsers: BlocProvider.of<TimelineBloc>(_context).mainFeedUsers,
             timelinePost: feedData.elementAt(index),
             //post: feedData[tpsSorted.elementAt(index)],
           );

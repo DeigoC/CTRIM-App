@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/LocationBloc/location_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
-import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/location_query.dart';
@@ -64,11 +63,10 @@ class _AddLocationState extends State<AddLocation> {
             }else if(state is LocationEditAttemptToUpdateState){
               ConfirmationDialogue().uploadTaskStarted(context: context);
             } else if (state is LocationCreatedState){
-              //TODO update this
-              /* widget._postBloc.add(PostSelectedLocationEvent(
-                addressLine: LocationDBManager.allLocations.last.addressLine,
-                locationID: LocationDBManager.allLocations.last.id,
-              )); */
+              widget._postBloc.add(PostSelectedLocationEvent(
+                addressLine: state.location.addressLine,
+                location: state.location
+              ));
               Navigator.of(context).pop();
               Navigator.of(context).pop();
               Navigator.of(context).pop();

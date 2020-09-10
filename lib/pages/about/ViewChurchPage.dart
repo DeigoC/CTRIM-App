@@ -1,6 +1,5 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
-import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
-import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
+import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
@@ -36,21 +35,37 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
       body: Builder(
         builder: (_){
           _context = _;
-          return _buildBody();
+          return _buildFBBody();
         },
       ),
     );
   }
 
-  Widget _buildBody(){
+  Widget _buildFBBody(){
+    return FutureBuilder<Map<String, dynamic>>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchChurchData(widget._aboutArticle),
+      builder: (_,snap){
+        Widget result;
+
+        if(snap.hasData){
+          result = _buildBodyWithData(snap.data);
+        }else if(snap.hasError){
+          result = Center(child: Text('Something went wrong!'),);
+        }else{
+          result = Center(child: CircularProgressIndicator(),);
+        }
+
+        return result;
+      },
+    );
+  }
+
+  Widget _buildBodyWithData(Map<String, dynamic> data){
     TextStyle headerStyle = TextStyle(fontSize: 36);
     TextStyle bodyStyle = TextStyle(fontSize: 18);
-    User pastorUser = UserDBManager.allUsers
-    .firstWhere((e) => e.id.compareTo(widget._aboutArticle.locationPastorUID)==0);
 
-    //TODO fix this
-    /* Location location = LocationDBManager.allLocations
-    .firstWhere((e) => e.id.compareTo(widget._aboutArticle.locationID)==0); */
+    User pastorUser = data['User'];
+    Location location = data['Location'];
 
     return ListView(
       children: [
@@ -59,10 +74,10 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
 
         Text('Location',style: headerStyle, textAlign: TextAlign.center,),
         MyFlatButton(
-          label: 'To be fixed',//location.addressLine,
+          label: location.addressLine,
           fontSize: 18,
           onPressed: (){
-            BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(null));
+            BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location));
           },
         ),
         SizedBox(height: 32,),
@@ -82,7 +97,6 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
             builder: (_){
               return ViewUserSheet(pastorUser);
           });
-          //BlocProvider.of<AppBloc>(context).add(AppToViewUserPageEvent(pastorUser));
         },
       ),
 

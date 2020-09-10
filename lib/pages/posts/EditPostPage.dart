@@ -5,6 +5,7 @@ import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
+import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/classes/other/updateDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
@@ -30,6 +31,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
   List<TimelinePost> _allTimelinePosts = [];
 
   Post _post;
+  User _authorUser;
 
   @override
   void initState() {
@@ -217,13 +219,20 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
   Widget _buildUpdatesTab(){
     if(_allTimelinePosts.length==0){
       BlocProvider.of<TimelineBloc>(context).fetchPostUpdatesData(_post.id).then((timelines){
-        setState(() {
-          _allTimelinePosts = timelines;
-        });
+        setState(() { _allTimelinePosts = timelines;});
       });
       return Center(child: CircularProgressIndicator());
+    }else if(_authorUser == null){
+      BlocProvider.of<TimelineBloc>(context).fetchUserByID(_allTimelinePosts.first.authorID).then((user){
+        setState(() {_authorUser = user;});
+      });
+      return Center(child: CircularProgressIndicator(),);
     }
-    return AbsorbPointer(child: PostUpdatesTab(_post, _allTimelinePosts));
+    return AbsorbPointer(child: PostUpdatesTab(
+      post: _post,
+      allTimelinePosts: _allTimelinePosts,
+      user: _authorUser,
+    ));
   }
 
   void _confirmSave() async {

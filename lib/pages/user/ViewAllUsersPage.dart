@@ -5,11 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ViewAllUsers extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
-    List<User> allUsers = BlocProvider.of<TimelineBloc>(context).allUsers;
-    allUsers.sort((a,b) => a.surname.compareTo(b.surname));
-
     return Scaffold(
       appBar: AppBar(title: Text('All Users'),),
       body: BlocBuilder<TimelineBloc, TimelineState>(
@@ -18,17 +16,41 @@ class ViewAllUsers extends StatelessWidget {
           return false;
         },
         builder: (_, state) {
-        return ListView.builder(
-            itemCount: allUsers.length,
-            itemBuilder: (_, index) {
-              return ListTile(
-                title: Text(allUsers[index].forename + ' ' + allUsers[index].surname),
-                subtitle: Text('Admin Lvl: ' + allUsers[index].adminLevel.toString()),
-                trailing: Text(allUsers[index].disabled ? 'Disabled':''),
-                onTap: () => BlocProvider.of<AppBloc>(context).add(AppToEditUserEvent(allUsers[index])),
-              );
-            });
+        return _buildBody(_);
       }),
     );
+  }
+
+  Widget _buildBody(BuildContext context){
+    return FutureBuilder<List<User>>(
+      future: BlocProvider.of<TimelineBloc>(context).fetchAllUsers(),
+      builder: (_,snap){
+        Widget result;
+
+        if(snap.hasData){
+          result = _buildListWithData(snap.data, _);
+        }else if(snap.hasError){
+          result = Center(child: Text('Something went wrong!'),);
+        }else{  
+          result = Center(child: CircularProgressIndicator(),);
+        }
+
+        return result;
+      },
+    );
+  }
+
+  Widget _buildListWithData(List<User> data, BuildContext context){
+    data.sort((a,b) => a.surname.compareTo(b.surname));
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (_, index) {
+        return ListTile(
+          title: Text(data[index].forename + ' ' + data[index].surname),
+          subtitle: Text('Admin Lvl: ' + data[index].adminLevel.toString()),
+          trailing: Text(data[index].disabled ? 'Disabled':''),
+          onTap: () => BlocProvider.of<AppBloc>(context).add(AppToEditUserEvent(data[index])),
+        );
+      });
   }
 }

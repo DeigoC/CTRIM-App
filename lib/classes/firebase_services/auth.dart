@@ -12,7 +12,7 @@ class AuthService{
 
   Future<User> loginWithEmail({@required String email, @required String password}) async{
       AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      User u = _userDBManager.getUserByAuthUID(result.user.uid);
+      User u = await _userDBManager.fetchUserByAuthID(result.user.uid);
       currentFirebaseUser['email'] = email;
       currentFirebaseUser['password'] = password;
       return u;

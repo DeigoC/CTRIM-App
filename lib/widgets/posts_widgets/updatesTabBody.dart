@@ -1,5 +1,4 @@
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
-import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
@@ -10,15 +9,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class PostUpdatesTab extends StatelessWidget {
   
   final Post post;
-  final List<TimelinePost> _allTimelinePosts;
+  final List<TimelinePost> allTimelinePosts;
+  final User user;
   
-  PostUpdatesTab(this.post, this._allTimelinePosts);
+  PostUpdatesTab({
+    this.post, 
+    this.allTimelinePosts,
+    this.user,
+  });
   
   @override
   Widget build(BuildContext context) {
-    User user = BlocProvider.of<TimelineBloc>(context).allUsers
-    .firstWhere( (author) => author.id == _allTimelinePosts.last.authorID);
-
     return CustomScrollView(
       slivers: [
         SliverList(//TODO wrap this into a FB to fetch user?
@@ -64,7 +65,7 @@ class PostUpdatesTab extends StatelessWidget {
 
   SliverList _buildUpdatesList(){
     Map<DateTime, List<TimelinePost>> updatesSortedToLists = {};
-    _allTimelinePosts.forEach((u) {
+    allTimelinePosts.forEach((u) {
       DateTime thisDate = DateTime(u.postDate.year, u.postDate.month, u.postDate.day);
       if(updatesSortedToLists[thisDate] == null){
         updatesSortedToLists[thisDate] = [];

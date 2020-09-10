@@ -1,6 +1,7 @@
 class Location{
   String id, imgSrc, addressLine, description;
   Map<String,double> coordinates;
+  List<String> searchArray;
   bool deleted;
     
   String getAddressLine(){
@@ -15,6 +16,7 @@ class Location{
     this.addressLine ='',
     this.description ='',
     this.deleted = false,
+    this.searchArray,
   });
 
   Location.fromMap(String id, Map<String, dynamic> data)
@@ -23,6 +25,7 @@ class Location{
   coordinates = Map<String,double>.from(data['Coordinates']),
   addressLine = data['AddressLine'],
   description = data['Description'],
+  searchArray = List.from(data['SearchArray']),
   deleted = data['Deleted'];
 
   toJson(){
@@ -31,6 +34,7 @@ class Location{
       'Coordinates':coordinates,
       'AddressLine':addressLine,
       'Description':description,
+      'SearchArray':searchArray,
       'Deleted':deleted,
     };
   }

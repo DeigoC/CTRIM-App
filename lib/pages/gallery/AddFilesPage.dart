@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
 import 'package:path/path.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 
 class AddGalleryFiles extends StatefulWidget {
@@ -24,11 +27,6 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
   bool _selectingFiles = false;
 
   @override
-  void dispose() { 
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
@@ -42,6 +40,7 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
         });
         
         widget._postBloc.add(PostFilesReceivedEvent());
+
         return true;
       },
       child: Scaffold(
@@ -146,6 +145,8 @@ class _AddingFileItemState extends State<AddingFileItem> {
   final List<String> _imageTypes = ['jpg', 'png', 'gif', 'svg'];
   double _containerSize;
   VideoPlayerController _videoPlayerController;
+ 
+  BuildContext _context;
 
   @override
   void initState() {
@@ -155,6 +156,7 @@ class _AddingFileItemState extends State<AddingFileItem> {
         if(mounted){ setState(() { });}
       });
     } 
+
     super.initState();
   }
 
@@ -166,6 +168,7 @@ class _AddingFileItemState extends State<AddingFileItem> {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     _containerSize = MediaQuery.of(context).size.width * 0.3;
     return Card(
       child: Row(
@@ -195,7 +198,6 @@ class _AddingFileItemState extends State<AddingFileItem> {
   }
 
   Widget _buildImageFileContainer(){
-   // _imageCompressionTest(widget.file);
     return Container(
       width: _containerSize,
       height: _containerSize,
@@ -207,6 +209,12 @@ class _AddingFileItemState extends State<AddingFileItem> {
   }
 
   Widget _buildVideoFileContainer(){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if(_videoPlayerController.value.initialized){
+        _testVideoCompression();
+      }
+    });
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
         child: Container(
@@ -223,6 +231,24 @@ class _AddingFileItemState extends State<AddingFileItem> {
     );
   }
 
+  void _testVideoCompression() {
+    final compressed = VideoCompress.compressVideo(widget.file.path);
+    showDialog(
+      context: _context,
+      builder: (_){
+        return Dialog(
+          child: ListTile(
+            title: VideoCompressorTask(),
+            subtitle: Text('Compressing'),
+          )
+        );
+      }
+    );
+    compressed.then((mediaInfo){
+      print('-----------------------COMPRESSION DONE!');
+    });
+  }
+
   Text _getFileSizeText(){
     double sizeMB = (widget.file.lengthSync() / (1026*1000));
     bool isVideo = _videoPlayerController != null;
@@ -235,5 +261,37 @@ class _AddingFileItemState extends State<AddingFileItem> {
 
     return Text(sizeMB.toStringAsFixed(2) + ' MB', style: isSizeValid ? 
     null:TextStyle(color: Colors.red, fontWeight: FontWeight.bold),);
+  }
+}
+
+class VideoCompressorTask extends StatefulWidget {
+  @override
+  _VideoCompressorTaskState createState() => _VideoCompressorTaskState();
+}
+
+class _VideoCompressorTaskState extends State<VideoCompressorTask> {
+
+  Subscription _subscription;
+  double _progress;
+
+  @override
+  void initState() { 
+    super.initState();
+    _subscription = VideoCompress.compressProgress$.subscribe((progress) {
+      setState(() {
+        _progress = progress;
+      });
+    });
+  }
+
+  @override
+  void dispose() { 
+    _subscription.unsubscribe();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Progress: ' + _progress.toString());
   }
 }
