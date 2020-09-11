@@ -27,12 +27,13 @@ class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
       shrinkWrap: true,
       children: [
         PostLocationField(),
-        SizedBox(height: 8,),
+        SizedBox(height: 10,),
+        Divider(),
+        SizedBox(height: 10,),
         PostDateTimeField(),
-        SizedBox(height: 8,),
-        SizedBox( height: 16,),
-        Divider(thickness: 2,),
-        SizedBox( height: 8,),
+        SizedBox(height: 10,),
+        Divider(),
+        SizedBox(height: 10,),
         DetailTable(),
       ],
     );

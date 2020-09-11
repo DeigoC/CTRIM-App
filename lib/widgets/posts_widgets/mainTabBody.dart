@@ -4,6 +4,7 @@ import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/post_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:zefyr/zefyr.dart';
 
 class MainTabBody extends StatefulWidget {
@@ -35,23 +36,38 @@ class _MainTabBodyState extends State<MainTabBody> {
     return ListView(
       shrinkWrap: true,
       children: [
-        PostDepartmentField(),
-        SizedBox(height: 20,),
+        PostTagsField(),
+        SizedBox(height: 10,),
+        Divider(),
+        SizedBox(height: 10,),
         MyTextField(
           controller: _tecSubtitle,
           label: 'Description',
-          hint: 'Required (Brief summary of the post)',
+          hint: 'A summary of the post',
           maxLength: 140,
           maxLines: 5,
           onTextChange: (newSubtitle) => BlocProvider.of<PostBloc>(context)
               .add(PostTextChangeEvent(description: newSubtitle)),
         ),
-        SizedBox(height: 20,),
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Text('Body (Required)',style: TextStyle(fontSize: 18),),
-        ),
+        SizedBox(height: 10,),
         Divider(),
+        SizedBox(height: 10,),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Body*',style: TextStyle(fontSize: 18),),
+              IconButton(
+                icon: Icon(AntDesign.questioncircleo),
+                onPressed: (){
+
+                },
+              )
+            ],
+          ),
+        ),
+        Divider(indent: 10, endIndent: 10,),
         BlocBuilder<PostBloc, PostState>(
             condition: (previousState, currentState) {
           if (currentState is PostUpdateBodyState) return true;
@@ -66,8 +82,7 @@ class _MainTabBodyState extends State<MainTabBody> {
           padding: EdgeInsets.all(8),
           child: RaisedButton(
             onPressed: () {
-              BlocProvider.of<AppBloc>(context).add(
-                  AppToPostBodyEditorEvent(BlocProvider.of<PostBloc>(context)));
+              BlocProvider.of<AppBloc>(context).add(AppToPostBodyEditorEvent(BlocProvider.of<PostBloc>(context)));
             },
             child: Text('Edit Body'),
           ),

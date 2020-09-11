@@ -25,12 +25,33 @@ class AppRebuildSliverAppBarState extends AppState{}
 class AppMapUploadTaskToDialogueState extends AppState{
   final StorageUploadTask task;
   final int itemNo,totalLength;
-  AppMapUploadTaskToDialogueState({@required this.task, @required this.itemNo, @required this.totalLength});
+  final String fileName;
+  AppMapUploadTaskToDialogueState({
+    @required this.task,
+    @required this.itemNo, 
+    @required this.totalLength,
+    @required this.fileName,
+  });
 }
 
 class AppCompressingImageTaskState extends AppState{
   final int itemNo,totalLength;
-  AppCompressingImageTaskState({@required this.itemNo, @required this.totalLength});
+  final String fileName;
+  AppCompressingImageTaskState({
+    @required this.itemNo, 
+    @required this.totalLength,
+    @required this.fileName,
+  });
+}
+
+class AppCompressingVideoTaskState extends AppState{
+  final String fileName;
+  final int itemNo, totalLength;
+  AppCompressingVideoTaskState({
+    @required this.fileName,
+    @required this.totalLength,
+    @required this.itemNo,
+  });
 }
 
 // ! Tabs Being clicked

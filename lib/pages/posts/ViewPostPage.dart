@@ -2,13 +2,10 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
-import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
-import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
-import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/updatesTabBody.dart';
@@ -26,6 +23,7 @@ class ViewPostPage extends StatefulWidget {
 class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderStateMixin {
   TabController _tabController;
   ZefyrController _zefyrController;
+  ScrollController _nestedScrollController;
   FocusNode _fn;
   Post _post;
 
@@ -33,6 +31,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   Location _postLocation;
   PostBloc _postBloc;
   User _authorUser;
+  bool _scrollAtBottom = false;
 
   @override
   void initState() {
@@ -40,6 +39,17 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
     _tabController = TabController(vsync: this, length: 4);
     _fn = FocusNode();
+    _nestedScrollController = ScrollController()..addListener(() {
+      if(_nestedScrollController.position.pixels == _nestedScrollController.position.maxScrollExtent){
+        if(!_scrollAtBottom){
+          setState(() {_scrollAtBottom = true;});
+        }
+      }else{
+        if(_scrollAtBottom){
+          setState(() {_scrollAtBottom = false;});
+        }
+      }
+    });
     super.initState();
   }
 
@@ -47,6 +57,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   void dispose() { 
     if(_zefyrController != null) _zefyrController.dispose();
     _tabController.dispose();
+    _nestedScrollController.dispose();
     _fn.dispose();
     super.dispose();
     _postBloc.close();
@@ -93,28 +104,13 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
   NestedScrollView _buildBodyWithData(){
     return NestedScrollView(
+      controller: _nestedScrollController,
       headerSliverBuilder: (_, __) {
         bool hasImage = _post.firstImageSrc != null;
         return [
           SliverAppBar(
             expandedHeight: MediaQuery.of(context).size.height * 0.33,
             actions: [
-              AdminCheck().isCurrentUserAboveLvl2(context) ? 
-              IconButton(
-                tooltip: 'Send Notification',
-                icon: Icon(Icons.notifications_active),
-                onPressed: (){
-                  ConfirmationDialogue().sendNotification(context: context).then((value){
-                    if(value){
-                      Scaffold.of(_).showSnackBar(SnackBar(
-                        content: Text('Notification Sent!'),
-                      ));
-                      NotificationHandler(context).notifyUsersAboutPost(_post);
-                    }
-                  });
-                },
-              ): Container(),
-              
               BlocBuilder<AppBloc, AppState>(
                 condition: (_, state) {
                   if (state is AppCurrentUserLikedPostState) return true;
@@ -188,6 +184,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
   Widget _buildFAB(){
     if(!_post.isDateNotApplicable && _post.startDate.isAfter(DateTime.now())){
+      if(_scrollAtBottom) return null;
       return BlocBuilder(
         bloc: _postBloc,
         condition: (_,state){
@@ -200,17 +197,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           if(state is PostRemoveViewFABState) return Container();
           return FloatingActionButton.extended(
             onPressed: (){
-              Event event = Event(
-                title: _post.title,
-                description: _post.description,
-                location: BlocProvider.of<TimelineBloc>(context).essentialLocations
-                .firstWhere((element) => element.id == _post.locationID)
-                .getAddressLine(),
-                startDate: _post.startDate,
-                endDate: _post.endDate,
-                allDay: _post.allDayEvent,
-              );
-              Add2Calendar.addEvent2Cal(event);
+              _setReminderClick();
             }, 
             label: Text('Set Reminder',style: TextStyle(color: Colors.white),),
             icon: Icon(Icons.calendar_today,color: Colors.white,),
@@ -219,6 +206,21 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
       );
     }
     return null;
+  }
+
+  void _setReminderClick(){
+    String locationString = 'N/A';
+    if(_postLocation != null) locationString = _postLocation.getAddressLine();
+
+    Event event = Event(
+      title: _post.title,
+      description: _post.description,
+      location: locationString,
+      startDate: _post.startDate,
+      endDate: _post.endDate,
+      allDay: _post.allDayEvent,
+    );
+    Add2Calendar.addEvent2Cal(event);
   }
   
   Widget _buildAboutTab() {
@@ -238,9 +240,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
       return Text('N/A',style: TextStyle(fontSize: 18),textAlign: TextAlign.center,);
     }else if(_postLocation == null){
       BlocProvider.of<TimelineBloc>(context).fetchLocationByID(_post.locationID).then((location){
-        setState(() {
-          _postLocation = location;
-        });
+        setState(() { _postLocation = location;});
       });
       return Center(child: CircularProgressIndicator(),);
     }else{

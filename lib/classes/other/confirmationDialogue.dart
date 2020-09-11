@@ -196,65 +196,59 @@ class ConfirmationDialogue{
           onWillPop: ()async=>false,
           child: Dialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
-            child: Container(
-              height: MediaQuery.of(context).size.height *0.3,
-              width:  MediaQuery.of(context).size.width *0.3,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(child: CircularProgressIndicator(),
-                  height: MediaQuery.of(context).size.width *0.1,
-                  width: MediaQuery.of(context).size.width *0.1,),
-                  SizedBox(height: 8,),
-                  BlocBuilder<AppBloc, AppState>(
-                    condition: (_,state){
-                      if(state is AppMapUploadTaskToDialogueState) return true;
-                      else if(state is AppCompressingImageTaskState) return true;
-                      return false;
-                    },
-                    builder: (_,state){
-                      String title = 'Uploading...',subtitle="Waiting for next task.";
-                      Widget trailing = Text('');
+            child: BlocBuilder<AppBloc, AppState>(
+              condition: (_,state){
+                if(state is AppMapUploadTaskToDialogueState) return true;
+                else if(state is AppCompressingImageTaskState) return true;
+                else if(state is AppCompressingVideoTaskState) return true;
+                return false;
+              },
+              builder: (_,state){
+                String title = 'Uploading...',subtitle="Waiting for next task.";
+                Widget trailing = Text('');
 
-                      if(state is AppMapUploadTaskToDialogueState){
-                        return StreamBuilder<StorageTaskEvent>(
-                          stream: state.task.events,
-                          builder: (_,snap){
-                            String percentage;
-                            if(snap.hasData){
-                              int totalByteCount = snap.data.snapshot.totalByteCount;
-                              int amountTransfered = snap.data.snapshot.bytesTransferred;
-                              percentage = ((amountTransfered/totalByteCount) * 100).round().toString() + '%';
-                              title = 'Item ${state.itemNo} / ${state.totalLength}';
-                              subtitle = 'Uploading...';
-                            }else{
-                              percentage = '0%';
-                            }
-                            trailing = Text(percentage);
-                             return ListTile(
-                              title: Text(title),
-                              subtitle: Text(subtitle),
-                              trailing: trailing,
-                            );
-                          },
-                        );
+                if(state is AppMapUploadTaskToDialogueState){
+                  return StreamBuilder<StorageTaskEvent>(
+                    stream: state.task.events,
+                    builder: (_,snap){
+                      String percentage;
+                      if(snap.hasData){
+                        int totalByteCount = snap.data.snapshot.totalByteCount;
+                        int amountTransfered = snap.data.snapshot.bytesTransferred;
+                        percentage = ((amountTransfered/totalByteCount) * 100).round().toString() + '%';
+                        title = state.fileName;
+                        subtitle = 'Uploading Item ${state.itemNo} / ${state.totalLength}';
+                      }else{
+                        percentage = '0%';
                       }
-
-                      else if(state is AppCompressingImageTaskState){
-                        title = 'Item ${state.itemNo} / ${state.totalLength}';
-                        subtitle = 'Compressing...';
-                        trailing = Text('...');
-                      }
-                      return ListTile(
+                      trailing = Text(percentage);
+                       return ListTile(
                         title: Text(title),
                         subtitle: Text(subtitle),
                         trailing: trailing,
                       );
                     },
-                  ),
-                ],
-              ),
+                  );
+                }
+
+                else if(state is AppCompressingImageTaskState){
+                  title = state.fileName;
+                  subtitle = 'Compressing Item ${state.itemNo} / ${state.totalLength}, Please wait...';
+                  trailing = CircularProgressIndicator();
+                }
+
+                else if(state is AppCompressingVideoTaskState){
+                  title = state.fileName;
+                  subtitle = 'Compressing Item ${state.itemNo} / ${state.totalLength} | Please wait...';
+                  trailing = CircularProgressIndicator();
+                }
+
+                return ListTile(
+                  title: Text(title),
+                  subtitle: Text(subtitle),
+                  trailing: trailing,
+                );
+              },
             ),
           ),
         );

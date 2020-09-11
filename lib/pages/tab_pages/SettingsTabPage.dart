@@ -134,6 +134,14 @@ class SettingsPage{
                 },
               ),
               ListTile(
+                title: Text('Privacy Policy'),
+                subtitle: Text('Boring legal document (more to come)'),
+                leading: Icon(MaterialCommunityIcons.security),
+                onTap: (){
+                  AppBloc.openURL('https://ctrim-app.web.app/', _context);
+                },
+              ),
+              ListTile(
                 title: Text('Other Info'),
                 subtitle: Text('Extra details about the app'),
                 leading: Icon(Icons.info_outline),

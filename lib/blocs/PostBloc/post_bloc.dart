@@ -64,13 +64,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   DateTime get selectedEndDate => _post.endDate??DateTime.now();
   DateTime _endDateTOD;
 
-  String get selectedStartDateString => _post.startDate == null ? 'Start Date - PENDING': DateFormat('EEE, dd MMM yyyy')
+  String get selectedStartDateString => _post.startDate == null ? 'Select Date': DateFormat('EEE, dd MMM yyyy')
   .format(_post.startDate);
-  String get selectedStartTimeString => _post.startDate == null ? 'Start Time - PENDING': DateFormat('h:mm a')
+  String get selectedStartTimeString => _post.startDate == null ? 'Select Time': DateFormat('h:mm a')
   .format(_post.startDate);
-  String get selectedEndDateString => _post.endDate == null ? 'End Date - PENDING': DateFormat('EEE, dd MMM yyyy')
+  String get selectedEndDateString => _post.endDate == null ? 'Select Date': DateFormat('EEE, dd MMM yyyy')
   .format(_post.endDate);
-  String get selectedEndTimeString => _endDateTOD == null ? 'End Time - PENDING': DateFormat('h:mm a')
+  String get selectedEndTimeString => _endDateTOD == null ? 'Select Time': DateFormat('h:mm a')
   .format(_endDateTOD);
 
   bool get isPostDateNotApplicable => _post.isDateNotApplicable;

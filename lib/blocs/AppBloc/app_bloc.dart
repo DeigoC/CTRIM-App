@@ -43,9 +43,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     if(await canLaunch(url)){
       await launch(url);
     }else{
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Couldn't open link!"),
-      ));
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text("Couldn't open link!"),));
     }
   }
 
@@ -64,12 +62,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppCurrentUserLogsOutEvent) yield* _currentUserLogsOut();
     else if(event is AppUploadCompressingImageEvent){
       yield AppEmptyState();
-      yield AppCompressingImageTaskState(itemNo: event.itemNo, totalLength: event.totalLength);
+      yield AppCompressingImageTaskState(itemNo: event.itemNo, totalLength: event.totalLength, fileName: event.fileName);
     }
     else if(event is AppUploadTaskStartedEvent){
       yield AppEmptyState();
-      yield AppMapUploadTaskToDialogueState(task: event.task, itemNo: event.itemNo, totalLength: event.totalLength);
+      yield AppMapUploadTaskToDialogueState(task: event.task, itemNo: event.itemNo, totalLength: event.totalLength, fileName: event.fileName);
     } 
+    else if(event is AppUploadCompressingVideoEvent){
+      yield AppEmptyState();
+      yield AppCompressingVideoTaskState(fileName: event.fileName, itemNo: event.itemNo, totalLength: event.totalLength);
+    }
     else if(event is AppRebuildSliverAppBarEvent) yield AppRebuildSliverAppBarState();
   }
  

@@ -8,7 +8,9 @@ import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:path/path.dart';
 
 class AppStorage{
   
@@ -29,18 +31,40 @@ class AppStorage{
         File itemToSend = File(fileSrc);
         itemNo = index + 1;
         String filePath = 'posts/${post.id}/item_$index';
+        String fileName = basename(itemToSend.path);
 
+        // * Compress the item
         if(post.temporaryFiles[fileSrc]=='img'){
-          _appBloc.add(AppUploadCompressingImageEvent(itemNo: itemNo, totalLength: totalLength));
+          _appBloc.add(AppUploadCompressingImageEvent(
+            itemNo: itemNo, 
+            totalLength: totalLength,
+            fileName: fileName
+          ));
           itemToSend = await _compressImage(fileSrc);
+        }else if(post.temporaryFiles[fileSrc]=='vid'){
+          _appBloc.add(AppUploadCompressingVideoEvent(
+            fileName: fileName,
+            itemNo: itemNo,
+            totalLength: totalLength,
+          ));
+          itemToSend = await _compressVideo(fileSrc);
         }
         
+        // * Upload the item
         task = _ref.child(filePath).putFile(itemToSend);
-        _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: itemNo,totalLength: totalLength));
+        _appBloc.add(AppUploadTaskStartedEvent(
+          task: task, 
+          itemNo: itemNo,
+          totalLength: totalLength,
+          fileName: fileName,
+        ));
         
+        // * Fetch the new item's download link
         await  task.onComplete.then((_) async{
          await _ref.child(filePath).getDownloadURL().then((url) async{
           post.gallerySources[url] = post.temporaryFiles[fileSrc];
+
+          // * Upload and get video thumbnail
           if(post.temporaryFiles[fileSrc] == 'vid'){
             post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(fileSrc, filePath);
           }
@@ -52,33 +76,6 @@ class AppStorage{
     post.noOfGalleryItems = index;
   }
 
-  Future<File> _compressImage(String originalFilePath) async{
-    String targetPath = directory+'/compressionImage.jpg';
-
-    var result = await FlutterImageCompress.compressAndGetFile(
-      originalFilePath, 
-      targetPath,
-    );
-    return result;
-  } 
-
-  Future<String> _uploadAndGetVideoThumbnailSrc(String fileSrc, String filePath) async{
-    Uint8List data = await VideoThumbnail.thumbnailData(video: fileSrc);
-    String newFilePath = filePath +'_thumbnail';
-
-    StorageUploadTask task;
-
-    await File('$directory/thing.png').create(recursive: true)
-    .then((thumbnail) async{
-      final buffer = data.buffer;
-      var anotherFile = await thumbnail.writeAsBytes(buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
-      task =_ref.child(newFilePath).putFile(anotherFile);
-    });
-
-    await task.onComplete;
-    return (await _ref.child(newFilePath).getDownloadURL()).toString();
-  }
-
   Future<Null> uploadEditPostNewFiles(Post post,) async{
     StorageUploadTask task;
     int index = post.noOfGalleryItems, itemNo=1, totalLength=post.temporaryFiles.length;
@@ -86,15 +83,25 @@ class AppStorage{
       await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
         File itemToSend = File(fileSrc);
         String filePath = 'posts/${post.id}/item_$index';
+        String fileName = basename(itemToSend.path);
         itemNo = index - totalLength;
 
         if(post.temporaryFiles[fileSrc]=='img'){
-          _appBloc.add(AppUploadCompressingImageEvent(itemNo: itemNo, totalLength: totalLength));
+          _appBloc.add(AppUploadCompressingImageEvent(
+            itemNo: itemNo, 
+            totalLength: totalLength,
+            fileName: fileName,
+          ));
           itemToSend = await _compressImage(fileSrc);
         }
 
         task = _ref.child(filePath).putFile(itemToSend);
-        _appBloc.add(AppUploadTaskStartedEvent(task: task, itemNo: itemNo,totalLength: totalLength));
+        _appBloc.add(AppUploadTaskStartedEvent(
+          task: task, 
+          itemNo: itemNo,
+          totalLength: totalLength,
+          fileName: fileName,
+        ));
 
         await task.onComplete.then((_) async{
           await _ref.child(filePath).getDownloadURL().then((url) async{
@@ -136,6 +143,45 @@ class AppStorage{
       downloadSrc = url;
     });
     return downloadSrc;
+  }
+
+  //TODO compress every image uploaded
+  Future<File> _compressImage(String originalFilePath) async{
+    String targetPath = directory+'/compressionImage.jpg';
+    
+    var result = await FlutterImageCompress.compressAndGetFile(
+      originalFilePath, 
+      targetPath,
+    );
+    return result;
+  } 
+
+  Future<String> _uploadAndGetVideoThumbnailSrc(String fileSrc, String filePath) async{
+    Uint8List data = await VideoThumbnail.thumbnailData(
+      video: fileSrc,
+      timeMs: 3000,
+    );
+    String newFilePath = filePath +'_thumbnail';
+
+    StorageUploadTask task;
+
+    await File('$directory/thing.png').create(recursive: true)
+    .then((thumbnail) async{
+      final buffer = data.buffer;
+      var anotherFile = await thumbnail.writeAsBytes(buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+      task =_ref.child(newFilePath).putFile(anotherFile);
+    });
+
+    await task.onComplete;
+    return (await _ref.child(newFilePath).getDownloadURL()).toString();
+  }
+
+  Future<File> _compressVideo(String fileSrc) async{
+    final compressedInfo = await VideoCompress.compressVideo(
+      fileSrc,
+      quality: VideoQuality.LowQuality,
+    );
+    return compressedInfo.file;
   }
 
 }

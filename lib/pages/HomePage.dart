@@ -1,7 +1,6 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/notificationHandler.dart';
-import 'package:ctrim_app_v1/classes/other/UserFileDocument.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/AboutTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
@@ -36,9 +35,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   @override
   void initState() { 
     super.initState();
-    
-    // ! Device Orientation
-    //SystemChrome.setPreferredOrientations([]);
 
     // ! Controllers
     _postsScrollController = ScrollController();
@@ -57,7 +53,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     // * data is the important one, you can add whatever data you want in it and i think
     // * data must include the "click_action: FLUTTER_NOTIFICATION_CLICK" key value pair
     NotificationHandler _notificationHandler = NotificationHandler(context);
-    
     _firebaseMessaging.configure(
       onMessage: (message)async{
         // * When app's open
@@ -70,15 +65,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         _notificationHandler.handleOnLaunch(message);
       },
     );
-    
-    UserFileDocument().hasDeviceTokenFile().then((hasFile){
-      if(!hasFile){
-        print('------------------!GRABBING THE DEVICE TOKEN!--------------------');
-         _firebaseMessaging.getToken().then((token){
-          _notificationHandler.addTokenDevice(token);
-        });
-      }
-    });
   }
 
   @override

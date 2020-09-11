@@ -35,12 +35,25 @@ class AppRebuildSliverAppBarEvent extends AppEvent{}
 class AppUploadTaskStartedEvent extends AppEvent{
   final StorageUploadTask task;
   final int itemNo, totalLength;
-  AppUploadTaskStartedEvent({@required this.task,  @required this.itemNo,@required this.totalLength});
+  final String fileName;
+  AppUploadTaskStartedEvent({
+    @required this.task,  
+    @required this.itemNo,
+    @required this.totalLength,
+    @required this.fileName,
+  });
 }
 
 class AppUploadCompressingImageEvent extends AppEvent{
   final int itemNo, totalLength;
-  AppUploadCompressingImageEvent({@required this.itemNo,@required this.totalLength});
+  final String fileName;
+  AppUploadCompressingImageEvent({@required this.itemNo,@required this.totalLength, @required this.fileName});
+}
+
+class AppUploadCompressingVideoEvent extends AppEvent{
+  final String fileName;
+  final int itemNo, totalLength;
+  AppUploadCompressingVideoEvent({@required this.fileName, @required this.itemNo,@required this.totalLength,});
 }
 
 // ! Navigation Events

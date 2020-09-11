@@ -3,6 +3,7 @@ import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class AdminDropdownList extends StatelessWidget {
   @override
@@ -45,7 +46,7 @@ class MyTextField extends StatelessWidget {
   final String label, hint;
   final TextEditingController controller;
   final Function(String) onTextChange;
-  final bool readOnly,autoFocus, obsucureText;
+  final bool readOnly,autoFocus, obsucureText, optional;
   final int maxLength, maxLines;
   final TextInputAction textInputAction;
   final TextInputType textInputType;
@@ -62,6 +63,7 @@ class MyTextField extends StatelessWidget {
     this.maxLines,
     this.textInputAction = TextInputAction.done,
     this.textInputType,
+    this.optional = false,
   });
 
   @override
@@ -71,7 +73,18 @@ class MyTextField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,style: TextStyle(fontSize: 18),),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(label + ((optional) ? '':'*') ,style: TextStyle(fontSize: 18),),
+              IconButton(
+                icon: Icon(AntDesign.questioncircleo),
+                onPressed: (){
+
+                },
+              )
+            ],
+          ),
           TextField(
             controller: controller,
             onChanged: onTextChange,

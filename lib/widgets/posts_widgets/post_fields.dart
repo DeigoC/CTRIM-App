@@ -1,10 +1,11 @@
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
-import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
+import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class PostDateTimeField extends StatefulWidget {
   @override
@@ -23,10 +24,6 @@ class _PostDateTimeFieldState extends State<PostDateTimeField> {
   
   @override
   Widget build(BuildContext context) {
-    return _otherBuild();
-  }
-
-  Widget _otherBuild(){
     return BlocConsumer(
       bloc: _postBloc,
       listenWhen: (_,state){
@@ -45,11 +42,23 @@ class _PostDateTimeFieldState extends State<PostDateTimeField> {
         return false;
       },
       builder:(_,state)=> Container(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.symmetric(horizontal:8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Start (Required)',style: TextStyle(fontSize: 18),),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Date & Time',style: TextStyle(fontSize: 18),),
+                IconButton(
+                  icon: Icon(AntDesign.questioncircleo),
+                  onPressed: (){
+
+                  },
+                )
+              ],
+            ),
+            Text('Start',style: TextStyle(fontSize: 14),),
             Wrap(
               spacing: 8,
               children: [
@@ -66,7 +75,7 @@ class _PostDateTimeFieldState extends State<PostDateTimeField> {
               ],
             ),
             SizedBox(height: 8,),
-            Text('End (Required)',style: TextStyle(fontSize: 18),),
+            Text('Finish',style: TextStyle(fontSize: 14), ),
             Wrap(
               spacing: 8,
               children: [
@@ -155,7 +164,18 @@ class PostLocationField extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Location (Required)',style: TextStyle(fontSize: 18),),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Location (Required)',style: TextStyle(fontSize: 18),),
+                    IconButton(
+                      icon: Icon(AntDesign.questioncircleo),
+                      onPressed: (){
+
+                      },
+                    )
+                  ],
+                ),
                 MyFlatButton(
                   border: true,
                   label: addressLine,
@@ -170,7 +190,7 @@ class PostLocationField extends StatelessWidget {
                       onChanged: (newValue){
                         if(newValue){
                           BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
-                            location: LocationDBManager.essentialLocations.elementAt(0),
+                            location: Location(id: '0'),
                             addressLine: 'Location Not Applicable'
                           ));
                         }else{
@@ -190,7 +210,7 @@ class PostLocationField extends StatelessWidget {
   }
 }
 
-class PostDepartmentField extends StatelessWidget {
+class PostTagsField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -198,7 +218,18 @@ class PostDepartmentField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Tags (Required)',style: TextStyle(fontSize: 18),),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Tags*',style: TextStyle(fontSize: 18),),
+              IconButton(
+                icon: Icon(AntDesign.questioncircleo),
+                onPressed: (){
+
+                },
+              )
+            ],
+          ),
           BlocBuilder<PostBloc, PostState>(
           condition: (_, state) {
             if (state is PostDepartmentClickState) return true;

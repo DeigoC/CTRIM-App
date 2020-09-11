@@ -96,6 +96,11 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         extendBodyBehindAppBar: true,
         appBar: _buildAppBar(orientation),
         body: PageView.builder(
+          onPageChanged: (index){
+            _videoControllers.values.forEach((vidCtr) {
+              vidCtr.pause();
+            });
+          },
           pageSnapping: true,
           physics: _isZoomedIn ? NeverScrollableScrollPhysics() : BouncingScrollPhysics(),
           itemCount: widget.imageSources.keys.length,

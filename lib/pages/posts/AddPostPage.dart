@@ -65,12 +65,12 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                   actions: [_buildAppBarActions(),],
                 ),
                 SliverPadding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.only(top: 8),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       MyTextField(
                         label: 'Title',
-                        hint: 'Required',
+                        hint: 'Keep it concise',
                         maxLength: 60,
                         controller: _tecTitle,
                         onTextChange: (newTitle) =>
