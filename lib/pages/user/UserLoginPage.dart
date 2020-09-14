@@ -88,6 +88,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
                 label: 'Email',
                 controller: _tecEmail,
                 readOnly: true,
+                buildHelpIcon: false,
               ),
             ),
             MyFlatButton(
@@ -103,6 +104,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
           autoFocus: true,
           controller: null,
           obsucureText: true,
+          buildHelpIcon: false,
           onTextChange: (newPassword) =>_adminBloc.add(AdminLoginTextChangeEvent(password: newPassword)),
         ),
         Align(
@@ -135,34 +137,24 @@ class _UserLoginPageState extends State<UserLoginPage> {
         label: 'Email',
         controller: _tecEmail,
         autoFocus: true,
+        buildHelpIcon: false,
         textInputType: TextInputType.emailAddress,
         onTextChange: (newEmail) =>
             _adminBloc.add(AdminLoginTextChangeEvent(email: newEmail)),
       ),
-      /* FlatButton(
-        child: Text('Test'),
-        onPressed: (){
-          showBottomSheet(
-            context: _context, 
-            backgroundColor: Colors.transparent,
-            builder: (_){
-              return ViewUserSheet(null);
-            });
-        },
-      ), */
       BlocBuilder(
-          bloc: _adminBloc,
-          condition: (prev, currentState) {
-            if (currentState is AdminLoginDisableContinueState ||currentState is AdminLoginEnableContinueState) return true;
-            return false;
-          },
-          builder: (_, state) {
-            return MyRaisedButton(
-              externalPadding: EdgeInsets.all(8.0),
-              label: 'CONTINUE',
-              onPressed: (state is AdminLoginEnableContinueState) ? () => _adminBloc.add(AdminContinueClickEvent()): null,
-            );
-          }),
+        bloc: _adminBloc,
+        condition: (prev, currentState) {
+          if (currentState is AdminLoginDisableContinueState ||currentState is AdminLoginEnableContinueState) return true;
+          return false;
+        },
+        builder: (_, state) {
+          return MyRaisedButton(
+            externalPadding: EdgeInsets.all(8.0),
+            label: 'CONTINUE',
+            onPressed: (state is AdminLoginEnableContinueState) ? () => _adminBloc.add(AdminContinueClickEvent()): null,
+          );
+        }),
     ];
   }
 

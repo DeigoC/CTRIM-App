@@ -3,6 +3,7 @@ import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/helpDialogTile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -49,11 +50,20 @@ class _PostDateTimeFieldState extends State<PostDateTimeField> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Date & Time',style: TextStyle(fontSize: 18),),
+                Text('Date & Time*',style: TextStyle(fontSize: 18),),
                 IconButton(
                   icon: Icon(AntDesign.questioncircleo),
                   onPressed: (){
-
+                    showDialog(
+                      context: context,
+                      builder: (_){
+                        return HelpDialogTile(
+                          title: 'Date & Time (Required)',
+                          subtitle:'• Finish DateTime must be set after Start DateTime.' +
+                          "\n\n• Can be set to 'N/A' when this doesn't apply. \n\n• 'All Day' needs a Start DateTime",
+                        );
+                      }
+                    );
                   },
                 )
               ],
@@ -167,11 +177,20 @@ class PostLocationField extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Location (Required)',style: TextStyle(fontSize: 18),),
+                    Text('Location*',style: TextStyle(fontSize: 18),),
                     IconButton(
                       icon: Icon(AntDesign.questioncircleo),
                       onPressed: (){
-
+                        showDialog(
+                          context: context,
+                          builder: (_){
+                            return HelpDialogTile(
+                              title: 'Location (Required)',
+                              subtitle: "Address of the event. Can be set to 'N/A' if this doesn't apply or 'Online'" + 
+                              " when it's set online.",
+                            );
+                          }
+                        );
                       },
                     )
                   ],
@@ -225,7 +244,15 @@ class PostTagsField extends StatelessWidget {
               IconButton(
                 icon: Icon(AntDesign.questioncircleo),
                 onPressed: (){
-
+                  showDialog(
+                    context: context,
+                    builder: (_){
+                      return HelpDialogTile(
+                        title: 'Tags (Required)',
+                        subtitle:"Classify the post's type and target audience.",
+                      );
+                    }
+                  );
                 },
               )
             ],
@@ -297,17 +324,17 @@ class DetailTable extends StatelessWidget {
                 children: [
                   Expanded(
                     child: MyTextField(
-                      label: 'Table Header',
-                      maxLength: 60,
+                      label: 'Custom List',
+                      maxLength: 30,
                       controller: TextEditingController(
                           text: BlocProvider.of<PostBloc>(context)
                               .newPost
                               .detailTableHeader),
-                      hint: 'Optional',
+                      hint: 'Insert List Header',
+                      helpText: "I'm still on the fence about this feature. Not sure what to make of it",
+                      optional: true,
                       onTextChange: (newHeader) {
-                        BlocProvider.of<PostBloc>(context)
-                            .newPost
-                            .detailTableHeader = newHeader;
+                        BlocProvider.of<PostBloc>(context).newPost.detailTableHeader = newHeader;
                       },
                     ),
                   ),
@@ -388,6 +415,8 @@ class DetailTable extends StatelessWidget {
                     SizedBox(height: 8,),
                     MyTextField(
                       label: 'Leading',
+                      optional: false,
+                      buildHelpIcon: false,
                       controller:TextEditingController(text: '$itemNumber.'),
                       onTextChange: (newLeading) =>
                           BlocProvider.of<PostBloc>(_context).add(
@@ -397,6 +426,8 @@ class DetailTable extends StatelessWidget {
                     MyTextField(
                       label: 'Trailing',
                       controller: null,
+                      optional: false,
+                      buildHelpIcon: false,
                       onTextChange: (newTrailing) =>
                           BlocProvider.of<PostBloc>(_context).add(
                               PostDetailListTextChangeEvent(

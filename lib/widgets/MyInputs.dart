@@ -1,6 +1,7 @@
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/style.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/helpDialogTile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -9,48 +10,59 @@ class AdminDropdownList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Admin Level',style: TextStyle(fontSize: 18),),
-        SizedBox(
-          width: 8,
-        ),
-        BlocBuilder<AdminBloc, AdminState>(condition: (_, state) {
-          if (state is AdminUserAdminLevelChangedState) return true;
-          return false;
-        }, builder: (_, state) {
-          return DropdownButton<int>(
-            style: TextStyle(
-              fontSize: 18,
-              color: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white:Colors.black
-            ),
-            hint: Text('Required'),
-            value: BlocProvider.of<AdminBloc>(context).selectedUser.adminLevel,
-            items: [1, 2, 3].map((item) {
-              return DropdownMenuItem<int>(
-                child: Text('Lvl $item'),
-                value: item,
+        Row(
+          children: [
+            Text('Admin Level',style: TextStyle(fontSize: 18),),
+            SizedBox( width: 8,),
+            BlocBuilder<AdminBloc, AdminState>(condition: (_, state) {
+              if (state is AdminUserAdminLevelChangedState) return true;
+              return false;
+            }, builder: (_, state) {
+              return DropdownButton<int>(
+                style: TextStyle(
+                  fontSize: 18,
+                  color: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white:Colors.black
+                ),
+                hint: Text('Required'),
+                value: BlocProvider.of<AdminBloc>(context).selectedUser.adminLevel,
+                items: [1, 2, 3].map((item) {
+                  return DropdownMenuItem<int>(
+                    child: Text('Lvl $item'),
+                    value: item,
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  BlocProvider.of<AdminBloc>(context)
+                      .add(AdminUserAdminLevelChangeEvent(newValue));
+                },
               );
-            }).toList(),
-            onChanged: (newValue) {
-              BlocProvider.of<AdminBloc>(context)
-                  .add(AdminUserAdminLevelChangeEvent(newValue));
+            }),
+          ],
+        ),
+        Padding(
+          padding: EdgeInsets.only(right:8.0),
+          child: IconButton(
+            icon: Icon(AntDesign.questioncircleo),
+            onPressed: (){
+
             },
-          );
-        }),
+          ),
+        )
       ],
     );
   }
 }
 
 class MyTextField extends StatelessWidget {
-  final String label, hint;
+  final String label, hint, helpText;
   final TextEditingController controller;
   final Function(String) onTextChange;
-  final bool readOnly,autoFocus, obsucureText, optional;
+  final bool readOnly,autoFocus, obsucureText, optional, buildHelpIcon;
   final int maxLength, maxLines;
   final TextInputAction textInputAction;
   final TextInputType textInputType;
-
   MyTextField({
     @required this.label,
     @required this.controller,
@@ -64,6 +76,8 @@ class MyTextField extends StatelessWidget {
     this.textInputAction = TextInputAction.done,
     this.textInputType,
     this.optional = false,
+    this.buildHelpIcon = true,
+    this.helpText,
   });
 
   @override
@@ -73,18 +87,7 @@ class MyTextField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label + ((optional) ? '':'*') ,style: TextStyle(fontSize: 18),),
-              IconButton(
-                icon: Icon(AntDesign.questioncircleo),
-                onPressed: (){
-
-                },
-              )
-            ],
-          ),
+          Text(label + ((optional) ? '':'*') ,style: TextStyle(fontSize: 18),),
           TextField(
             controller: controller,
             onChanged: onTextChange,
@@ -95,10 +98,31 @@ class MyTextField extends StatelessWidget {
             obscureText: obsucureText,
             textInputAction: textInputAction,
             keyboardType: textInputType,
-            decoration: InputDecoration(hintText: hint ?? ''),
+            decoration: InputDecoration(
+              hintText: hint ?? '',
+              suffixIcon: IconButton(
+                icon: Icon(AntDesign.questioncircleo,color: Theme.of(context).iconTheme.color,),
+                onPressed: (){
+                  _showHelpDialog(context);
+                },
+              )
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  void _showHelpDialog(BuildContext context) async{
+    //FocusScope.of(context).requestFocus(FocusNode());
+    await showDialog(
+      context: context,
+      builder: (_){
+        return HelpDialogTile(
+          title: label + ((optional) ? '':' (Required)'),
+          subtitle: helpText??'N/A',
+        );
+      }
     );
   }
 }
@@ -309,6 +333,38 @@ class MyDropdownList extends StatelessWidget {
             }).toList(),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MySearchBar extends StatelessWidget {
+  
+  final Function onTap;
+  final Function(String) onSubmitted;
+  final FocusNode focusNode;
+
+  MySearchBar({
+    @required this.focusNode,
+    @required this.onSubmitted,
+    this.onTap,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    bool onDark = BlocProvider.of<AppBloc>(context).onDarkTheme;
+    
+    return Expanded(
+      child: TextField(
+        onTap: onTap,
+        onSubmitted: onSubmitted,
+        focusNode: focusNode,
+        decoration: InputDecoration(
+          suffixIcon: Icon(Icons.search,),
+          border: InputBorder.none,
+          filled: true,
+          fillColor: onDark ? Color(0xff383838) : Colors.white,
+        ),
       ),
     );
   }

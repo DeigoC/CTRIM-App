@@ -28,11 +28,11 @@ class _PostDetailsTabBodyState extends State<PostDetailsTabBody> {
       children: [
         PostLocationField(),
         SizedBox(height: 10,),
-        Divider(),
+        Divider(thickness: 1,),
         SizedBox(height: 10,),
         PostDateTimeField(),
         SizedBox(height: 10,),
-        Divider(),
+        Divider(thickness: 1,),
         SizedBox(height: 10,),
         DetailTable(),
       ],

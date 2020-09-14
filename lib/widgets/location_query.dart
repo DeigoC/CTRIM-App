@@ -29,25 +29,21 @@ class _LocationQueryState extends State<LocationQuery> {
         return Scaffold(
           appBar: _buildQueryAppbar(state),
           body: _buildQueryBody(state, widget._results),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton:
-              (state is LocationDisplaySelectedLocationMapState)
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        RaisedButton(
-                          child: Text('No'),
-                          onPressed: () => widget._locationBloc.add(LocationWrongQueryAddressEvent()),
-                        ),
-                        SizedBox(width: 10,),
-                        RaisedButton(
-                          child: Text('Yes'),
-                          onPressed: () => widget._locationBloc.add(LocationEditConfirmedQueryAddressEvent()),
-                        ),
-                      ],
-                    )
-                  : null,
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: (state is LocationDisplaySelectedLocationMapState) ? Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RaisedButton(
+                child: Text('No'),
+                onPressed: () => widget._locationBloc.add(LocationWrongQueryAddressEvent()),
+              ),
+              SizedBox(width: 10,),
+              RaisedButton(
+                child: Text('Yes'),
+                onPressed: () => widget._locationBloc.add(LocationEditConfirmedQueryAddressEvent()),
+              ),
+            ],
+          ): null,
         );
       });
   }
@@ -71,8 +67,7 @@ class _LocationQueryState extends State<LocationQuery> {
   Widget _buildQueryBody(LocationQueryState state, List<String> results) {
     if (state is LocationDisplaySelectedLocationMapState) {
       return _buildGoogleMaps(state.selectedAddress);
-      //return Center(child: Text('Map here for: ' + state.selectedAddress),);
-    }
+    }else if(results.length==0) return Center(child: Text('No address found with given query!'),);
     return ListView(
       children: results.map((address) {
         return ListTile(

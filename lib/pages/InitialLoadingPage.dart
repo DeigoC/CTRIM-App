@@ -26,7 +26,16 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
     return Scaffold(
       backgroundColor: LightPrimaryColor,
       body: Center(
-        child:CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
+        child:Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AspectRatio(
+              aspectRatio: 16/9,
+              child: Hero(tag:'startupLogo', child: Image.asset('assets/ctrim_logo.png')),
+            ),
+            CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
+          ],
+        ),
       ),
     );
   }

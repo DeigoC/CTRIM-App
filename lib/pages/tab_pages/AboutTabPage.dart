@@ -22,11 +22,12 @@ class AboutTabPage{
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        //leading: Icon(FontAwesome5Solid.church,color: Colors.white,),
+        titleSpacing: 0,
         title: Row(
           children: [
-            Icon(FontAwesome5Solid.church,color: Colors.white,),
-            SizedBox(width: 24,),
+            SizedBox(width: 4,),
+            Image.asset('assets/ctrim_logo.png',width: kToolbarHeight,),
+            SizedBox(width: 4,),
             Text('About Us'),
           ],
         ),

@@ -33,14 +33,22 @@ class LocationDBManager{
     return _essentialLocations;
   }
 
-  Future<List<Location>> fetchLocationsBySearchString(String searchString) async{
+  Future<List<Location>> fetchLocationsBySearchString(String searchString, {bool includeDeleted = false}) async{
     List<String> searchArray = searchString.trim().toLowerCase().replaceAll(RegExp(r','), '').split(' ');
 
-    var collection = await _ref
-    .where('Deleted',isEqualTo: false)
-    .where('SearchArray',arrayContainsAny: searchArray)
-    .limit(10)
-    .getDocuments();
+    var collection;
+    if(includeDeleted){
+      collection = await _ref
+      .where('SearchArray',arrayContainsAny: searchArray)
+      .limit(10)
+      .getDocuments(); 
+    }else{
+      collection = await _ref
+      .where('Deleted',isEqualTo: false)
+      .where('SearchArray',arrayContainsAny: searchArray)
+      .limit(10)
+      .getDocuments();
+    }
 
     List<Location> results = collection.documents.map((e) => Location.fromMap(e.documentID, e.data)).toList();
     results.removeWhere((e) => e.id.compareTo('0')==0);

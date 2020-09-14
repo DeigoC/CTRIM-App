@@ -77,7 +77,6 @@ class _EditUserPageState extends State<EditUserPage> {
               .add(AdminUserModEditTextChangeEvent(surname: newString)),
         ),
         padding,
-        Text('Social Links HERE!'),
         _buildAdminLvlSelector(),
         padding,
         MyTextField(

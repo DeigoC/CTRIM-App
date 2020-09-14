@@ -52,6 +52,11 @@ class LocationDisplayConfirmedQueryAddressState extends LocationQueryState {
   LocationDisplayConfirmedQueryAddressState(this.confirmedAddress);
 }
 
+class LocationQueryAddressAlreadyExistsState extends LocationState{
+  final Location existingRecord;
+  LocationQueryAddressAlreadyExistsState(this.existingRecord);
+}
+
 // ! Edit Location events
 class LocationEditLocationState extends LocationState {}
 

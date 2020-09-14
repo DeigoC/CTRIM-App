@@ -79,12 +79,13 @@ class AppStorage{
   Future<Null> uploadEditPostNewFiles(Post post,) async{
     StorageUploadTask task;
     int index = post.noOfGalleryItems, itemNo=1, totalLength=post.temporaryFiles.length;
+    
+
     if(post.temporaryFiles.length != 0){
       await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
         File itemToSend = File(fileSrc);
         String filePath = 'posts/${post.id}/item_$index';
         String fileName = basename(itemToSend.path);
-        itemNo = index - totalLength;
 
         if(post.temporaryFiles[fileSrc]=='img'){
           _appBloc.add(AppUploadCompressingImageEvent(
@@ -110,7 +111,7 @@ class AppStorage{
               post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(fileSrc, filePath);
             }
           });
-          index++;
+          index++; itemNo++;
         });
       });
     }

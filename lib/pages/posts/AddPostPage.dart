@@ -71,10 +71,10 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
                       MyTextField(
                         label: 'Title',
                         hint: 'Keep it concise',
+                        helpText: 'Headline for the post. Try to keep it concise as there is a 60 character word limit',
                         maxLength: 60,
                         controller: _tecTitle,
-                        onTextChange: (newTitle) =>
-                            _postBloc.add(PostTextChangeEvent(title: newTitle)),
+                        onTextChange: (newTitle) => _postBloc.add(PostTextChangeEvent(title: newTitle)),
                       ),
                       TabBar(
                         labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,

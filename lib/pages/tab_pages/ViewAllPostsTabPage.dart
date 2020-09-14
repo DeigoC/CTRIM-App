@@ -74,11 +74,13 @@ class ViewAllEventsPage {
         automaticallyImplyLeading: false,
         controller: _scrollController,
         centerTitle: true,
+        titleSpacing: 0,
         title: Container(
           child: Row(
             children: [
-              Hero(tag:'openningIcon',child: Icon(FontAwesome5Solid.church,color: Colors.white,)),
-              SizedBox(width: 24,),
+              SizedBox(width: 4,),
+              Hero(tag: 'startupLogo',child: Image.asset('assets/ctrim_logo.png',width: kToolbarHeight,)),
+              SizedBox(width: 4,),
               Text('Posts'),
             ],
           ),
@@ -89,7 +91,7 @@ class ViewAllEventsPage {
             padding: EdgeInsets.only(bottom: 5),
             height: 35,
             child: BlocBuilder<TimelineBloc, TimelineState>(
-                condition: (_, state) {
+              condition: (_, state) {
               if (state is TimelineTagChangedState) return true;
               return false;
             }, builder: (_, state) {
@@ -103,8 +105,8 @@ class ViewAllEventsPage {
                     padding: EdgeInsets.only(left: 8.0),
                     child: FilterChip(
                       label: Text(tag),
-                      onSelected: (newState) =>
-                          BlocProvider.of<TimelineBloc>(_context).add(TimelineTagClickedEvent(tag)),
+                      onSelected: (newState) => 
+                      BlocProvider.of<TimelineBloc>(_context).add(TimelineTagClickedEvent(tag)),
                       selected: BlocProvider.of<TimelineBloc>(_context).getSelectedTags()[tag],
                     ),
                   );

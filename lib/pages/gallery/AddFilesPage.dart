@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:path/path.dart';
+//import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 
 class AddGalleryFiles extends StatefulWidget {
@@ -145,6 +146,9 @@ class _AddingFileItemState extends State<AddingFileItem> {
   double _containerSize;
   VideoPlayerController _videoPlayerController;
 
+  bool _compressing = false;
+
+
   @override
   void initState() {
     if(!_imageTypes.contains(widget.fileType.toLowerCase())){
@@ -205,6 +209,10 @@ class _AddingFileItemState extends State<AddingFileItem> {
   }
 
   Widget _buildVideoFileContainer(){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _compressVideoTest();
+    });
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
         child: Container(
@@ -233,6 +241,24 @@ class _AddingFileItemState extends State<AddingFileItem> {
 
     return Text(sizeMB.toStringAsFixed(2) + ' MB', style: isSizeValid ? 
     null:TextStyle(color: Colors.red, fontWeight: FontWeight.bold),);
+  }
+
+  void _compressVideoTest(){
+    if(!_compressing){
+      /* var thing = VideoCompress.compressVideo(widget.file.path);
+      setState(() { _compressing = true; });
+      thing.then((value) {
+        print('-----------------VIDEO COMPRESSED!');
+      }); */
+     
+      /* var thing = _flutterVideoCompress.compressVideo(widget.file.path);
+      setState(() { _compressing = true; });
+      thing.then((value){
+        print('----------------------VIDEO COMPRESSED!');
+      }); */
+
+    }
+    
   }
 }
 

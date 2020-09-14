@@ -35,7 +35,6 @@ ViewAllEventsForLocation(this._locationID);
   }
 
   Widget _buildBodyWithData(Map<String,List> data){
-    print('---------------USER LENGTH IS ' + data['Users'].length.toString());
     if(data['TimelinePosts'].length==0){
       return Center(child: Text('No Posts Yet!'),);
     }

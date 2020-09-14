@@ -27,11 +27,12 @@ class SettingsPage{
     bool isGuestUser = (BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0);
     return AppBar(
       automaticallyImplyLeading: !isGuestUser,
-      titleSpacing: isGuestUser?16:0,
+      titleSpacing: 0,
       title: isGuestUser ? Row(
         children: [
-          Icon(FontAwesome5Solid.church,color: Colors.white,),
-          SizedBox(width: 24,),
+          SizedBox(width: 4,),
+          Image.asset('assets/ctrim_logo.png',width: kToolbarHeight,),
+          SizedBox(width: 4,),
           Text('Settings',),
         ],
       ):Text('Settings'),

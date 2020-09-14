@@ -25,6 +25,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   SettingsPage _settingsPage;
   AboutTabPage _aboutTabPage;
   int _selectedIndex =0;
+  double _postPageScrollPosition =0;
 
   // ! Tab page scroll controllers
   ScrollController _postsScrollController, _locationScrollController;
@@ -233,11 +234,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       listener: (_,state){
         if(state is TimelinePinPostSnackbarState){
           if(!_postsScrollController.appBar.isPinned){
-            setState(() { _postsScrollController.appBar.tooglePinState(); });
+            setState(() { 
+              // ? Remember the location 
+              _postPageScrollPosition = _postsScrollController.position.pixels;
+              _postsScrollController.appBar.tooglePinState(); 
+            });
           }
         }else if (state is TimelineUnpinPostSnackbarState){
           if(_postsScrollController.appBar.isPinned){
-            setState(() { _postsScrollController.appBar.tooglePinState(); });
+            setState(() {
+              // ? Animate to the location
+              _postsScrollController.appBar.tooglePinState(); 
+              //_postsScrollController.jumpTo(_postPageScrollPosition);
+              _postsScrollController.animateTo(_postPageScrollPosition, 
+              duration: Duration(milliseconds: 800,), curve: Curves.easeIn);
+            });
           }
         }
       },

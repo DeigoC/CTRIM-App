@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -80,11 +81,17 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       yield LocationRemoveSelectedImageState();
       yield _canUpdateLocation();
     } else if (event is LocationEditConfirmedQueryAddressEvent) {
+
       _location.addressLine = _selectedAddressLine;
       Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
       _location.coordinates = {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude};
-      yield LocationDisplayConfirmedQueryAddressState(_selectedAddressLine);
+      
+
+      Location existingRecord = await _doesAddressAlreadyExist(add);
+      if(existingRecord != null) yield LocationQueryAddressAlreadyExistsState(existingRecord);
+      else yield LocationDisplayConfirmedQueryAddressState(_selectedAddressLine);
       yield _canUpdateLocation();
+
     } else if (event is LocationEditUpdateLocationEvent) {
       yield LocationEditAttemptToUpdateState();
       await _locationDBManager.updateLocation(_location, _imageFile);
@@ -105,9 +112,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     } else if (event is LocationSelectedQueryAddressEvent) {
       _selectedAddressLine = event.selectedAddress;
       Address selectedAddress = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
-     
-      print('---------SEARCH ARRAY LOOKS LIKE: ' + _setSearchArray(selectedAddress.addressLine).toString());
-
+      //print('---------SEARCH ARRAY LOOKS LIKE: ' + _setSearchArray(selectedAddress.addressLine).toString());
       yield LocationDisplaySelectedLocationMapState(selectedAddress: selectedAddress);
       
     } else if (event is LocationWrongQueryAddressEvent) {
@@ -170,8 +175,23 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       results.forEach((address){
         _queryAddresses.add(address);
       });
+    }).catchError((ex){
+      print('------------------NO LOCATION FOUND!');
     });
     yield LocationDisplayQueryResultsState(_queryAddresses.map((a) => a.addressLine).toList());
+  }
+
+  Future<Location> _doesAddressAlreadyExist(Address selectedAddress) async{
+    Location existingLocation;
+    String firstPart = selectedAddress.postalCode.split(' ').first;
+    List<Location> existingLocations = await _locationDBManager
+    .fetchLocationsBySearchString(firstPart, includeDeleted: true);
+   
+   if(existingLocations.length==0) return null;
+    existingLocations.forEach((local) {
+      if(local.addressLine.compareTo(selectedAddress.addressLine)==0) existingLocation = local;
+    });
+    return existingLocation;
   }
 
 }

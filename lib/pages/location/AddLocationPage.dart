@@ -3,12 +3,15 @@ import 'dart:io';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/LocationBloc/location_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/location_query.dart';
+import 'package:ctrim_app_v1/widgets/my_outputs/helpDialogTile.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class AddLocation extends StatefulWidget {
   final PostBloc _postBloc;
@@ -24,7 +27,7 @@ class _AddLocationState extends State<AddLocation> {
       _tecSelectedAddress,
       _tecDescription;
   LocationBloc _locationBloc;
-
+  
   @override
   void initState() {
     super.initState();
@@ -49,30 +52,41 @@ class _AddLocationState extends State<AddLocation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Add Location'),),
-      body: BlocListener(
-          bloc: _locationBloc,
-          listener: (_, state) {
-            if (state is LocationDisplayQueryResultsState) {
-              _displayLocationQueryResults(state.results);
-            } else if (state is LocationCancelQueryState) {
-              Navigator.of(context).pop();
-            } else if (state is LocationDisplayConfirmedQueryAddressState) {
-              Navigator.of(context).pop();
-            }else if(state is LocationEditAttemptToUpdateState){
-              ConfirmationDialogue().uploadTaskStarted(context: context);
-            } else if (state is LocationCreatedState){
-              widget._postBloc.add(PostSelectedLocationEvent(
-                addressLine: state.location.addressLine,
-                location: state.location
-              ));
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            }
-          },
-          child: _buildBody()),
+    return WillPopScope(//TODO test this
+      onWillPop: () {
+        return ConfirmationDialogue().leaveEditPage(
+          context: context,
+          creatingRecord: true,
+        );
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text('Add Location'),),
+        body: BlocListener(
+            bloc: _locationBloc,
+            listener: (_, state) {
+              if (state is LocationDisplayQueryResultsState) {
+                _displayLocationQueryResults(state.results);
+              } else if (state is LocationCancelQueryState) {
+                Navigator.of(context).pop();
+              } else if (state is LocationDisplayConfirmedQueryAddressState) {
+                Navigator.of(context).pop();
+              }else if(state is LocationEditAttemptToUpdateState){
+                ConfirmationDialogue().uploadTaskStarted(context: context);
+              } else if (state is LocationCreatedState){
+                widget._postBloc.add(PostSelectedLocationEvent(
+                  addressLine: state.location.addressLine,
+                  location: state.location
+                ));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              }else if(state is LocationQueryAddressAlreadyExistsState){
+                _locationAlreadyExistsDialog(state.existingRecord);
+                
+              }
+            },
+            child: _buildBody()),
+      ),
     );
   }
 
@@ -84,15 +98,17 @@ class _AddLocationState extends State<AddLocation> {
         SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Street Address',
-          hint: '12 Example Rd.',
+         // hint: '# Example Rd.',
           controller: _tecStreetAddress,
+          helpText: "First line of address. Doesn't require the street number.",
           onTextChange: (newStreetAddress) => _locationBloc
               .add(LocationTextChangeEvent(streetAddress: newStreetAddress)),
         ),
         SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Town/City',
-          hint: 'Belfast',
+          //hint: 'Town/City Name',
+          helpText: "Self-explanatory.",
           controller: _tecTownCity,
           onTextChange: (newTownCity) => _locationBloc
               .add(LocationTextChangeEvent(townCityAddress: newTownCity)),
@@ -100,7 +116,8 @@ class _AddLocationState extends State<AddLocation> {
         SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Postcode',
-          hint: 'BT13 2DE',
+          //hint: 'BT## ###',
+          helpText: "Very important field, make sure it's in the correct format.",
           controller: _tecPostcode,
           onTextChange: (newPostcode) =>
               _locationBloc.add(LocationTextChangeEvent(postcode: newPostcode)),
@@ -119,22 +136,22 @@ class _AddLocationState extends State<AddLocation> {
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 8),
                 child: MyRaisedButton(
                   label: 'Find Address',
-                  onPressed: enabled
-                      ? () {
-                          _locationBloc.add(LocationFindAddressEvent(
-                              streetAddress: _tecStreetAddress.text,
-                              townCityAddress: _tecTownCity.text,
-                              postcode: _tecPostcode.text));
-                        }: null,
+                  onPressed: enabled ? () {
+                    _locationBloc.add(LocationFindAddressEvent(
+                        streetAddress: _tecStreetAddress.text,
+                        townCityAddress: _tecTownCity.text,
+                        postcode: _tecPostcode.text));
+                  }: null,
                 ),
               );
             }),
         SizedBox(height: itemPaddingHeight,),
-        BlocBuilder(
+        _buildImageSelector(),
+        SizedBox(height: itemPaddingHeight,),
+         BlocBuilder(
             bloc: _locationBloc,
             condition: (previousState, currentState) {
-              if (currentState is LocationDisplayConfirmedQueryAddressState)
-                return true;
+              if (currentState is LocationDisplayConfirmedQueryAddressState) return true;
               return false;
             },
             builder: (_, state) {
@@ -146,6 +163,9 @@ class _AddLocationState extends State<AddLocation> {
                 children: [
                   MyTextField(
                     label: 'Selected Address',
+                    helpText: 
+                    "Read-Only, seperate words of this address line will be used for the 'Seach Locations' query.",
+                    optional: true,
                     controller: _tecSelectedAddress,
                     readOnly: true,
                   ),
@@ -153,8 +173,7 @@ class _AddLocationState extends State<AddLocation> {
                     padding: EdgeInsets.only(top: 8.0),
                     width: MediaQuery.of(context).size.width * 0.85,
                     child: MyRaisedButton(
-                      onPressed:
-                          _tecSelectedAddress.text.isEmpty ? null : (){
+                      onPressed: _tecSelectedAddress.text.isEmpty ? null : (){
                             _locationBloc.add(LocationSaveNewLocationEvent());
                           },
                       label: 'Save New Location',
@@ -163,9 +182,7 @@ class _AddLocationState extends State<AddLocation> {
                 ],
               );
             }),
-        SizedBox(height: itemPaddingHeight,),
-        _buildImageSelector(),
-        SizedBox(height: itemPaddingHeight,),
+        SizedBox(height: 16,),
       ],
     );
   }
@@ -173,7 +190,29 @@ class _AddLocationState extends State<AddLocation> {
   Column _buildImageSelector() {
     return Column(
       children: [
-        Text('Location Image (Optional)'),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Location Image', style: TextStyle(fontSize: 18),),
+              IconButton(
+            icon: Icon(AntDesign.questioncircleo),
+            onPressed: (){
+              showDialog(
+                context: context,
+                builder: (_){
+                  return HelpDialogTile(
+                    title: 'Location Image (Optional)',
+                    subtitle: 'Show what the location looks like. Can be added at another time by level 2 or 3 admins.',
+                  );
+                }
+              );
+            },
+          )
+            ],
+          ),
+        ),
         BlocBuilder(
             bloc: _locationBloc,
             condition: (_, state) {
@@ -189,31 +228,29 @@ class _AddLocationState extends State<AddLocation> {
                 hasFile = true;
                 imageFile = state.locationFile;
               }
+
               return GestureDetector(
                 onTap: () => _selectLocationImage(),
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: MediaQuery.of(context).size.height * 0.20,
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: hasFile
-                        ? IconButton(
-                            icon: Icon(
-                              Icons.cancel,
-                              color: Colors.red,
-                            ),
-                            onPressed: () => _locationBloc
-                                .add(LocationRemoveSelectedImageEvent()),
-                          )
-                        : Container(),
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.pinkAccent,
-                    image: hasFile
-                        ? DecorationImage(
-                            image: FileImage(imageFile), fit: BoxFit.cover)
-                        : null,
-                    borderRadius: BorderRadius.circular(8),
+                child: AspectRatio(
+                  aspectRatio: 16/9,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32.0),
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: hasFile? IconButton(
+                          icon: Icon(Icons.cancel,color: Colors.red,),
+                          onPressed: () => _locationBloc.add(LocationRemoveSelectedImageEvent()),
+                        ): Container(),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.pinkAccent,
+                        image: hasFile? DecorationImage(image: FileImage(imageFile), fit: BoxFit.cover): null,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -237,4 +274,41 @@ class _AddLocationState extends State<AddLocation> {
         return LocationQuery(results,_locationBloc);
       });
   }
+
+  void _locationAlreadyExistsDialog(Location existingLocation) async{
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_){
+        return AlertDialog(
+          title: Text('Existing Location Found!'),
+          content: Text('Selected address is already recorded. Choose to select that record or'
+           + ' query another address.\n\n• Record may have been deleted, selecting will re-enable it.'),
+           actions: [
+             MyFlatButton(
+               label: 'Query Again',
+               onPressed: (){
+                 Navigator.of(context).pop();
+               },
+             ),
+             MyFlatButton(
+               label: 'Select Record',
+               onPressed: (){
+                 // TODO Needs to also select Deleted Locations and 'Undelete' them
+                 widget._postBloc.add(PostSelectedLocationEvent(
+                  addressLine: existingLocation.addressLine,
+                  location: existingLocation
+                ));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+               },
+             ),
+           ],
+        );
+      }
+    );
+    Navigator.of(context).pop();
+  }
+
 }

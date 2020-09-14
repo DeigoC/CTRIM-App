@@ -13,6 +13,7 @@ import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 part 'timeline_event.dart';
 part 'timeline_state.dart';
 
@@ -88,7 +89,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       bool timelineUpdated = await _timelinePostDBManager.hasTimelinePostsChanged(latestTPId);
       if(timelineUpdated){
         await fetchMainPostFeed();
-        await _userDBManager.fetchMainFeedUsers(_getFeedUsersID(_feedData));//TODO needs testing
+        await _userDBManager.fetchMainFeedUsers(_getFeedUsersID(_feedData));
       }
     }
   }
@@ -114,7 +115,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     List<TimelinePost> timelinePosts = await _timelinePostDBManager.fetchOriginalPostsByList(postIDs);
     timelinePosts.sort((a,b) => b.postDate.compareTo(a.postDate));
     List<User> users = await _userDBManager.fetchListOfUsersByID(_getFeedUsersID(timelinePosts));
-    
     return {'TimelinePosts':timelinePosts, 'Users':users};
   }
 
@@ -123,14 +123,22 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     _feedData = await _timelinePostDBManager.fetchHomeFeedTPs();
   }
 
-  Future<List<TimelinePost>> fetchPostFeedWithTags() async{
+  List<TimelinePost> _fetchPostFeedWithTags() {
     List<String> tags = []; 
     _selectedTags.forEach((key, value) {
       if(value){tags.add(Post().tagToString(key));}
     });
-    List<TimelinePost> result = await _timelinePostDBManager.fetchFeedWithTags(tags);
-    result.sort((a,b) => b.postDate.compareTo(a.postDate));
-    return result;
+    /* List<TimelinePost> result = await _timelinePostDBManager.fetchFeedWithTags(tags);
+    result.sort((a,b) => b.postDate.compareTo(a.postDate)); */
+
+
+    List<TimelinePost> newTPs = [];
+    _feedData.forEach((tp) {
+      if(DeepCollectionEquality.unordered().equals(tp.tags, tags)) newTPs.add(tp);
+    });
+    newTPs.sort((a,b) => b.postDate.compareTo(a.postDate));
+
+    return newTPs;
   }
 
   Future<List<TimelinePost>> fetchPostUpdatesData(String postID) async{
@@ -187,9 +195,9 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
     yield TimelineTagChangedState();
     if(_selectedTags.containsValue(true)){
-      yield TimelineLoadingFeedState();
+      //yield TimelineLoadingFeedState();
       yield TimelinePinPostSnackbarState();
-      List<TimelinePost> data = await fetchPostFeedWithTags();
+      List<TimelinePost> data = _fetchPostFeedWithTags();
       yield TimelineDisplayFilteredFeedState(data);
     }else{
       yield TimelineUnpinPostSnackbarState();

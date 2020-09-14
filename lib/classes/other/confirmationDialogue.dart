@@ -3,6 +3,7 @@ import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ConfirmationDialogue{
 
@@ -216,12 +217,14 @@ class ConfirmationDialogue{
                         int totalByteCount = snap.data.snapshot.totalByteCount;
                         int amountTransfered = snap.data.snapshot.bytesTransferred;
                         percentage = ((amountTransfered/totalByteCount) * 100).round().toString() + '%';
+                        
                         title = state.fileName;
-                        subtitle = 'Uploading Item ${state.itemNo} / ${state.totalLength}';
+                        subtitle = 'Uploading Item ${state.itemNo} / ${state.totalLength} ($percentage%)';
                       }else{
                         percentage = '0%';
                       }
-                      trailing = Text(percentage);
+                      trailing = SpinKitWave();
+
                        return ListTile(
                         title: Text(title),
                         subtitle: Text(subtitle),
@@ -234,13 +237,13 @@ class ConfirmationDialogue{
                 else if(state is AppCompressingImageTaskState){
                   title = state.fileName;
                   subtitle = 'Compressing Item ${state.itemNo} / ${state.totalLength}, Please wait...';
-                  trailing = CircularProgressIndicator();
+                  trailing = SpinKitRotatingPlain();
                 }
 
                 else if(state is AppCompressingVideoTaskState){
                   title = state.fileName;
                   subtitle = 'Compressing Item ${state.itemNo} / ${state.totalLength} | Please wait...';
-                  trailing = CircularProgressIndicator();
+                  trailing = SpinKitCubeGrid();
                 }
 
                 return ListTile(
