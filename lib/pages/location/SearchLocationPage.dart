@@ -47,6 +47,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
           children: [
             _buildAppBarLeading(),
             MySearchBar(
+              hint: 'Search Location',
               focusNode: _fnSearchLocation,
               onSubmitted: (searchString){
                 setState(() {
@@ -74,7 +75,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
 
   Widget _buildBody(){
     if(_searchString == null){
-       return Center(child: Text('Awaiting Search...'),);
+       return Center(child: Text('Awaiting Search Submission...'),);
     }else if(_fetchingResults){
       BlocProvider.of<TimelineBloc>(context).fetchLocationsByPostCode(_searchString).then((results){
         setState(() {

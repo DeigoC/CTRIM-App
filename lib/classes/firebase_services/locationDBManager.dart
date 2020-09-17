@@ -50,8 +50,7 @@ class LocationDBManager{
       .getDocuments();
     }
 
-    List<Location> results = collection.documents.map((e) => Location.fromMap(e.documentID, e.data)).toList();
-    results.removeWhere((e) => e.id.compareTo('0')==0);
+    List<Location> results = List.castFrom<dynamic, Location>(collection.documents.map((e) => Location.fromMap(e.documentID, e.data)).toList());
     return results;
   }
 
@@ -89,8 +88,10 @@ class LocationDBManager{
 
   Future _addReferenceToPost(Post newPost) async{
     List<String> postIDs = await fetchPostReferenceList(newPost.locationID);
-    postIDs.add(newPost.id);
-    await _setNewPostReferenceList(newPost.locationID, postIDs);
+    if(!postIDs.contains(newPost.id)){
+      postIDs.add(newPost.id);
+      await _setNewPostReferenceList(newPost.locationID, postIDs);
+    }
   }
   
   Future _updateReferenceToPost(Post newPost, Post oldPost) async{
@@ -119,10 +120,5 @@ class LocationDBManager{
       .document(_subCollectionDoc)
       .setData({_subCollectionField:postIDs});
   }
-
-  /* void _updateLocationList(Location location){
-    int index = _allLocations.indexWhere((e) => e.id.compareTo(location.id)==0);
-    _allLocations[index] = location;
-  } */
 
 }

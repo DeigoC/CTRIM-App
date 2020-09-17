@@ -242,6 +242,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     // * All day post stuff
     else if(event is PostAllDayDateClickEvent){
       _post.allDayEvent = !_post.allDayEvent;
+      if(_post.isDateNotApplicable && _post.allDayEvent) _post.isDateNotApplicable = false;
       yield PostScheduleState();
     }
     
@@ -249,6 +250,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     else if (event is PostDateNotApplicableClickEvent) {
       if (_post.isDateNotApplicable) _post.isDateNotApplicable = false;
       else  _post.isDateNotApplicable = true;
+      if(_post.allDayEvent && _post.isDateNotApplicable) _post.allDayEvent = false;
       yield PostScheduleState();
     } 
     
@@ -257,6 +259,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       _post.locationID = '';
       if(event.location!=null) _post.locationID = event.location.id;
       _addressLine = event.addressLine;
+
+      if(event.location.deleted){
+        //TODO needs to be tested
+        event.location.deleted = false;
+        LocationDBManager(null).updateLocation(event.location, null);
+      }
+
       yield PostLocationSelectedState();
     }
     yield* _canEnableSaveButton();

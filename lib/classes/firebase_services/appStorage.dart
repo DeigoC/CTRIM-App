@@ -79,7 +79,6 @@ class AppStorage{
   Future<Null> uploadEditPostNewFiles(Post post,) async{
     StorageUploadTask task;
     int index = post.noOfGalleryItems, itemNo=1, totalLength=post.temporaryFiles.length;
-    
 
     if(post.temporaryFiles.length != 0){
       await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
@@ -87,15 +86,24 @@ class AppStorage{
         String filePath = 'posts/${post.id}/item_$index';
         String fileName = basename(itemToSend.path);
 
+        // * Compress the item
         if(post.temporaryFiles[fileSrc]=='img'){
           _appBloc.add(AppUploadCompressingImageEvent(
             itemNo: itemNo, 
             totalLength: totalLength,
-            fileName: fileName,
+            fileName: fileName
           ));
           itemToSend = await _compressImage(fileSrc);
+        }else if(post.temporaryFiles[fileSrc]=='vid'){
+          _appBloc.add(AppUploadCompressingVideoEvent(
+            fileName: fileName,
+            itemNo: itemNo,
+            totalLength: totalLength,
+          ));
+          itemToSend = await _compressVideo(fileSrc);
         }
 
+        // * Upload the item
         task = _ref.child(filePath).putFile(itemToSend);
         _appBloc.add(AppUploadTaskStartedEvent(
           task: task, 
@@ -104,9 +112,12 @@ class AppStorage{
           fileName: fileName,
         ));
 
+        // * Fetch the new item's download link
         await task.onComplete.then((_) async{
           await _ref.child(filePath).getDownloadURL().then((url) async{
             post.gallerySources[url] = post.temporaryFiles[fileSrc];
+            
+            // * Upload and get video thumbnail
             if(post.temporaryFiles[fileSrc] == 'vid'){
               post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(fileSrc, filePath);
             }
@@ -126,6 +137,14 @@ class AppStorage{
     String downloadSrc;
     String fullname = user.forename + ' ' + user.surname;
     String filePath = 'users/${user.id}-$fullname';
+
+    _appBloc.add(AppUploadCompressingImageEvent(
+      itemNo: 1, 
+      totalLength: 1,
+      fileName: basename(file.path),
+    ));
+    file = await _compressImage(file.path);
+
     StorageUploadTask task = _ref.child(filePath).putFile(file);
     await task.onComplete.then((_) async{
       await _ref.child(filePath).getDownloadURL().then((url){
@@ -138,6 +157,14 @@ class AppStorage{
   Future<String> uploadAndGetLocationImageSrc(Location location, File file) async{
     String downloadSrc;
     String filePath = 'locations/${location.id}';
+    
+    _appBloc.add(AppUploadCompressingImageEvent(
+      itemNo: 1, 
+      totalLength: 1,
+      fileName: basename(file.path),
+    ));
+    file = await _compressImage(file.path);
+
     StorageUploadTask task = _ref.child(filePath).putFile(file);
     await task.onComplete;
     await _ref.child(filePath).getDownloadURL().then((url){
@@ -146,13 +173,13 @@ class AppStorage{
     return downloadSrc;
   }
 
-  //TODO compress every image uploaded
   Future<File> _compressImage(String originalFilePath) async{
     String targetPath = directory+'/compressionImage.jpg';
     
     var result = await FlutterImageCompress.compressAndGetFile(
       originalFilePath, 
       targetPath,
+      quality: 75,
     );
     return result;
   } 

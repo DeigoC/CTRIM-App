@@ -168,37 +168,5 @@ class _EditAlbumState extends State<EditAlbum> {
         ),
       ),
     );
-
-    /* return Padding(
-       padding: EdgeInsets.only(top: paddingSize, left: paddingSize),
-       child: AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          width: pictureSize,
-          height: pictureSize,
-          child: InkWell(
-            onTap: (){
-              if(_onDeleteMode){
-                setState(() {
-                if(selected)_selectedFiles.remove(file);
-                else _selectedFiles.add(file);
-              }); 
-              }
-            },
-            child: Opacity(
-              opacity: selected ? 1:0,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    color: Colors.black.withOpacity(0.3),
-                  ),
-                  Icon(Icons.done, color: Colors.white,)
-                ],
-              ),
-            ),
-          ),
-       ),
-    ); */
   }
 }

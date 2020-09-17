@@ -47,15 +47,9 @@ class LocationCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ListTile(
-                    title: location.id == '0' ? Text('Address not Required') : MyFlatButton(
-                      externalPadding: EdgeInsets.zero,
-                      label: location.addressLine,
-                      onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location)),
-                      internalPadding: EdgeInsets.zero,
-                    ),
+                    title: _buildTitle(context),
                     subtitle: Text(location.description,textAlign: TextAlign.center,),
                     isThreeLine: true,
-                    //onTap: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location)),
                   ),
                   ButtonBar(
                     alignment: MainAxisAlignment.end,
@@ -90,6 +84,17 @@ class LocationCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context){
+    if(location.id=='0') return Text('Address Not Applicable',textAlign: TextAlign.center,);
+    else if(location.id =='-1') return Text('Online',textAlign: TextAlign.center,);
+    return MyFlatButton(
+      externalPadding: EdgeInsets.zero,
+      label: location.addressLine,
+      onPressed: ()=> BlocProvider.of<AppBloc>(context).add(AppToViewLocationOnMapEvent(location)),
+      internalPadding: EdgeInsets.zero,
     );
   }
 

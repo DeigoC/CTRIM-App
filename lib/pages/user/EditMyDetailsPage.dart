@@ -125,10 +125,13 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
         SizedBox(height: 32,),
         MyTextField(
           label: 'Role/Status?',
+          optional: true,
+          buildHelpIcon: false,
+          centerLabel: true,
           controller: _tecRole,
         ),
         SizedBox(height: 8,),
-        Text('Social Links / Contacts', textAlign: TextAlign.center,),
+        Text('Social Links / Contacts', textAlign: TextAlign.center, style: TextStyle(fontSize: 18),),
         SizedBox(height: 8,),
         Column(
           children: [

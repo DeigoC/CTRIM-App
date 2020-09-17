@@ -64,15 +64,15 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
   List<Widget> _buildNormalActions(){
     return [
       MyRaisedButton(
-        label: 'Add',
-        externalPadding: EdgeInsets.all(8),
-        onPressed:()=> BlocProvider.of<AppBloc>(context).add(AppToAddGalleryFileEvent(widget._postBloc)),
-      ),
-      MyRaisedButton(
         label: 'Remove',
         isDestructive: true,
         externalPadding: EdgeInsets.all(8),
         onPressed:(){ setState(() {_onDeleteMode = true; });} 
+      ),
+      MyRaisedButton(
+        label: 'Add',
+        externalPadding: EdgeInsets.all(8),
+        onPressed:()=> BlocProvider.of<AppBloc>(context).add(AppToAddGalleryFileEvent(widget._postBloc)),
       ),
     ];
   }

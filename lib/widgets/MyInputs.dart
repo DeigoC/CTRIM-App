@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/style.dart';
@@ -59,10 +61,11 @@ class MyTextField extends StatelessWidget {
   final String label, hint, helpText;
   final TextEditingController controller;
   final Function(String) onTextChange;
-  final bool readOnly,autoFocus, obsucureText, optional, buildHelpIcon;
+  final bool readOnly,autoFocus, obsucureText, optional, buildHelpIcon, centerLabel;
   final int maxLength, maxLines;
   final TextInputAction textInputAction;
   final TextInputType textInputType;
+
   MyTextField({
     @required this.label,
     @required this.controller,
@@ -77,6 +80,7 @@ class MyTextField extends StatelessWidget {
     this.textInputType,
     this.optional = false,
     this.buildHelpIcon = true,
+    this.centerLabel = false,
     this.helpText,
   });
 
@@ -85,9 +89,13 @@ class MyTextField extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(label + ((optional) ? '':'*') ,style: TextStyle(fontSize: 18),),
+          Text(
+            label + ((optional) ? '':'*') ,
+            style: TextStyle(fontSize: 18), 
+            textAlign: centerLabel?TextAlign.center : null,
+          ),
           TextField(
             controller: controller,
             onChanged: onTextChange,
@@ -100,12 +108,12 @@ class MyTextField extends StatelessWidget {
             keyboardType: textInputType,
             decoration: InputDecoration(
               hintText: hint ?? '',
-              suffixIcon: IconButton(
+              suffixIcon: buildHelpIcon ? IconButton(
                 icon: Icon(AntDesign.questioncircleo,color: Theme.of(context).iconTheme.color,),
                 onPressed: (){
                   _showHelpDialog(context);
                 },
-              )
+              ):null,
             ),
           ),
         ],
@@ -145,9 +153,8 @@ class MyCheckBox extends StatelessWidget {
       onTap: (){
         onChanged(!value);
       },
-          child: Row(
-        mainAxisAlignment:
-            boxLeftToRight ? MainAxisAlignment.start : MainAxisAlignment.end,
+      child: Row(
+        mainAxisAlignment: boxLeftToRight ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: boxLeftToRight ? _buildLeftToRight() : _buildRightToLeft(),
       ),
     );
@@ -292,6 +299,7 @@ class MyFilterChip extends StatelessWidget {
     return FilterChip(
       backgroundColor: filteringPosts ? null : Colors.grey,
       label: Text(label),
+      checkmarkColor: Colors.white,
       onSelected: onSelected,
       selected: selected,
     );
@@ -343,11 +351,13 @@ class MySearchBar extends StatelessWidget {
   final Function onTap;
   final Function(String) onSubmitted;
   final FocusNode focusNode;
+  final String hint;
 
   MySearchBar({
     @required this.focusNode,
     @required this.onSubmitted,
     this.onTap,
+    this.hint,
   });
   
   @override
@@ -361,9 +371,12 @@ class MySearchBar extends StatelessWidget {
         focusNode: focusNode,
         decoration: InputDecoration(
           suffixIcon: Icon(Icons.search,),
-          border: InputBorder.none,
+          hintText: hint??'',
+          border: OutlineInputBorder(borderSide: BorderSide.none),
           filled: true,
           fillColor: onDark ? Color(0xff383838) : Colors.white,
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         ),
       ),
     );

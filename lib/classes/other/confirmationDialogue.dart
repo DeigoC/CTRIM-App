@@ -218,38 +218,38 @@ class ConfirmationDialogue{
                         int amountTransfered = snap.data.snapshot.bytesTransferred;
                         percentage = ((amountTransfered/totalByteCount) * 100).round().toString() + '%';
                         
-                        title = state.fileName;
-                        subtitle = 'Uploading Item ${state.itemNo} / ${state.totalLength} ($percentage%)';
+                        title = "Item ${state.itemNo} / ${state.totalLength}: '${state.fileName}'";
+                        subtitle = 'Upload Progress: ($percentage)';
                       }else{
                         percentage = '0%';
                       }
-                      trailing = SpinKitWave();
+                      trailing = SpinKitWave(color: Colors.blue,);
 
                        return ListTile(
                         title: Text(title),
                         subtitle: Text(subtitle),
-                        trailing: trailing,
+                        trailing: SizedBox(width: kToolbarHeight, height: kToolbarHeight, child: trailing),
                       );
                     },
                   );
                 }
 
                 else if(state is AppCompressingImageTaskState){
-                  title = state.fileName;
-                  subtitle = 'Compressing Item ${state.itemNo} / ${state.totalLength}, Please wait...';
-                  trailing = SpinKitRotatingPlain();
+                  title = "Item ${state.itemNo} / ${state.totalLength}: '${state.fileName}'";
+                  subtitle = 'Compressing Image, Please Wait...';
+                  trailing = SpinKitRotatingPlain(color: Colors.red,);
                 }
 
                 else if(state is AppCompressingVideoTaskState){
-                  title = state.fileName;
-                  subtitle = 'Compressing Item ${state.itemNo} / ${state.totalLength} | Please wait...';
-                  trailing = SpinKitCubeGrid();
+                  title = "Item ${state.itemNo} / ${state.totalLength}: '${state.fileName}'";
+                  subtitle = 'Compressing Video, Please Wait...';
+                  trailing = SpinKitCubeGrid(color: Colors.green,);
                 }
 
                 return ListTile(
                   title: Text(title),
                   subtitle: Text(subtitle),
-                  trailing: trailing,
+                  trailing: SizedBox(width: kToolbarHeight, height: kToolbarHeight, child: trailing),
                 );
               },
             ),

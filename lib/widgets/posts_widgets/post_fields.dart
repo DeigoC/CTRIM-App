@@ -101,25 +101,29 @@ class _PostDateTimeFieldState extends State<PostDateTimeField> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                MyCheckBox(
-                  boxLeftToRight: true,
-                  label: 'Not Applicable',
-                  onChanged: (_)=>_postBloc.add(PostDateNotApplicableClickEvent()),
-                  value: _postBloc.isPostDateNotApplicable,
-                ),
-                MyCheckBox(
-                  boxLeftToRight: true,
-                  label: 'All Day',
-                  onChanged: (_)=>_postBloc.add(PostAllDayDateClickEvent()),
-                  value: _postBloc.isEventAllDay,
-                ),
-              ],
-            ),
+            _buildBottomRow(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBottomRow(){
+    return  Row(
+      children: [
+        MyCheckBox(
+          boxLeftToRight: true,
+          label: 'Not Applicable',
+          onChanged: (_)=>_postBloc.add(PostDateNotApplicableClickEvent()),
+          value: _postBloc.isPostDateNotApplicable,
+        ),
+        MyCheckBox(
+          boxLeftToRight: true,
+          label: 'All Day',
+          onChanged: (_)=>_postBloc.add(PostAllDayDateClickEvent()),
+          value: _postBloc.isEventAllDay,
+        ),
+      ],
     );
   }
 
@@ -162,7 +166,6 @@ class PostLocationField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
       child: BlocBuilder<PostBloc, PostState>(
         condition: (_, currentState) {
             if (currentState is PostLocationSelectedState) return true;
@@ -174,28 +177,32 @@ class PostLocationField extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Location*',style: TextStyle(fontSize: 18),),
-                    IconButton(
-                      icon: Icon(AntDesign.questioncircleo),
-                      onPressed: (){
-                        showDialog(
-                          context: context,
-                          builder: (_){
-                            return HelpDialogTile(
-                              title: 'Location (Required)',
-                              subtitle: "Address of the event. Can be set to 'N/A' if this doesn't apply or 'Online'" + 
-                              " when it's set online.",
-                            );
-                          }
-                        );
-                      },
-                    )
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Location*',style: TextStyle(fontSize: 18),),
+                      IconButton(
+                        icon: Icon(AntDesign.questioncircleo),
+                        onPressed: (){
+                          showDialog(
+                            context: context,
+                            builder: (_){
+                              return HelpDialogTile(
+                                title: 'Location (Required)',
+                                subtitle: "Address of the event. Can be set to 'N/A' if this doesn't apply or 'Online'" + 
+                                " when it's set online.",
+                              );
+                            }
+                          );
+                        },
+                      )
+                    ],
+                  ),
                 ),
                 MyFlatButton(
+                  externalPadding: EdgeInsets.symmetric(horizontal: 8),
                   border: true,
                   label: addressLine,
                   onPressed: () => BlocProvider.of<AppBloc>(context).add(AppToSearchLocationEvent(
@@ -220,6 +227,26 @@ class PostLocationField extends StatelessWidget {
                         }
                       },
                     ),
+
+                    MyCheckBox(
+                      label: 'Online',
+                      value: BlocProvider.of<PostBloc>(context).newPost.locationID == '-1',
+                      onChanged: (newValue){
+                        if(newValue){
+                          BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
+                            location: Location(id: '-1'),
+                            addressLine: 'Online'
+                          ));
+                        }else{
+                          BlocProvider.of<PostBloc>(context).add(PostSelectedLocationEvent(
+                            location: null,
+                            addressLine: 'PENDING'
+                          ));
+                        }
+                      },
+                    ),
+
+
                   ],
                 ),
               ],
