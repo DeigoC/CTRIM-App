@@ -163,7 +163,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     yield AdminLoginAttempToRegisterUserState();
     await _auth.registerUserWithEmailAndPassword(_selectedUser.email, _creationPassword)
     .then((authUser){
-      _selectedUser.authID = authUser.uid;
+      _selectedUser.authID = authUser.user.uid;
       _userDBManager.addUser(_selectedUser);
     }).catchError((error){
       print('----------------ERROR WHEN REGISTERING: \n' + error.toString());

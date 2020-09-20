@@ -56,7 +56,7 @@ class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
           _pickFiles().then((newFiles) {
             setState(() {
               _selectingFiles = false;
-              _selectedFiles.addAll(newFiles);
+              _selectedFiles.addAll(newFiles.map<File>((e) => File(e.path)).toList());
             });
           });
         },
@@ -72,7 +72,7 @@ class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
               _pickFiles(pickingImages: false).then((newFiles) {
                 setState(() {
                   _selectingFiles = false;
-                  _selectedFiles.addAll(newFiles);
+                  _selectedFiles.addAll(newFiles.map<File>((e) => File(e.path)).toList());
                 });
               });
             }
@@ -84,7 +84,7 @@ class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
               _pickFiles(pickingImages: true).then((newFiles) {
                 setState(() {
                   _selectingFiles = false;
-                  _selectedFiles.addAll(newFiles);
+                  _selectedFiles.addAll(newFiles.map<File>((e) => File(e.path)).toList());
                 });
               });
             }
@@ -116,27 +116,30 @@ class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
   }
 
   // ! Needs different technique with iOS
-  Future<List<File>> _pickFiles({bool pickingImages = false}) async {
-    List<File> results;
+  Future<List<PlatformFile>> _pickFiles({bool pickingImages = false}) async {
+    FilePickerResult results;
 
     if(Platform.isIOS){
-      results = await FilePicker.getMultiFile(
-        type: pickingImages ? FileType.image : FileType.video,
+       results = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowMultiple: true,
+        allowedExtensions: _imageTypes + _videoTypes,
       );
     }else{
-      results = await FilePicker.getMultiFile(
+      results = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: _videoTypes + _imageTypes,
+        allowMultiple: true,
+        allowedExtensions: _imageTypes + _videoTypes,
       );
     }
 
-    _removeDuplicateFiles(results);
-    return results;
+    _removeDuplicateFiles(results.files);
+    return results.files;
   }
 
-  void _removeDuplicateFiles(List<File> files) {
+  void _removeDuplicateFiles(List<PlatformFile> files) {
     if(files !=null){
-      List<File> filesToRemove = [];
+      List<PlatformFile> filesToRemove = [];
       files.forEach((file) {
       _selectedFiles.forEach((selectedFile) {
         if (basename(selectedFile.path).compareTo(basename(file.path)) == 0) {

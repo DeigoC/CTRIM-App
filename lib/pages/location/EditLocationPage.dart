@@ -288,10 +288,11 @@ class _EditLocationState extends State<EditLocation> {
     );
   }
 
+  //TODO need to update the 'ViewAllLocations' page to show the new image
   Future _selectLocationImage() async {
-    File selectedImage;
-    selectedImage = await FilePicker.getFile(type: FileType.image);
-    _locationBloc.add(LocationImageSelectedEvent(selectedImage));
+    FilePickerResult selectedImage;
+    selectedImage = await FilePicker.platform.pickFiles(type: FileType.image);
+    _locationBloc.add(LocationImageSelectedEvent(File(selectedImage.files.first.path)));
   }
 
   void _displayLocationQueryResults(List<String> results) {

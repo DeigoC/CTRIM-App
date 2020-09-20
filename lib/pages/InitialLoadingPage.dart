@@ -45,7 +45,7 @@ class _InitialLoadingPageState extends State<InitialLoadingPage> {
       LocationDBManager locationDBManager = LocationDBManager(BlocProvider.of<AppBloc>(context));
       UserDBManager userDBManager = UserDBManager();
       AboutDBManager aboutDBManager = AboutDBManager();
-      
+
       await aboutDBManager.fetchAllPosts();
       await locationDBManager.fetchEssentialLocations();
       await BlocProvider.of<TimelineBloc>(context).fetchMainPostFeed();

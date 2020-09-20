@@ -3,17 +3,13 @@ import 'package:ctrim_app_v1/classes/models/user.dart';
 
 class UserDBManager{
 
-  // ! This class will hold all the users staticly
-  //static List<User> _allUsers;
-  //static List<User> get allUsers => _allUsers;
-
-  static final CollectionReference _ref = Firestore.instance.collection('users');
+  final CollectionReference _ref = FirebaseFirestore.instance.collection('users');
   static List<User> _mainFeedUsers;
   static List<User> get mainFeedUsers => _mainFeedUsers;
 
   Future<List<User>> fetchAllUsers() async{
-    var collections = await _ref.getDocuments();
-    List<User> results = collections.documents.map((doc) => User.fromMap(doc.documentID, doc.data)).toList();
+    var collections = await _ref.get();
+    List<User> results = collections.docs.map((doc) => User.fromMap(doc.id, doc.data())).toList();
     return results;
   }
 
@@ -31,41 +27,41 @@ class UserDBManager{
   }
 
   Future<List<User>> fetchLevel3Users() async{
-    var collections = await _ref.where('AdminLevel',isEqualTo: 3).limit(5).getDocuments();
-    List<User> results = collections.documents.map((doc) => User.fromMap(doc.documentID, doc.data)).toList();
+    var collections = await _ref.where('AdminLevel',isEqualTo: 3).limit(5).get();
+    List<User> results = collections.docs.map((doc) => User.fromMap(doc.id, doc.data())).toList();
     return results;
   }
 
   Future<Null> addUser(User user) async{
-    await _ref.getDocuments().then((collection){
-      List<int> allIDs = collection.documents.map((e) => int.parse(e.documentID)).toList();
+    await _ref.get().then((collection){
+      List<int> allIDs = collection.docs.map((e) => int.parse(e.id)).toList();
       allIDs.sort();
 
       user.id = (allIDs.last + 1).toString();
     });
-    await _ref.document(user.id).setData(user.toJson());
+    await _ref.doc(user.id).set(user.toJson());
   }
 
   Future<Null> updateUser(User user) async{
-    await _ref.document(user.id).setData(user.toJson());
+    await _ref.doc(user.id).set(user.toJson());
   }
 
   Future<User> fetchUserByID(String id) async{
-    var doc = await _ref.document(id).get();
-    return User.fromMap(doc.documentID, doc.data);
+    var doc = await _ref.doc(id).get();
+    return User.fromMap(doc.id, doc.data());
   }
 
   // ? Might not need
   Future<User> fetchUserByAuthID(String authID) async{
-    var col = await _ref.where('AuthID',isEqualTo: authID).limit(1).getDocuments();
-    var doc = col.documents.first; 
-    return User.fromMap(doc.documentID, doc.data);
+    var col = await _ref.where('AuthID',isEqualTo: authID).limit(1).get();
+    var doc = col.docs.first; 
+    return User.fromMap(doc.id, doc.data());
   }
   
   Future<User> fetchUserByEmail(String email) async{
-    var col = await _ref.where('Email',isEqualTo: email).limit(1).getDocuments();
-    if(col.documents.length==0) return null;
-    var doc = col.documents.first; 
-    return User.fromMap(doc.documentID, doc.data);
+    var col = await _ref.where('Email',isEqualTo: email).limit(1).get();
+    if(col.docs.length==0) return null;
+    var doc = col.docs.first; 
+    return User.fromMap(doc.id, doc.data());
   }
 }

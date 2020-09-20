@@ -37,7 +37,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
     _tecTitle.dispose();
     _postBloc.close();
     
-    FilePicker.clearTemporaryFiles();
+    FilePicker.platform.clearTemporaryFiles();
     VideoCompress.deleteAllCache();
     super.dispose();
   }

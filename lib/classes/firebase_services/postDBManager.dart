@@ -6,7 +6,7 @@ import 'package:ctrim_app_v1/classes/models/post.dart';
 
 class PostDBManager{
 
-  final CollectionReference _ref = Firestore.instance.collection('posts');
+  final CollectionReference _ref = FirebaseFirestore.instance.collection('posts');
   final AppStorage _appStorage;
 
   PostDBManager(AppBloc appBloc): _appStorage = AppStorage(appBloc);
@@ -25,15 +25,15 @@ class PostDBManager{
     .limit(10)
     .where('Deleted',isEqualTo: false)
     .where('SelectedTags',arrayContainsAny: tags)// change maybe?
-    .getDocuments();
+    .get();
     
-    List<Post> results = collection.documents.map((doc) => Post.fromMap(doc.documentID, doc.data)).toList();
+    List<Post> results = collection.docs.map((doc) => Post.fromMap(doc.id, doc.data())).toList();
     return results;
   }
 
   Future<Post> fetchPostByID(String id) async{
-    var doc = await _ref.document(id).get();
-    return Post.fromMap(doc.documentID, doc.data);
+    var doc = await _ref.doc(id).get();
+    return Post.fromMap(doc.id, doc.data());
   }
 
   Future<Null> addPost(Post post) async{
@@ -41,7 +41,7 @@ class PostDBManager{
 
     await _appStorage.uploadNewPostFiles(post);
 
-    await _ref.document(post.id).setData(post.toJson());
+    await _ref.doc(post.id).set(post.toJson());
     post.temporaryFiles.clear();
   }
 
@@ -49,7 +49,7 @@ class PostDBManager{
     await _appStorage.uploadEditPostNewFiles(post);
     post.temporaryFiles.clear();
     _removeUnusedThumbnails(post);
-    await _ref.document(post.id).setData(post.toJson());
+    await _ref.doc(post.id).set(post.toJson());
   }
 
   void _removeUnusedThumbnails(Post post){

@@ -35,12 +35,14 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       addressLine: location.addressLine,
       description: location.description,
       imgSrc: location.imgSrc,
+      searchArray: List.from(location.searchArray),
       coordinates: Map<String,double>.from(location.coordinates) 
     );
 
     _originalLocation = Location(
       addressLine: location.addressLine,
       description: location.description,
+      searchArray: List.from(location.searchArray),
       coordinates: Map<String,double>.from(location.coordinates),
     );
   }

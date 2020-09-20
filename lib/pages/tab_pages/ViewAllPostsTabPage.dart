@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
@@ -69,7 +71,7 @@ class ViewAllEventsPage {
 
   PreferredSize buildAppBar(){
     return PreferredSize(
-      preferredSize: Size.fromHeight(_scrollController.appBar.height),
+      preferredSize: Size.fromHeight(_scrollController.appBar.height - (Platform.isAndroid ? 24:0)),
       child: ScrollAppBar(
         automaticallyImplyLeading: false,
         controller: _scrollController,

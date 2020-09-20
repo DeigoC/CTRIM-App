@@ -299,8 +299,8 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
   }
 
   Future<File> _pickImgFile() async{
-    File result;
-    result = await FilePicker.getFile(type: FileType.image,);
-    return result;
+    FilePickerResult result;
+    result = await FilePicker.platform.pickFiles(type: FileType.image,);
+    return File(result.files.first.path);
   }
 }

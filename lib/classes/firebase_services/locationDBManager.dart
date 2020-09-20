@@ -8,7 +8,7 @@ import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 
 class LocationDBManager{
-  static final CollectionReference _ref = Firestore.instance.collection('locations');
+  final CollectionReference _ref = FirebaseFirestore.instance.collection('locations');
  
   static List<Location> _essentialLocations;
   static List<Location> get essentialLocations{
@@ -23,13 +23,13 @@ class LocationDBManager{
   LocationDBManager(AppBloc appBloc):_appStorage = AppStorage(appBloc);
 
   Future<Location> fetchLocationByID(String id) async{
-    var doc = await _ref.document(id).get();
-    return Location.fromMap(doc.documentID, doc.data);
+    var doc = await _ref.doc(id).get();
+    return Location.fromMap(doc.id, doc.data());
   }
 
   Future<List<Location>> fetchEssentialLocations() async{
-    var collection = await _ref.limit(15).where('Deleted',isEqualTo: false).getDocuments();
-    _essentialLocations = collection.documents.map((doc) => Location.fromMap(doc.documentID, doc.data)).toList();
+    var collection = await _ref.limit(15).where('Deleted',isEqualTo: false).get();
+    _essentialLocations = collection.docs.map((doc) => Location.fromMap(doc.id, doc.data())).toList();
     return _essentialLocations;
   }
 
@@ -41,13 +41,13 @@ class LocationDBManager{
       collection = await _ref
       .where('SearchArray',arrayContainsAny: searchArray)
       .limit(10)
-      .getDocuments(); 
+      .get(); 
     }else{
       collection = await _ref
       .where('Deleted',isEqualTo: false)
       .where('SearchArray',arrayContainsAny: searchArray)
       .limit(10)
-      .getDocuments();
+      .get();
     }
 
     List<Location> results = List.castFrom<dynamic, Location>(collection.documents.map((e) => Location.fromMap(e.documentID, e.data)).toList());
@@ -59,20 +59,20 @@ class LocationDBManager{
     if(file != null){
       location.imgSrc = await _appStorage.uploadAndGetLocationImageSrc(location, file);
     }
-    await _ref.document(location.id).setData(location.toJson());
+    await _ref.doc(location.id).set(location.toJson());
     
-    _ref.document(location.id)
+    _ref.doc(location.id)
     .collection(_subCollection)
-    .document(_subCollectionDoc)
-    .setData({'posts':[]});
+    .doc(_subCollectionDoc)
+    .set({'posts':[]});
   }
 
+  //todo update search array!
   Future<Null> updateLocation(Location location, File file) async{
     if(file != null){
       location.imgSrc = await _appStorage.uploadAndGetLocationImageSrc(location, file);
     }
-    await _ref.document(location.id).setData(location.toJson());
-    //_updateLocationList(location);
+    await _ref.doc(location.id).set(location.toJson());
   }
 
   void updateReferenceList(Post newPost, Post oldPost){
@@ -106,19 +106,19 @@ class LocationDBManager{
   }
 
   Future<List<String>> fetchPostReferenceList(String locationID) async{
-    var doc = await _ref.document(locationID)
+    var doc = await _ref.doc(locationID)
       .collection(_subCollection)
-      .document(_subCollectionDoc)
+      .doc(_subCollectionDoc)
       .get();
     
-    return List.from(doc.data[_subCollectionField], growable: true);
+    return List.from(doc.data()[_subCollectionField], growable: true);
   }
 
   Future _setNewPostReferenceList(String locationID, List<String> postIDs) async{
-    await _ref.document(locationID)
+    await _ref.doc(locationID)
       .collection(_subCollection)
-      .document(_subCollectionDoc)
-      .setData({_subCollectionField:postIDs});
+      .doc(_subCollectionDoc)
+      .set({_subCollectionField:postIDs});
   }
 
 }
