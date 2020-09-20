@@ -171,7 +171,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
           children: [
             _buildAboutTab(),
             _newDetailTab(),
-            //_buildDetailsTab(),
             GalleryTabBody.view(
               thumbnails: _post.thumbnails,
               gallerySrc: _post.gallerySources),

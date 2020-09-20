@@ -69,7 +69,7 @@ class ViewAllEventsPage {
 
   PreferredSize buildAppBar(){
     return PreferredSize(
-      preferredSize: Size.fromHeight(_scrollController.appBar.height-24),
+      preferredSize: Size.fromHeight(_scrollController.appBar.height),
       child: ScrollAppBar(
         automaticallyImplyLeading: false,
         controller: _scrollController,

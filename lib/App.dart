@@ -169,7 +169,7 @@ class _AppState extends State<App> {
         case CreateAlbumRoute: screen = EditAlbum(arguments['postBloc']);
         break;
 
-        case AddGalleryFilesRoute: screen = AddGalleryFiles(arguments['postBloc']);
+        case AddGalleryFilesRoute: screen = AddGalleryFilesPage(arguments['postBloc']);
         break;
 
         case EventBodyEditorRoute: screen = PostBodyEditor(arguments['postBloc']);

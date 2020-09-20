@@ -5,17 +5,16 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:path/path.dart';
-//import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 
-class AddGalleryFiles extends StatefulWidget {
+class AddGalleryFilesPage extends StatefulWidget {
   final PostBloc _postBloc;
-  AddGalleryFiles(this._postBloc);
+  AddGalleryFilesPage(this._postBloc);
   @override
-  _AddGalleryFilesState createState() => _AddGalleryFilesState();
+  _AddGalleryFilesPageState createState() => _AddGalleryFilesPageState();
 }
 
-class _AddGalleryFilesState extends State<AddGalleryFiles> {
+class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
   
   List<String> _videoTypes = [
     'mp4',
@@ -34,44 +33,72 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
           String fileType = basename(file.path).split('.').last.toLowerCase();
           String type = (_videoTypes.contains(fileType)) ? 'vid' : 'img';
 
-          if(_isFileValid(file, type)){
-             widget._postBloc.files[file.path] = type;
-          }
+          if(_isFileValid(file, type)) widget._postBloc.files[file.path] = type;
         });
-        
         widget._postBloc.add(PostFilesReceivedEvent());
-
         return true;
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Add Files'),
-        ),
-        floatingActionButton: _selectingFiles ? null: FloatingActionButton(
-          tooltip: 'Browse Files',
-          onPressed: () {
-            setState(() { _selectingFiles = true; });
-            _pickFiles().then((newFiles) {
-              setState(() {
-                _selectingFiles = false;
-                _selectedFiles.addAll(newFiles);
-              });
-            });
-          },
-          child: Icon(Icons.add_photo_alternate),
-        ),
+        appBar: AppBar(title: Text('Add Files'),),
+        floatingActionButton:_buildFAB(),
         body: _buildBody(),
       ),
     );
   }
 
+  Widget _buildFAB(){
+    if(_selectingFiles) return null;
+    else if(Platform.isAndroid){
+      return FloatingActionButton(
+        tooltip: 'Browse Files',
+        onPressed: () {
+          setState(() { _selectingFiles = true; });
+          _pickFiles().then((newFiles) {
+            setState(() {
+              _selectingFiles = false;
+              _selectedFiles.addAll(newFiles);
+            });
+          });
+        },
+        child: Icon(Icons.add_photo_alternate),
+      );
+    }else{
+      return Row(
+        children: [
+          RaisedButton(
+            child: Icon(Icons.video_library),
+            onPressed: (){
+              setState(() { _selectingFiles = true; });
+              _pickFiles(pickingImages: false).then((newFiles) {
+                setState(() {
+                  _selectingFiles = false;
+                  _selectedFiles.addAll(newFiles);
+                });
+              });
+            }
+          ),
+          RaisedButton(
+            child: Icon(Icons.image),
+            onPressed: (){
+              setState(() { _selectingFiles = true; });
+              _pickFiles(pickingImages: true).then((newFiles) {
+                setState(() {
+                  _selectingFiles = false;
+                  _selectedFiles.addAll(newFiles);
+                });
+              });
+            }
+          ),
+        ],
+      );
+    }
+  }
+
   Widget _buildBody() {
-    if(_selectingFiles){
-      return Center(child: CircularProgressIndicator(),);
-    }
-    else if (_selectedFiles.length == 0) {
-      return Center(child: Text('Max Image Size: 5.0 MB\nMax Video Size: 75.0 MB',textAlign: TextAlign.center,),);
-    }
+    if(_selectingFiles) return Center(child: CircularProgressIndicator(),);
+    
+    else if (_selectedFiles.length == 0) return Center(child: Text('Max Image Size: 5.0 MB\nMax Video Size: 200.0 MB',textAlign: TextAlign.center,),);
+    
     return ListView.builder(
       itemCount: _selectedFiles.length,
       itemBuilder: (_, i) {
@@ -79,13 +106,9 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
         String fileType = basename(file.path).split('.').last.toLowerCase();
 
         return Dismissible(
-          background: Container(
-            color: Colors.red,
-          ),
+          background: Container(color: Colors.red,),
           key: ValueKey(file),
-          onDismissed: (_) {
-            setState(() {_selectedFiles.removeAt(i);});
-          },
+          onDismissed: (_) {setState(() {_selectedFiles.removeAt(i);});},
           child: AddingFileItem(file: file, fileType: fileType),
         );
       },
@@ -93,12 +116,20 @@ class _AddGalleryFilesState extends State<AddGalleryFiles> {
   }
 
   // ! Needs different technique with iOS
-  Future<List<File>> _pickFiles() async {
+  Future<List<File>> _pickFiles({bool pickingImages = false}) async {
     List<File> results;
-    results = await FilePicker.getMultiFile(
-      type: FileType.custom,
-      allowedExtensions: _videoTypes + _imageTypes,
-    );
+
+    if(Platform.isIOS){
+      results = await FilePicker.getMultiFile(
+        type: pickingImages ? FileType.image : FileType.video,
+      );
+    }else{
+      results = await FilePicker.getMultiFile(
+        type: FileType.custom,
+        allowedExtensions: _videoTypes + _imageTypes,
+      );
+    }
+
     _removeDuplicateFiles(results);
     return results;
   }
