@@ -265,7 +265,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         event.location.deleted = false;
         LocationDBManager(null).updateLocation(event.location, null);
       }
-
+      
       yield PostLocationSelectedState();
     }
     yield* _canEnableSaveButton();

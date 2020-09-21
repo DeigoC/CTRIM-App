@@ -129,6 +129,7 @@ class ViewAllEventsPage {
         });
       },
       child: ListView.builder(
+        physics: ClampingScrollPhysics(),
         key: PageStorageKey('viewAllPosts'),
         controller: _scrollController,
         itemCount: feedData.length,

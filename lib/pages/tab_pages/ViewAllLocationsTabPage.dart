@@ -3,9 +3,7 @@ import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/locationCard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:scroll_app_bar/scroll_app_bar.dart';
 
 class ViewAllLocationsPage {
@@ -31,6 +29,7 @@ class ViewAllLocationsPage {
             essentialLocations = state.locations;
           }
           return ListView.builder(
+            physics: ClampingScrollPhysics(),
             key: PageStorageKey('viewAllLocations'),
             controller: _controller,
             itemCount: essentialLocations.length,

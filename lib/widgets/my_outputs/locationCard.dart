@@ -99,6 +99,8 @@ class LocationCard extends StatelessWidget {
   }
 
   Widget _buildImageContainer(BuildContext context) {
+    
+
     if(location.imgSrc==''){
       return Container(
         width: MediaQuery.of(context).size.width * 0.30,

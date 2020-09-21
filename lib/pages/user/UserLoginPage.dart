@@ -89,6 +89,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
                 controller: _tecEmail,
                 readOnly: true,
                 buildHelpIcon: false,
+                optional: true,
               ),
             ),
             MyFlatButton(
@@ -104,6 +105,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
           autoFocus: true,
           controller: null,
           obsucureText: true,
+          optional: true,
           buildHelpIcon: false,
           onTextChange: (newPassword) =>_adminBloc.add(AdminLoginTextChangeEvent(password: newPassword)),
         ),
@@ -138,6 +140,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
         controller: _tecEmail,
         autoFocus: true,
         buildHelpIcon: false,
+        optional: true,
         textInputType: TextInputType.emailAddress,
         onTextChange: (newEmail) =>
             _adminBloc.add(AdminLoginTextChangeEvent(email: newEmail)),

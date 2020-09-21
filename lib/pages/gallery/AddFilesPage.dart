@@ -64,8 +64,10 @@ class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
       );
     }else{
       return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          RaisedButton(
+          FloatingActionButton(
+            heroTag: 'iosSelectVideo',
             child: Icon(Icons.video_library),
             onPressed: (){
               setState(() { _selectingFiles = true; });
@@ -77,7 +79,9 @@ class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
               });
             }
           ),
-          RaisedButton(
+          SizedBox(width: 8,),
+          FloatingActionButton(
+            heroTag: 'iosSelectImage',
             child: Icon(Icons.image),
             onPressed: (){
               setState(() { _selectingFiles = true; });
@@ -121,9 +125,8 @@ class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
 
     if(Platform.isIOS){
        results = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
+        type: pickingImages ?  FileType.image : FileType.video,
         allowMultiple: true,
-        allowedExtensions: _imageTypes + _videoTypes,
       );
     }else{
       results = await FilePicker.platform.pickFiles(

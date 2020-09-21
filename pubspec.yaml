@@ -43,6 +43,7 @@ dependencies:
   video_compress: ^2.0.0
   scroll_app_bar: ^1.0.2
   flutter_spinkit: ^4.1.2
+  device_info: ^0.4.2+7
 
 dev_dependencies:
   flutter_test:

@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     // * data is the important one, you can add whatever data you want in it and i think
     // * data must include the "click_action: FLUTTER_NOTIFICATION_CLICK" key value pair
     NotificationHandler _notificationHandler = NotificationHandler(context);
+    _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.configure(
       onMessage: (message)async{
         // * When app's open

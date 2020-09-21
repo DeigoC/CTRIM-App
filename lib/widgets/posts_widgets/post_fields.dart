@@ -173,7 +173,7 @@ class PostLocationField extends StatelessWidget {
         }, 
         builder: (_, state) {
             String addressLine = BlocProvider.of<PostBloc>(context).addressLine;
-            
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

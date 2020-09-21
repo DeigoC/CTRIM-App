@@ -17,6 +17,8 @@ class PostDisableSaveButtonState extends PostButtonChangeState {}
 
 class PostUpdateBodyState extends PostState {}
 
+class PostEmptyState extends PostState{}
+
 // ! Department Clicks
 class PostDepartmentClickState extends PostState {}
 
