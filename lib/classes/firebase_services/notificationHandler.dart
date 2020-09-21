@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,18 +12,43 @@ class NotificationHandler{
   NotificationHandler(this._context);
 
   void handleOnMessage(Map<String,dynamic> message){
+    if(Platform.isAndroid) _handleAndroidOnMessage(message);
+    else _handleiOSOnMessage(message);
+  }
+
+  void _handleAndroidOnMessage(Map<String,dynamic> message){
     final Map<String, dynamic> notificationData = Map<String, dynamic>.from(message['data']);
     final  Map<String, dynamic> notificationLabels = Map<String, dynamic>.from(message['notification']);
-    if(_hasPost(notificationData)){
-      String postID = notificationData['postID'];
-      showDialog(
+   
+    if(notificationData.keys.contains('postID')){
+      _displayPostHighlight(
+        postID: notificationData['postID'],
+        title: notificationLabels['title'],
+        body: notificationLabels['body'],
+      );
+    }
+  }
+
+  void _handleiOSOnMessage(Map<String,dynamic> message){
+    final  Map<String, dynamic> notificationLabels = Map<String, dynamic>.from(message['aps']['alert']);
+    if(message.keys.contains('postID')){
+      _displayPostHighlight(
+        postID: message['postID'],
+        title: notificationLabels['title'],
+        body: notificationLabels['body'],
+      );
+    }
+  }
+
+  void _displayPostHighlight({String postID, String title, String body}){
+    showDialog(
         context: _context,
         builder: (_){
           return AlertDialog(
             title: Text('Highlighted Post Notification!',textScaleFactor: 1.2,textAlign: TextAlign.center,),
             content: RichText(
               text: TextSpan(
-                text: notificationLabels['title'],
+                text: title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontStyle: FontStyle.italic,
@@ -30,7 +57,7 @@ class NotificationHandler{
                 ),
                 children: [
                   TextSpan(
-                    text: "\n\n${notificationLabels['body']}",
+                    text: "\n\n$body",
                     style: TextStyle(
                       fontWeight: FontWeight.normal, 
                       fontStyle: FontStyle.italic,
@@ -60,7 +87,6 @@ class NotificationHandler{
           );
         }
       );
-    }
   }
 
   void handleOnResume(Map<String,dynamic> message){
@@ -74,6 +100,7 @@ class NotificationHandler{
   }
 
   bool _hasPost(Map<String, dynamic> notificationData){
+    print('------------------------NOTIFICATION DATA LOOKS LIKE: ' + notificationData.toString());
     if(notificationData.keys.contains('postID')) return true;
     return false;
   }

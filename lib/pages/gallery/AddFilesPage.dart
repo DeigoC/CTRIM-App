@@ -16,11 +16,7 @@ class AddGalleryFilesPage extends StatefulWidget {
 
 class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
   
-  List<String> _videoTypes = [
-    'mp4',
-    'mkv',
-    'flv',
-  ];
+  List<String> _videoTypes = [ 'mp4', 'mkv', 'flv', 'mov'];
   List<String> _imageTypes = ['jpg', 'png', 'gif', 'svg'];
   List<File> _selectedFiles = [];
   bool _selectingFiles = false;

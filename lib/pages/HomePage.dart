@@ -6,6 +6,7 @@ import 'package:ctrim_app_v1/pages/tab_pages/SettingsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllPostsTabPage.dart';
 import 'package:ctrim_app_v1/pages/tab_pages/ViewAllLocationsTabPage.dart';
 import 'package:ctrim_app_v1/style.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,15 +59,73 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     _firebaseMessaging.configure(
       onMessage: (message)async{
         // * When app's open
+        //print('----------------------------ON MESSAGE!');
+        print('----------------MESSAGE LOOKS LIKE: ' + message.toString());
         _notificationHandler.handleOnMessage(message);
       },
       onResume: (message)async{
+        print('----------------------------ON RESUME!');
         _notificationHandler.handleOnResume(message);
       },
       onLaunch: (message)async{
+        print('----------------------------ON LAUNCH!');
         _notificationHandler.handleOnLaunch(message);
       },
     );
+  }
+
+  void _handleOnMessage(Map<String,dynamic> message){
+    //final Map<String, dynamic> notificationData = Map<String, dynamic>.from(message['data']);
+    final  Map<String, dynamic> notificationLabels = Map<String, dynamic>.from(message['notification']);
+     
+     String postID = message['postID'];
+     BlocProvider.of<AppBloc>(context).add(AppToViewPostPageEvent(postID));
+      showDialog(
+        context: context,
+        builder: (_){
+          return AlertDialog(
+            title: Text('Highlighted Post Notification!',textScaleFactor: 1.2,textAlign: TextAlign.center,),
+            content: RichText(
+              text: TextSpan(
+                text: notificationLabels['title'],
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 18,
+                  color: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white : Colors.black,
+                ),
+                children: [
+                  TextSpan(
+                    text: "\n\n${notificationLabels['body']}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal, 
+                      fontStyle: FontStyle.italic,
+                      fontSize: 14,
+                      color: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white : Colors.black,
+                    ),
+                    
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              MyFlatButton(
+                label: 'Close',
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+              ),
+              MyFlatButton(
+                label: 'View Post',
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  BlocProvider.of<AppBloc>(context).add(AppToViewPostPageEvent(postID));
+                },
+              ),
+            ],
+          );
+        }
+      );
   }
 
   @override
