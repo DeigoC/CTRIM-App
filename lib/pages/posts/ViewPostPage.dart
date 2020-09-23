@@ -208,7 +208,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
 
   void _setReminderClick(){
-    String locationString = 'N/A';
+    String locationString = "Location's N/A";
     if(_postLocation != null) locationString = _postLocation.getAddressLine();
 
     Event event = Event(

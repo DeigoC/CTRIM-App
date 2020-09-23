@@ -47,12 +47,15 @@ class SocialLinksDisplay extends StatelessWidget {
   }
 
   void _iconClick(String type, BuildContext context)async{
+    String link = socialLinks[type];
+
     if(type.compareTo('Email')==0){
        final Uri email = Uri(
         scheme: 'mailto',
         path: socialLinks['Email'],
     );
-    launch(email.toString(),forceSafariVC: false, universalLinksOnly: true);
+    launch(email.toString());
+
     }else if(type.compareTo('Phone no.')==0){
       showDialog(
         context: context,
@@ -81,12 +84,45 @@ class SocialLinksDisplay extends StatelessWidget {
       );
     }else{
       if(await canLaunch(socialLinks[type])){
-        await launch(socialLinks[type]);
+      
+        if(await launch(socialLinks[type],forceSafariVC: false,universalLinksOnly: true) == false){
+          showDialog(
+            context: context,
+            child: AlertDialog(
+              title: Text("Couldn't find the app!"),
+              content: Text("Your device doesn't seem to have the app to open: '$link'\n\nDo you wish to continue with webview?"),
+              actions: [
+                MyFlatButton(
+                  label: 'Cancel',
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                  },
+                ),
+                MyFlatButton(
+                  label: 'Open Webview',
+                  onPressed: () async{
+                    await launch(socialLinks[type],forceSafariVC: true);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            )
+          );
+        }
       }else{
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text("Couldn't open the link!"),
-          action: SnackBarAction(label: 'Ok',onPressed: (){},),
-        ));
+        showDialog(
+          context: context,
+          child: AlertDialog(
+            title: Text('Link is invalid'),
+            content: Text("The link the user provided is not in the correct format and so cannot be opened.\nLink: '$link'"),
+            actions: [
+              MyFlatButton(
+                label: 'Ok',
+                onPressed: ()=>Navigator.of(context).pop(),
+              ),
+            ],
+          )
+        );
       }
     }
   }
