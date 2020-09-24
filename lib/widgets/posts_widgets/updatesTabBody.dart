@@ -22,7 +22,7 @@ class PostUpdatesTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        SliverList(//TODO wrap this into a FB to fetch user?
+        SliverList(
           delegate: SliverChildListDelegate([
             ListTile(
               leading: Hero(child: user.buildAvatar(context),tag:'no more',),

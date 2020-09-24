@@ -52,7 +52,7 @@ class _AddLocationState extends State<AddLocation> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(//TODO test this
+    return WillPopScope(
       onWillPop: () {
         return ConfirmationDialogue().leaveEditPage(
           context: context,
@@ -147,7 +147,7 @@ class _AddLocationState extends State<AddLocation> {
             }),
         SizedBox(height: itemPaddingHeight,),
         _buildImageSelector(),
-        SizedBox(height: itemPaddingHeight,),
+        SizedBox(height: itemPaddingHeight * 2,),
          BlocBuilder(
             bloc: _locationBloc,
             condition: (previousState, currentState) {
@@ -163,6 +163,7 @@ class _AddLocationState extends State<AddLocation> {
                 children: [
                   MyTextField(
                     label: 'Selected Address',
+                    centerLabel: true,
                     helpText: 
                     "Read-Only, seperate words of this address line will be used for the 'Seach Locations' query.",
                     optional: true,
@@ -294,7 +295,6 @@ class _AddLocationState extends State<AddLocation> {
              MyFlatButton(
                label: 'Select Record',
                onPressed: (){
-                 // TODO Needs to also select Deleted Locations and 'Undelete' them
                  widget._postBloc.add(PostSelectedLocationEvent(
                   addressLine: existingLocation.addressLine,
                   location: existingLocation

@@ -29,8 +29,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   ,_postDBManager = PostDBManager(appBloc);
 
   // ! Bloc Fields
-  String _locationSearchString = '';
-  
   List<User> get mainFeedUsers => UserDBManager.mainFeedUsers;
 
   List<TimelinePost> _feedData =[];
@@ -43,18 +41,20 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     PostTag.BELFAST: false,
     PostTag.NORTHCOAST: false,
     PostTag.PORTADOWN: false,
+    PostTag.ONLINE: false,
     PostTag.TESTIMONIES: false,
     PostTag.EVENTS: false,
     PostTag.YOUTH: false,
     PostTag.MEN: false,
     PostTag.WOMEN: false,
     PostTag.KIDS: false,
+    
   };
 
   // ! Bloc Functions
-  bool doesLocationHaveEvents(String locationId){ 
-    //TODO needs to be a future
-    return false;
+  Future<bool> doesLocationHaveEvents(String locationId) async{ 
+    List<String> postRefList = await _locationDBManager.fetchPostReferenceList(locationId);
+    return postRefList.length > 0;
   }
 
   Map<String, bool> getSelectedTags() {
@@ -69,7 +69,8 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   // * New FUTURE
   Future<Location> fetchLocationByID(String id) => _locationDBManager.fetchLocationByID(id);
-  Future<List<Location>> fetchLocationsByPostCode(String postCode) => _locationDBManager.fetchLocationsBySearchString(postCode);
+  Future<List<Location>> fetchLocationsByPostCode(String postCode, {bool includeDeleted = false}) => 
+  _locationDBManager.fetchLocationsBySearchString(postCode, includeDeleted: includeDeleted);
   Future<List<User>> fetchAllUsers() => _userDBManager.fetchAllUsers();
   Future<User> fetchUserByID(String id) => _userDBManager.fetchUserByID(id);
   Future<List<User>> fetchLevel3Users() => _userDBManager.fetchLevel3Users();
@@ -162,12 +163,11 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       else yield* _mapPostDeletedToState(event);
     } else if (event is TimelineTagClickedEvent) yield* _mapTagChangeToState(event);
     else if (event is TimelineSearchPostEvent) yield* _mapSearchPageEventToState(event);
-    else if (event is TimelineLocationSearchTextChangeEvent) yield* _mapLocationSearchEventToState(event);
     else if (event is TimelineUserUpdatedEvent)yield* _mapUserUpdatedEventToState(event);
     else if (event is TimelineUserDisabledEvent) yield* _mapUserDisabledToState(event);
     else if (event is TimelineUserEnabledEvent) yield* _mapUserEnabledToState(event);
     else if (event is TimelineAboutTabEvent) yield* _mapAboutTabEventToState(event);
-    else if(event is TimelineLocationUpdateOccuredEvent) this.mapEventToState(TimelineLocationSearchTextChangeEvent(null));
+    else if(event is TimelineLocationUpdateOccuredEvent) yield _checkToUpdateLocationsTab(event.updatedLocation);
     else if(event is TimelineRefreshCompletedEvent) yield* _mapRefreshToState();
   }
 
@@ -279,19 +279,14 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   // ! Location Related
-  Stream<TimelineState> _mapLocationSearchEventToState(TimelineLocationSearchTextChangeEvent event) async* {
-    List<Location> result = [];
-    _locationSearchString = event.searchString ?? _locationSearchString;
-    essentialLocations.forEach((location) {
-      if (location.id != '0' &&
-          location.addressLine
-              .toLowerCase()
-              .contains(_locationSearchString.toLowerCase())) {
-        result.add(location);
-      }
-    });
-    yield TimelineDisplayLocationSearchResultsState(result);
-    yield TimelineEmptyState();
+  //TODO needs to add new location as well?
+  TimelineState _checkToUpdateLocationsTab(Location updatedLocation){
+    if(essentialLocations.firstWhere((e) => e.id.compareTo(updatedLocation.id)==0, orElse: ()=>null) !=null ){
+      int index = essentialLocations.indexWhere((e) => e.id.compareTo(updatedLocation.id)==0,);
+      essentialLocations[index] = updatedLocation;
+      return TimelineLocationTabUpdatedState();
+    }
+    return null;
   }
 
   // ! Lower level details
@@ -306,6 +301,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
       case 'Portadown':return PostTag.PORTADOWN;
       case 'Testimonies':return PostTag.TESTIMONIES;
       case 'Events':return PostTag.EVENTS;
+      case 'Online':return PostTag.ONLINE;
     }
     return null;
   }

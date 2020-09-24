@@ -322,6 +322,7 @@ class PostTagsField extends StatelessWidget {
       case PostTag.PORTADOWN:return 'Portadown';
       case PostTag.TESTIMONIES:return 'Testimonies';
       case PostTag.EVENTS:return 'Events';
+      case PostTag.ONLINE: return 'Online';
     }
     return '';
   }

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/style.dart';
@@ -48,7 +46,16 @@ class AdminDropdownList extends StatelessWidget {
           child: IconButton(
             icon: Icon(AntDesign.questioncircleo),
             onPressed: (){
-
+              showDialog(
+                context: context,
+                builder: (_){
+                  return HelpDialogTile(
+                    title: 'Admin Level (Required)',
+                    subtitle: 'Level 3 gives access to all editable aspects. \nLevel 2 is a reduction of level 3.' +
+                    '\nLevel 1 has the least amount of access. Only allowed to add/edit their posts',
+                  );
+                }
+              );
             },
           ),
         )

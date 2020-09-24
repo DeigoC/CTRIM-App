@@ -41,10 +41,8 @@ class TimelineDisplayEmptyFeedState extends TimelineSearchState {}
 class TimelineDisplayEmptySearchState extends TimelineSearchState {}
 
 // ! Search Location
-class TimelineDisplayLocationSearchResultsState extends TimelineState {
-  final List<Location> locations;
-  TimelineDisplayLocationSearchResultsState(this.locations);
-}
+
+class TimelineLocationTabUpdatedState extends TimelineState{}
 
 // ! Album Search
 class TimelineAlbumSearchState extends TimelineState {}

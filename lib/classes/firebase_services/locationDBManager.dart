@@ -13,6 +13,7 @@ class LocationDBManager{
   static List<Location> _essentialLocations;
   static List<Location> get essentialLocations{
     _essentialLocations.removeWhere((e) => e.id=='0');
+    _essentialLocations.removeWhere((e) => e.id=='-1');
     return _essentialLocations;
   }
 
@@ -28,7 +29,7 @@ class LocationDBManager{
   }
 
   Future<List<Location>> fetchEssentialLocations() async{
-    var collection = await _ref.limit(15).where('Deleted',isEqualTo: false).get();
+    var collection = await _ref.limit(20).where('Deleted',isEqualTo: false).get();
     _essentialLocations = collection.docs.map((doc) => Location.fromMap(doc.id, doc.data())).toList();
     return _essentialLocations;
   }
@@ -36,7 +37,7 @@ class LocationDBManager{
   Future<List<Location>> fetchLocationsBySearchString(String searchString, {bool includeDeleted = false}) async{
     List<String> searchArray = searchString.trim().toLowerCase().replaceAll(RegExp(r','), '').split(' ');
 
-    var collection;
+    QuerySnapshot collection;
     if(includeDeleted){
       collection = await _ref
       .where('SearchArray',arrayContainsAny: searchArray)
@@ -50,7 +51,7 @@ class LocationDBManager{
       .get();
     }
 
-    List<Location> results = List.castFrom<dynamic, Location>(collection.documents.map((e) => Location.fromMap(e.documentID, e.data)).toList());
+    List<Location> results = List.castFrom<dynamic, Location>(collection.docs.map((e) => Location.fromMap(e.id, e.data())).toList());
     return results;
   }
 
@@ -66,8 +67,7 @@ class LocationDBManager{
     .doc(_subCollectionDoc)
     .set({'posts':[]});
   }
-
-  //todo update search array!
+ 
   Future<Null> updateLocation(Location location, File file) async{
     if(file != null){
       location.imgSrc = await _appStorage.uploadAndGetLocationImageSrc(location, file);

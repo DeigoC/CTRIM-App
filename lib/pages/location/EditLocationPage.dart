@@ -26,6 +26,7 @@ class _EditLocationState extends State<EditLocation> {
       _tecSelectedAddress,
       _tecDescription;
   LocationBloc _locationBloc;
+  bool _hasPosts;
 
   @override
   void initState() {
@@ -73,7 +74,7 @@ class _EditLocationState extends State<EditLocation> {
               } else if (state is LocationEditAttemptToUpdateState) {
                 ConfirmationDialogue().uploadTaskStarted(context: context);
               }else if(state is LocationEditUpdateCompleteState){
-                BlocProvider.of<TimelineBloc>(context).add(TimelineLocationUpdateOccuredEvent());
+                BlocProvider.of<TimelineBloc>(context).add(TimelineLocationUpdateOccuredEvent(state.updatedLocation));
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               }
@@ -89,13 +90,12 @@ class _EditLocationState extends State<EditLocation> {
       shrinkWrap: false,
       children: [
         SizedBox(height: itemPaddingHeight,),
-        Text('Query Address',textAlign: TextAlign.center,),
+        //Text('Query Address',textAlign: TextAlign.center,),
         // * Selected Address
         BlocBuilder(
             bloc: _locationBloc,
             condition: (previousState, currentState) {
-              if (currentState is LocationDisplayConfirmedQueryAddressState)
-                return true;
+              if (currentState is LocationDisplayConfirmedQueryAddressState) return true;
               return false;
             },
             builder: (_, state) {
@@ -105,10 +105,13 @@ class _EditLocationState extends State<EditLocation> {
               return MyTextField(
                 label: 'Selected Address',
                 controller: _tecSelectedAddress,
+                buildHelpIcon: false,
+                centerLabel: true,
+                optional: true,
                 readOnly: true,
               );
             }),
-        SizedBox(height: itemPaddingHeight,),
+       /*  SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Street Address',
           hint: '12 Example Rd.',
@@ -155,11 +158,14 @@ class _EditLocationState extends State<EditLocation> {
                       }
                     : null,
               );
-            }),
+            }), */
         SizedBox(height: 32,),
         MyTextField(
           label: 'Short Description',
           controller: _tecDescription,
+          optional: true,
+          buildHelpIcon: false,
+          centerLabel: true,
           hint: '(Optional)',
           maxLength: 60,
           onTextChange: (newDec) {
@@ -188,8 +194,9 @@ class _EditLocationState extends State<EditLocation> {
                               record: 'Location',
                               editing: true)
                           .then((confirmation) {
-                        if (confirmation)
+                        if (confirmation) {
                           _locationBloc.add(LocationEditUpdateLocationEvent());
+                        }
                       });
                     }: null,
             );
@@ -202,21 +209,29 @@ class _EditLocationState extends State<EditLocation> {
   }
 
   Widget _buildDeleteButton(){
-    bool hasEvents = BlocProvider.of<TimelineBloc>(context).doesLocationHaveEvents(widget._location.id);
+    
     if(BlocProvider.of<AppBloc>(context).currentUser.adminLevel != 3) return Container();
-    return  MyRaisedButton(
-      externalPadding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
-      label: 'Delete Location',
-      isDestructive: true,
-      onPressed: hasEvents ? null :(){
-        ConfirmationDialogue().deleteRecord(context: context, record: 'Location').then((confirmation){
-          if(confirmation){
-            _locationBloc.add(LocationEditDeleteLocationEvent());
-            Navigator.of(context).pop();
-          }
+    else{
+      if(_hasPosts == null){
+        BlocProvider.of<TimelineBloc>(context).doesLocationHaveEvents(widget._location.id).then((value){
+          setState(() { _hasPosts = value;});
         });
-      },
-    );
+        return Container();
+      }
+      return  MyRaisedButton(
+        externalPadding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+        label: 'Delete Location',
+        isDestructive: true,
+        onPressed: _hasPosts ? null :(){
+          ConfirmationDialogue().deleteRecord(context: context, record: 'Location').then((confirmation){
+            if(confirmation){
+              _locationBloc.add(LocationEditDeleteLocationEvent());
+              Navigator.of(context).pop();
+            }
+          });
+        },
+      );
+    }
   }
 
   Column _buildImageSelector() {
@@ -287,8 +302,7 @@ class _EditLocationState extends State<EditLocation> {
       },
     );
   }
-
-  //TODO need to update the 'ViewAllLocations' page to show the new image
+ 
   Future _selectLocationImage() async {
     FilePickerResult selectedImage;
     selectedImage = await FilePicker.platform.pickFiles(type: FileType.image);

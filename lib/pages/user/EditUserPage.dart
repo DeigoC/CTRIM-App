@@ -134,8 +134,10 @@ class _EditUserPageState extends State<EditUserPage> {
   Widget _buildDisableButton() {
     bool disabled = widget.user.disabled;
     if(AdminCheck().isCurrentUserAboveLvl2(context)){
-      return RaisedButton(
-        child: Text(disabled ? 'Enable User' : 'Disable User'),
+      return MyRaisedButton(
+        isDestructive: !disabled,
+        externalPadding: EdgeInsets.symmetric(horizontal: 8),
+        label: disabled ? 'Enable User' : 'Disable User',
         onPressed: (){
           ConfirmationDialogue().disableReenableUser(
             context: context,

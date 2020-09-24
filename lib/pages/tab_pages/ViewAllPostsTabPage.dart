@@ -128,7 +128,7 @@ class ViewAllEventsPage {
           BlocProvider.of<TimelineBloc>(_context).add(TimelineRefreshCompletedEvent());
         });
       },
-      child: ListView.builder(
+      child: feedData.length == 0 ? _buildNoPostsBody() : ListView.builder(
         physics: ClampingScrollPhysics(),
         key: PageStorageKey('viewAllPosts'),
         controller: _scrollController,
@@ -143,6 +143,10 @@ class ViewAllEventsPage {
         }
       ),
     );
+  }
+
+  Widget _buildNoPostsBody(){
+    return Center(child: Text('No Posts to show here'),);
   }
   
 }

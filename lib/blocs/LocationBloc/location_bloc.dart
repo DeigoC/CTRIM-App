@@ -62,7 +62,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       _imageFile = null;
       yield LocationRemoveSelectedImageState();
     } else if (event is LocationEditLocationEvent)yield* _mapEditLocationToState(event);
-    else if(event is LocationSaveNewLocationEvent) yield* _saveNewLocation();
+    else if (event is LocationSaveNewLocationEvent) yield* _saveNewLocation();
   }
 
   Stream<LocationState> _mapImageSetEventToState(LocationImageSelectedEvent event) async* {
@@ -96,12 +96,12 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     } else if (event is LocationEditUpdateLocationEvent) {
       yield LocationEditAttemptToUpdateState();
       await _locationDBManager.updateLocation(_location, _imageFile);
-      yield LocationEditUpdateCompleteState();
+      yield LocationEditUpdateCompleteState(_location);
     }else if(event is LocationEditDeleteLocationEvent){
       yield LocationEditAttemptToUpdateState();
       _location.deleted = true;
       await _locationDBManager.updateLocation(_location, _imageFile);
-      yield LocationEditUpdateCompleteState();
+      yield LocationEditUpdateCompleteState(_location);
     }
   }
 
@@ -155,7 +155,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       coordinates: {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude},
       deleted: false,
       description: 'Used for Events',
-      searchArray: _setSearchArray(add.addressLine),//TODO test this
+      searchArray: _setSearchArray(add.addressLine),
     );
 
     await _locationDBManager.addLocation(newLocation, _imageFile);
@@ -194,5 +194,5 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     });
     return existingLocation;
   }
-
+ 
 }

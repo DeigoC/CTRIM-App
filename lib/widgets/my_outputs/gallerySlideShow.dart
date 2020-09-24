@@ -48,6 +48,15 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
     });
    }
   
+
+  List<Color> _colors = [
+    Colors.red,
+    Colors.black,
+    Colors.blue,
+    Colors.green,
+    Colors.pink,
+  ];
+
   @override
   Widget build(BuildContext context) {
     Map<String,ImageTag> gallery = {};
@@ -62,9 +71,18 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
       aspectRatio: 16/9,
       child: PageView.builder(
         controller: _pageController,
-        itemCount: gallery.length,
+        //itemCount: gallery.length,
+        itemCount: _colors.length,
         itemBuilder: (_,index){
-          return GestureDetector(
+          return Container(
+            alignment: Alignment.center,
+            child: Text('Placeholder Image #$index',style: TextStyle(color: Colors.white),),
+            color: _colors[index],
+          );
+
+
+
+          /* return GestureDetector(
             onTap: (){
               BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(gallery, index));
             },
@@ -72,7 +90,7 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
               tag: gallery[widget.galleryItems.keys.toList()[index]].heroTag,
               child: Image(image: NetworkImageWithRetry(widget.galleryItems.keys.toList()[index]), fit: BoxFit.cover,)
             )
-          );
+          ); */
         }
       ),
     );

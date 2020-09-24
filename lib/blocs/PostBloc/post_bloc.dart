@@ -49,6 +49,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     PostTag.BELFAST:false,
     PostTag.NORTHCOAST:false,
     PostTag.PORTADOWN:false,
+    PostTag.ONLINE:false,
     PostTag.TESTIMONIES:false,
     PostTag.EVENTS:false,
     PostTag.MEN: false,
@@ -257,15 +258,16 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     // * Selected Location
     else if (event is PostSelectedLocationEvent) {
       _post.locationID = '';
-      if(event.location!=null) _post.locationID = event.location.id;
       _addressLine = event.addressLine;
 
-      if(event.location.deleted){
-        //TODO needs to be tested
-        event.location.deleted = false;
-        LocationDBManager(null).updateLocation(event.location, null);
-      }
-      
+      if(event.location != null){
+        _post.locationID = event.location.id;
+        if(event.location.deleted){
+          event.location.deleted = false;
+          LocationDBManager(null).updateLocation(event.location, null);
+        }
+      } 
+
       yield PostLocationSelectedState();
     }
     yield* _canEnableSaveButton();

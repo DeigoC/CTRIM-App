@@ -271,6 +271,8 @@ class _SocialLinksEditState extends State<SocialLinksEdit> {
           ),
           MyTextField(
             label: 'Link/Email/Contact No.',
+            buildHelpIcon: false,
+            optional: true,
             controller: _tecLinkContact,
             onTextChange: (_){
               _canEnableSaveButton();

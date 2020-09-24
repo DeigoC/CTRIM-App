@@ -77,7 +77,9 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
     if(_searchString == null){
        return Center(child: Text('Awaiting Search Submission...'),);
     }else if(_fetchingResults){
-      BlocProvider.of<TimelineBloc>(context).fetchLocationsByPostCode(_searchString).then((results){
+      BlocProvider.of<TimelineBloc>(context)
+      .fetchLocationsByPostCode(_searchString, includeDeleted: widget._postBloc != null)
+      .then((results){
         setState(() {
           _locationResults = results;
           _fetchingResults = false;

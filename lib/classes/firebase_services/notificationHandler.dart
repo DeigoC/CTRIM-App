@@ -90,19 +90,22 @@ class NotificationHandler{
   }
 
   void handleOnResume(Map<String,dynamic> message){
-    final Map<String, dynamic> notificationData = Map<String, dynamic>.from(message['data']);
-    if(_hasPost(notificationData)) _openPost(notificationData['postID']);
+    if(Platform.isAndroid){
+      final Map<String, dynamic> notificationData = Map<String, dynamic>.from(message['data']);
+      if(notificationData.keys.contains('postID')) _openPost(notificationData['postID']);
+    }else{
+      if(message.keys.contains('postID')) _openPost(message['postID']);
+    }
+    
   }
 
   void handleOnLaunch(Map<String,dynamic> message){
-    final Map<String, dynamic> notificationData = Map<String, dynamic>.from(message['data']);
-    if(_hasPost(notificationData)) _openPost(notificationData['postID']);
-  }
-
-  bool _hasPost(Map<String, dynamic> notificationData){
-    print('------------------------NOTIFICATION DATA LOOKS LIKE: ' + notificationData.toString());
-    if(notificationData.keys.contains('postID')) return true;
-    return false;
+    if(Platform.isAndroid){
+      final Map<String, dynamic> notificationData = Map<String, dynamic>.from(message['data']);
+      if(notificationData.keys.contains('postID')) _openPost(notificationData['postID']);
+    }else{
+      if(message.keys.contains('postID')) _openPost(message['postID']);
+    }
   }
 
   void _openPost(String postID){

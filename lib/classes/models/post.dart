@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zefyr/zefyr.dart';
 
-enum PostTag { MEN, YOUTH, WOMEN, KIDS, BELFAST, NORTHCOAST, PORTADOWN, EVENTS, TESTIMONIES }
+enum PostTag { MEN, YOUTH, WOMEN, KIDS, BELFAST, NORTHCOAST, PORTADOWN, ONLINE,  EVENTS, TESTIMONIES }
 
 class Post {
   String id,title,description,body = '',locationID,detailTableHeader;
@@ -104,7 +104,7 @@ class Post {
       case 'Portadown':return PostTag.PORTADOWN;
       case 'Testimonies':return PostTag.TESTIMONIES;
       case 'Events':return PostTag.EVENTS;
-      
+      case 'Online':return PostTag.ONLINE;
     }
     return null;
   }
@@ -205,6 +205,7 @@ class Post {
       case PostTag.PORTADOWN: return 'Portadown';
       case PostTag.TESTIMONIES: return 'Testimonies';
       case PostTag.EVENTS: return 'Events';
+      case PostTag.ONLINE: return 'Online';
     }
     return '';
   }
@@ -221,6 +222,7 @@ class Post {
         case PostTag.PORTADOWN:return 'Portadown';
         case PostTag.TESTIMONIES:return 'Testimonies';
         case PostTag.EVENTS:return 'Events';
+        case PostTag.ONLINE: return 'Online';
       }
       return null;
     }).toList();

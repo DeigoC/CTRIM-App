@@ -210,6 +210,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   void _setReminderClick(){
     String locationString = "Location's N/A";
     if(_postLocation != null) locationString = _postLocation.getAddressLine();
+    else if(_post.locationID == '-1') locationString = "Location's Online";
 
     Event event = Event(
       title: _post.title,
@@ -237,6 +238,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   Widget _buildLocationWidget(){
     if(_post.locationID.compareTo('0')==0){
       return Text('N/A',style: TextStyle(fontSize: 18),textAlign: TextAlign.center,);
+    }else if(_post.locationID.compareTo('-1')==0){
+      return Text('Online',style: TextStyle(fontSize: 18),textAlign: TextAlign.center,);
     }else if(_postLocation == null){
       BlocProvider.of<TimelineBloc>(context).fetchLocationByID(_post.locationID).then((location){
         setState(() { _postLocation = location;});

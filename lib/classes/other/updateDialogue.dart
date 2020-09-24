@@ -41,6 +41,9 @@ class _UpdateLogDialogueState extends State<UpdateLogDialogue> {
               MyTextField(
                 controller: _tecUpdateLog,
                 label: 'Update Log',
+                centerLabel: true,
+                optional: true,
+                buildHelpIcon: false,
                 maxLength: 90,
                 onTextChange: (newString) {
                   if (_tecUpdateLog.text.trim().isEmpty) {

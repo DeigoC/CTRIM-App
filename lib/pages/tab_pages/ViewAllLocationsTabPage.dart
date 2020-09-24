@@ -21,13 +21,10 @@ class ViewAllLocationsPage {
       controller: _controller.appBar,
       child: BlocBuilder<TimelineBloc, TimelineState>(
         condition: (_, state) {
-          if (state is TimelineDisplayLocationSearchResultsState) return true;
+          if (state is TimelineLocationTabUpdatedState) return true;
           return false;
         },
         builder: (_, state) {
-          if (state is TimelineDisplayLocationSearchResultsState) {
-            essentialLocations = state.locations;
-          }
           return ListView.builder(
             physics: ClampingScrollPhysics(),
             key: PageStorageKey('viewAllLocations'),

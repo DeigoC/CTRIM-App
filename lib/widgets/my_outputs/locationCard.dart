@@ -99,7 +99,6 @@ class LocationCard extends StatelessWidget {
   }
 
   Widget _buildImageContainer(BuildContext context) {
-    
 
     if(location.imgSrc==''){
       return Container(

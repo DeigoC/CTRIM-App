@@ -102,7 +102,12 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
 
         AspectRatio(
           aspectRatio: 16/9,
-          child: GestureDetector(
+          child: Container(
+            alignment: Alignment.center,
+            child: Text('Placeholder Image', style: TextStyle(color: Colors.white),),
+            color: Colors.purpleAccent,
+          )
+          /* GestureDetector(
             onTap: (){
               BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({
                 widget._aboutArticle.secondImage:ImageTag(
@@ -115,17 +120,14 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
               tag: '0/'+widget._aboutArticle.secondImage,
               child: Image(image:NetworkImageWithRetry(widget._aboutArticle.secondImage),)
             ),
-          ),
+          ), */
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            MyRaisedButton(
-              label: 'Get To Know Them',
-              fontsize: 20,
-              onPressed: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewPastorEvent(widget._aboutArticle)),
-            ),
-          ],
+        SizedBox(height: 16,),
+        MyRaisedButton(
+          externalPadding: EdgeInsets.symmetric(horizontal: 32),
+          label: 'Get To Know Them',
+          fontsize: 20,
+          onPressed: ()=>BlocProvider.of<AppBloc>(context).add(AppToViewPastorEvent(widget._aboutArticle)),
         ),
         SizedBox(height: 16,),
 

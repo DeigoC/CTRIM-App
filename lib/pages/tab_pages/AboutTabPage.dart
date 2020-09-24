@@ -7,7 +7,6 @@ import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/my_outputs/gallerySlideShow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_image/network.dart';
 import 'package:url_launcher/url_launcher.dart';
 
