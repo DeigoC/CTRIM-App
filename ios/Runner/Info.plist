@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>CTRIM Debug</string>
+	<string>CTRIM Demo</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,11 +29,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Allows you to set reminders</string>
-	<key>NSContactsUsageDescription</key>
-	<string></string>
+	<string>Allows you to set reminders by adding a new event.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string></string>
+	<string>Select Images and Videos to upload</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

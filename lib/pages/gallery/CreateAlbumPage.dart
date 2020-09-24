@@ -72,6 +72,7 @@ class _EditAlbumState extends State<EditAlbum> {
         onPressed: (){
           widget._postBloc.add(PostFilesRemoveSelectedEvent(_selectedFilePaths));
           setState(() {
+            _selectedFilePaths.clear();
             _onDeleteMode = false;
           });
         },

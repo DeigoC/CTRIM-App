@@ -71,6 +71,7 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
       aspectRatio: 16/9,
       child: PageView.builder(
         controller: _pageController,
+        key: PageStorageKey('slideshow'),
         //itemCount: gallery.length,
         itemCount: _colors.length,
         itemBuilder: (_,index){
