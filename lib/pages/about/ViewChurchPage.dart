@@ -102,12 +102,7 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
 
         AspectRatio(
           aspectRatio: 16/9,
-          child: Container(
-            alignment: Alignment.center,
-            child: Text('Placeholder Image', style: TextStyle(color: Colors.white),),
-            color: Colors.purpleAccent,
-          )
-          /* GestureDetector(
+          child: GestureDetector(
             onTap: (){
               BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({
                 widget._aboutArticle.secondImage:ImageTag(
@@ -120,7 +115,7 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
               tag: '0/'+widget._aboutArticle.secondImage,
               child: Image(image:NetworkImageWithRetry(widget._aboutArticle.secondImage),)
             ),
-          ), */
+          ),
         ),
         SizedBox(height: 16,),
         MyRaisedButton(

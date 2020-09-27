@@ -47,15 +47,6 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
       }catch(e){print('-------------SLIDE SHOW ERROR: ' + e.toString());}
     });
    }
-  
-
-  List<Color> _colors = [
-    Colors.red,
-    Colors.black,
-    Colors.blue,
-    Colors.green,
-    Colors.pink,
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -72,18 +63,9 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
       child: PageView.builder(
         controller: _pageController,
         key: PageStorageKey('slideshow'),
-        //itemCount: gallery.length,
-        itemCount: _colors.length,
+        itemCount: gallery.length,
         itemBuilder: (_,index){
-          return Container(
-            alignment: Alignment.center,
-            child: Text('Placeholder Image #$index',style: TextStyle(color: Colors.white),),
-            color: _colors[index],
-          );
-
-
-
-          /* return GestureDetector(
+          return GestureDetector(
             onTap: (){
               BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(gallery, index));
             },
@@ -91,7 +73,7 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
               tag: gallery[widget.galleryItems.keys.toList()[index]].heroTag,
               child: Image(image: NetworkImageWithRetry(widget.galleryItems.keys.toList()[index]), fit: BoxFit.cover,)
             )
-          ); */
+          );
         }
       ),
     );

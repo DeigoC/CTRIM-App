@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:ctrim_app_v1/classes/other/adminCheck.dart';
 import 'package:ctrim_app_v1/style.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,7 +41,7 @@ class LocationCard extends StatelessWidget {
                     }, 0));
                   }
                 },
-                child: _buildImageContainer(context),
+                child: _checkThenBuildImage(context),
               ),
             ),
             Expanded(
@@ -98,12 +101,11 @@ class LocationCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImageContainer(BuildContext context) {
-
+  Widget _buildImageContainer(BuildContext context, double size) {
     if(location.imgSrc==''){
       return Container(
-        width: MediaQuery.of(context).size.width * 0.30,
-        height: MediaQuery.of(context).size.width * 0.30,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           color: LightPrimaryColor,
           borderRadius: BorderRadius.circular(8),
@@ -113,8 +115,8 @@ class LocationCard extends StatelessWidget {
     return Hero(
       tag:'0/' + location.imgSrc,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.30,
-        height: MediaQuery.of(context).size.width * 0.30,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
             color: LightPrimaryColor,
             borderRadius: BorderRadius.circular(8),
@@ -124,6 +126,24 @@ class LocationCard extends StatelessWidget {
           )
         ),
       ),
+    );
+  }
+
+  Widget _checkThenBuildImage(BuildContext context){
+    if(Platform.isAndroid) return _buildImageContainer(context, MediaQuery.of(context).size.width * 0.30);
+    return FutureBuilder<IosDeviceInfo>(
+      future: DeviceInfoPlugin().iosInfo,
+      builder: (_,snap){
+        if(snap.hasData){
+          if(snap.data.model.toLowerCase().contains('ipad')){
+            print('-------------------------WE ON THE IPAD!');
+            return _buildImageContainer(context, MediaQuery.of(context).size.width * 0.1);
+          }
+          return _buildImageContainer(context, MediaQuery.of(context).size.width * 0.30);
+        }else{
+          return Center(child: CircularProgressIndicator(),);
+        }
+      },
     );
   }
 }

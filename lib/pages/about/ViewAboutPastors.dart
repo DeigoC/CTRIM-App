@@ -66,12 +66,7 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
         children: [
           AspectRatio(
             aspectRatio: 16/9,
-            child: Container(
-              alignment: Alignment.center,
-              child: Text('Placeholder Image',style: TextStyle(color: Colors.white),),
-              color: Colors.green,
-            )
-            /* GestureDetector(
+            child: GestureDetector(
               onTap: (){
                 BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent({
                 widget._aboutArticle.thirdImage:ImageTag(
@@ -84,12 +79,10 @@ class _ViewAboutPastorPageState extends State<ViewAboutPastorPage> {
                 child: Image.network(widget._aboutArticle.thirdImage,fit: BoxFit.cover,),
                 tag: '0/' + widget._aboutArticle.thirdImage,
               ),
-            ), */
+            ),
           ),
           SizedBox(height: 16,),
-          ZefyrView(
-            document: _zefyrController.document,
-          ),
+          ZefyrView(document: _zefyrController.document,),
         ],
       ),
     );

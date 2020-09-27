@@ -119,7 +119,7 @@ class SettingsPage{
                 value: BlocProvider.of<AppBloc>(_context).onDarkTheme, 
                 title: Text('Dark Mode',),
                 secondary: Icon(Icons.brightness_medium),
-                subtitle: Text('A darker theme for the eyes',),
+                subtitle: Text('Because everything seems to have one',),
                 onChanged: (newValue){
                   AppSettingsEvent event = newValue ? AppChangeThemeToDarkEvent() : AppChangeThemeToLightEvent();
                   BlocProvider.of<AppBloc>(_context).add(event);
@@ -136,7 +136,7 @@ class SettingsPage{
               ),
               ListTile(
                 title: Text('Privacy Policy'),
-                subtitle: Text('Needs some more work i believe'),
+                subtitle: Text('What we do with given data'),
                 leading: Icon(MaterialCommunityIcons.security),
                 onTap: (){
                   AppBloc.openURL('https://ctrim-app.web.app/', _context);

@@ -53,38 +53,34 @@ class SocialLinksDisplay extends StatelessWidget {
        final Uri email = Uri(
         scheme: 'mailto',
         path: socialLinks['Email'],
-    );
-    launch(email.toString());
-
+      );
+      launch(email.toString());
     }else if(type.compareTo('Phone no.')==0){
       showDialog(
         context: context,
         builder: (_){
-          return Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18)
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListTile(
-                title: Text(socialLinks[type],overflow: TextOverflow.ellipsis,),
-                subtitle: Text('Phone No.'),
-                trailing: IconButton(
-                  icon: Icon(Icons.content_copy),
-                  onPressed: (){
-                    Clipboard.setData(ClipboardData(text: socialLinks[type]));
-                    Scaffold.of(context).showSnackBar(SnackBar(content: Text('Phone no. Copied!')));
-                    Navigator.of(context).pop();
-                  },
-                ),
+          return AlertDialog(
+            title: Text('Contact by Phone No.'),
+            content: Text("The number is: '$link'. Do you wish to open your Phone or SMS app?",),
+            actions: [
+              MyFlatButton(
+                label: 'Cancel',
+                onPressed: ()=> Navigator.of(context).pop(),
               ),
-            ),
+              MyFlatButton(
+                label: 'Phone',
+                onPressed: ()=> launch('tel:$link'),
+              ),
+              MyFlatButton(
+                label: 'SMS',
+                onPressed: ()=> launch('sms:$link'),
+              ),
+            ],
           );
         }
       );
     }else{
       if(await canLaunch(socialLinks[type])){
-      
         if(await launch(socialLinks[type],forceSafariVC: false,universalLinksOnly: true) == false){
           showDialog(
             context: context,

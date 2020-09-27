@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
@@ -9,6 +11,7 @@ import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
 import 'package:ctrim_app_v1/widgets/posts_widgets/updatesTabBody.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zefyr/zefyr.dart';
@@ -22,9 +25,7 @@ class ViewPostPage extends StatefulWidget {
 
 class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderStateMixin {
   TabController _tabController;
-  ZefyrController _zefyrController;
   ScrollController _nestedScrollController;
-  FocusNode _fn;
   Post _post;
 
   List<TimelinePost> _allTimelinePosts = [];
@@ -33,12 +34,12 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   User _authorUser;
   bool _scrollAtBottom = false;
 
+  double _expandedHeight;
+
   @override
   void initState() {
     _postBloc = PostBloc();
-
     _tabController = TabController(vsync: this, length: 4);
-    _fn = FocusNode();
     _nestedScrollController = ScrollController()..addListener(() {
       if(_nestedScrollController.position.pixels == _nestedScrollController.position.maxScrollExtent){
         if(!_scrollAtBottom){
@@ -55,10 +56,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
   @override
   void dispose() { 
-    if(_zefyrController != null) _zefyrController.dispose();
     _tabController.dispose();
     _nestedScrollController.dispose();
-    _fn.dispose();
     super.dispose();
     _postBloc.close();
   }
@@ -76,9 +75,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
 
   Widget _buildBody(){
-    if(_post!=null){
-      return  _buildBodyWithData();
-    }
+    if(_post!=null) return _buildBodyWithData();
     return FutureBuilder<Post>(
       future: BlocProvider.of<TimelineBloc>(context).fetchPostByID(widget.postID),
       builder: (_,snap){
@@ -86,10 +83,10 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
 
         if(snap.hasData){
           result = Center(child: CircularProgressIndicator(),);
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() { 
+          _getExpandedHeight().then((expandedHeight){
+            setState(() {
+              _expandedHeight = expandedHeight;
               _post = snap.data; 
-              _zefyrController = ZefyrController(_post.getBodyDoc());
             });
           });
         }else if(snap.hasError){
@@ -102,6 +99,17 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     );
   }
 
+  Future<double> _getExpandedHeight()async{
+    if(Platform.isIOS){
+      IosDeviceInfo iosDeviceInfo = await DeviceInfoPlugin().iosInfo;
+      if(iosDeviceInfo.model.toLowerCase().contains('ipad')){
+        print('-------------------------WE ON THE IPAD!');
+        return MediaQuery.of(context).size.height * 0.4;
+      }
+    }
+    return MediaQuery.of(context).size.height * 0.33;
+  }
+
   NestedScrollView _buildBodyWithData(){
     return NestedScrollView(
       controller: _nestedScrollController,
@@ -109,7 +117,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         bool hasImage = _post.firstImageSrc != null;
         return [
           SliverAppBar(
-            expandedHeight: MediaQuery.of(context).size.height * 0.33,
+            expandedHeight: _expandedHeight,
             actions: [
               BlocBuilder<AppBloc, AppState>(
                 condition: (_, state) {
@@ -224,13 +232,10 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
   
   Widget _buildAboutTab() {
-    return ZefyrTheme(
-      data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
-      child: ZefyrScaffold(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(8),
-          child: ZefyrView(document: _zefyrController.document),
-        )
+    return SingleChildScrollView(
+      child: ZefyrTheme(
+        data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
+        child:  ZefyrView(document: _post.getBodyDoc()),
       ),
     );  
   }
