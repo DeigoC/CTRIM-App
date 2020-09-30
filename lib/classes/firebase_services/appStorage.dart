@@ -35,12 +35,20 @@ class AppStorage{
 
         // * Compress the item
         if(post.temporaryFiles[fileSrc]=='img'){
-          _appBloc.add(AppUploadCompressingImageEvent(
-            itemNo: itemNo, 
-            totalLength: totalLength,
-            fileName: fileName
-          ));
-          itemToSend = await _compressImage(fileSrc);
+          // ! Do not change gif files, need to distinguish gif files to others
+          if(_isImageAGif(fileSrc)){
+            itemToSend = File(fileSrc);
+            filePath += '.gif';
+          }else{
+             _appBloc.add(AppUploadCompressingImageEvent(
+              itemNo: itemNo, 
+              totalLength: totalLength,
+              fileName: fileName
+            ));
+            itemToSend = await _compressImage(fileSrc);
+          }
+         
+
         }else if(post.temporaryFiles[fileSrc]=='vid'){
           _appBloc.add(AppUploadCompressingVideoEvent(
             fileName: fileName,
@@ -63,7 +71,6 @@ class AppStorage{
         await  task.onComplete.then((_) async{
          await _ref.child(filePath).getDownloadURL().then((url) async{
           post.gallerySources[url] = post.temporaryFiles[fileSrc];
-
           // * Upload and get video thumbnail
           if(post.temporaryFiles[fileSrc] == 'vid'){
             post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(fileSrc, filePath);
@@ -174,8 +181,12 @@ class AppStorage{
   }
 
   Future<File> _compressImage(String originalFilePath) async{
+    if(basename(originalFilePath).split('.').last.compareTo('gif')==0){
+      // * Do not change gif files
+      return File(originalFilePath);
+    }
+
     String targetPath = directory+'/compressionImage.jpg';
-    
     var result = await FlutterImageCompress.compressAndGetFile(
       originalFilePath, 
       targetPath,
@@ -183,6 +194,10 @@ class AppStorage{
     );
     return result;
   } 
+
+  bool _isImageAGif(String src){
+    return basename(src).split('.').last.compareTo('gif')==0;
+  }
 
   Future<String> _uploadAndGetVideoThumbnailSrc(String fileSrc, String filePath) async{
     Uint8List data = await VideoThumbnail.thumbnailData(

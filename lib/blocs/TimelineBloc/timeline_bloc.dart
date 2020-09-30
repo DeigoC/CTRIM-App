@@ -218,6 +218,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     await _timelinePostDBManager.addTimelinePost(timelinePost);
   
     _feedData.add(timelinePost);
+    await _userDBManager.fetchMainFeedUsers(_getFeedUsersID(_feedData));
     yield TimelineNewPostUploadedState();
   }
 

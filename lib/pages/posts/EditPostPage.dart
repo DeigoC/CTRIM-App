@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
+import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
@@ -32,6 +33,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
 
   Post _post;
   User _authorUser;
+  Location _location;
 
   @override
   void initState() {
@@ -50,6 +52,13 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     if(_post!=null){
+      if(_location == null){
+        BlocProvider.of<TimelineBloc>(context).fetchLocationByID(_post.locationID).then((location){
+          setState(() {_location = location;});
+        });
+        return Center(child: CircularProgressIndicator(),);
+      }
+      _postBloc.setAddressLine(_location.addressLine);
       return _buildBodyWithData();
     }
     return FutureBuilder<Post>(

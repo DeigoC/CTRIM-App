@@ -443,7 +443,7 @@ class DetailTable extends StatelessWidget {
                     SizedBox(height: 8,),
                     MyTextField(
                       label: 'Leading',
-                      optional: false,
+                      optional: true,
                       buildHelpIcon: false,
                       controller:TextEditingController(text: '$itemNumber.'),
                       onTextChange: (newLeading) =>
@@ -454,7 +454,7 @@ class DetailTable extends StatelessWidget {
                     MyTextField(
                       label: 'Trailing',
                       controller: null,
-                      optional: false,
+                      optional: true,
                       buildHelpIcon: false,
                       onTextChange: (newTrailing) =>
                           BlocProvider.of<PostBloc>(_context).add(

@@ -298,16 +298,23 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
   }
 
   Widget _buildImageContainer(int index){
+    final src = _gallerySrc.keys.elementAt(index);
     return Hero(
       tag: _gallerySrc.values.elementAt(index).heroTag,
       child: Container(
         child: GestureDetector(onTap: ()=>_moveToViewImageVideo(index),),
         decoration: BoxDecoration(
-          image: DecorationImage(image: NetworkImageWithRetry(_gallerySrc.keys.elementAt(index),),fit: BoxFit.cover)
+          image: DecorationImage(image: _isImageAGif(src) ? NetworkImage(src) : NetworkImageWithRetry(src),fit: BoxFit.cover)
         ),
       ),
     );
   }
+
+  bool _isImageAGif(String src){
+    List<String> firstLayer = src.split('2F');
+    String itemName = firstLayer.last.split('?').first;
+    return itemName.contains('gif');
+  } 
 
   void _moveToViewImageVideo(int index) {
     BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(_gallerySrc, index));
