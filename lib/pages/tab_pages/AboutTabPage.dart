@@ -206,6 +206,6 @@ class AboutTabPage{
         'subject':'*Subject*'
       } */
     );
-    launch(email.toString(),forceSafariVC: false, universalLinksOnly: true);
+    launch(email.toString());
   }
 }

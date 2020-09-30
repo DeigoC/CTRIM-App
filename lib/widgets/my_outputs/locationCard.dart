@@ -136,10 +136,9 @@ class LocationCard extends StatelessWidget {
       builder: (_,snap){
         if(snap.hasData){
           if(snap.data.model.toLowerCase().contains('ipad')){
-            print('-------------------------WE ON THE IPAD!');
-            return _buildImageContainer(context, MediaQuery.of(context).size.width * 0.1);
+            return _buildImageContainer(context, MediaQuery.of(context).size.width * 0.2);
           }
-          return _buildImageContainer(context, MediaQuery.of(context).size.width * 0.30);
+          return _buildImageContainer(context, MediaQuery.of(context).size.width * 0.3);
         }else{
           return Center(child: CircularProgressIndicator(),);
         }

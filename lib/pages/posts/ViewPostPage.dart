@@ -103,7 +103,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     if(Platform.isIOS){
       IosDeviceInfo iosDeviceInfo = await DeviceInfoPlugin().iosInfo;
       if(iosDeviceInfo.model.toLowerCase().contains('ipad')){
-        print('-------------------------WE ON THE IPAD!');
         return MediaQuery.of(context).size.height * 0.4;
       }
     }
@@ -218,7 +217,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   void _setReminderClick(){
     String locationString = "Location's N/A";
     if(_postLocation != null) locationString = _postLocation.getAddressLine();
-    else if(_post.locationID == '-1') locationString = "Location's Online";
+    else if(_post.locationID == '-1') locationString = "Location's Online - check the post!";
 
     Event event = Event(
       title: _post.title,
@@ -233,9 +232,9 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   
   Widget _buildAboutTab() {
     return SingleChildScrollView(
-      child: ZefyrTheme(
-        data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
-        child:  ZefyrView(document: _post.getBodyDoc()),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal:8.0),
+        child: ZefyrView(document: _post.getBodyDoc()),
       ),
     );  
   }
