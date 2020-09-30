@@ -33,6 +33,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   String get postDescription => _post.description;
   String _addressLine = 'PENDING';
   String get addressLine => _addressLine;
+  void setAddressLine(String address) => _addressLine = address;
  
   NotusDocument getEditorDoc() {
     if (_post.body == '') {
@@ -117,6 +118,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     _endDateTOD = postToEdit.endDate;
     _endDateButtonEnabled = _endDateTOD != null;
 
+    
     _post = Post(
         id: postToEdit.id,
         title: postToEdit.title,

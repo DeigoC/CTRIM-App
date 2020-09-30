@@ -231,12 +231,22 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
   
   Widget _buildAboutTab() {
+    /* return SingleChildScrollView(
+      child: ZefyrTheme(
+        data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
+        child:  Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: ZefyrView(document: _post.getBodyDoc()),
+        ),
+      ),
+    );  */ 
+
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal:8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: ZefyrView(document: _post.getBodyDoc()),
       ),
-    );  
+    );
   }
 
   Widget _buildLocationWidget(){

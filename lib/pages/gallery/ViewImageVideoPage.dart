@@ -235,9 +235,14 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       },
       initialScale: PhotoViewComputedScale.contained,
       minScale: PhotoViewComputedScale.contained,
-      imageProvider: NetworkImageWithRetry(src),
+      imageProvider: _isImageAGif(src) ? NetworkImage(src) : NetworkImageWithRetry(src),
       tightMode: true,
     );
   }
-  
+
+  bool _isImageAGif(String src){
+    List<String> firstLayer = src.split('2F');
+    String itemName = firstLayer.last.split('?').first;
+    return itemName.contains('gif');
+  }
 }

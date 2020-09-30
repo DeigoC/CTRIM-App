@@ -92,7 +92,10 @@ class _GalleryItemState extends State<GalleryItem> {
             width: _pictureSize,
             height: _pictureSize,
             decoration: BoxDecoration(
-              image: DecorationImage(image: NetworkImageWithRetry(widget.src),fit: BoxFit.cover)
+              image: DecorationImage(
+                image: _isImageAGif() ? NetworkImage(widget.src) : NetworkImageWithRetry(widget.src),
+                fit: BoxFit.cover
+              )
             ),
             child: widget.child??Container(),
           ),
@@ -167,6 +170,13 @@ class _GalleryItemState extends State<GalleryItem> {
       ),
     );
   }
+
+  bool _isImageAGif(){
+    List<String> firstLayer = widget.src.split('2F');
+    String itemName = firstLayer.last.split('?').first;
+    return itemName.contains('gif');
+  }
+
 }
 
 class AlbumCoverItem extends StatelessWidget {
