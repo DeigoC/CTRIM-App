@@ -7,6 +7,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NotificationHandler{
 
+  // * Android custom message looks like
+  /*
+    {notification: 
+      {title: Worship Concert 2020!, body: Removed the description changes. This is a test btw}, 
+      data: {postID: 14, click_action: FLUTTER_NOTIFICATION_CLICK}
+    }
+  */
+
+  // * iOS custom message looks like
+  /*
+    insert here
+  */
+
   final BuildContext _context;
 
   NotificationHandler(this._context);
@@ -43,9 +56,10 @@ class NotificationHandler{
   void _displayPostHighlight({String postID, String title, String body}){
     showDialog(
         context: _context,
+        barrierDismissible: false,
         builder: (_){
           return AlertDialog(
-            title: Text('Highlighted Post Notification!',textScaleFactor: 1.2,textAlign: TextAlign.center,),
+            title: Text('Received Notification!',textScaleFactor: 1.2,textAlign: TextAlign.center,),
             content: RichText(
               text: TextSpan(
                 text: title,

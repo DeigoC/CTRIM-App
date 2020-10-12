@@ -10,10 +10,7 @@ import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/confirmationDialogue.dart';
 import 'package:ctrim_app_v1/classes/other/updateDialogue.dart';
 import 'package:ctrim_app_v1/widgets/MyInputs.dart';
-import 'package:ctrim_app_v1/widgets/posts_widgets/detailsTabBody.dart';
-import 'package:ctrim_app_v1/widgets/posts_widgets/galleryTabBody.dart';
-import 'package:ctrim_app_v1/widgets/posts_widgets/mainTabBody.dart';
-import 'package:ctrim_app_v1/widgets/posts_widgets/updatesTabBody.dart';
+import 'package:ctrim_app_v1/widgets/posts_widgets/post_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -174,7 +171,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  MainTabBody(),
+                  AboutTabBody(),
                   PostDetailsTabBody(),
                   GalleryTabBody.edit(
                     thumbnails: _postBloc.newPost.thumbnails,

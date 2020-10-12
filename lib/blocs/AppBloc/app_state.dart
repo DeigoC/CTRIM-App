@@ -22,36 +22,29 @@ class AppAttemptingToLogoutUserState extends AppState{}
 class AppRebuildSliverAppBarState extends AppState{}
 
 // ! Uploading Task
-class AppMapUploadTaskToDialogueState extends AppState{
+
+abstract class AppUploadTaskState extends AppState{
+  final AppUploadItem appUploadItem;
+  AppUploadTaskState(this.appUploadItem);
+}
+
+class AppMapUploadTaskToDialogueState extends AppUploadTaskState{
   final StorageUploadTask task;
-  final int itemNo,totalLength;
-  final String fileName;
+  final AppUploadItem appUploadItem;
   AppMapUploadTaskToDialogueState({
     @required this.task,
-    @required this.itemNo, 
-    @required this.totalLength,
-    @required this.fileName,
-  });
+    @required this.appUploadItem,
+  }):super(appUploadItem);
 }
 
-class AppCompressingImageTaskState extends AppState{
-  final int itemNo,totalLength;
-  final String fileName;
-  AppCompressingImageTaskState({
-    @required this.itemNo, 
-    @required this.totalLength,
-    @required this.fileName,
-  });
+class AppCompressingImageTaskState extends AppUploadTaskState{
+  final AppUploadItem appUploadItem;
+  AppCompressingImageTaskState({@required this.appUploadItem,}):super(appUploadItem);
 }
 
-class AppCompressingVideoTaskState extends AppState{
-  final String fileName;
-  final int itemNo, totalLength;
-  AppCompressingVideoTaskState({
-    @required this.fileName,
-    @required this.totalLength,
-    @required this.itemNo,
-  });
+class AppCompressingVideoTaskState extends AppUploadTaskState{
+  final AppUploadItem appUploadItem;
+  AppCompressingVideoTaskState({@required this.appUploadItem,}):super(appUploadItem);
 }
 
 // ! Tabs Being clicked

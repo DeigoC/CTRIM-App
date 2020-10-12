@@ -217,8 +217,8 @@ class ConfirmationDialogue{
                         int totalByteCount = snap.data.snapshot.totalByteCount;
                         int amountTransfered = snap.data.snapshot.bytesTransferred;
                         percentage = ((amountTransfered/totalByteCount) * 100).round().toString() + '%';
-                        
-                        title = "Item ${state.itemNo} / ${state.totalLength}: '${state.fileName}'";
+
+                        title = _getTitle(state);
                         subtitle = 'Upload Progress: ($percentage)';
                       }else{
                         percentage = '0%';
@@ -235,21 +235,24 @@ class ConfirmationDialogue{
                 }
 
                 else if(state is AppCompressingImageTaskState){
-                  title = "Item ${state.itemNo} / ${state.totalLength}: '${state.fileName}'";
+                  title = _getTitle(state);
                   subtitle = 'Compressing Image, Please Wait...';
                   trailing = SpinKitRotatingPlain(color: Colors.red,);
                 }
 
                 else if(state is AppCompressingVideoTaskState){
-                  title = "Item ${state.itemNo} / ${state.totalLength}: '${state.fileName}'";
+                  title = _getTitle(state);
                   subtitle = 'Compressing Video, Please Wait...';
                   trailing = SpinKitCubeGrid(color: Colors.green,);
                 }
 
-                return ListTile(
-                  title: Text(title),
-                  subtitle: Text(subtitle),
-                  trailing: SizedBox(width: kToolbarHeight, height: kToolbarHeight, child: trailing),
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListTile(
+                    title: Text(title),
+                    subtitle: Text(subtitle),
+                    trailing: SizedBox(width: kToolbarHeight, height: kToolbarHeight, child: trailing),
+                  ),
                 );
               },
             ),
@@ -258,4 +261,12 @@ class ConfirmationDialogue{
       }
     );
   }
+
+  String _getTitle(AppUploadTaskState state){
+    final int itemNo = state.appUploadItem.itemNo;
+    final int totalLength = state.appUploadItem.totalLength;
+    final String fileName = state.appUploadItem.originalFileName;
+    return "Item $itemNo of $totalLength: '$fileName'";
+  }
+
 }

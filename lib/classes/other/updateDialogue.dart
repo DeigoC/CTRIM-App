@@ -59,23 +59,19 @@ class _UpdateLogDialogueState extends State<UpdateLogDialogue> {
                 },
                 hint: 'e.g. Changed location and time',
               ),
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: MyRaisedButton(
-                  label: 'Update Post',
-                  onPressed: _hasText
-                      ? () {
-                          String userID =BlocProvider.of<AppBloc>(context).currentUser.id;
-                          BlocProvider.of<TimelineBloc>(context).add(TimelineUpdatePostEvent(
-                            post: widget.postBloc.newPost, 
-                            uid: userID, 
-                            updateLog:_tecUpdateLog.text)
-                          );
-
-                           widget.postBloc.add(PostLocationCheckReferenceEvent());
-                        }
-                      : null,
-                ),
+              MyRaisedButton(
+                externalPadding: const EdgeInsets.all(8),
+                label: 'Upload Changes',
+                onPressed: _hasText ? () {
+                  String userID =BlocProvider.of<AppBloc>(context).currentUser.id;
+                  BlocProvider.of<TimelineBloc>(context).add(TimelineUpdatePostEvent(
+                    post: widget.postBloc.newPost, 
+                    uid: userID, 
+                    updateLog:_tecUpdateLog.text)
+                  );
+                  
+                  widget.postBloc.add(PostLocationCheckReferenceEvent());
+                } : null,
               )
             ],
           ),

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/blocs/AdminBloc/admin_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/appStorage.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/auth.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/postNotification.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
@@ -11,6 +13,7 @@ import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/user.dart';
 import 'package:ctrim_app_v1/classes/other/UserFileDocument.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
+import 'package:ctrim_app_v1/widgets/MyInputs.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -62,25 +65,23 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     else if(event is AppCurrentUserLogsOutEvent) yield* _currentUserLogsOut();
     else if(event is AppUploadCompressingImageEvent){
       yield AppEmptyState();
-      yield AppCompressingImageTaskState(itemNo: event.itemNo, totalLength: event.totalLength, fileName: event.fileName);
+      yield AppCompressingImageTaskState(appUploadItem: event.appUploadItem);
     }
     else if(event is AppUploadTaskStartedEvent){
       yield AppEmptyState();
-      yield AppMapUploadTaskToDialogueState(task: event.task, itemNo: event.itemNo, totalLength: event.totalLength, fileName: event.fileName);
+      yield AppMapUploadTaskToDialogueState(task: event.task, appUploadItem: event.appUploadItem);
     } 
     else if(event is AppUploadCompressingVideoEvent){
       yield AppEmptyState();
-      yield AppCompressingVideoTaskState(fileName: event.fileName, itemNo: event.itemNo, totalLength: event.totalLength);
+      yield AppCompressingVideoTaskState(appUploadItem: event.appUploadItem);
     }
     else if(event is AppRebuildSliverAppBarEvent) yield AppRebuildSliverAppBarState();
   }
  
   Stream<AppState> _mapCurrentUserEventToState(AppCurrentUserEvent event) async* {
     if (event is AppPostLikeClickedEvent) {
-      bool alreadySaved = _currentUser.likedPosts.contains(event.post.id);
-      if (alreadySaved) _currentUser.likedPosts.remove(event.post.id);
-      else _currentUser.likedPosts.add(event.post.id);
-
+      if (_currentUser.likedPosts.contains(event.post.id)) _removeLikedPost(event);
+      else _addLikedPost(event);
       _saveCurrentUser();
 
       yield AppCurrentUserLikedPostState();
@@ -89,6 +90,33 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       _currentUser = event.user;
       yield* _mapTabEventToState(TabButtonClicked(4));
     }
+  }
+
+  void _removeLikedPost(AppPostLikeClickedEvent event){
+    _currentUser.likedPosts.remove(event.post.id);
+    PostNotification().removeTokenFromPostNotifications(event.post.id);
+  }
+
+  void _addLikedPost(AppPostLikeClickedEvent event){
+    _currentUser.likedPosts.add(event.post.id);
+    PostNotification().addTokenToPostNotifications(event.post.id);
+    showDialog(
+      context: event.context,
+      barrierDismissible: false,
+      builder: (_){
+        return AlertDialog(
+          title: Text('Post Liked!'),
+          content: Text("You will receive notifications when updates are made for this post. " 
+          + "\nThis will stop once you 'unliked' the post."),
+          actions: [
+            MyFlatButton(
+              label: 'I Understand',
+              onPressed: () => Navigator.of(event.context).pop(),
+            )
+          ],
+        );
+      }
+    );
   }
 
   void _openPageFromEvent(AppNavigateToPageEvent event) {

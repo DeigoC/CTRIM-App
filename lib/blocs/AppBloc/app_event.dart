@@ -17,7 +17,8 @@ class AppCurrentUserEvent extends AppEvent {}
 
 class AppPostLikeClickedEvent extends AppCurrentUserEvent {
   final Post post;
-  AppPostLikeClickedEvent(this.post);
+  final BuildContext context;
+  AppPostLikeClickedEvent({@required this.post, @required this.context});
 }
 
 class AppCurrentUserLoggedInEvent extends AppCurrentUserEvent{
@@ -34,26 +35,21 @@ class AppRebuildSliverAppBarEvent extends AppEvent{}
 // ! Uploading?
 class AppUploadTaskStartedEvent extends AppEvent{
   final StorageUploadTask task;
-  final int itemNo, totalLength;
-  final String fileName;
+  final AppUploadItem appUploadItem;
   AppUploadTaskStartedEvent({
     @required this.task,  
-    @required this.itemNo,
-    @required this.totalLength,
-    @required this.fileName,
+    @required this.appUploadItem,
   });
 }
 
 class AppUploadCompressingImageEvent extends AppEvent{
-  final int itemNo, totalLength;
-  final String fileName;
-  AppUploadCompressingImageEvent({@required this.itemNo,@required this.totalLength, @required this.fileName});
+  final AppUploadItem appUploadItem;
+  AppUploadCompressingImageEvent({@required this.appUploadItem});
 }
 
 class AppUploadCompressingVideoEvent extends AppEvent{
-  final String fileName;
-  final int itemNo, totalLength;
-  AppUploadCompressingVideoEvent({@required this.fileName, @required this.itemNo,@required this.totalLength,});
+  final AppUploadItem appUploadItem;
+  AppUploadCompressingVideoEvent({@required this.appUploadItem});
 }
 
 // ! Navigation Events

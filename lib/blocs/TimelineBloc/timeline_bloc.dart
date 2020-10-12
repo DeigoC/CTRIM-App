@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/locationDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/postDBManager.dart';
+import 'package:ctrim_app_v1/classes/firebase_services/postNotification.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/timelinePostDBManager.dart';
 import 'package:ctrim_app_v1/classes/firebase_services/userDBManager.dart';
 import 'package:ctrim_app_v1/classes/models/aboutArticle.dart';
@@ -230,6 +231,11 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     TimelinePost updatedOriginalTPost = await _timelinePostDBManager.fetchOriginalPostByID(event.post.id);
 
     await processRefresh();
+    PostNotification().notifyAllTokensAboutUpdate(PostNotificationMessage(
+        body: event.updateLog, 
+        postID: event.post.id, 
+        title: event.post.title,
+    ));
     yield TimelineRebuildMyPostsPageState(updatedOriginalTPost);
     yield TimelineRebuildFeedState();
     yield TimelineEmptyState();

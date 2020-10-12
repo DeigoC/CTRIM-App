@@ -23,180 +23,106 @@ class AppStorage{
     getApplicationDocumentsDirectory().then((d) => directory =d.path);
   }
 
+  // * Posts upload tasks
   Future<Null> uploadNewPostFiles(Post post) async{
-    StorageUploadTask task;
-    int index =0, itemNo=1, totalLength=post.temporaryFiles.length;
+    AppUploadItem appUploadItem = AppUploadItem(post: post);
+
     if(post.temporaryFiles.length != 0){
       await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
-        File itemToSend = File(fileSrc);
-        itemNo = index + 1;
-        String filePath = 'posts/${post.id}/item_$index';
-        String fileName = basename(itemToSend.path);
-
-        // * Compress the item
-        if(post.temporaryFiles[fileSrc]=='img'){
-          // ! Do not change gif files, need to distinguish gif files to others
-          if(_isImageAGif(fileSrc)){
-            itemToSend = File(fileSrc);
-            filePath += '.gif';
-          }else{
-             _appBloc.add(AppUploadCompressingImageEvent(
-              itemNo: itemNo, 
-              totalLength: totalLength,
-              fileName: fileName
-            ));
-            itemToSend = await _compressImage(fileSrc);
-          }
-         
-
-        }else if(post.temporaryFiles[fileSrc]=='vid'){
-          _appBloc.add(AppUploadCompressingVideoEvent(
-            fileName: fileName,
-            itemNo: itemNo,
-            totalLength: totalLength,
-          ));
-          itemToSend = await _compressVideo(fileSrc);
-        }
-        
-        // * Upload the item
-        task = _ref.child(filePath).putFile(itemToSend);
-        _appBloc.add(AppUploadTaskStartedEvent(
-          task: task, 
-          itemNo: itemNo,
-          totalLength: totalLength,
-          fileName: fileName,
-        ));
-        
-        // * Fetch the new item's download link
-        await  task.onComplete.then((_) async{
-         await _ref.child(filePath).getDownloadURL().then((url) async{
-          post.gallerySources[url] = post.temporaryFiles[fileSrc];
-          // * Upload and get video thumbnail
-          if(post.temporaryFiles[fileSrc] == 'vid'){
-            post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(fileSrc, filePath);
-          }
-         });
-         index++;
-        });
+        appUploadItem.originalFilePath = fileSrc;
+        appUploadItem.setFile(File(fileSrc));
+ 
+        await _compressUploadItem(appUploadItem);
+        final StorageUploadTask task = _initialiseUploadingTheItem(appUploadItem);
+        await _setUploadItemDownloadLink(task, appUploadItem);
       });
     }
-    post.noOfGalleryItems = index;
+    post.noOfGalleryItems = appUploadItem.index;
   }
-
+  
   Future<Null> uploadEditPostNewFiles(Post post,) async{
-    StorageUploadTask task;
-    int index = post.noOfGalleryItems, itemNo=1, totalLength=post.temporaryFiles.length;
+    AppUploadItem appUploadItem = AppUploadItem(post: post);
 
     if(post.temporaryFiles.length != 0){
       await Future.forEach(post.temporaryFiles.keys, (String fileSrc) async{
-        File itemToSend = File(fileSrc);
-        String filePath = 'posts/${post.id}/item_$index';
-        String fileName = basename(itemToSend.path);
-
-        // * Compress the item
-        if(post.temporaryFiles[fileSrc]=='img'){
-          _appBloc.add(AppUploadCompressingImageEvent(
-            itemNo: itemNo, 
-            totalLength: totalLength,
-            fileName: fileName
-          ));
-          itemToSend = await _compressImage(fileSrc);
-        }else if(post.temporaryFiles[fileSrc]=='vid'){
-          _appBloc.add(AppUploadCompressingVideoEvent(
-            fileName: fileName,
-            itemNo: itemNo,
-            totalLength: totalLength,
-          ));
-          itemToSend = await _compressVideo(fileSrc);
-        }
-
-        // * Upload the item
-        task = _ref.child(filePath).putFile(itemToSend);
-        _appBloc.add(AppUploadTaskStartedEvent(
-          task: task, 
-          itemNo: itemNo,
-          totalLength: totalLength,
-          fileName: fileName,
-        ));
-
-        // * Fetch the new item's download link
-        await task.onComplete.then((_) async{
-          await _ref.child(filePath).getDownloadURL().then((url) async{
-            post.gallerySources[url] = post.temporaryFiles[fileSrc];
-            
-            // * Upload and get video thumbnail
-            if(post.temporaryFiles[fileSrc] == 'vid'){
-              post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(fileSrc, filePath);
-            }
-          });
-          index++; itemNo++;
-        });
+        appUploadItem.originalFilePath = fileSrc;
+        appUploadItem.setFile(File(fileSrc));
+        
+        await _compressUploadItem(appUploadItem);
+        final StorageUploadTask task = _initialiseUploadingTheItem(appUploadItem);
+        await _setUploadItemDownloadLink(task, appUploadItem);
       });
     }
-    post.noOfGalleryItems = index;
+    // ? Does the post break when user deletes all items and start uploading again?
+    post.noOfGalleryItems = appUploadItem.index;
   }
 
-  void deleteFile(String filePath){
-    _ref.child(filePath).delete();
+  Future _compressUploadItem(AppUploadItem appUploadItem) async{
+    final Post post = appUploadItem.post;
+    final String fileSrc = appUploadItem.file.path;
+
+    if(post.temporaryFiles[fileSrc]=='img'){
+      if(_isImageAGif(fileSrc)){
+        appUploadItem.isFileAGif = true;
+      }else{
+        _appBloc.add(AppUploadCompressingImageEvent(appUploadItem: appUploadItem));
+        appUploadItem.setFile(await _compressImage(fileSrc));
+      }
+    }else if(post.temporaryFiles[fileSrc]=='vid'){
+      _appBloc.add(AppUploadCompressingVideoEvent(appUploadItem: appUploadItem,));
+      appUploadItem.setFile(await _compressVideo(fileSrc));
+    }
   }
 
+  StorageUploadTask _initialiseUploadingTheItem(AppUploadItem appUploadItem){
+    final StorageUploadTask task = _ref.child(appUploadItem.uploadFilePath).putFile(appUploadItem.file);
+    _appBloc.add(AppUploadTaskStartedEvent(
+      task: task, 
+      appUploadItem: appUploadItem,
+    )); 
+    return task;
+  }
+
+  Future _setUploadItemDownloadLink(StorageUploadTask task, AppUploadItem appUploadItem) async{
+    Post post = appUploadItem.post;
+    
+    final String fileSrc = appUploadItem.originalFilePath;
+    await task.onComplete.then((_) async{
+      await _ref.child(appUploadItem.uploadFilePath).getDownloadURL().then((url) async{
+        post.gallerySources[url] = post.temporaryFiles[fileSrc];
+        
+        // * Upload and get video thumbnail
+        if(post.temporaryFiles[fileSrc] == 'vid'){
+          post.thumbnails[url] = await _uploadAndGetVideoThumbnailSrc(fileSrc, appUploadItem.uploadFilePath);
+        }
+      });
+      appUploadItem.startNewUploadCycle();
+    });
+  }
+
+  // * Other Upload tasks
   Future<String> uploadAndGetUserImageSrc(User user, File file) async{
-    String downloadSrc;
-    String fullname = user.forename + ' ' + user.surname;
-    String filePath = 'users/${user.id}-$fullname';
+    final String filePath = 'users/${user.id}-${user.forename + ' ' + user.surname}';
+    final AppUploadItem appUploadItem = AppUploadItem(originalFilePath: file.path);
 
-    _appBloc.add(AppUploadCompressingImageEvent(
-      itemNo: 1, 
-      totalLength: 1,
-      fileName: basename(file.path),
-    ));
+    _appBloc.add(AppUploadCompressingImageEvent(appUploadItem: appUploadItem));
     file = await _compressImage(file.path);
 
-    StorageUploadTask task = _ref.child(filePath).putFile(file);
-    await task.onComplete.then((_) async{
-      await _ref.child(filePath).getDownloadURL().then((url){
-        downloadSrc = url;
-      });
-    });
-    return downloadSrc;
+    final StorageUploadTask task = _ref.child(filePath).putFile(file);
+    await task.onComplete;
+    return await _ref.child(filePath).getDownloadURL();
   }
 
   Future<String> uploadAndGetLocationImageSrc(Location location, File file) async{
-    String downloadSrc;
-    String filePath = 'locations/${location.id}';
-    
-    _appBloc.add(AppUploadCompressingImageEvent(
-      itemNo: 1, 
-      totalLength: 1,
-      fileName: basename(file.path),
-    ));
+    final String filePath = 'locations/${location.id}';
+    final AppUploadItem appUploadItem = AppUploadItem(originalFilePath: file.path);
+
+    _appBloc.add(AppUploadCompressingImageEvent(appUploadItem: appUploadItem,));
     file = await _compressImage(file.path);
 
-    StorageUploadTask task = _ref.child(filePath).putFile(file);
+    final StorageUploadTask task = _ref.child(filePath).putFile(file);
     await task.onComplete;
-    await _ref.child(filePath).getDownloadURL().then((url){
-      downloadSrc = url;
-    });
-    return downloadSrc;
-  }
-
-  Future<File> _compressImage(String originalFilePath) async{
-    if(basename(originalFilePath).split('.').last.compareTo('gif')==0){
-      // * Do not change gif files
-      return File(originalFilePath);
-    }
-
-    String targetPath = directory+'/compressionImage.jpg';
-    var result = await FlutterImageCompress.compressAndGetFile(
-      originalFilePath, 
-      targetPath,
-      quality: 75,
-    );
-    return result;
-  } 
-
-  bool _isImageAGif(String src){
-    return basename(src).split('.').last.compareTo('gif')==0;
+    return await _ref.child(filePath).getDownloadURL();
   }
 
   Future<String> _uploadAndGetVideoThumbnailSrc(String fileSrc, String filePath) async{
@@ -218,6 +144,26 @@ class AppStorage{
     await task.onComplete;
     return (await _ref.child(newFilePath).getDownloadURL()).toString();
   }
+  
+  // * Other functions
+  void deleteFile(String filePath){
+    _ref.child(filePath).delete();
+  }
+
+  Future<File> _compressImage(String originalFilePath) async{
+    if(basename(originalFilePath).split('.').last.compareTo('gif')==0){
+      // * Do not change gif files
+      return File(originalFilePath);
+    }
+
+    String targetPath = directory+'/compressionImage.jpg';
+    var result = await FlutterImageCompress.compressAndGetFile(
+      originalFilePath, 
+      targetPath,
+      quality: 75,
+    );
+    return result;
+  } 
 
   Future<File> _compressVideo(String fileSrc) async{
     final compressedInfo = await VideoCompress.compressVideo(
@@ -227,4 +173,44 @@ class AppStorage{
     return compressedInfo.file;
   }
 
+  bool _isImageAGif(String src) => basename(src).split('.').last.compareTo('gif')==0;
+
+}
+
+class AppUploadItem{
+  final Post post;
+  String originalFilePath;
+
+  int _index, _itemNo, _totalLength;
+  File _file;
+  bool isFileAGif = false;
+
+  int get index => _index;
+  int get itemNo => _itemNo;
+  int get totalLength => _totalLength;
+  File get file => _file;
+  String get uploadFilePath => 'posts/${post.id}/item_$index' + (isFileAGif ? '.gif':'');
+  String get originalFileName => basename(_file.path);
+
+  AppUploadItem({
+    this.post,
+    this.originalFilePath,
+  }){
+    _itemNo = 1;
+    _index=0;
+    if(post != null){
+      _index = post.gallerySources.length==0 ? 0 : post.noOfGalleryItems;
+      _totalLength = post.temporaryFiles.length;
+    }
+    if(originalFilePath != null) setFile(File(originalFilePath));
+    
+  }
+
+  void setFile(File file) => _file = file;
+
+  void startNewUploadCycle(){
+    _index++;
+    _itemNo++;
+    isFileAGif = false;
+  }
 }
