@@ -40,6 +40,12 @@ class PostNotification{
   // ? Will iOS be different?
   // ? Remember to add images in the future
   Future _sendMessageToToken(PostNotificationMessage postNotificationMessage, String token) async{
+    Map<String,String> notification = {
+      'body': postNotificationMessage.body,
+      'title': postNotificationMessage.title,
+    };
+    if(postNotificationMessage.imageSrc!= null) notification['image'] = postNotificationMessage.imageSrc;
+    
     http.post(
       'https://fcm.googleapis.com/fcm/send',
       headers: {
@@ -47,10 +53,7 @@ class PostNotification{
         'Authorization': 'key=$serverToken',
       },
       body: jsonEncode({
-        'notification':{
-          'body': postNotificationMessage.body,
-          'title': postNotificationMessage.title,
-        },
+        'notification': notification,
         'priority': 'high',
         'data':{
           'click_action': 'FLUTTER_NOTIFICATION_CLICK',
@@ -73,6 +76,11 @@ class PostNotification{
 }
 
 class PostNotificationMessage{
-  final String title, body, postID;
-  PostNotificationMessage({@required this.body, @required this.postID, @required this.title});
+  final String title, body, postID, imageSrc;
+  PostNotificationMessage({
+    @required this.body, 
+    @required this.postID, 
+    @required this.title,
+    this.imageSrc,
+  });
 }

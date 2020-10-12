@@ -17,7 +17,8 @@ class NotificationHandler{
 
   // * iOS custom message looks like
   /*
-    insert here
+    {gcm.message_id: 1602506336874418, postID: 14, google.c.sender.id: 547781919976, google.c.a.e: 1, click_action: FLUTTER_NOTIFICATION_CLICK, 
+    aps: {alert: {title: Worship Concert 2020!, body: Testing on iOS}}}
   */
 
   final BuildContext _context;

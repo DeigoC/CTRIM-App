@@ -46,10 +46,8 @@ class PostArticle extends StatelessWidget {
     List<Widget> colChildren = [
       RichText(
         text: TextSpan(
-          text: timelinePost.title,
-          style:TextStyle(fontSize: isUpdatePost ? 22 : 26, color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
-          ? Colors.white : Colors.black),
           children: [
+            _getTitle(timelinePost, isUpdatePost),
             TextSpan(
                 text: _getAuthorNameAndTagsLine(timelinePost),
                 style: TextStyle(fontSize: isUpdatePost ? 8 : 12,color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
@@ -113,6 +111,21 @@ class PostArticle extends StatelessWidget {
           child: _buildOriginalPost(true),
         ),
       ],
+    );
+  }
+
+  TextSpan _getTitle(TimelinePost timelinePost, bool isUpdatePost){
+    List<InlineSpan> children = [
+      TextSpan(text: timelinePost.title),
+    ];
+    if(timelinePost.postDeleted) children.insert(0, TextSpan(
+      text: '[DELETED] ',
+      style: TextStyle(fontSize: isUpdatePost ? 22 : 26, color: Colors.red),
+    ));
+    return TextSpan(
+      style: TextStyle(fontSize: isUpdatePost ? 22 : 26, color: BlocProvider.of<AppBloc>(_context).onDarkTheme 
+      ? Colors.white : Colors.black),
+      children: children,
     );
   }
 

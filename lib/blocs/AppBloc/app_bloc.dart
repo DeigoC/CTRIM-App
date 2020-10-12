@@ -107,7 +107,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         return AlertDialog(
           title: Text('Post Liked!'),
           content: Text("You will receive notifications when updates are made for this post. " 
-          + "\nThis will stop once you 'unliked' the post."),
+          + "\n\nThis will stop once you 'unlike' it."),
           actions: [
             MyFlatButton(
               label: 'I Understand',

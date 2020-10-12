@@ -229,12 +229,13 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     await _processUpdateTPost(event);
     
     TimelinePost updatedOriginalTPost = await _timelinePostDBManager.fetchOriginalPostByID(event.post.id);
-
+   
     await processRefresh();
     PostNotification().notifyAllTokensAboutUpdate(PostNotificationMessage(
         body: event.updateLog, 
         postID: event.post.id, 
         title: event.post.title,
+        imageSrc: event.post.firstImageSrc,
     ));
     yield TimelineRebuildMyPostsPageState(updatedOriginalTPost);
     yield TimelineRebuildFeedState();

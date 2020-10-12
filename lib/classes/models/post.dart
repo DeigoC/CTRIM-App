@@ -161,7 +161,7 @@ class Post {
   String get firstImageSrc{
     if(gallerySources.length != 0){
       List<String> srcs = gallerySources.keys.toList();
-    srcs.sort((a,b) => a.compareTo(b));
+      srcs.sort((a,b) => a.compareTo(b));
       for (var i = 0; i < srcs.length; i++) {
         String src = srcs.elementAt(i);
         if(gallerySources[src]=='img') return src;

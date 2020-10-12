@@ -143,7 +143,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
             padding: EdgeInsets.all(8.0),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                Text(_post.title,style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),),
+                //Text(_post.title,style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),),
+                _buildTitle(),
                 TabBar(
                   labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
                   controller: _tabController,
@@ -185,6 +186,25 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         ),
       ),
     );
+  }
+
+  Widget _buildTitle(){
+    if(_post.deleted){
+      return RichText(
+        text:  TextSpan(
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white : Colors.black
+          ),
+          children: [
+            TextSpan(text: '[DELETED] ', style: TextStyle(color: Colors.red)),
+            TextSpan(text: _post.title,),
+          ]
+        ),
+      );
+    }
+    return Text(_post.title,style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),);
   }
 
   Widget _buildFAB(){
@@ -230,16 +250,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
   }
   
   Widget _buildAboutTab() {
-    /* return SingleChildScrollView(
-      child: ZefyrTheme(
-        data: ZefyrThemeData(defaultLineTheme: LineTheme(textStyle: TextStyle(),padding: EdgeInsets.all(8))), 
-        child:  Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: ZefyrView(document: _post.getBodyDoc()),
-        ),
-      ),
-    );  */ 
-
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
