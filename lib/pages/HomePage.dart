@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   Widget _buildMainScaffold(int selectedIndex) {
     return BlocBuilder<AppBloc, AppState>(
-      condition: (_,state){
+      buildWhen: (_,state){
         if(state is SettingsState) return true;
         return false;
       },
@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
               floatingActionButton: _getFAB(selectedIndex),
               drawer: _getDrawer(selectedIndex),
               bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                condition: (_,state){
+                buildWhen: (_,state){
                   if(state is SettingsState) return true;
                   return false;
                 },
@@ -142,25 +142,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                   unselectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white38 :null,
                   selectedItemColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? Colors.white: LightPrimaryColor,
                   backgroundColor: BlocProvider.of<AppBloc>(context).onDarkTheme ? DarkPrimaryColor : LightSurfaceColor,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
                   onTap: (newIndex){
                     _scrollToTop(newIndex);
                     BlocProvider.of<AppBloc>(context).add(TabButtonClicked(newIndex));
                   },
                   items: [
                      BottomNavigationBarItem(
-                      title: Container(),
+                       label: 'Home' ,
                       icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
                     ),
                     BottomNavigationBarItem(
-                      title: Container(),
+                      label:'Locations' ,
                       icon: Tooltip(child: Icon(Icons.map),message: 'Locations'),
                     ),
                      BottomNavigationBarItem(
-                       title: Container(),
+                       label:'About Us' ,
                       icon: Tooltip(child: Icon(Icons.info),message: 'About Us'),
                     ),
                     BottomNavigationBarItem(
-                      title: Container(),
+                      label:'Settings' ,
                       icon: Tooltip(child: Icon(Icons.settings),message: 'Settings'),
                     ),
                   ],
@@ -232,7 +234,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   Widget _buildPostTabBody(){
     return BlocListener<TimelineBloc, TimelineState>(
-      condition: (_,state){
+      listenWhen: (_,state){
         if(state is TimelinePinPostSnackbarState || state is TimelineUnpinPostSnackbarState) return true;
         return false;
       },

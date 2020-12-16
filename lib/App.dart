@@ -104,8 +104,8 @@ class _AppState extends State<App> {
       )
       ],
       child: BlocBuilder(
-        bloc: _appBloc,
-        condition: (previousState, currentState){
+        cubit: _appBloc,
+        buildWhen: (previousState, currentState){
           if(currentState is SettingsState) return true;
           return false;
         },

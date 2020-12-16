@@ -4,7 +4,6 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/blocs/PostBloc/post_bloc.dart';
 import 'package:ctrim_app_v1/blocs/TimelineBloc/timeline_bloc.dart';
-import 'package:ctrim_app_v1/classes/firebase_services/postNotification.dart';
 import 'package:ctrim_app_v1/classes/models/location.dart';
 import 'package:ctrim_app_v1/classes/models/post.dart';
 import 'package:ctrim_app_v1/classes/models/timelinePost.dart';
@@ -119,7 +118,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
             expandedHeight: _expandedHeight,
             actions: [
               BlocBuilder<AppBloc, AppState>(
-                condition: (_, state) {
+                buildWhen: (_, state) {
                   if (state is AppCurrentUserLikedPostState) return true;
                   return false;
                 },
@@ -211,8 +210,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     if(!_post.isDateNotApplicable && _post.startDate.isAfter(DateTime.now())){
       if(_scrollAtBottom) return null;
       return BlocBuilder(
-        bloc: _postBloc,
-        condition: (_,state){
+        cubit: _postBloc,
+        buildWhen: (_,state){
           if(state is PostRemoveViewFABState||state is PostBuildViewFABState){
             return true;
           }

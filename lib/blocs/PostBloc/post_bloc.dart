@@ -111,8 +111,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   // ! Mapping events to states
 
-  PostBloc();
-  PostBloc.editMode(Post postToEdit) {
+  PostBloc(): super(PostInitial());
+  PostBloc.editMode(Post postToEdit): super(PostInitial()) {
     _editMode = true;
    
     _endDateTOD = postToEdit.endDate;
@@ -160,9 +160,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       selectedTags[tag] = true;
     });
   }
-
-  @override
-  PostState get initialState => PostInitial();
 
   @override
   Stream<PostState> mapEventToState(PostEvent event,) async* {

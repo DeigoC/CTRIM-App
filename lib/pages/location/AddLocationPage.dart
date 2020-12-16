@@ -62,7 +62,7 @@ class _AddLocationState extends State<AddLocation> {
       child: Scaffold(
         appBar: AppBar(title: Text('Add Location'),),
         body: BlocListener(
-            bloc: _locationBloc,
+            cubit: _locationBloc,
             listener: (_, state) {
               if (state is LocationDisplayQueryResultsState) {
                 _displayLocationQueryResults(state.results);
@@ -124,8 +124,8 @@ class _AddLocationState extends State<AddLocation> {
         ),
         SizedBox(height: itemPaddingHeight,),
         BlocBuilder(
-            bloc: _locationBloc,
-            condition: (previousStatem, currentState) {
+            cubit: _locationBloc,
+            buildWhen: (previousStatem, currentState) {
               if (currentState is LocationButtonState) return true;
               return false;
             },
@@ -149,8 +149,8 @@ class _AddLocationState extends State<AddLocation> {
         _buildImageSelector(),
         SizedBox(height: itemPaddingHeight * 2,),
          BlocBuilder(
-            bloc: _locationBloc,
-            condition: (previousState, currentState) {
+            cubit: _locationBloc,
+            buildWhen: (previousState, currentState) {
               if (currentState is LocationDisplayConfirmedQueryAddressState) return true;
               return false;
             },
@@ -215,8 +215,8 @@ class _AddLocationState extends State<AddLocation> {
           ),
         ),
         BlocBuilder(
-            bloc: _locationBloc,
-            condition: (_, state) {
+            cubit: _locationBloc,
+            buildWhen: (_, state) {
               if (state is LocationSetNewLocationImageState)
                 return true;
               else if (state is LocationRemoveSelectedImageState) return true;

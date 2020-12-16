@@ -63,7 +63,7 @@ class _EditLocationState extends State<EditLocation> {
       child: Scaffold(
         appBar: AppBar( title: Text('Edit Location'),centerTitle: true,),
         body: BlocListener(
-            bloc: _locationBloc,
+            cubit: _locationBloc,
             listener: (_, state) {
               if (state is LocationDisplayQueryResultsState) {
                 _displayLocationQueryResults(state.results);
@@ -93,8 +93,8 @@ class _EditLocationState extends State<EditLocation> {
         //Text('Query Address',textAlign: TextAlign.center,),
         // * Selected Address
         BlocBuilder(
-            bloc: _locationBloc,
-            condition: (previousState, currentState) {
+            cubit: _locationBloc,
+            buildWhen: (previousState, currentState) {
               if (currentState is LocationDisplayConfirmedQueryAddressState) return true;
               return false;
             },
@@ -177,8 +177,8 @@ class _EditLocationState extends State<EditLocation> {
         SizedBox(height: itemPaddingHeight,),
         // * Save Button
         BlocBuilder(
-          bloc: _locationBloc,
-          condition: (_, state) {
+          cubit: _locationBloc,
+          buildWhen: (_, state) {
             if (state is LocationEditEnableUpdateButtonState) return true;
             else if (state is LocationEditDisableUpdateButtonState) return true;
             return false;
@@ -240,8 +240,8 @@ class _EditLocationState extends State<EditLocation> {
         Text('Location Image'),
         SizedBox(height: 8,),
         BlocBuilder(
-            bloc: _locationBloc,
-            condition: (_, state) {
+            cubit: _locationBloc,
+            buildWhen: (_, state) {
               if (state is LocationSetNewLocationImageState)
                 return true;
               else if (state is LocationRemoveSelectedImageState) return true;

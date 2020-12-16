@@ -101,7 +101,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
               ];
             },
             body: BlocListener<TimelineBloc,TimelineState>(
-              condition: (_,state){
+              listenWhen: (_,state){
                 if(state is TimelineNewPostUploadedState||
                 state is TimelineAttemptingToUploadNewPostState) return true;
                 return false;
@@ -131,7 +131,7 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
 
   BlocBuilder _buildAppBarActions() {
     return BlocBuilder<PostBloc, PostState>(
-      condition: (previousState, currentState) {
+      buildWhen: (previousState, currentState) {
         if (currentState is PostButtonChangeState) return true;
         return false;
       },

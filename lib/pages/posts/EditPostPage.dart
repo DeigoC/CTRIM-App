@@ -151,7 +151,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
               ];
             },
             body: BlocListener<TimelineBloc, TimelineState>(
-              condition: (_,state){
+              listenWhen: (_,state){
                 if(state is TimelineRebuildMyPostsPageState||
                 state is TimelineAttemptingToUploadNewPostState) return true;
                 return false;
@@ -208,7 +208,7 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
 
   BlocBuilder _buildUpdateButton() {
     return BlocBuilder<PostBloc, PostState>(
-      condition: (previousState, currentState) {
+      buildWhen: (previousState, currentState) {
         if (currentState is PostButtonChangeState) return true;
         return false;
       },

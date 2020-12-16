@@ -12,9 +12,11 @@ import 'package:video_compress/video_compress.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:path/path.dart';
 
+// TODO cleanup code
 class AppStorage{
   
-  final StorageReference _ref =  FirebaseStorage(storageBucket: 'gs://ctrim-app.appspot.com/').ref();
+  final Reference _ref =  FirebaseStorage.instance.ref();
+  //FirebaseStorage(storageBucket: 'gs://ctrim-app.appspot.com/').ref();
   String directory ='';
 
   final AppBloc _appBloc;
@@ -33,7 +35,7 @@ class AppStorage{
         appUploadItem.setFile(File(fileSrc));
  
         await _compressUploadItem(appUploadItem);
-        final StorageUploadTask task = _initialiseUploadingTheItem(appUploadItem);
+        final UploadTask task = _initialiseUploadingTheItem(appUploadItem);
         await _setUploadItemDownloadLink(task, appUploadItem);
       });
     }
@@ -49,7 +51,7 @@ class AppStorage{
         appUploadItem.setFile(File(fileSrc));
         
         await _compressUploadItem(appUploadItem);
-        final StorageUploadTask task = _initialiseUploadingTheItem(appUploadItem);
+        final UploadTask task = _initialiseUploadingTheItem(appUploadItem);
         await _setUploadItemDownloadLink(task, appUploadItem);
       });
     }
@@ -73,9 +75,9 @@ class AppStorage{
       appUploadItem.setFile(await _compressVideo(fileSrc));
     }
   }
-
-  StorageUploadTask _initialiseUploadingTheItem(AppUploadItem appUploadItem){
-    final StorageUploadTask task = _ref.child(appUploadItem.uploadFilePath).putFile(appUploadItem.file);
+  
+  UploadTask _initialiseUploadingTheItem(AppUploadItem appUploadItem){
+    final UploadTask task = _ref.child(appUploadItem.uploadFilePath).putFile(appUploadItem.file);
     _appBloc.add(AppUploadTaskStartedEvent(
       task: task, 
       appUploadItem: appUploadItem,
@@ -83,11 +85,12 @@ class AppStorage{
     return task;
   }
 
-  Future _setUploadItemDownloadLink(StorageUploadTask task, AppUploadItem appUploadItem) async{
+  Future _setUploadItemDownloadLink(UploadTask task, AppUploadItem appUploadItem) async{
     Post post = appUploadItem.post;
     
     final String fileSrc = appUploadItem.originalFilePath;
-    await task.onComplete.then((_) async{
+
+    await task.then((_) async{
       await _ref.child(appUploadItem.uploadFilePath).getDownloadURL().then((url) async{
         post.gallerySources[url] = post.temporaryFiles[fileSrc];
         
@@ -108,8 +111,8 @@ class AppStorage{
     _appBloc.add(AppUploadCompressingImageEvent(appUploadItem: appUploadItem));
     file = await _compressImage(file.path);
 
-    final StorageUploadTask task = _ref.child(filePath).putFile(file);
-    await task.onComplete;
+    final UploadTask task = _ref.child(filePath).putFile(file);
+    await task.whenComplete((){});
     return await _ref.child(filePath).getDownloadURL();
   }
 
@@ -120,8 +123,8 @@ class AppStorage{
     _appBloc.add(AppUploadCompressingImageEvent(appUploadItem: appUploadItem,));
     file = await _compressImage(file.path);
 
-    final StorageUploadTask task = _ref.child(filePath).putFile(file);
-    await task.onComplete;
+    final UploadTask task = _ref.child(filePath).putFile(file);
+    await task.whenComplete((){});
     return await _ref.child(filePath).getDownloadURL();
   }
 
@@ -132,7 +135,7 @@ class AppStorage{
     );
     String newFilePath = filePath +'_thumbnail';
 
-    StorageUploadTask task;
+    UploadTask task;
 
     await File('$directory/thing.png').create(recursive: true)
     .then((thumbnail) async{
@@ -141,7 +144,7 @@ class AppStorage{
       task =_ref.child(newFilePath).putFile(anotherFile);
     });
 
-    await task.onComplete;
+    await task.whenComplete((){});
     return (await _ref.child(newFilePath).getDownloadURL()).toString();
   }
   

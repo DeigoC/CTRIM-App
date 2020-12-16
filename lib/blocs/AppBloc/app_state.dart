@@ -29,12 +29,14 @@ abstract class AppUploadTaskState extends AppState{
 }
 
 class AppMapUploadTaskToDialogueState extends AppUploadTaskState{
-  final StorageUploadTask task;
+  final UploadTask task;
   final AppUploadItem appUploadItem;
+
   AppMapUploadTaskToDialogueState({
     @required this.task,
     @required this.appUploadItem,
   }):super(appUploadItem);
+
 }
 
 class AppCompressingImageTaskState extends AppUploadTaskState{

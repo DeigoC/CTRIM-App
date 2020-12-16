@@ -14,6 +14,8 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
 
   final AboutDBManager _aboutDBManager = AboutDBManager();
 
+  AboutBloc():super(AboutInitial());
+
   List<AboutArticle> get allArticles => AboutDBManager.allAboutArticles;
 
   AboutArticle _articleToEdit, _originalArticle;
@@ -53,9 +55,6 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
     var jsonDecoded = jsonDecode(_articleToEdit.body);
     return NotusDocument.fromJson(jsonDecoded);
   }
-
-  @override
-  AboutState get initialState => AboutInitial();
 
   @override
   Stream<AboutState> mapEventToState(AboutEvent event,) async* {

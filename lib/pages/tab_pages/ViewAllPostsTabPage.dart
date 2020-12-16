@@ -93,7 +93,7 @@ class ViewAllEventsPage {
             padding: EdgeInsets.only(bottom: 5),
             height: 35,
             child: BlocBuilder<TimelineBloc, TimelineState>(
-              condition: (_, state) {
+              buildWhen: (_, state) {
               if (state is TimelineTagChangedState) return true;
               return false;
             }, builder: (_, state) {

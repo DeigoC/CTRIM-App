@@ -82,8 +82,8 @@ class _EditAlbumState extends State<EditAlbum> {
 
   Widget _buildBody(){
     return BlocBuilder(
-      bloc: widget._postBloc,
-      condition: (_, currentState){
+      cubit: widget._postBloc,
+      buildWhen: (_, currentState){
         if(currentState is PostFilesReceivedState) return true;
         return false;
       },

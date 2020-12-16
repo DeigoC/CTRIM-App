@@ -89,7 +89,7 @@ class _EditUserPageState extends State<EditUserPage> {
         Container(
             padding: EdgeInsets.all(8),
             child: BlocConsumer(
-              bloc: _adminBloc,
+              cubit: _adminBloc,
               listener: (_, state) {
                 if (state is AdminUserModUpdateUserState) {}
               },

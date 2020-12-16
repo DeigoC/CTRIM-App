@@ -198,7 +198,7 @@ class ConfirmationDialogue{
           child: Dialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
             child: BlocBuilder<AppBloc, AppState>(
-              condition: (_,state){
+              buildWhen: (_,state){
                 if(state is AppMapUploadTaskToDialogueState) return true;
                 else if(state is AppCompressingImageTaskState) return true;
                 else if(state is AppCompressingVideoTaskState) return true;
@@ -209,13 +209,14 @@ class ConfirmationDialogue{
                 Widget trailing = Text('');
 
                 if(state is AppMapUploadTaskToDialogueState){
-                  return StreamBuilder<StorageTaskEvent>(
-                    stream: state.task.events,
+                  
+                  return StreamBuilder<TaskSnapshot>(
+                    stream: state.task.snapshotEvents,
                     builder: (_,snap){
                       String percentage;
                       if(snap.hasData){
-                        int totalByteCount = snap.data.snapshot.totalByteCount;
-                        int amountTransfered = snap.data.snapshot.bytesTransferred;
+                        int totalByteCount = snap.data.totalBytes;
+                        int amountTransfered = snap.data.bytesTransferred;
                         percentage = ((amountTransfered/totalByteCount) * 100).round().toString() + '%';
 
                         title = _getTitle(state);

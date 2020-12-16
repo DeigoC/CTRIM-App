@@ -26,7 +26,7 @@ class _PostDateTimeFieldState extends State<PostDateTimeField> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer(
-      bloc: _postBloc,
+      cubit: _postBloc,
       listenWhen: (_,state){
         if(state is PostEndDateNotAcceptedState) return true;
         return false;
@@ -167,7 +167,7 @@ class PostLocationField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: BlocBuilder<PostBloc, PostState>(
-        condition: (_, currentState) {
+        buildWhen: (_, currentState) {
             if (currentState is PostLocationSelectedState) return true;
             return false;
         }, 
@@ -285,7 +285,7 @@ class PostTagsField extends StatelessWidget {
             ],
           ),
           BlocBuilder<PostBloc, PostState>(
-          condition: (_, state) {
+           buildWhen: (_, state) {
             if (state is PostDepartmentClickState) return true;
             return false;
           }, 
@@ -340,7 +340,8 @@ class DetailTable extends StatelessWidget {
         decoration: BoxDecoration(
             border: Border.all(), borderRadius: BorderRadius.circular(16)),
         height: MediaQuery.of(context).size.height * 0.6,
-        child: BlocBuilder<PostBloc, PostState>(condition: (_, currentState) {
+        child: BlocBuilder<PostBloc, PostState>(
+          buildWhen: (_, currentState) {
           if (currentState is PostDetailListReorderState) return true;
           return false;
         }, builder: (_, state) {
@@ -463,8 +464,8 @@ class DetailTable extends StatelessWidget {
                     ),
                     SizedBox(height: 8,),
                     BlocBuilder(
-                      bloc: BlocProvider.of<PostBloc>(_context),
-                      condition: (_, state) {
+                      cubit: BlocProvider.of<PostBloc>(_context),
+                      buildWhen: (_, state) {
                         if (state is PostDetailListState) return true;
                         return false;
                       },
@@ -520,8 +521,8 @@ class DetailTable extends StatelessWidget {
                   ),
                   SizedBox( height: 8,),
                   BlocBuilder(
-                    bloc: BlocProvider.of<PostBloc>(_context),
-                    condition: (_, state) {
+                    cubit: BlocProvider.of<PostBloc>(_context),
+                    buildWhen: (_, state) {
                       if (state is PostDetailListState) return true;
                       return false;
                     },

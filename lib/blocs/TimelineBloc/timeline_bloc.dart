@@ -20,14 +20,16 @@ part 'timeline_state.dart';
 
 class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   
-  final LocationDBManager _locationDBManager;
+  
   final UserDBManager _userDBManager = UserDBManager();
-  final PostDBManager _postDBManager;
   final TimelinePostDBManager _timelinePostDBManager = TimelinePostDBManager();
+  PostDBManager _postDBManager;
+  LocationDBManager _locationDBManager;
  
-  TimelineBloc(AppBloc appBloc) 
-  :_locationDBManager = LocationDBManager(appBloc)
-  ,_postDBManager = PostDBManager(appBloc);
+  TimelineBloc(AppBloc appBloc) : super(TimelineInitial()){
+    _locationDBManager = LocationDBManager(appBloc); // ? No other way?
+    _postDBManager = PostDBManager(appBloc);
+  }
 
   // ! Bloc Fields
   List<User> get mainFeedUsers => UserDBManager.mainFeedUsers;
@@ -152,9 +154,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   // ! Mapping events to state
-  @override
-  TimelineState get initialState => TimelineInitial();
-
   @override
   Stream<TimelineState> mapEventToState(TimelineEvent event,) async* {
     if (event is TimelineAddNewPostEvent) yield* _mapNewPostEventToState(event);

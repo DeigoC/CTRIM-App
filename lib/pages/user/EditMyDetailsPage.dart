@@ -78,7 +78,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
       child: Scaffold(
         appBar: AppBar(title: Text('Edit my Data'),),
         body: BlocListener(
-          bloc: _adminBloc,
+          cubit: _adminBloc,
           listener: (_,state){
             if(state is AdminUserImageUploadingState){
               ConfirmationDialogue().uploadTaskStarted(context: context);
@@ -136,8 +136,8 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
         Column(
           children: [
             BlocBuilder(
-              bloc: _adminBloc,
-              condition: (_,state){
+              cubit: _adminBloc,
+              buildWhen: (_,state){
                 if(state is AdminUserRebuildSocialLinkState) return true;
                 return false;
               },
@@ -226,8 +226,8 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
 
   Widget _buildUserBodySection(){
     return BlocBuilder(
-      bloc: _adminBloc,
-      condition: (_,state){
+      cubit: _adminBloc,
+      buildWhen: (_,state){
         if(state is AdminUserRebuildBodyState) return true;
         return false;
       },

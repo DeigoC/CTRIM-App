@@ -43,7 +43,7 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
         ],
       ),
       body: BlocBuilder<TimelineBloc, TimelineState>(
-        condition: (_, state) {
+        buildWhen: (_, state) {
         if (state is TimelineRebuildMyPostsPageState) return true;
         return false;
       }, builder: (_, state) {

@@ -53,7 +53,7 @@ class _SearchPostsPageState extends State<SearchPostsPage> {
 
   Widget _buildBody() {
     return BlocBuilder<TimelineBloc, TimelineState>(
-      condition: (_, state) {
+      buildWhen: (_, state) {
         if (state is TimelineSearchState) return true;
         return false;
       },

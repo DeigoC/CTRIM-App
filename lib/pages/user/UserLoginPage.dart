@@ -39,7 +39,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
       body: Builder(builder: (_) {
         _context = _;
         return BlocConsumer(
-            bloc: _adminBloc,
+            cubit: _adminBloc,
             listener: (_, state) {
               if (state is AdminLoginErrorState) _mapErrorStatesToSnackbars(state);
               else if(state is AdminLoginCompletedState) _loginCompleted(state);
@@ -117,8 +117,8 @@ class _UserLoginPageState extends State<UserLoginPage> {
           )
         ),
         BlocBuilder(
-          bloc: _adminBloc,
-          condition: (_,state){
+          cubit: _adminBloc,
+          buildWhen: (_,state){
             if(state is AdminLoginEnableLoginState || state is AdminLoginDisableLoginState) return true;
             return false;
           },
@@ -146,8 +146,8 @@ class _UserLoginPageState extends State<UserLoginPage> {
             _adminBloc.add(AdminLoginTextChangeEvent(email: newEmail)),
       ),
       BlocBuilder(
-        bloc: _adminBloc,
-        condition: (prev, currentState) {
+        cubit: _adminBloc,
+        buildWhen: (prev, currentState) {
           if (currentState is AdminLoginDisableContinueState ||currentState is AdminLoginEnableContinueState) return true;
           return false;
         },

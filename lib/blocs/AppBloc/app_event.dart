@@ -34,7 +34,7 @@ class AppRebuildSliverAppBarEvent extends AppEvent{}
 
 // ! Uploading?
 class AppUploadTaskStartedEvent extends AppEvent{
-  final StorageUploadTask task;
+  final UploadTask task;
   final AppUploadItem appUploadItem;
   AppUploadTaskStartedEvent({
     @required this.task,  

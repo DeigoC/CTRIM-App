@@ -20,8 +20,8 @@ class _LocationQueryState extends State<LocationQuery> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      bloc: widget._locationBloc,
-      condition: (previousState, currentState) {
+      cubit: widget._locationBloc,
+      buildWhen: (previousState, currentState) {
         if (currentState is LocationQueryState) return true;
         return false;
       },

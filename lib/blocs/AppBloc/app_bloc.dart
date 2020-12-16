@@ -40,7 +40,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     _currentUser = user;
   }
 
-  AppBloc(this.navigatorKey);
+  AppBloc(this.navigatorKey):super(AppInitial());
 
   static openURL(String url, BuildContext context) async{
     if(await canLaunch(url)){
@@ -51,9 +51,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   // ! Mapping events to states
-  @override
-  AppState get initialState => AppInitial();
-
   @override
   Stream<AppState> mapEventToState(AppEvent event,) async* {
     if (event is TabButtonClicked)  yield* _mapTabEventToState(event);

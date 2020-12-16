@@ -18,7 +18,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
   final AuthService _auth = AuthService();
   final UserDBManager _userDBManager = UserDBManager();
-  final AppStorage _appStorage;
+  AppStorage _appStorage;
 
   //List<User> _users = [];
 
@@ -27,7 +27,9 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
   String _loginEmail = '', _loginPassword = '', _creationPassword = '', _confirmPassword = '';
 
-  AdminBloc(AppBloc appBloc):_appStorage = AppStorage(appBloc);
+  AdminBloc(AppBloc appBloc) : super(AdminInitial()) {
+    _appStorage = AppStorage(appBloc);
+  } 
 
   void setupUserToRegister() {
     _selectedUser = User(
@@ -69,9 +71,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   }
 
   // ! Mapping events to state
-  @override
-  AdminState get initialState => AdminInitial();
-
+  
   @override
   Stream<AdminState> mapEventToState(AdminEvent event,) async* {
     if (event is AdminLoginTextChangeEvent) yield* _mapLoginTextChangeEventToState(event);

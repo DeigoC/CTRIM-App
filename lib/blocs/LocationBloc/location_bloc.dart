@@ -14,12 +14,13 @@ part 'location_state.dart';
 
 class LocationBloc extends Bloc<LocationEvent, LocationState> {
   // ! Bloc Fields
-  final LocationDBManager _locationDBManager;
+  LocationDBManager _locationDBManager;
 
-  LocationBloc(AppBloc appBloc):
-  _locationDBManager = LocationDBManager(appBloc), 
-  _location = Location(),
-  _originalLocation = Location();
+  LocationBloc(AppBloc appBloc) : super(LocationInitial()) {
+    _locationDBManager = LocationDBManager(appBloc);
+    _location = Location();
+    _originalLocation = Location();
+  }
 
   List<Address> _queryAddresses =[];
 
@@ -50,9 +51,6 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   Location get locationToEdit => _location;
 
   // ! Mapping events to states
-  @override
-  LocationState get initialState => LocationInitial();
-
   @override
   Stream<LocationState> mapEventToState(LocationEvent event,) async* {
     if (event is LocationTextChangeEvent)yield* _mapTextChangeEventsToState(event);

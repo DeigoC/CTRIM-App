@@ -20,7 +20,7 @@ class ViewAllLocationsPage {
     return Snap(
       controller: _controller.appBar,
       child: BlocBuilder<TimelineBloc, TimelineState>(
-        condition: (_, state) {
+        buildWhen: (_, state) {
           if (state is TimelineLocationTabUpdatedState) return true;
           return false;
         },

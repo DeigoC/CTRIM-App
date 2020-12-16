@@ -122,7 +122,7 @@ class AboutTabPage{
 
   Widget _buildTab2(){
     return BlocBuilder<TimelineBloc, TimelineState>(
-      condition: (_,state){
+      buildWhen: (_,state){
         if(state is TimelineRebuildAboutTabState) return true;
         return false;
       },

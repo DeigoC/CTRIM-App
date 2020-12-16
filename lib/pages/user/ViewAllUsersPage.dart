@@ -11,7 +11,7 @@ class ViewAllUsers extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('All Users'),),
       body: BlocBuilder<TimelineBloc, TimelineState>(
-        condition: (_,state){
+        buildWhen: (_,state){
           if(state is TimelineRebuildUserListState) return true;
           return false;
         },

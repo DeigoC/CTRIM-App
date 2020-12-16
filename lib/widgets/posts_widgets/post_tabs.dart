@@ -87,9 +87,9 @@ class _AboutTabBodyState extends State<AboutTabBody> {
         ),
         Divider(thickness: 1, indent: 10, endIndent: 10,),
         BlocBuilder<PostBloc, PostState>(
-            condition: (previousState, currentState) {
-          if (currentState is PostUpdateBodyState) return true;
-          return false;
+            buildWhen: (previousState, currentState) {
+              if (currentState is PostUpdateBodyState) return true;
+              return false;
         }, builder: (_, state) {
           return Container(
               padding: EdgeInsets.all(8),

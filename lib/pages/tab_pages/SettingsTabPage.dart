@@ -95,7 +95,7 @@ class SettingsPage{
 
   Widget buildBody(){
     return BlocConsumer(
-      bloc: BlocProvider.of<AppBloc>(_context),
+      cubit: BlocProvider.of<AppBloc>(_context),
       listener: (_,state){
 
       },

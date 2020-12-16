@@ -16,9 +16,10 @@ class AdminDropdownList extends StatelessWidget {
           children: [
             Text('Admin Level',style: TextStyle(fontSize: 18),),
             SizedBox( width: 8,),
-            BlocBuilder<AdminBloc, AdminState>(condition: (_, state) {
-              if (state is AdminUserAdminLevelChangedState) return true;
-              return false;
+            BlocBuilder<AdminBloc, AdminState>(
+              buildWhen: (_, state) {
+                if (state is AdminUserAdminLevelChangedState) return true;
+                return false;
             }, builder: (_, state) {
               return DropdownButton<int>(
                 style: TextStyle(

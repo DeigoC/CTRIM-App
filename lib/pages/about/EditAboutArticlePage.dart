@@ -32,8 +32,8 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
       child: Scaffold(
         appBar: AppBar(title: Text('Edit About Article'),),
         body: BlocListener(
-          bloc: _aboutBloc,
-          condition: (_,state){
+          cubit: _aboutBloc,
+          listenWhen: (_,state){
             if(state is AboutArticleAttemptingToSaveRecordState || 
             state is AboutArticleRebuildAboutTabState) return true;
             return false;
@@ -123,7 +123,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
 
   Widget _buildSaveButton(){
     return BlocBuilder<AboutBloc, AboutState>(
-      condition: (_,state){
+      buildWhen: (_,state){
         if(state is AboutArticleEnableSaveButtonState || state is AboutArticleDisableSaveButtonState) return true;
         return false;
       },
@@ -145,7 +145,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
 
   Widget _buildBodyView(){
     return BlocBuilder<AboutBloc, AboutState>(
-      condition: (_,state){
+      buildWhen: (_,state){
         if(state is AboutArticleBodyChangedState) return true;
         return false;
       },
