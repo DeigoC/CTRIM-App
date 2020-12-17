@@ -52,9 +52,7 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
           _allUserTPs.add(state.updatedOriginalTP);
           return _buildBodyWithData(_allUserTPs);
         }
-        if(_allUserTPs!=null){
-          return  _buildBodyWithData(_allUserTPs);
-        }
+        if(_allUserTPs!=null) return  _buildBodyWithData(_allUserTPs);
         return _buildFB();
       }),
     );
@@ -71,11 +69,8 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             setState(() {_allUserTPs = snap.data;});
           });
-        }else if(snap.hasError){
-          result = Center(child: Text('Something went wrong!'),);
-        }else{
-          result = Center(child: CircularProgressIndicator(),);
-        }
+        }else if(snap.hasError) result = Center(child: Text('Something went wrong!'),);
+        else result = Center(child: CircularProgressIndicator(),);
         return result;
       },
     );
@@ -96,7 +91,6 @@ class _ViewMyPostsPageState extends State<ViewMyPostsPage> {
           mode: _showDeleted ? 'view':'edit',
           allUsers: BlocProvider.of<TimelineBloc>(context).mainFeedUsers,
           timelinePost: listToDisplay.elementAt(index),
-          //post: data[listToDisplay.keys.elementAt(index)],
         );
       }
     );

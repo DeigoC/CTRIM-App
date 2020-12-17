@@ -239,7 +239,7 @@ class _SocialLinksEditState extends State<SocialLinksEdit> {
     return _buildViewing();
   }
 
-  Widget _buildAddingLink(){
+  SingleChildScrollView _buildAddingLink(){
     List<String> availableTypes = List.from(_availableTypes);
     availableTypes.removeWhere((e) => widget._adminBloc.selectedUser.socialLinks.containsKey(e));
     if(_editing) availableTypes.add(_selectedTypeToEdit);
@@ -286,7 +286,7 @@ class _SocialLinksEditState extends State<SocialLinksEdit> {
     );
   }
 
-  Widget _buildViewing(){
+  ListView _buildViewing(){
     Map<String,String> socialLinks = widget._adminBloc.selectedUser.socialLinks;
     List<String> types = socialLinks.keys.toList();
     types.sort();

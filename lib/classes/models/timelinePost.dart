@@ -54,13 +54,8 @@ class TimelinePost{
     };
   }
 
-  String getPostDateString(){
-    return DateFormat('dd MMM yyyy').format(postDate);
-  }
-
-  String getUpdateTime(){
-    return DateFormat('h:mm a').format(postDate);
-  }
+  String  getPostDateString ()=> DateFormat('dd MMM yyyy').format(postDate);
+  String  getUpdateTime ()=> DateFormat('h:mm a').format(postDate);
 
   String getUpdateString(){
     if(postType == 'original') return 'Original Post';

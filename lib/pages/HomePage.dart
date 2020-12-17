@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                   items: [
                      BottomNavigationBarItem(
                        label: 'Home' ,
-                      icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
+                       icon: Tooltip(child: Icon(Icons.home),message: 'Home',)
                     ),
                     BottomNavigationBarItem(
                       label:'Locations' ,

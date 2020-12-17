@@ -53,7 +53,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
     );
   }
 
-  Widget _buildBody(){
+  BlocListener _buildBody(){
     SizedBox padding = SizedBox(height: 8,);
     AboutArticle article = _aboutBloc.articleToEdit;
     
@@ -107,21 +107,21 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
     );
   }
 
-  Widget _buildSelectPastorUID(){
+  Padding _buildSelectPastorUID(){
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text('Change This at Firebase Console'),
     );
   }
 
-  Widget _buildSelectLocationID(){
+  Padding _buildSelectLocationID(){
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text('Change This at Firebase Console'),
     );
   }
 
-  Widget _buildSaveButton(){
+  BlocBuilder _buildSaveButton(){
     return BlocBuilder<AboutBloc, AboutState>(
       buildWhen: (_,state){
         if(state is AboutArticleEnableSaveButtonState || state is AboutArticleDisableSaveButtonState) return true;
@@ -143,7 +143,7 @@ class _EditAboutArticlePageState extends State<EditAboutArticlePage> {
     );
   }
 
-  Widget _buildBodyView(){
+  BlocBuilder _buildBodyView(){
     return BlocBuilder<AboutBloc, AboutState>(
       buildWhen: (_,state){
         if(state is AboutArticleBodyChangedState) return true;

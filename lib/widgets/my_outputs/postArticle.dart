@@ -20,7 +20,6 @@ class PostArticle extends StatelessWidget {
     @required this.allUsers,
     @required this.mode,
   });
-       
  
   @override
   Widget build(BuildContext context) {
@@ -42,7 +41,7 @@ class PostArticle extends StatelessWidget {
     );
   }
 
-  Widget _buildOriginalPost(bool isUpdatePost) {
+  Column _buildOriginalPost(bool isUpdatePost) {
     List<Widget> colChildren = [
       RichText(
         text: TextSpan(
@@ -56,7 +55,6 @@ class PostArticle extends StatelessWidget {
         ),
       ),
     ];
-
     _addDescription(colChildren);
     _addImages(colChildren);
     return Column(
@@ -91,7 +89,7 @@ class PostArticle extends StatelessWidget {
     }
   }
 
-  Widget _buildUpdatePost() {
+  Column _buildUpdatePost() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -175,7 +173,6 @@ class _PostArticleMediaContainerState extends State<PostArticleMediaContainer> {
     _initalPostID = widget.timelinePost.postID;
     super.initState();
   }
-
 
   void _initialiseData(){
     List<String> srcs = widget.timelinePost.gallerySources.keys.toList();

@@ -44,7 +44,6 @@ class ViewAllEventsPage {
             _scrollController.animateTo(_scrollController.position.minScrollExtent, 
             duration: Duration(milliseconds: 500), curve: Curves.easeIn);
           }else if(state is TimelineTagChangedState){
-            //_scrollController.jumpTo(_scrollController.position.minScrollExtent);
             _scrollController.animateTo(_scrollController.position.minScrollExtent, 
             duration: Duration(milliseconds: 500), curve: Curves.easeIn);
           }
@@ -138,7 +137,6 @@ class ViewAllEventsPage {
             mode: 'view',
             allUsers: BlocProvider.of<TimelineBloc>(_context).mainFeedUsers,
             timelinePost: feedData.elementAt(index),
-            //post: feedData[tpsSorted.elementAt(index)],
           );
         }
       ),

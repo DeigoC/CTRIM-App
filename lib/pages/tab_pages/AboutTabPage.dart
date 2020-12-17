@@ -51,7 +51,7 @@ class AboutTabPage{
     );
   }
 
-  Widget _buildTab1(){
+  ListView _buildTab1(){
     AboutArticle thisArticle = BlocProvider.of<AboutBloc>(_context).allArticles.first;
     String matthewVerse = '“Therefore go and make disciples of all nations, baptizing them in the ' +
     'name of the Father and of the Son and of the Holy Spirit, and ' +
@@ -120,7 +120,7 @@ class AboutTabPage{
     );
   }
 
-  Widget _buildTab2(){
+  BlocBuilder _buildTab2(){
     return BlocBuilder<TimelineBloc, TimelineState>(
       buildWhen: (_,state){
         if(state is TimelineRebuildAboutTabState) return true;
@@ -176,7 +176,7 @@ class AboutTabPage{
     );
   }
 
-  Widget _buildTab3(){
+  ListView _buildTab3(){
    return ListView(
      children: [
        SizedBox(height: MediaQuery.of(_context).size.height * 0.1,),

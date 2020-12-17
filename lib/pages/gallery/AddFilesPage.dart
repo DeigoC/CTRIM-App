@@ -97,7 +97,9 @@ class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
   Widget _buildBody() {
     if(_selectingFiles) return Center(child: CircularProgressIndicator(),);
     
-    else if (_selectedFiles.length == 0) return Center(child: Text('Max Image Size: 5.0 MB\nMax Video Size: 200.0 MB',textAlign: TextAlign.center,),);
+    else if (_selectedFiles.length == 0) return Center(
+      child: Text('Max Image Size: 5.0 MB\nMax Video Size: 200.0 MB',textAlign: TextAlign.center,),
+    );
     
     return ListView.builder(
       itemCount: _selectedFiles.length,
@@ -115,7 +117,7 @@ class _AddGalleryFilesPageState extends State<AddGalleryFilesPage> {
     );
   }
 
-  // ! Needs different technique with iOS
+  // TODO Needs different technique with iOS
   Future<List<PlatformFile>> _pickFiles({bool pickingImages = false}) async {
     FilePickerResult results;
 
@@ -178,9 +180,7 @@ class _AddingFileItemState extends State<AddingFileItem> {
   final List<String> _imageTypes = ['jpg', 'png', 'gif', 'svg'];
   double _containerSize;
   VideoPlayerController _videoPlayerController;
-
   bool _compressing = false;
-
 
   @override
   void initState() {
@@ -214,7 +214,7 @@ class _AddingFileItemState extends State<AddingFileItem> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(basename(widget.file.path), textAlign: TextAlign.center, /* overflow: TextOverflow.ellipsis */),
+                  Text(basename(widget.file.path), textAlign: TextAlign.center,),
                   _getFileSizeText(),
                 ],
               ),
@@ -230,7 +230,7 @@ class _AddingFileItemState extends State<AddingFileItem> {
     return _buildVideoFileContainer();
   }
 
-  Widget _buildImageFileContainer(){
+  Container _buildImageFileContainer(){
     return Container(
       width: _containerSize,
       height: _containerSize,
@@ -241,7 +241,7 @@ class _AddingFileItemState extends State<AddingFileItem> {
     );
   }
 
-  Widget _buildVideoFileContainer(){
+  ClipRRect _buildVideoFileContainer(){
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _compressVideoTest();
     });

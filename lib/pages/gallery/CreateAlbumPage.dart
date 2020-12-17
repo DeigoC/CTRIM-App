@@ -20,9 +20,7 @@ class _EditAlbumState extends State<EditAlbum> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: _onDeleteMode ? _buildDeleteActions() : _buildNormalActions(),
-      ),
+      appBar: AppBar(actions: _onDeleteMode ? _buildDeleteActions() : _buildNormalActions(),),
      body: _buildBody(),
      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
      floatingActionButton: _onDeleteMode ? _buildDeleteButton(): null,
@@ -80,7 +78,7 @@ class _EditAlbumState extends State<EditAlbum> {
     );
   }
 
-  Widget _buildBody(){
+  BlocBuilder _buildBody(){
     return BlocBuilder(
       cubit: widget._postBloc,
       buildWhen: (_, currentState){
@@ -98,12 +96,6 @@ class _EditAlbumState extends State<EditAlbum> {
        return  SingleChildScrollView(
           child: Wrap(children: newChildren,),
         );
-
-      /* return ListView(
-      children: [
-        Wrap(children: newChildren),
-      ],
-      ); */
       }
      );
    

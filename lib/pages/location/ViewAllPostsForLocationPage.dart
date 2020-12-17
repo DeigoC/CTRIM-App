@@ -21,23 +21,16 @@ ViewAllEventsForLocation(this._locationID);
        future: BlocProvider.of<TimelineBloc>(context).fetchPostsForLocation(_locationID),
        builder: (_,snap){
          Widget result;
-
-         if(snap.hasData){
-           result = _buildBodyWithData(snap.data);
-         }else if(snap.hasError){
-           result = Center(child: Text('Something went wrong!'),);
-         }else{
-           result = Center(child: CircularProgressIndicator(),);
-         }
+         if(snap.hasData) result = _buildBodyWithData(snap.data);
+         else if(snap.hasError) result = Center(child: Text('Something went wrong!'),);
+         else result = Center(child: CircularProgressIndicator(),);
          return result;
        },
      );
   }
 
   Widget _buildBodyWithData(Map<String,List> data){
-    if(data['TimelinePosts'].length==0){
-      return Center(child: Text('No Posts Yet!'),);
-    }
+    if(data['TimelinePosts'].length==0) return Center(child: Text('No Posts Yet!'),);
     return ListView.builder(
       itemCount: data['TimelinePosts'].length,
       itemBuilder: (_,index){

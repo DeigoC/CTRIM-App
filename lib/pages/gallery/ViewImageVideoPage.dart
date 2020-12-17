@@ -7,6 +7,7 @@ import 'package:flutter_image/network.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
 
+// TODO fix this once and for all!
 class ViewImageVideo extends StatefulWidget {
   final Map<String, ImageTag> imageSources;
   final int initialPage;
@@ -37,21 +38,17 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
           _scrollController = ScrollController(initialScrollOffset: _midScroll);
        });
     });
+   
     _scrollController = ScrollController();
     super.initState();
   }
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations([
-       DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    _setNormalOrientation();
     SystemChrome.setEnabledSystemUIOverlays([
-        SystemUiOverlay.top,
-        SystemUiOverlay.bottom,
+      SystemUiOverlay.top,
+      SystemUiOverlay.bottom,
     ]);
 
     _chewieControllers.keys.forEach((src) {
@@ -62,11 +59,19 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
     super.dispose();
   }
 
+  void _setNormalOrientation(){
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     if(_hideAppBar){
-      SystemChrome.setEnabledSystemUIOverlays([
-      ]);
+      SystemChrome.setEnabledSystemUIOverlays([]);
     }else{
       SystemChrome.setEnabledSystemUIOverlays([
         SystemUiOverlay.top,
@@ -74,19 +79,23 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
       ]);
     }
     
-    return OrientationBuilder(builder: (_, orientation) {
+    return OrientationBuilder(
+      builder: (_, orientation) {
       bool continueListening = true;
       if(_orientation != null){
         if(_orientation != orientation){
           // ! sizes have changed, need to reset the midsize and initial position, need to disable the listeners
           continueListening = false;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+          
+        
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               setState(() {
                   _midScroll = _scrollController.position.maxScrollExtent / 2;
                   _scrollController.jumpTo(_midScroll);
                   _scrollController = ScrollController(initialScrollOffset: _midScroll);
               });
-        });
+            });
+              
         }
       }
       _orientation = orientation;
@@ -97,9 +106,11 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
         appBar: _buildAppBar(orientation),
         body: PageView.builder(
           onPageChanged: (index){
+
             _videoControllers.values.forEach((vidCtr) {
               vidCtr.pause();
             });
+
           },
           pageSnapping: true,
           physics: _isZoomedIn ? NeverScrollableScrollPhysics() : BouncingScrollPhysics(),
@@ -167,7 +178,13 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
           _chewieControllers[src] = ChewieController(
             videoPlayerController: _videoControllers[src],
             aspectRatio: _videoControllers[src].value.aspectRatio,
-            autoPlay: true
+            autoPlay: true,
+            deviceOrientationsOnEnterFullScreen: [
+              DeviceOrientation.landscapeLeft,
+              DeviceOrientation.landscapeRight,
+              DeviceOrientation.portraitDown,
+              DeviceOrientation.portraitUp,
+            ]
           );
         });
       });
@@ -187,16 +204,13 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
     return InkWell(
       splashColor: Colors.transparent,
       onTap: (){setState(() {_hideAppBar= !_hideAppBar;});},
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(height: _midScroll,),
-          AspectRatio(
-            aspectRatio: 16/9,
-            child: (type.compareTo('vid') == 0) ? _buildVideoContainer(src) : _createImagePage(src),
-          ),
-          SizedBox(height: _midScroll,),
-        ],
+      child: Container(
+        height:  MediaQuery.of(context).size.height + 200,
+        alignment: Alignment.center,
+        child: (type.compareTo('vid') == 0) ? _buildVideoContainer(src) : AspectRatio(
+          aspectRatio: 16/9,
+          child: _createImagePage(src),
+        ),
       ),
     );
   }
@@ -245,4 +259,6 @@ class _ViewImageVideoState extends State<ViewImageVideo> {
     String itemName = firstLayer.last.split('?').first;
     return itemName.contains('gif');
   }
+
+  
 }

@@ -51,7 +51,6 @@ class UserDBManager{
     return User.fromMap(doc.id, doc.data());
   }
 
-  // ? Might not need
   Future<User> fetchUserByAuthID(String authID) async{
     var col = await _ref.where('AuthID',isEqualTo: authID).limit(1).get();
     var doc = col.docs.first; 

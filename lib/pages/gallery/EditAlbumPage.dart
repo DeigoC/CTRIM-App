@@ -22,7 +22,6 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
     return WillPopScope(
       onWillPop: () async{
         bool result = false;
-        
         widget._postBloc.add(PostTextChangeEvent());
         if(widget._postBloc.hasAlbumChanged){
             await showDialog(
@@ -50,10 +49,8 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
 
         return result;
       },
-        child: Scaffold(
-        appBar: AppBar(
-          actions: _onDeleteMode ? _buildDeleteActions() : _buildNormalActions(),
-        ),
+      child: Scaffold(
+        appBar: AppBar(actions: _onDeleteMode ? _buildDeleteActions() : _buildNormalActions(),),
        body: _buildBody(),
        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
        floatingActionButton: _onDeleteMode ? _buildDeleteButton(): null,
@@ -110,7 +107,7 @@ class _EditAlbumPageState extends State<EditAlbumPage> {
     );
   }
 
-  Widget _buildBody(){
+  BlocBuilder _buildBody(){
     return BlocBuilder(
       cubit: widget._postBloc,
       buildWhen: (_, currentState){

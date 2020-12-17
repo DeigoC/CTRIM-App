@@ -21,14 +21,12 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
   FocusNode _fnSearchLocation;
   List<Location> _locationResults= [];
   String _searchString;
-
   bool _fetchingResults = false;
 
   @override
   void initState() { 
     super.initState();
     _fnSearchLocation = FocusNode();
-
   }
 
   @override
@@ -74,9 +72,8 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
   }
 
   Widget _buildBody(){
-    if(_searchString == null){
-       return Center(child: Text('Awaiting Search Submission...'),);
-    }else if(_fetchingResults){
+    if(_searchString == null) return Center(child: Text('Awaiting Search Submission...'),);
+    else if(_fetchingResults){
       BlocProvider.of<TimelineBloc>(context)
       .fetchLocationsByPostCode(_searchString, includeDeleted: widget._postBloc != null)
       .then((results){
@@ -86,10 +83,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
         });
       });
       return Center(child: CircularProgressIndicator(),);
-    }else{
-      return _buildResults();
-    }
-   
+    }else return _buildResults();
   }
 
   Widget _buildResults(){
@@ -127,12 +121,6 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
       icon: Icon(Icons.arrow_back),
       onPressed: ()=>Navigator.of(context).pop(),
     );
-    /* return FlatButton(
-      child: Text('BACK',style: TextStyle(color: Colors.white),),
-      onPressed: (){
-        Navigator.of(context).pop();
-      },
-    ); */
   }
 }
 

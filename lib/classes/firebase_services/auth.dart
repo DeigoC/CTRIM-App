@@ -8,7 +8,6 @@ class AuthService{
   static final authPackage.FirebaseAuth _auth = authPackage.FirebaseAuth.instance;
   static Map<String,String> currentFirebaseUser = {'email':'', 'password':''};
   final UserDBManager _userDBManager = UserDBManager();
-  
 
   Future<User> loginWithEmail({@required String email, @required String password}) async{
       authPackage.UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -21,8 +20,7 @@ class AuthService{
   Future logoutCurrentUser() async{
     await _auth.signOut();
   }
-
-  // ? was the change correct?
+ 
   Future<authPackage.UserCredential> registerUserWithEmailAndPassword(String email, String password) async{
     authPackage.UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
     return result;

@@ -105,7 +105,6 @@ class _RegisterUserState extends State<RegisterUser> {
               cubit: _adminBloc,
               listener: (_, state) {
                 if (state is AdminUserModAddNewUserState) {
-                  //BlocProvider.of<TimelineBloc>(context).allUsers.add(state.newUser);
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 } else if (state is AdminUserModPasswordTooSmallState) {

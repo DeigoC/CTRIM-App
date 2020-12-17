@@ -12,8 +12,7 @@ class ViewLocationOnMap extends StatefulWidget {
 }
 
 class _ViewLocationOnMapState extends State<ViewLocationOnMap> {
-  
-  //GoogleMapController _mapController;
+
   LatLng latLng;
   BuildContext _context;
 
@@ -37,7 +36,7 @@ class _ViewLocationOnMapState extends State<ViewLocationOnMap> {
     );
   }
 
-  Widget _buildBody(){
+  GoogleMap _buildBody(){
     return GoogleMap(
       mapToolbarEnabled: true,
       mapType: MapType.normal,
@@ -60,9 +59,7 @@ class _ViewLocationOnMapState extends State<ViewLocationOnMap> {
           )
         )
       ]),
-      onMapCreated: (controller){
-        //setState(() {_mapController = controller;});
-      },
+      onMapCreated: (controller){ },
     );
   }
 }

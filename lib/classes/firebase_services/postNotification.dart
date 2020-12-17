@@ -37,7 +37,6 @@ class PostNotification{
     });
   }
 
-  // ? Will iOS be different?
   // ? Remember to add images in the future
   Future _sendMessageToToken(PostNotificationMessage postNotificationMessage, String token) async{
     Map<String,String> notification = {

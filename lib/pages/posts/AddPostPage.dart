@@ -182,4 +182,5 @@ class _AddEventPageState extends State<AddEventPage> with SingleTickerProviderSt
         });
     return result;
   }
+
 }

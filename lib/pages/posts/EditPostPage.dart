@@ -72,11 +72,10 @@ class _EditPostPageState extends State<EditPostPage> with SingleTickerProviderSt
             _tecTitle = TextEditingController(text: _post.title);
            });
           });
-        }else if(snap.hasError){
-          result = Center(child: Text('Something went wrong!'),);
-        }else{
-          result = Center(child: CircularProgressIndicator(),);
         }
+        else if(snap.hasError) result = Center(child: Text('Something went wrong!'),);
+        else result = Center(child: CircularProgressIndicator(),);
+        
         return result;
       },
     );

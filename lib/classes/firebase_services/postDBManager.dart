@@ -24,7 +24,7 @@ class PostDBManager{
     var collection = await _ref
     .limit(10)
     .where('Deleted',isEqualTo: false)
-    .where('SelectedTags',arrayContainsAny: tags)// change maybe?
+    .where('SelectedTags',arrayContainsAny: tags)
     .get();
     
     List<Post> results = collection.docs.map((doc) => Post.fromMap(doc.id, doc.data())).toList();
@@ -38,9 +38,7 @@ class PostDBManager{
 
   Future<Null> addPost(Post post) async{
     post.id = await IDTracker().getAndUpdateNewPostID();
-
     await _appStorage.uploadNewPostFiles(post);
-
     await _ref.doc(post.id).set(post.toJson());
     post.temporaryFiles.clear();
   }

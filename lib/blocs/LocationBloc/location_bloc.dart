@@ -80,17 +80,13 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       yield LocationRemoveSelectedImageState();
       yield _canUpdateLocation();
     } else if (event is LocationEditConfirmedQueryAddressEvent) {
-
       _location.addressLine = _selectedAddressLine;
       Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
       _location.coordinates = {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude};
-      
-
       Location existingRecord = await _doesAddressAlreadyExist(add);
       if(existingRecord != null) yield LocationQueryAddressAlreadyExistsState(existingRecord);
       else yield LocationDisplayConfirmedQueryAddressState(_selectedAddressLine);
       yield _canUpdateLocation();
-
     } else if (event is LocationEditUpdateLocationEvent) {
       yield LocationEditAttemptToUpdateState();
       await _locationDBManager.updateLocation(_location, _imageFile);
@@ -111,9 +107,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     } else if (event is LocationSelectedQueryAddressEvent) {
       _selectedAddressLine = event.selectedAddress;
       Address selectedAddress = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
-      //print('---------SEARCH ARRAY LOOKS LIKE: ' + _setSearchArray(selectedAddress.addressLine).toString());
       yield LocationDisplaySelectedLocationMapState(selectedAddress: selectedAddress);
-      
     } else if (event is LocationWrongQueryAddressEvent) {
       yield LocationRebuildQueryResultsState();
     } else if (event is LocationConfirmedQueryAddressEvent) {
@@ -147,7 +141,6 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     yield LocationEditAttemptToUpdateState();
 
     Address add = _queryAddresses.firstWhere((a) => a.addressLine.compareTo(_selectedAddressLine)==0);
-
     Location newLocation = Location(
       addressLine: _selectedAddressLine,
       coordinates: {'Latitude':add.coordinates.latitude, 'Longitude':add.coordinates.longitude},

@@ -88,11 +88,9 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
               _post = snap.data; 
             });
           });
-        }else if(snap.hasError){
-          result = Center(child: Text('Something went wrong!'),);
-        }else{
-          result = Center(child: CircularProgressIndicator(),);
-        }
+        }else if(snap.hasError) result = Center(child: Text('Something went wrong!'),);
+        else result = Center(child: CircularProgressIndicator(),);
+
         return result;
       },
     );
@@ -142,7 +140,6 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
             padding: EdgeInsets.all(8.0),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                //Text(_post.title,style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),),
                 _buildTitle(),
                 TabBar(
                   labelColor: BlocProvider.of<AppBloc>(context).onDarkTheme?null:Colors.black87,
@@ -212,9 +209,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
       return BlocBuilder(
         cubit: _postBloc,
         buildWhen: (_,state){
-          if(state is PostRemoveViewFABState||state is PostBuildViewFABState){
-            return true;
-          }
+          if(state is PostRemoveViewFABState||state is PostBuildViewFABState) return true;
           return false;
         },
         builder: (_,state){
@@ -248,7 +243,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     Add2Calendar.addEvent2Cal(event);
   }
   
-  Widget _buildAboutTab() {
+  SingleChildScrollView _buildAboutTab() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -298,7 +293,7 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
     );
   }
  
-  Widget _newDetailTab(){
+  CustomScrollView _newDetailTab(){
     List<Widget> slivers =[
        SliverList(
           delegate: SliverChildListDelegate([
@@ -343,11 +338,8 @@ class _ViewPostPageState extends State<ViewPostPage> with SingleTickerProviderSt
         ))
       ]);
     }
-
-
     return CustomScrollView(
       slivers: slivers,
     );
   }
-
 }

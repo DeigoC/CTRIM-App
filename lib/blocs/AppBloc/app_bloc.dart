@@ -43,11 +43,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   AppBloc(this.navigatorKey):super(AppInitial());
 
   static openURL(String url, BuildContext context) async{
-    if(await canLaunch(url)){
-      await launch(url);
-    }else{
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text("Couldn't open link!"),));
-    }
+    if(await canLaunch(url)) await launch(url);
+    else Scaffold.of(context).showSnackBar(SnackBar(content: Text("Couldn't open the link!"),));
   }
 
   // ! Mapping events to states
@@ -80,7 +77,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       if (_currentUser.likedPosts.contains(event.post.id)) _removeLikedPost(event);
       else _addLikedPost(event);
       _saveCurrentUser();
-
       yield AppCurrentUserLikedPostState();
       yield AppCurrentUserState();
     }else if(event is AppCurrentUserLoggedInEvent){
@@ -118,41 +114,54 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   void _openPageFromEvent(AppNavigateToPageEvent event) {
     NavigatorState state = navigatorKey.currentState;
-    if (event is AppToViewPostPageEvent) state.pushNamed(ViewEventRoute, arguments: {'postID': event.postID});
-    else if(event is AppToHomePageEvent) state.pushNamed(HomeRoute);
+
+    if(event is AppToHomePageEvent) state.pushNamed(HomeRoute);
+
+    // * Post Related pages
+    else if (event is AppToViewPostPageEvent) state.pushNamed(ViewEventRoute, arguments: {'postID': event.postID});
     else if (event is AppToAddPostPageEvent) state.pushNamed(AddEventRoute);
     else if (event is AppToViewAllPostsForLocationEvent) state.pushNamed(ViewAllEventsForLocationRoute,arguments: 
     {'locationID':event.locationID});
+    else if (event is AppToPostBodyEditorEvent) state.pushNamed(EventBodyEditorRoute,
+    arguments: {'postBloc': event.postBloc});
+    else if (event is AppToViewMyPostsPageEvent) state.pushNamed(ViewMyPostsRoute);
+    else if (event is AppToEditPostPageEvent) state.pushNamed(EditPostRoute, arguments: {'postID': event.postID});
+    else if (event is AppToSearchPostsPageEvent) state.pushNamed(SearchPostsRoute); // ? May get deleted?
+    else if (event is AppToLikedPostsPageEvent) state.pushNamed(MyLikedPostsRoute);
+
+    // * Location Related pages
     else if (event is AppToViewLocationOnMapEvent) state.pushNamed(ViewLocationOnMapRoute, arguments: 
     {'location':event.location});
-    else if (event is AppToRegisterUserEvent) state.pushNamed(RegisterUserRoute);
-    else if (event is AppToViewAllUsersEvent) state.pushNamed(ViewAllUsersRoute);
-    else if (event is AppToEditUserEvent) state.pushNamed(EditUserRoute, arguments: {'user': event.user});
     else if (event is AppToAddLocationEvent) state.pushNamed(AddLocationRoute, arguments: {'postBloc': event.postBloc});
     else if (event is AppToEditLocationEvent) state.pushNamed(EditLocationRoute,
     arguments: {'location': event.location});
-    else if (event is AppToCreateAlbumEvent)state.pushNamed(CreateAlbumRoute, arguments: {'postBloc': event.postBloc});
-    else if (event is AppToAddGalleryFileEvent)state.pushNamed(AddGalleryFilesRoute,
-    arguments: {'postBloc': event.postBloc});
-    else if (event is AppToPostBodyEditorEvent)state.pushNamed(EventBodyEditorRoute,
-    arguments: {'postBloc': event.postBloc});
-    else if (event is AppToUserLoginEvent)state.pushNamed(UserLoginRoute);
-    else if (event is AppToViewImageVideoPageEvent)state.pushNamed(ViewImageVideoRoute, arguments: {
-        'initialPage': event.initialPage,'imgSources': event.imageSorces});
-    else if (event is AppToViewMyPostsPageEvent)state.pushNamed(ViewMyPostsRoute);
-    else if (event is AppToEditPostPageEvent)state.pushNamed(EditPostRoute, arguments: {'postID': event.postID});
-    else if (event is AppToEditAlbumEvent)state.pushNamed(EditAlbumRoute, arguments: {'postBloc': event.postBloc});
-    else if (event is AppToSearchPostsPageEvent)state.pushNamed(SearchPostsRoute);
-    else if (event is AppToMyDetailsEvent)state.pushNamed(MyDetailsRoute);
-    else if (event is AppToLikedPostsPageEvent)state.pushNamed(MyLikedPostsRoute);
-    else if(event is AppToViewChurchEvent) state.pushNamed(ViewChurchPageRoute, arguments: 
+    else if (event is AppToSearchLocationEvent) state.pushNamed(SearchLocationPageRoute, arguments: 
+    {'postBloc':event.postBloc});
+
+    // * About Related pages
+    else if (event is AppToViewChurchEvent) state.pushNamed(ViewChurchPageRoute, arguments: 
     {'article':event.aboutArticle});
-    else if(event is AppToViewPastorEvent) state.pushNamed(ViewAboutPastorsRoute, arguments: {
-      'article':event.aboutArticle});
-    else if(event is AppToEditAboutArticleEvent) state.pushNamed(EditAboutArticleRoute);
-    else if(event is AppToEditAboutBodyEvent) state.pushNamed(AboutBodyEditorPageRoute);
-    else if(event is AppToEditUserBodyPageEvent) state.pushNamed(EditUserBodyRoute, arguments: {'adminBloc':event.adminBloc});
-    else if(event is AppToSearchLocationEvent) state.pushNamed(SearchLocationPageRoute, arguments: {'postBloc':event.postBloc});
+    else if (event is AppToViewPastorEvent) state.pushNamed(ViewAboutPastorsRoute, arguments: 
+    {'article':event.aboutArticle});
+    else if (event is AppToEditAboutArticleEvent) state.pushNamed(EditAboutArticleRoute);
+    else if (event is AppToEditAboutBodyEvent) state.pushNamed(AboutBodyEditorPageRoute);
+
+    // * User Related pages
+    else if (event is AppToRegisterUserEvent) state.pushNamed(RegisterUserRoute);
+    else if (event is AppToViewAllUsersEvent) state.pushNamed(ViewAllUsersRoute);
+    else if (event is AppToEditUserEvent) state.pushNamed(EditUserRoute, arguments: {'user': event.user});
+    else if (event is AppToUserLoginEvent) state.pushNamed(UserLoginRoute);
+    else if (event is AppToMyDetailsEvent) state.pushNamed(MyDetailsRoute);
+    else if (event is AppToEditUserBodyPageEvent) state.pushNamed(EditUserBodyRoute, arguments: 
+    {'adminBloc':event.adminBloc});
+
+    // * Gallery Related pages
+    else if (event is AppToCreateAlbumEvent) state.pushNamed(CreateAlbumRoute, arguments: {'postBloc': event.postBloc});
+    else if (event is AppToAddGalleryFileEvent) state.pushNamed(AddGalleryFilesRoute,
+    arguments: {'postBloc': event.postBloc});
+    else if (event is AppToViewImageVideoPageEvent) state.pushNamed(ViewImageVideoRoute, arguments: 
+    {'initialPage': event.initialPage,'imgSources': event.imageSorces});
+    else if (event is AppToEditAlbumEvent) state.pushNamed(EditAlbumRoute, arguments: {'postBloc': event.postBloc});
   }
 
   Stream<AppState> _appStartupLoad() async*{
@@ -175,29 +184,20 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   Stream<AppState> _mapTabEventToState(TabButtonClicked event) async* {
     switch (event.selectedIndex) {
-      case 0:
-        yield AppPostsTabClickedState();
+      case 0: yield AppPostsTabClickedState();
         break;
-      /* case 1:
-        yield AppGalleryTabClickedState();
-        break; */
-      case 1:
-        yield AppLocationsTabClickedState();
+      case 1: yield AppLocationsTabClickedState();
         break;
-      case 2:
-        yield AppAboutTabClickedState();
+      case 2: yield AppAboutTabClickedState();
         break;
-      case 3:
-        yield AppSettingsTabClickedState();
+      case 3: yield AppSettingsTabClickedState();
         break;
     }
   }
 
   Stream<AppState> _mapSettingsEventToState(AppSettingsEvent event) async* {
-    if (event is AppChangeThemeToDarkEvent)
-      yield _changeThemeToDarkState();
-    else if (event is AppChangeThemeToLightEvent)
-      yield _changeThemeToLightState();
+    if (event is AppChangeThemeToDarkEvent) yield _changeThemeToDarkState();
+    else if (event is AppChangeThemeToLightEvent) yield _changeThemeToLightState();
   }
 
   AppState _changeThemeToDarkState() {

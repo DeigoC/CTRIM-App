@@ -120,11 +120,8 @@ class Post {
   }
 
   void setStartDate(DateTime date) {
-    if (startDate == null) {
-      startDate = date;
-    } else {
-      startDate = DateTime(date.year, date.month, date.day, startDate.hour, startDate.minute);
-    }
+    if (startDate == null) startDate = date;
+    else startDate = DateTime(date.year, date.month, date.day, startDate.hour, startDate.minute);
   }
 
   void setEndTimeOfDay(TimeOfDay tod) {
@@ -138,11 +135,9 @@ class Post {
   }
 
   void setEndDate(DateTime date) {
-    if (endDate == null) {
-      endDate = date;
-    } else {
-      endDate = DateTime(date.year, date.month, date.day, endDate.hour, endDate.minute);
-    }
+    if (endDate == null)  endDate = date;
+    else endDate = DateTime(date.year, date.month, date.day, endDate.hour, endDate.minute);
+    
   }
 
   NotusDocument getBodyDoc() {

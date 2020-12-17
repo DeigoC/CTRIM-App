@@ -43,17 +43,6 @@ class _GalleryItemState extends State<GalleryItem> {
   VideoPlayerController _videoPlayerController;
 
   @override
-  void initState() {
-    /* print('--------------TYPE IS ' + widget.type + '----------------is file: ' + widget.isItemAFile.toString());
-    if(widget.type.compareTo('vid')==0 && widget.isItemAFile){
-      print('-----------------INITIALISING VIDEO------------');
-      _videoPlayerController = VideoPlayerController.file(File(widget.filePath));
-      _videoPlayerController.initialize().then((_){ setState(() {});});
-    } */
-    super.initState();
-  }
-
-  @override
   void dispose() { 
     if(_videoPlayerController != null) _videoPlayerController.dispose();
     super.dispose();
@@ -79,7 +68,7 @@ class _GalleryItemState extends State<GalleryItem> {
     return widget.type=='vid' ?  _buildSRCVideoContainer(): _buildSRCImageContainer();
   }
 
-  Widget _buildSRCImageContainer(){
+  Padding _buildSRCImageContainer(){
     return Padding(
      padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
       child: GestureDetector(
@@ -104,7 +93,7 @@ class _GalleryItemState extends State<GalleryItem> {
     );
   }
 
-  Widget _buildSRCVideoContainer(){
+  Padding _buildSRCVideoContainer(){
     String thumbSrc = widget.thumbnails[widget.src];
     return Padding(
      padding: EdgeInsets.only(top: _paddingSize, left: _paddingSize),
@@ -130,7 +119,7 @@ class _GalleryItemState extends State<GalleryItem> {
     );
   }
 
-  Widget _buildFileImageContainer(){
+  Padding _buildFileImageContainer(){
     return Padding(
       padding:  EdgeInsets.only(top: _paddingSize, left: _paddingSize),
       child: AnimatedContainer(
@@ -146,7 +135,7 @@ class _GalleryItemState extends State<GalleryItem> {
     );
   }
 
-  Widget _buildFileVideoContainer(){
+  Padding _buildFileVideoContainer(){
     bool initialised = false;
     if(_videoPlayerController != null){
       initialised = _videoPlayerController.value.initialized;
@@ -159,7 +148,6 @@ class _GalleryItemState extends State<GalleryItem> {
         curve: Curves.easeInOut,
         width: _pictureSize,
         height: _pictureSize,
-        //color: Colors.black,
         child: Stack(
           alignment: Alignment.center,
           children:[ 

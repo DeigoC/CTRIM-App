@@ -17,7 +17,6 @@ class HelpDialogTile extends StatelessWidget {
           title: Text(
             title,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,),
-            
           ),
           subtitle: Text(
             subtitle,

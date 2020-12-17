@@ -82,7 +82,6 @@ class _AddLocationState extends State<AddLocation> {
                 Navigator.of(context).pop();
               }else if(state is LocationQueryAddressAlreadyExistsState){
                 _locationAlreadyExistsDialog(state.existingRecord);
-                
               }
             },
             child: _buildBody()),
@@ -90,7 +89,7 @@ class _AddLocationState extends State<AddLocation> {
     );
   }
 
-  Widget _buildBody() {
+  ListView _buildBody() {
     double itemPaddingHeight = 8.0;
     return ListView(
       shrinkWrap: false,
@@ -98,7 +97,6 @@ class _AddLocationState extends State<AddLocation> {
         SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Street Address',
-         // hint: '# Example Rd.',
           controller: _tecStreetAddress,
           helpText: "First line of address. Doesn't require the street number.",
           onTextChange: (newStreetAddress) => _locationBloc
@@ -107,7 +105,6 @@ class _AddLocationState extends State<AddLocation> {
         SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Town/City',
-          //hint: 'Town/City Name',
           helpText: "Self-explanatory.",
           controller: _tecTownCity,
           onTextChange: (newTownCity) => _locationBloc
@@ -116,7 +113,6 @@ class _AddLocationState extends State<AddLocation> {
         SizedBox(height: itemPaddingHeight,),
         MyTextField(
           label: 'Postcode',
-          //hint: 'BT## ###',
           helpText: "Very important field, make sure it's in the correct format.",
           controller: _tecPostcode,
           onTextChange: (newPostcode) =>
@@ -217,8 +213,7 @@ class _AddLocationState extends State<AddLocation> {
         BlocBuilder(
             cubit: _locationBloc,
             buildWhen: (_, state) {
-              if (state is LocationSetNewLocationImageState)
-                return true;
+              if (state is LocationSetNewLocationImageState) return true;
               else if (state is LocationRemoveSelectedImageState) return true;
               return false;
             },

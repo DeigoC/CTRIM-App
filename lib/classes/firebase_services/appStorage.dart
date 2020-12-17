@@ -16,10 +16,8 @@ import 'package:path/path.dart';
 class AppStorage{
   
   final Reference _ref =  FirebaseStorage.instance.ref();
-  //FirebaseStorage(storageBucket: 'gs://ctrim-app.appspot.com/').ref();
-  String directory ='';
-
   final AppBloc _appBloc;
+  String directory ='';
 
   AppStorage(this._appBloc){
     getApplicationDocumentsDirectory().then((d) => directory =d.path);
@@ -87,7 +85,6 @@ class AppStorage{
 
   Future _setUploadItemDownloadLink(UploadTask task, AppUploadItem appUploadItem) async{
     Post post = appUploadItem.post;
-    
     final String fileSrc = appUploadItem.originalFilePath;
 
     await task.then((_) async{

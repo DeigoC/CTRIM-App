@@ -43,12 +43,9 @@ class _UserLoginPageState extends State<UserLoginPage> {
             listener: (_, state) {
               if (state is AdminLoginErrorState) _mapErrorStatesToSnackbars(state);
               else if(state is AdminLoginCompletedState) _loginCompleted(state);
-              else if(state is AdminLoginPopLoginDialogState){
-                Navigator.of(context).pop();
-              }
-              else if(state is AdminLoginLoadingState){
-                _showLoadingDialog();
-              }else if(state is AdminLoginRecoveryEmailSentState){
+              else if(state is AdminLoginPopLoginDialogState) Navigator.of(context).pop();
+              else if(state is AdminLoginLoadingState) _showLoadingDialog();
+              else if(state is AdminLoginRecoveryEmailSentState){
                 Navigator.of(context).pop();
                 Scaffold.of(_context).showSnackBar(SnackBar(
                   content: Text('Password Recovery Email Sent!'),
@@ -56,8 +53,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
               }
             },
             buildWhen: (previousState, currentState) {
-              if (currentState is AdminLoginContinueToPasswordState)
-                return true;
+              if (currentState is AdminLoginContinueToPasswordState) return true;
               else if (currentState is AdminLognReturnToEmailState) return true;
               return false;
             },
@@ -142,8 +138,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
         buildHelpIcon: false,
         optional: true,
         textInputType: TextInputType.emailAddress,
-        onTextChange: (newEmail) =>
-            _adminBloc.add(AdminLoginTextChangeEvent(email: newEmail)),
+        onTextChange: (newEmail) => _adminBloc.add(AdminLoginTextChangeEvent(email: newEmail)),
       ),
       BlocBuilder(
         cubit: _adminBloc,

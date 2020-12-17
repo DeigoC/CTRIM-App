@@ -95,7 +95,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
     );
   }
 
-  Widget _buildBody(){
+  ListView _buildBody(){
     return ListView(
       children: [
         _buildUserImageControls(),
@@ -187,7 +187,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
     );
   }
 
-  Widget _buildLevel3UserList(){
+  FutureBuilder _buildLevel3UserList(){
     return FutureBuilder<List<User>>(
       future: BlocProvider.of<TimelineBloc>(context).fetchLevel3Users(),
       builder: (_,snap){
@@ -213,18 +213,15 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
               ),
             ],
           );
-        }else if(snap.hasError){
-          result = Center(child: Text('Something went wrong!'),);
-        }else{
-          result = Center(child: CircularProgressIndicator());
-        }
+        }else if(snap.hasError) result = Center(child: Text('Something went wrong!'),);
+        else result = Center(child: CircularProgressIndicator());
 
         return result;
       },
     );
   }
 
-  Widget _buildUserBodySection(){
+  BlocBuilder _buildUserBodySection(){
     return BlocBuilder(
       cubit: _adminBloc,
       buildWhen: (_,state){
@@ -235,7 +232,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
     );
   }
 
-  Widget _buildUserImageControls(){
+  Container _buildUserImageControls(){
     return Container(
       padding: EdgeInsets.all(8),
       width: double.infinity,
@@ -267,7 +264,7 @@ class _EditMyDetailsPageState extends State<EditMyDetailsPage> {
     );
   }
 
-  Widget _buildUserImageContainer(){
+  Container _buildUserImageContainer(){
     double imageSize =  MediaQuery.of(context).size.width * 0.5;
      if(_imageFile != null){
       return Container(

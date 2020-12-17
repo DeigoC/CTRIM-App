@@ -20,11 +20,7 @@ class EditLocation extends StatefulWidget {
 }
 
 class _EditLocationState extends State<EditLocation> {
-  TextEditingController _tecStreetAddress,
-      _tecTownCity,
-      _tecPostcode,
-      _tecSelectedAddress,
-      _tecDescription;
+  TextEditingController _tecStreetAddress, _tecTownCity,  _tecPostcode, _tecSelectedAddress, _tecDescription;
   LocationBloc _locationBloc;
   bool _hasPosts;
 
@@ -84,14 +80,12 @@ class _EditLocationState extends State<EditLocation> {
     );
   }
 
-  Widget _buildBody() {
+  ListView _buildBody() {
     double itemPaddingHeight = 8.0;
     return ListView(
       shrinkWrap: false,
       children: [
         SizedBox(height: itemPaddingHeight,),
-        //Text('Query Address',textAlign: TextAlign.center,),
-        // * Selected Address
         BlocBuilder(
             cubit: _locationBloc,
             buildWhen: (previousState, currentState) {
@@ -111,54 +105,6 @@ class _EditLocationState extends State<EditLocation> {
                 readOnly: true,
               );
             }),
-       /*  SizedBox(height: itemPaddingHeight,),
-        MyTextField(
-          label: 'Street Address',
-          hint: '12 Example Rd.',
-          controller: _tecStreetAddress,
-          onTextChange: (newStreetAddress) => _locationBloc
-              .add(LocationTextChangeEvent(streetAddress: newStreetAddress)),
-        ),
-        SizedBox(height: itemPaddingHeight,),
-        MyTextField(
-          label: 'Town/City',
-          hint: 'Belfast',
-          controller: _tecTownCity,
-          onTextChange: (newTownCity) => _locationBloc
-              .add(LocationTextChangeEvent(townCityAddress: newTownCity)),
-        ),
-        SizedBox(height: itemPaddingHeight,),
-        MyTextField(
-          label: 'Postcode',
-          hint: 'BT13 2DE',
-          controller: _tecPostcode,
-          onTextChange: (newPostcode) =>
-              _locationBloc.add(LocationTextChangeEvent(postcode: newPostcode)),
-        ),
-        SizedBox(height: itemPaddingHeight,),
-        // * Find Address button
-        BlocBuilder(
-            bloc: _locationBloc,
-            condition: (previousStatem, currentState) {
-              if (currentState is LocationButtonState) return true;
-              return false;
-            },
-            builder: (_, state) {
-              bool enabled = false;
-              if (state is LocationEnableFindButtonState) enabled = true;
-              return MyRaisedButton(
-                externalPadding: EdgeInsets.all(8),
-                label: 'Find Address',
-                onPressed: enabled
-                    ? () {
-                        _locationBloc.add(LocationFindAddressEvent(
-                            streetAddress: _tecStreetAddress.text,
-                            townCityAddress: _tecTownCity.text,
-                            postcode: _tecPostcode.text));
-                      }
-                    : null,
-              );
-            }), */
         SizedBox(height: 32,),
         MyTextField(
           label: 'Short Description',
@@ -175,7 +121,6 @@ class _EditLocationState extends State<EditLocation> {
         SizedBox(height: itemPaddingHeight,),
         _buildImageSelector(),
         SizedBox(height: itemPaddingHeight,),
-        // * Save Button
         BlocBuilder(
           cubit: _locationBloc,
           buildWhen: (_, state) {
@@ -209,7 +154,6 @@ class _EditLocationState extends State<EditLocation> {
   }
 
   Widget _buildDeleteButton(){
-    
     if(BlocProvider.of<AppBloc>(context).currentUser.adminLevel != 3) return Container();
     else{
       if(_hasPosts == null){
@@ -242,8 +186,7 @@ class _EditLocationState extends State<EditLocation> {
         BlocBuilder(
             cubit: _locationBloc,
             buildWhen: (_, state) {
-              if (state is LocationSetNewLocationImageState)
-                return true;
+              if (state is LocationSetNewLocationImageState) return true;
               else if (state is LocationRemoveSelectedImageState) return true;
               return false;
             },
@@ -290,8 +233,7 @@ class _EditLocationState extends State<EditLocation> {
       ),
       onPressed: () {
         if (hasSrc) {
-          ConfirmationDialogue().deleteRecord(context: context, record: 'Image')
-              .then((confirmation) {
+          ConfirmationDialogue().deleteRecord(context: context, record: 'Image').then((confirmation) {
             if (confirmation) {
               _locationBloc.add(LocationEditRemoveSrcEvent());
             }

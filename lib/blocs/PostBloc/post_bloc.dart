@@ -110,7 +110,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   // ! Mapping events to states
-
   PostBloc(): super(PostInitial());
   PostBloc.editMode(Post postToEdit): super(PostInitial()) {
     _editMode = true;
@@ -340,17 +339,11 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Stream<PostState> _canEnableSaveButton() async* {
     if (_editMode) {
-      if (_haveAnyChangedFields() && !_haveAnyEmptyFields()) {
-        yield PostEnableSaveButtonState();
-      } else{
-        yield PostDisableSaveButtonState();
-      } 
+      if (_haveAnyChangedFields() && !_haveAnyEmptyFields()) yield PostEnableSaveButtonState();
+      else yield PostDisableSaveButtonState();
     } else {
-      if (_haveAnyEmptyFields()) {
-        yield PostDisableSaveButtonState();
-      } else {
-        yield PostEnableSaveButtonState();
-      }
+      if (_haveAnyEmptyFields()) yield PostDisableSaveButtonState();
+      else yield PostEnableSaveButtonState();
     }
   }
 
@@ -360,13 +353,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     else if (_originalPost.description.compareTo(_post.description) != 0) return true;
     else if (_originalPost.detailTableHeader.compareTo(_post.detailTableHeader) !=0) return true;
     else if (!DeepCollectionEquality().equals(_originalPost.detailTable, _post.detailTable)) return true;
-    else if (!DeepCollectionEquality.unordered().equals(_originalPost.selectedTags, _post.selectedTags))return true;
+    else if (!DeepCollectionEquality.unordered().equals(_originalPost.selectedTags, _post.selectedTags)) return true;
     else if (_originalPost.locationID.compareTo(_post.locationID) != 0)return true;
     else if (_originalPost.isDateNotApplicable != _post.isDateNotApplicable)return true;
-    else if(hasAlbumChanged) return true;
-    else if(_originalPost.startDate != null || _originalPost.endDate != null){
-      if (_originalPost.startDate.compareTo(_post.startDate) != 0 &&!_post.isDateNotApplicable)return true;
-      else if(_originalPost.endDate.compareTo(_post.endDate) !=0 && !_post.isDateNotApplicable)return true;
+    else if (hasAlbumChanged) return true;
+    else if (_originalPost.startDate != null || _originalPost.endDate != null){
+      if (_originalPost.startDate.compareTo(_post.startDate) != 0 &&!_post.isDateNotApplicable) return true;
+      else if (_originalPost.endDate.compareTo(_post.endDate) !=0 && !_post.isDateNotApplicable) return true;
     }
     return false;
   }
@@ -390,17 +383,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Stream<PostState> _mapTabClickEventToState(PostTabClickEvent event) async* {
     switch (event.selectedIndex) {
-      case 0:
-        yield PostAboutTabClickState();
+      case 0: yield PostAboutTabClickState();
         break;
-      case 1:
-        yield PostDetailsTabClickState();
+      case 1: yield PostDetailsTabClickState();
         break;
-      case 2:
-        yield PostGalleryTabClickState();
+      case 2: yield PostGalleryTabClickState();
         break;
-      case 3:
-        yield PostUpdatesTabClickState();
+      case 3: yield PostUpdatesTabClickState();
         break;
     }
   }

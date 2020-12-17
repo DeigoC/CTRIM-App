@@ -54,7 +54,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     
   };
 
-  // ! Bloc Functions
+  // ! Public Bloc Functions
   Future<bool> doesLocationHaveEvents(String locationId) async{ 
     List<String> postRefList = await _locationDBManager.fetchPostReferenceList(locationId);
     return postRefList.length > 0;
@@ -70,7 +70,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   List<Location> get essentialLocations => LocationDBManager.essentialLocations;
 
-  // * New FUTURE
   Future<Location> fetchLocationByID(String id) => _locationDBManager.fetchLocationByID(id);
   Future<List<Location>> fetchLocationsByPostCode(String postCode, {bool includeDeleted = false}) => 
   _locationDBManager.fetchLocationsBySearchString(postCode, includeDeleted: includeDeleted);
@@ -84,7 +83,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     return {'Location':churchLocal, 'User':user};
   }
 
-  // ! Future Functions
   Future<Null> processRefresh() async{
     if(_selectedTags.values.contains(true)){
       await Future.delayed(Duration(seconds: 1,milliseconds: 500));
@@ -132,9 +130,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     _selectedTags.forEach((key, value) {
       if(value){tags.add(Post().tagToString(key));}
     });
-    /* List<TimelinePost> result = await _timelinePostDBManager.fetchFeedWithTags(tags);
-    result.sort((a,b) => b.postDate.compareTo(a.postDate)); */
-
 
     List<TimelinePost> newTPs = [];
     _feedData.forEach((tp) {
@@ -173,9 +168,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   Stream<TimelineState> _mapRefreshToState() async*{
     yield TimelineEmptyState();
-    if(!_selectedTags.values.contains(true)){
-      yield TimelineRebuildFeedState();
-    }
+    if(!_selectedTags.values.contains(true)) yield TimelineRebuildFeedState();
   }
 
   Stream<TimelineState> _mapAboutTabEventToState(TimelineAboutTabEvent event) async*{
@@ -195,7 +188,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
     yield TimelineTagChangedState();
     if(_selectedTags.containsValue(true)){
-      //yield TimelineLoadingFeedState();
       yield TimelinePinPostSnackbarState();
       List<TimelinePost> data = _fetchPostFeedWithTags();
       yield TimelineDisplayFilteredFeedState(data);
@@ -246,7 +238,6 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
     event.post.deleted = true;
     _postDBManager.updatePost(event.post);
     await _processUpdateTPost(event);
-    //await _timelinePostDBManager.updateDeletedPostTPs(event.post.id);
     
     TimelinePost updatedOriginalTPost = await _timelinePostDBManager.fetchOriginalPostByID(event.post.id);
     
@@ -258,18 +249,12 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
 
   // ! User Related
   Stream<TimelineState> _mapUserUpdatedEventToState(TimelineUserUpdatedEvent event) async*{
-    /* int index = allUsers.indexWhere((user) => user.id.compareTo(event.updatedUser.id) == 0);
-    allUsers[index] = event.updatedUser; */
-
     _userDBManager.updateUser(event.updatedUser);
     yield TimelineRebuildUserListState();
     yield TimelineEmptyState();
   }
 
   Stream<TimelineState> _mapUserDisabledToState(TimelineUserDisabledEvent event) async* {
-    /* int index = allUsers.indexWhere((e) => e.id == event.user.id);
-    allUsers[index].disabled = true; */
-
     event.user.disabled = true;
     _userDBManager.updateUser(event.user);
     yield TimelineRebuildUserListState();
@@ -277,9 +262,7 @@ class TimelineBloc extends Bloc<TimelineEvent, TimelineState> {
   }
 
   Stream<TimelineState> _mapUserEnabledToState(TimelineUserEnabledEvent event) async*{
-    //int index = allUsers.indexWhere((e) => e.id == event.user.id);
     event.user.disabled = false;
-
     _userDBManager.updateUser(event.user);
     yield TimelineRebuildUserListState();
     yield TimelineEmptyState();

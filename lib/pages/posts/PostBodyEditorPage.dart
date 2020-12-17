@@ -53,5 +53,4 @@ class _PostBodyEditorState extends State<PostBodyEditor> {
       ),
     );
   }
-
 }

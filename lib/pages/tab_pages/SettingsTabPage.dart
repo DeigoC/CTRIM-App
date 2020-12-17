@@ -40,7 +40,7 @@ class SettingsPage{
   }
 
   Widget buildDrawer(){
-    if(BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0)return null;
+    if(BlocProvider.of<AppBloc>(_context).currentUser.adminLevel==0) return null;
     User u = BlocProvider.of<AppBloc>(_context).currentUser;
     return Drawer(
       child: ListView(
@@ -93,7 +93,7 @@ class SettingsPage{
     );
     }
 
-  Widget buildBody(){
+  BlocConsumer buildBody(){
     return BlocConsumer(
       cubit: BlocProvider.of<AppBloc>(_context),
       listener: (_,state){

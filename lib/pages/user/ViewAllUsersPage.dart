@@ -27,14 +27,10 @@ class ViewAllUsers extends StatelessWidget {
       builder: (_,snap){
         Widget result;
 
-        if(snap.hasData){
-          result = _buildListWithData(snap.data, _);
-        }else if(snap.hasError){
-          result = Center(child: Text('Something went wrong!'),);
-        }else{  
-          result = Center(child: CircularProgressIndicator(),);
-        }
-
+        if(snap.hasData) result = _buildListWithData(snap.data, _);
+        else if(snap.hasError) result = Center(child: Text('Something went wrong!'),);
+        else result = Center(child: CircularProgressIndicator(),);
+        
         return result;
       },
     );

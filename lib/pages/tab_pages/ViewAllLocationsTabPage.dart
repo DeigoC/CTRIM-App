@@ -14,7 +14,7 @@ class ViewAllLocationsPage {
 
   ViewAllLocationsPage(this._context,this._controller);
 
-  Widget buildBody() {
+  Snap buildBody() {
     List<Location> essentialLocations = BlocProvider.of<TimelineBloc>(_context).essentialLocations;
     
     return Snap(
@@ -39,7 +39,7 @@ class ViewAllLocationsPage {
     );
   }
 
-  Widget buildAppBar(){
+  ScrollAppBar buildAppBar(){
     return ScrollAppBar(
       controller: _controller,
       automaticallyImplyLeading: false,
@@ -60,6 +60,5 @@ class ViewAllLocationsPage {
         ],
       ),
     );
-   //return LocationSearchBar(_controller);
   }
 }

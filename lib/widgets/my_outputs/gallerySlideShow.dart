@@ -1,3 +1,4 @@
+import 'package:ctrim_app_v1/blocs/AboutBloc/about_bloc.dart';
 import 'package:ctrim_app_v1/blocs/AppBloc/app_bloc.dart';
 import 'package:ctrim_app_v1/classes/other/imageTag.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +19,41 @@ class GallerySlideShow extends StatefulWidget {
 class _GallerySlideShowState extends State<GallerySlideShow> {
   
   final PageController _pageController = PageController();
+  Widget _currentImageWidget;
+  AboutBloc _aboutBloc;
 
   @override
   void initState() {
-    _animateSlideShow();
+    _aboutBloc = BlocProvider.of<AboutBloc>(context);
+    print("--------------INITIAL INDEX IS " + _aboutBloc.slideShowIndex.toString());
+
+    Map<String,ImageTag> gallery = {};
+    widget.galleryItems.keys.forEach((src) {
+      gallery[src] = ImageTag(
+        src: src,
+        type: widget.galleryItems[src],
+      );
+    });
+
+    List<Widget> images = widget.galleryItems.keys.toList().map((src){
+      return AspectRatio(
+        aspectRatio: 16/9,
+        key: ValueKey(src),
+        child: GestureDetector(
+          onTap: (){
+            int index = gallery.keys.toList().indexOf(src);
+            BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(gallery, index));
+          },
+          child: Hero(
+            tag: gallery[src].heroTag,
+            child: Image(image: NetworkImageWithRetry(src), fit: BoxFit.cover,)
+          )
+        ),
+      ); 
+    }).toList();
+
+    _currentImageWidget = images[_aboutBloc.slideShowIndex];
+    _animateSlideShow(images);
     super.initState();
   }
 
@@ -31,20 +63,26 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
     super.dispose();
   }
 
-  Future<Null> _animateSlideShow() async{
+  Future<Null> _animateSlideShow(List<Widget> images) async{
     await Future.delayed(Duration(seconds: 6,),(){
-      try{
-        if(mounted){
-          if(_pageController.page + 1 < widget.galleryItems.length){
-            _pageController.animateToPage(_pageController.page.round() + 1, 
-            duration: Duration(seconds: 1), curve: Curves.easeInOut);
-            _animateSlideShow();
-          }else{
-            _pageController.animateToPage(0, duration: Duration(seconds: 1), curve: Curves.easeInOut);
-            _animateSlideShow();
-          }
+      
+      if(mounted){
+        if(_aboutBloc.slideShowIndex < images.length){
+          setState(() {
+            _currentImageWidget = images[_aboutBloc.slideShowIndex];
+            _aboutBloc.incrementSlideShowIndex();
+          });
+        }else{
+          setState(() {
+            _aboutBloc.setSlideShowIndex(0);
+            _currentImageWidget = images[_aboutBloc.slideShowIndex];
+            _aboutBloc.incrementSlideShowIndex();
+          });
         }
-      }catch(e){print('-------------SLIDE SHOW ERROR: ' + e.toString());}
+        print("--------------INDEX IS NOW " + _aboutBloc.slideShowIndex.toString());
+        _animateSlideShow(images);
+      }
+      
     });
    }
 
@@ -57,25 +95,11 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
         type: widget.galleryItems[src],
       );
     });
-    
-    return AspectRatio(
-      aspectRatio: 16/9,
-      child: PageView.builder(
-        controller: _pageController,
-        key: PageStorageKey('slideshow'),
-        itemCount: gallery.length,
-        itemBuilder: (_,index){
-          return GestureDetector(
-            onTap: (){
-              BlocProvider.of<AppBloc>(context).add(AppToViewImageVideoPageEvent(gallery, index));
-            },
-            child: Hero(
-              tag: gallery[widget.galleryItems.keys.toList()[index]].heroTag,
-              child: Image(image: NetworkImageWithRetry(widget.galleryItems.keys.toList()[index]), fit: BoxFit.cover,)
-            )
-          );
-        }
-      ),
-    );
+     return AnimatedSwitcher(
+       duration: const Duration(seconds: 1),
+       child: _currentImageWidget,
+     );
   }
+
+
 }

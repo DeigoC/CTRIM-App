@@ -4,6 +4,7 @@ import 'package:ctrim_app_v1/widgets/my_outputs/postArticle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// ? Do we still need a search posts page?
 class SearchPostsPage extends StatefulWidget {
   @override
   _SearchPostsPageState createState() => _SearchPostsPageState();

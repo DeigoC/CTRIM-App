@@ -13,6 +13,11 @@ part 'about_state.dart';
 class AboutBloc extends Bloc<AboutEvent, AboutState> {
 
   final AboutDBManager _aboutDBManager = AboutDBManager();
+  int _slideShowIndex = 0;
+
+  int get slideShowIndex => _slideShowIndex;
+  void setSlideShowIndex(int index)=> _slideShowIndex = index;
+  void incrementSlideShowIndex()=> _slideShowIndex++;
 
   AboutBloc():super(AboutInitial());
 

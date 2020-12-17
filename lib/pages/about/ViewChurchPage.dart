@@ -41,26 +41,20 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
     );
   }
 
-  Widget _buildFBBody(){
+  FutureBuilder _buildFBBody(){
     return FutureBuilder<Map<String, dynamic>>(
       future: BlocProvider.of<TimelineBloc>(context).fetchChurchData(widget._aboutArticle),
       builder: (_,snap){
         Widget result;
-
-        if(snap.hasData){
-          result = _buildBodyWithData(snap.data);
-        }else if(snap.hasError){
-          result = Center(child: Text('Something went wrong!'),);
-        }else{
-          result = Center(child: CircularProgressIndicator(),);
-        }
-
+        if(snap.hasData) result = _buildBodyWithData(snap.data);
+        else if(snap.hasError) result = Center(child: Text('Something went wrong!'),);
+        else result = Center(child: CircularProgressIndicator(),);
         return result;
       },
     );
   }
 
-  Widget _buildBodyWithData(Map<String, dynamic> data){
+  ListView _buildBodyWithData(Map<String, dynamic> data){
     TextStyle headerStyle = TextStyle(fontSize: 36);
     TextStyle bodyStyle = TextStyle(fontSize: 18);
 
@@ -132,4 +126,5 @@ class _ViewChurchPageState extends State<ViewChurchPage> {
       ],
     );
   }
+
 }

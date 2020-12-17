@@ -143,8 +143,7 @@ class _ViewUserSheetState extends State<ViewUserSheet> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
-          image: hasImage? DecorationImage(
-            image: NetworkImageWithRetry(widget.user.imgSrc),fit: BoxFit.cover ):null),
+          image: hasImage? DecorationImage(image: NetworkImageWithRetry(widget.user.imgSrc),fit: BoxFit.cover ):null),
       ),
     );
   }
