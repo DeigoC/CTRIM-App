@@ -223,8 +223,6 @@ class _UserLoginPageState extends State<UserLoginPage> {
   }
 
   void _showErrorSnackbar(String content) {
-    Scaffold.of(_context).showSnackBar(SnackBar(
-      content: Text('ERROR: '+content),
-    ));
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text('ERROR: '+content),));
   }
 }

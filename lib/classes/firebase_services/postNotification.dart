@@ -65,7 +65,7 @@ class PostNotification{
 
   Future<List<String>> _fetchAllTokensForPost(String postID) async{
     var doc = await _ref.doc(postID).get();
-    if(!doc.exists) return List<String>();
+    if(!doc.exists) return []; // ? Changed Idk if this is ok
     return List<String>.from(doc.data()['tokens'], growable: true); 
   }
 

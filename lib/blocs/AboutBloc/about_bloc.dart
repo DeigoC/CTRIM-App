@@ -17,6 +17,10 @@ class AboutBloc extends Bloc<AboutEvent, AboutState> {
 
   int get slideShowIndex => _slideShowIndex;
   void setSlideShowIndex(int index)=> _slideShowIndex = index;
+  void initialiseSlideshow(int length){
+    if(_slideShowIndex == -1 || _slideShowIndex > length - 1) _slideShowIndex = 0;
+  }
+  
   void incrementSlideShowIndex()=> _slideShowIndex++;
 
   AboutBloc():super(AboutInitial());

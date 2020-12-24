@@ -7,7 +7,6 @@ import 'package:flutter_image/network.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
 
-// TODO fix this once and for all!
 class ViewImageVideo extends StatefulWidget {
   final Map<String, ImageTag> imageSources;
   final int initialPage;

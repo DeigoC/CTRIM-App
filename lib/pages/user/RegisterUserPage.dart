@@ -55,16 +55,14 @@ class _RegisterUserState extends State<RegisterUser> {
           label: 'Forename',
           controller: null,
           hint: 'Required',
-          onTextChange: (newString) =>
-              _adminBloc.add(AdminUserModTextChangeEvent(forename: newString)),
+          onTextChange: (newString) => _adminBloc.add(AdminUserModTextChangeEvent(forename: newString)),
         ),
         padding,
         MyTextField(
           label: 'Surname',
           controller: null,
           hint: 'Required',
-          onTextChange: (newString) =>
-              _adminBloc.add(AdminUserModTextChangeEvent(surname: newString)),
+          onTextChange: (newString) =>  _adminBloc.add(AdminUserModTextChangeEvent(surname: newString)),
         ),
         padding,
         Padding(
@@ -77,8 +75,7 @@ class _RegisterUserState extends State<RegisterUser> {
           controller: null,
           hint: 'Required',
           textInputType: TextInputType.emailAddress,
-          onTextChange: (newString) =>
-              _adminBloc.add(AdminUserModTextChangeEvent(email: newString)),
+          onTextChange: (newString) => _adminBloc.add(AdminUserModTextChangeEvent(email: newString)),
         ),
         padding,
         MyTextField(
@@ -86,8 +83,7 @@ class _RegisterUserState extends State<RegisterUser> {
           controller: null,
           hint: 'At least 6 chars.',
           obsucureText: true,
-          onTextChange: (newString) =>
-              _adminBloc.add(AdminUserModTextChangeEvent(password: newString)),
+          onTextChange: (newString) => _adminBloc.add(AdminUserModTextChangeEvent(password: newString)),
         ),
         padding,
         MyTextField(
@@ -95,8 +91,7 @@ class _RegisterUserState extends State<RegisterUser> {
           controller: null,
           hint: 'Required',
           obsucureText: true,
-          onTextChange: (newString) =>
-              _adminBloc.add(AdminUserModTextChangeEvent(confirmPassword: newString)),
+          onTextChange: (newString) => _adminBloc.add(AdminUserModTextChangeEvent(confirmPassword: newString)),
         ),
         padding,
         Container(
@@ -111,6 +106,7 @@ class _RegisterUserState extends State<RegisterUser> {
                   Scaffold.of(_context).showSnackBar(SnackBar(
                     content:Text('Password too small (at least 6 characters)!'),
                   ));
+                  
                 } else if (state is AdminLoginConfirmationPasswordWrongState){
                   Scaffold.of(_context).showSnackBar(SnackBar(
                     content: Text('Confirmation Password is not correct!'),
@@ -141,9 +137,7 @@ class _RegisterUserState extends State<RegisterUser> {
   }
 
   Widget _buildAdminLevelSelector(){
-    if(AdminCheck().isCurrentUserAboveLvl2(context)){
-      return AdminDropdownList();
-    }
+    if(AdminCheck().isCurrentUserAboveLvl2(context)) return AdminDropdownList();
     return Container();
   }
 }

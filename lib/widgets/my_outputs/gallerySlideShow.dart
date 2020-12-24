@@ -25,7 +25,7 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
   @override
   void initState() {
     _aboutBloc = BlocProvider.of<AboutBloc>(context);
-    print("--------------INITIAL INDEX IS " + _aboutBloc.slideShowIndex.toString());
+    
 
     Map<String,ImageTag> gallery = {};
     widget.galleryItems.keys.forEach((src) {
@@ -52,6 +52,7 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
       ); 
     }).toList();
 
+    _aboutBloc.initialiseSlideshow(images.length);
     _currentImageWidget = images[_aboutBloc.slideShowIndex];
     _animateSlideShow(images);
     super.initState();
@@ -67,19 +68,17 @@ class _GallerySlideShowState extends State<GallerySlideShow> {
     await Future.delayed(Duration(seconds: 6,),(){
       
       if(mounted){
-        if(_aboutBloc.slideShowIndex < images.length){
+        if(_aboutBloc.slideShowIndex < images.length - 1){
           setState(() {
-            _currentImageWidget = images[_aboutBloc.slideShowIndex];
             _aboutBloc.incrementSlideShowIndex();
+            _currentImageWidget = images[_aboutBloc.slideShowIndex];
           });
         }else{
           setState(() {
             _aboutBloc.setSlideShowIndex(0);
             _currentImageWidget = images[_aboutBloc.slideShowIndex];
-            _aboutBloc.incrementSlideShowIndex();
           });
         }
-        print("--------------INDEX IS NOW " + _aboutBloc.slideShowIndex.toString());
         _animateSlideShow(images);
       }
       
